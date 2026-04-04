@@ -1,0 +1,384 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model User {
+  id                     String                  @id @default(cuid())
+  name                   String?
+  email                  String?                 @unique
+  image                  String?
+  role                   String                  @default("USER")
+  createdAt              DateTime                @default(now())
+  bio                    String?
+  skills                 String[]                @default([])
+  githubUrl              String?
+  headline               String?
+  location               String?                 @default("India")
+  portfolioUrl           String?
+  resumeUrl              String?
+  twitterUrl             String?
+  emailVerified          DateTime?
+  address                String?
+  dateOfBirth            DateTime?
+  expectedSalary         String?
+  gender                 String?
+  joiningDate            String?
+  languages              String[]                @default([])
+  linkedinUrl            String?
+  maritalStatus          String?                 @default("Single")
+  mediumUrl              String?
+  phone                  String?
+  resumeName             String?
+  resumeUpdated          DateTime?
+  totalExperience        String?
+  isBanned               Boolean                 @default(false)
+  password               String?
+  passwordResetExpires   DateTime?
+  passwordResetToken     String?
+  accomplishments        Accomplishment[]
+  accounts               Account[]
+  applications           Application[]
+  certificates           Certification[]
+  education              Education[]
+  employments            Employment[]
+  itSkills               ITSkill[]
+  internshipApplications InternshipApplication[]
+  notifications          Notification[]
+  posts                  Post[]
+  projects               Project[]
+  sessions               Session[]
+
+   // ADD THESE LINES:
+  likedPosts    Like[]        // Add this
+  savedPosts    SavedPost[]   // Add this
+  comments      Comment[]     // Add this
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+model Employment {
+  id          String   @id @default(cuid())
+  company     String
+  role        String
+  type        String?
+  startDate   String
+  endDate     String?
+  description String?
+  isCurrent   Boolean  @default(false)
+  bullets     String[] @default([])
+  techStack   String[] @default([])
+  orderIndex  Int      @default(0)
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Education {
+  id        String  @id @default(cuid())
+  school    String
+  degree    String
+  field     String?
+  yearStart String?
+  yearEnd   String
+  type      String? @default("Full Time")
+  userId    String
+  user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Project {
+  id          String   @id @default(cuid())
+  title       String
+  description String
+  techStack   String[]
+  githubUrl   String?
+  liveUrl     String?
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model ITSkill {
+  id        String  @id @default(cuid())
+  skillName String
+  version   String?
+  lastUsed  String?
+  expYears  Int     @default(0)
+  expMonths Int     @default(0)
+  userId    String
+  user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Certification {
+  id        String  @id @default(cuid())
+  title     String
+  issuer    String
+  link      String?
+  validFrom String?
+  validTo   String?
+  userId    String
+  user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Accomplishment {
+  id          String  @id @default(cuid())
+  type        String
+  title       String
+  link        String?
+  description String?
+  userId      String
+  user        User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Company {
+  id        String   @id @default(cuid())
+  name      String
+  logo      String?
+  website   String?
+  createdAt DateTime @default(now())
+  jobs      Job[]
+}
+
+model Job {
+  id           String        @id @default(cuid())
+  title        String
+  category     String        @default("Internship")
+  description  String
+  skills       String[]
+  location     String        @default("Remote")
+  stipend      String?
+  duration     String?
+  deadline     DateTime?
+  experience   String        @default("0-1 years")
+  createdAt    DateTime      @default(now())
+  companyId    String
+  applications Application[]
+  company      Company       @relation(fields: [companyId], references: [id], onDelete: Cascade)
+}
+
+model Application {
+  id        String   @id @default(cuid())
+  jobId     String
+  userId    String
+  status    String   @default("APPLIED")
+  createdAt DateTime @default(now())
+  job       Job      @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([jobId, userId])
+}
+
+model Internship {
+  id             String                  @id @default(cuid())
+  title          String
+  description    String
+  company        String
+  companyLogo    String?
+  companyWebsite String?
+  aboutCompany   String?
+  category       String
+  workMode       String
+  internshipType String
+  location       String
+  duration       String
+  paid           Boolean
+  stipendAmount  Int?
+  stipendType    String?
+  skills         String[]
+  perks          String[]
+  eligibility    String?
+  applyLink      String?
+  openings       Int?
+  startDate      DateTime?
+  applyBy        DateTime?
+  published      Boolean                 @default(true)
+  verified       Boolean                 @default(false)
+  createdAt      DateTime                @default(now())
+  isTrending     Boolean                 @default(false)
+  applyClicks    ApplyClick[]
+  applications   InternshipApplication[]
+  views          InternshipView[]
+}
+
+model InternshipApplication {
+  id           String     @id @default(cuid())
+  userId       String
+  internshipId String
+  status       String     @default("PENDING")
+  createdAt    DateTime   @default(now())
+  internship   Internship @relation(fields: [internshipId], references: [id], onDelete: Cascade)
+  user         User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, internshipId])
+}
+
+model Post {
+  id         String   @id @default(cuid())
+  title      String
+  slug       String   @unique
+  content    String?
+  published  Boolean  @default(false)
+  createdAt  DateTime @default(now())
+  orderIndex Int      @default(0)
+  authorId   String
+  author     User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
+
+// ADD THESE LINES:
+  likes      Like[]        // Add this
+  savedBy    SavedPost[]   // Add this
+  comments   Comment[]     // Add this
+}
+
+model SystemStat {
+  id        String   @id @default(cuid())
+  label     String
+  value     String
+  icon      String?
+  order     Int      @default(0)
+  isActive  Boolean  @default(true)
+  updatedAt DateTime @updatedAt
+}
+
+model CareerResource {
+  id         String   @id @default(cuid())
+  title      String
+  slug       String   @unique
+  excerpt    String
+  content    String?
+  category   String
+  coverImage String?
+  fileurl    String?
+  link       String?
+  type       String?  @default("text")
+  published  Boolean  @default(true)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+model InternshipView {
+  id           String     @id @default(cuid())
+  internshipId String
+  createdAt    DateTime   @default(now())
+  internship   Internship @relation(fields: [internshipId], references: [id], onDelete: Cascade)
+}
+
+model ApplyClick {
+  id           String     @id @default(cuid())
+  internshipId String
+  createdAt    DateTime   @default(now())
+  internship   Internship @relation(fields: [internshipId], references: [id], onDelete: Cascade)
+}
+
+model Visitor {
+  id        String   @id @default(cuid())
+  sessionId String
+  createdAt DateTime @default(now())
+}
+
+model ContactMessage {
+  id        String   @id @default(cuid())
+  name      String
+  email     String
+  userType  String
+  subject   String
+  message   String
+  company   String?
+  createdAt DateTime @default(now())
+  status    String   @default("NEW")
+  repliedAt DateTime?
+  reply     String?
+}
+
+model Admin {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  name      String?
+  createdAt DateTime @default(now())
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  userId    String
+  title     String
+  message   String
+  type      String
+  link      String?
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([createdAt])
+}
+
+model Like {
+  id        String   @id @default(cuid())
+  postId    String
+  userId    String
+  createdAt DateTime @default(now())
+
+  post Post @relation(fields: [postId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([postId, userId])
+}
+
+model SavedPost {
+  id        String   @id @default(cuid())
+  postId    String
+  userId    String
+  createdAt DateTime @default(now())
+
+  post Post @relation(fields: [postId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([postId, userId])
+}
+
+model Comment {
+  id        String   @id @default(cuid())
+  content   String
+  postId    String
+  userId    String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  post Post @relation(fields: [postId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
