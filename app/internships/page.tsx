@@ -27,19 +27,56 @@ export default async function InternshipsPage({ searchParams }: PageProps) {
   try {
     const where: any = { published: true };
     
-    if (searchParams.category && searchParams.category !== "All") where.category = searchParams.category;
-    if (searchParams.mode && searchParams.mode !== "All") where.workMode = searchParams.mode;
-    if (searchParams.location && searchParams.location !== "All Locations") {
-      where.location = { contains: searchParams.location, mode: 'insensitive' };
+    // Category filter
+    if (searchParams.category && searchParams.category !== "All") {
+      where.category = searchParams.category;
     }
-    if (searchParams.type === "Paid") where.stipendAmount = { not: null };
-    if (searchParams.type === "Unpaid") where.stipendAmount = null;
-    if (searchParams.search) {
+    
+    // Work mode filter
+    if (searchParams.mode && searchParams.mode !== "All") {
+      where.workMode = searchParams.mode;
+    }
+    
+    // FIXED LOCATION FILTER - More flexible and robust
+    if (searchParams.location && searchParams.location !== "All Locations") {
+      const locationMap: Record<string, string[]> = {
+        "Remote": ["Remote", "Work from Home", "WFH", "Remote - India", "Work From Home", "Remote Work"],
+        "Bangalore": ["Bangalore", "Bengaluru", "Bangalore, India", "Bengaluru, India", "Bangalore Karnataka", "Bengaluru Karnataka"],
+        "Mumbai": ["Mumbai", "Mumbai, India", "Bombay", "Mumbai Maharashtra"],
+        "Delhi": ["Delhi", "New Delhi", "Delhi NCR", "NCR", "Delhi, India", "New Delhi, India"],
+        "Hyderabad": ["Hyderabad", "Hyderabad, India", "Telangana", "Hyderabad Telangana", "Secunderabad"],
+        "Chennai": ["Chennai", "Chennai, India", "Madras", "Chennai Tamil Nadu"],
+        "Pune": ["Pune", "Pune, India", "Poona", "Pune Maharashtra"],
+        "Kolkata": ["Kolkata", "Kolkata, India", "Calcutta", "Kolkata West Bengal"],
+        "Ahmedabad": ["Ahmedabad", "Ahmedabad, India", "Ahmedabad Gujarat"],
+        "Jaipur": ["Jaipur", "Jaipur, India", "Jaipur Rajasthan"],
+        "Lucknow": ["Lucknow", "Lucknow, India", "Lucknow Uttar Pradesh"],
+      };
+      
+      const locationVariants = locationMap[searchParams.location] || [searchParams.location];
+      
+      where.location = {
+        in: locationVariants,
+        mode: 'insensitive'
+      };
+    }
+    
+    // Stipend filter
+    if (searchParams.type === "Paid") {
+      where.stipendAmount = { not: null };
+    }
+    if (searchParams.type === "Unpaid") {
+      where.stipendAmount = null;
+    }
+    
+    // Search filter
+    if (searchParams.search && searchParams.search.trim() !== "") {
       where.OR = [
         { title: { contains: searchParams.search, mode: 'insensitive' } },
         { company: { contains: searchParams.search, mode: 'insensitive' } },
         { description: { contains: searchParams.search, mode: 'insensitive' } },
-        { skills: { has: searchParams.search } }
+        { skills: { has: searchParams.search } },
+        { location: { contains: searchParams.search, mode: 'insensitive' } }
       ];
     }
 
@@ -47,8 +84,10 @@ export default async function InternshipsPage({ searchParams }: PageProps) {
       where,
       orderBy: { createdAt: "desc" },
     });
+    
   } catch (error) {
     console.error("Database error:", error);
+    internships = [];
   }
 
   const activeFilterCount = Object.values(searchParams).filter(v => v && v !== "All Locations" && v !== "" && v !== "All").length;
@@ -81,6 +120,10 @@ export default async function InternshipsPage({ searchParams }: PageProps) {
     { name: "Hyderabad", value: "Hyderabad", icon: "💎" },
     { name: "Chennai", value: "Chennai", icon: "🏖️" },
     { name: "Pune", value: "Pune", icon: "📚" },
+    { name: "Kolkata", value: "Kolkata", icon: "🌊" },
+    { name: "Ahmedabad", value: "Ahmedabad", icon: "🏭" },
+    { name: "Jaipur", value: "Jaipur", icon: "🏰" },
+    { name: "Lucknow", value: "Lucknow", icon: "🕌" },
   ];
 
   const getFilterUrl = (key: string, value: string) => {
@@ -109,7 +152,6 @@ export default async function InternshipsPage({ searchParams }: PageProps) {
     return colors[color] || colors.gray;
   };
 
-  // Function to truncate description to exactly 2 lines (approx 120 chars)
   const truncateDescription = (description: string, maxLength: number = 120) => {
     if (!description) return "";
     if (description.length <= maxLength) return description;
@@ -178,9 +220,9 @@ export default async function InternshipsPage({ searchParams }: PageProps) {
                     Filters
                   </h3>
                   {activeFilterCount > 0 && (
-                    <button onClick={() => window.location.href = clearFilters()} className="text-xs text-red-500 hover:text-red-700 flex items-center gap-1">
+                    <Link href={clearFilters()} className="text-xs text-red-500 hover:text-red-700 flex items-center gap-1">
                       <X size={12} /> Clear all
-                    </button>
+                    </Link>
                   )}
                 </div>
               </div>
@@ -272,7 +314,15 @@ export default async function InternshipsPage({ searchParams }: PageProps) {
                 <div className="p-2 max-h-64 overflow-y-auto">
                   {locations.map((loc) => {
                     const isActive = (searchParams.location === loc.value) || (loc.value === "" && !searchParams.location);
-                    const count = internships.filter(i => loc.value === "" || i.location?.includes(loc.value)).length;
+                    const count = internships.filter(i => {
+                      if (loc.value === "") return true;
+                      if (loc.value === "Remote") {
+                        return i.location?.toLowerCase().includes("remote") || 
+                               i.location?.toLowerCase().includes("work from home") ||
+                               i.location?.toLowerCase().includes("wfh");
+                      }
+                      return i.location?.toLowerCase().includes(loc.value.toLowerCase());
+                    }).length;
                     return (
                       <Link
                         key={loc.name}
@@ -530,9 +580,9 @@ export default async function InternshipsPage({ searchParams }: PageProps) {
                   <Rocket size={48} className="text-gray-300 mx-auto mb-4" />
                   <h3 className="text-lg font-semibold text-gray-900 mb-2">No internships found</h3>
                   <p className="text-sm text-gray-500 mb-4">We couldn't find any internships matching your criteria.</p>
-                  <button onClick={() => window.location.href = clearFilters()} className="px-5 py-2 bg-gradient-to-r from-[#8B6BA3] to-[#BDA6CE] text-white text-sm font-medium rounded-lg hover:from-[#7A5A92] hover:to-[#A896C8] transition shadow-sm">
+                  <Link href={clearFilters()} className="px-5 py-2 bg-gradient-to-r from-[#8B6BA3] to-[#BDA6CE] text-white text-sm font-medium rounded-lg hover:from-[#7A5A92] hover:to-[#A896C8] transition shadow-sm inline-block">
                     Clear all filters
-                  </button>
+                  </Link>
                 </div>
               </div>
             )}
