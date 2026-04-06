@@ -1,6 +1,17 @@
 User-agent: *
 Allow: /
 
-# Pointing to the new, working sitemap
-Sitemap: https://tryinternify.in/sitemap-new.xml
-Host: https://tryinternify.in
+# Disallow - Pages Google should NEVER crawl
+Disallow: /auth/signin
+Disallow: /auth/register
+Disallow: /auth/forgot-password
+Disallow: /dashboard
+Disallow: /profile
+Disallow: /settings
+Disallow: /saved
+Disallow: /api/
+Disallow: /_next/
+Disallow: /static/
+
+# Sitemap location
+Sitemap: https://tryinternify.in/sitemap.xml
