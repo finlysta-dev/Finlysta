@@ -168,7 +168,7 @@ export default function HowToGetFirstInternshipIndia() {
             <div className='flex items-start gap-3'>
               <Lightbulb className='w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5' />
               <div>
-                <p className='font-semibold text-amber-900 mb-1'>⭐ Important: Projects > Certificates</p>
+                <p className='font-semibold text-amber-900 mb-1'>⭐ Important: Projects &gt; Certificates</p>
                 <p className='text-amber-800 text-sm'>
                   Companies care more about what you've built than what courses you've taken. A candidate with 2-3 solid projects and no certificates will often get hired over someone with 10 certificates and zero projects. Build real things.
                 </p>
