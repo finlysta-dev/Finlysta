@@ -124,7 +124,7 @@ export default function RootLayout({
               "url": "https://tryinternify.in",
               "logo": "https://tryinternify.in/Internify.png",
               "description": "Free internship platform connecting students with manually verified internships. 50-75 new listings daily across 24+ domains.",
-              "foundingDate": "2024",
+              "foundingDate": "2026",
               "foundingLocation": "India",
               "areaServed": "India",
               "sameAs": [

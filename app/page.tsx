@@ -5,7 +5,7 @@ import Image from 'next/image';
 import React from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { 
   Search, Sparkles, Shield, Zap, Heart, MapPin, Building2, Users, Code, PenTool,
   Database, Instagram, Linkedin, Mail, Twitter, TrendingUp, ChevronRight,
@@ -211,9 +211,12 @@ export default function HomePage() {
   const [location, setLocation] = useState("");
   const [popularCities, setPopularCities] = useState<City[]>(FALLBACK_CITIES);
   const [loadingCities, setLoadingCities] = useState(true);
+  const [mounted, setMounted] = useState(false);
 
   // Track page view - Google Analytics only
   useEffect(() => {
+    setMounted(true);
+    
     if (typeof window !== "undefined" && (window as any).gtag) {
       (window as any).gtag("config", "G-CZM79LK7MR", {
         page_path: window.location.pathname,
@@ -322,11 +325,14 @@ export default function HomePage() {
     { name: "Finance", icon: <Landmark size={14} />, seoUrl: "/internships/role/finance" },
   ];
 
+  // Use useMemo for static text that shouldn't change
+  const domainText = useMemo(() => "24+ domains with active opportunities", []);
+
   return (
-    <div className="bg-white min-h-screen font-sans selection:bg-blue-100 selection:text-blue-900">
+    <div className="bg-white min-h-screen font-sans selection:bg-blue-100 selection:text-blue-900" suppressHydrationWarning>
 
       {/* ─── HEADER ───────────────────────────────────────────────────────────── */}
-      <header className="bg-white/95 backdrop-blur-xl sticky top-0 z-50 border-b border-slate-100 shadow-sm">
+      <header className="bg-white/95 backdrop-blur-xl sticky top-0 z-50 border-b border-slate-100 shadow-sm" suppressHydrationWarning>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-[72px] flex items-center justify-between">
           <Link href="/" className="flex items-center" aria-label="Internify Home">
             <Image 
@@ -451,7 +457,7 @@ export default function HomePage() {
             <div>
               <p className="text-blue-600 text-xs font-bold uppercase tracking-widest mb-1.5">Explore by Field</p>
               <h2 className="text-3xl font-black text-slate-900">Popular Domains for Internships</h2>
-              <p className="text-slate-600 text-sm mt-1.5">24+ domains with 1000+ active opportunities</p>
+              <p className="text-slate-600 text-sm mt-1.5" suppressHydrationWarning>{domainText}</p>
             </div>
             <Link href="/internships" className="flex items-center gap-1.5 text-blue-600 text-sm font-bold bg-blue-50 hover:bg-blue-100 px-4 py-2 rounded-lg transition-all whitespace-nowrap">View All Internships <ChevronRight size={15} /></Link>
           </div>
@@ -474,7 +480,7 @@ export default function HomePage() {
               <h2 className="text-3xl font-black text-slate-900">Popular Cities for Internships</h2>
               <p className="text-slate-600 text-sm mt-1.5 max-w-2xl mx-auto">Discover internship opportunities in your preferred city — remote options available nationwide</p>
             </div>
-            {loadingCities ? (
+            {loadingCities || !mounted ? (
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
                 {[...Array(12)].map((_, i) => (
                   <div key={i} className="bg-white p-4 rounded-xl text-center border border-slate-200 animate-pulse">
