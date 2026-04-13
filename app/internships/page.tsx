@@ -1,6 +1,6 @@
 ﻿"use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import {
@@ -30,7 +30,7 @@ type Internship = {
   applyLink?: string;
   paid?: boolean;
   stipendAmount?: string;
-  internshipType?: string;  // ✅ ADD THIS LINE
+  internshipType?: string;
 };
 
 // Helper function to get company initials for logo fallback
@@ -53,12 +53,10 @@ const getLocationDisplay = (location: string, workMode: string) => {
 
 // Helper function to get numeric stipend value for filtering
 const getStipendValue = (job: Internship): number => {
-  // Check stipendAmount first
   if (job.stipendAmount && job.stipendAmount !== "Not Disclosed" && job.stipendAmount !== "") {
     const num = parseInt(job.stipendAmount);
     if (!isNaN(num)) return num;
   }
-  // Check stipend field
   if (job.stipend && job.stipend !== "Not Disclosed" && job.stipend !== "Not disclosed" && job.stipend !== "") {
     const num = parseInt(job.stipend);
     if (!isNaN(num)) return num;
@@ -95,7 +93,8 @@ const formatStipend = (stipend: string, paid?: boolean, stipendAmount?: string) 
   return "Stipend not disclosed";
 };
 
-export default function InternshipsPage() {
+// Main component that uses useSearchParams
+function InternshipsContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const [allInternships, setAllInternships] = useState<Internship[]>([]);
@@ -112,12 +111,10 @@ export default function InternshipsPage() {
   const [partTime, setPartTime] = useState(false);
   const [imageErrors, setImageErrors] = useState<{ [key: string]: boolean }>({});
 
-  // Fetch internships on mount
   useEffect(() => {
     fetchInternships();
   }, []);
 
-  // Apply filters whenever filter criteria change
   useEffect(() => {
     applyFilters();
   }, [allInternships, searchKeyword, selectedCategory, selectedLocation, minStipend, workFromHome, partTime, sortBy]);
@@ -128,7 +125,6 @@ export default function InternshipsPage() {
       const res = await fetch(`/api/internships`);
       const data = await res.json();
       let internshipsData = Array.isArray(data) ? data : [];
-      
       setAllInternships(internshipsData);
     } catch (error) {
       console.error("Error fetching internships:", error);
@@ -140,7 +136,6 @@ export default function InternshipsPage() {
   const applyFilters = () => {
     let filtered = [...allInternships];
     
-    // Filter by search keyword
     if (searchKeyword) {
       const keyword = searchKeyword.toLowerCase();
       filtered = filtered.filter(job => 
@@ -150,17 +145,14 @@ export default function InternshipsPage() {
       );
     }
     
-    // Filter by category
     if (selectedCategory) {
       filtered = filtered.filter(job => job.category === selectedCategory);
     }
     
-    // Filter by location
     if (selectedLocation) {
       filtered = filtered.filter(job => job.location === selectedLocation);
     }
     
-    // Filter by minimum stipend - FIXED
     if (minStipend > 0) {
       filtered = filtered.filter(job => {
         const stipendValue = getStipendValue(job);
@@ -168,17 +160,14 @@ export default function InternshipsPage() {
       });
     }
     
-    // Filter by work from home
     if (workFromHome) {
       filtered = filtered.filter(job => job.workMode === "Remote");
     }
     
-    // Filter by part time
     if (partTime) {
       filtered = filtered.filter(job => job.internshipType === "Part-time");
     }
     
-    // Apply sorting
     if (sortBy === "newest") {
       filtered = [...filtered].sort((a, b) => 
         new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
@@ -203,7 +192,6 @@ export default function InternshipsPage() {
     setWorkFromHome(false);
     setPartTime(false);
     setSortBy("relevant");
-    // Update URL without filters
     router.push("/internships");
   };
 
@@ -539,5 +527,21 @@ export default function InternshipsPage() {
         </div>
       </section>
     </div>
+  );
+}
+
+// Main export with Suspense boundary
+export default function InternshipsPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center bg-[#F8FAFC]">
+        <div className="text-center">
+          <div className="w-12 h-12 border-4 border-[#0A2540] border-t-[#FFD700] rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-[#0A2540] font-medium">Loading internships...</p>
+        </div>
+      </div>
+    }>
+      <InternshipsContent />
+    </Suspense>
   );
 }

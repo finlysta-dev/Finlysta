@@ -1,8 +1,23 @@
 import prisma from "@/lib/prisma";
 import { NextResponse } from "next/server";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
+
+// ✅ Add this to prevent static generation
+export const dynamic = 'force-dynamic';
 
 export async function GET(req: Request) {
   try {
+    // Check if user is admin
+    const session = await getServerSession(authOptions);
+    
+    if (!session || (session.user as any).role !== "ADMIN") {
+      return NextResponse.json(
+        { error: "Unauthorized - Admin access required" },
+        { status: 401 }
+      );
+    }
+
     const { searchParams } = new URL(req.url);
     const type = searchParams.get("type");
     const search = searchParams.get("search");

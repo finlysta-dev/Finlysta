@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { Camera, Loader2 } from "lucide-react";
@@ -25,17 +25,49 @@ export default function EditProfilePage() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [uploadingImage, setUploadingImage] = useState(false);
-  const [profileImage, setProfileImage] = useState(session?.user?.image || "");
+  const [profileImage, setProfileImage] = useState("");
+  const [mounted, setMounted] = useState(false);
   const [formData, setFormData] = useState({
-    name: session?.user?.name || "",
-    location: (session?.user as any)?.location || "",
-    linkedinUrl: (session?.user as any)?.linkedinUrl || "",
-    githubUrl: (session?.user as any)?.githubUrl || "",
-    portfolioUrl: (session?.user as any)?.portfolioUrl || "",
-    mediumUrl: (session?.user as any)?.mediumUrl || "",
-    twitterUrl: (session?.user as any)?.twitterUrl || "",
-    bio: (session?.user as any)?.bio || "",
+    name: "",
+    location: "",
+    linkedinUrl: "",
+    githubUrl: "",
+    portfolioUrl: "",
+    mediumUrl: "",
+    twitterUrl: "",
+    bio: "",
   });
+
+  // Set mounted to true after component mounts (client-side only)
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  // Initialize form data when session is available
+  useEffect(() => {
+    if (session?.user) {
+      setFormData({
+        name: session.user.name || "",
+        location: (session.user as any)?.location || "",
+        linkedinUrl: (session.user as any)?.linkedinUrl || "",
+        githubUrl: (session.user as any)?.githubUrl || "",
+        portfolioUrl: (session.user as any)?.portfolioUrl || "",
+        mediumUrl: (session.user as any)?.mediumUrl || "",
+        twitterUrl: (session.user as any)?.twitterUrl || "",
+        bio: (session.user as any)?.bio || "",
+      });
+      setProfileImage(session.user.image || "");
+    }
+  }, [session]);
+
+  // Show loading state while mounting or checking session
+  if (!mounted) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="w-8 h-8 border-4 border-[#0A2540] border-t-[#FFD700] rounded-full animate-spin"></div>
+      </div>
+    );
+  }
 
   if (!session) {
     router.push("/auth/signin");
