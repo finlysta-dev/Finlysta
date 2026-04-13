@@ -30,6 +30,7 @@ type Internship = {
   applyLink?: string;
   paid?: boolean;
   stipendAmount?: string;
+  internshipType?: string;  // ✅ ADD THIS LINE
 };
 
 // Helper function to get company initials for logo fallback
