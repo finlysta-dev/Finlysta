@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import Link from "next/link";
 import Image from "next/image";
@@ -24,10 +24,10 @@ export default function Header() {
     return (
       <header className="bg-white sticky top-0 z-50 border-b border-slate-200 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-          <Link href="/" className="flex items-center shrink-0" aria-label="Internify Home">
+          <Link href="/" className="flex items-center shrink-0" aria-label="Finlysta Home">
             <Image 
-              src="/Internify.png" 
-              alt="Internify Logo" 
+              src="/Finlysta.png" 
+              alt="Finlysta Logo" 
               width={200} 
               height={45}
               priority
@@ -43,10 +43,10 @@ export default function Header() {
     <header className="bg-white sticky top-0 z-50 border-b border-slate-200 shadow-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
         {/* Logo */}
-        <Link href="/" className="flex items-center shrink-0" aria-label="Internify Home">
+        <Link href="/" className="flex items-center shrink-0" aria-label="Finlysta Home">
           <Image 
-            src="/Internify.png" 
-            alt="Internify Logo - Finance Internship Platform for Students"
+            src="/Finlysta.png" 
+            alt="Finlysta Logo - Finance Internship Platform for Students"
             width={180} 
             height={40}
             priority
@@ -57,16 +57,16 @@ export default function Header() {
         {/* Navigation - Desktop */}
         <nav className="hidden md:flex items-center gap-8">
           <Link 
+            href="/jobs" 
+            className="text-sm font-semibold text-slate-600 hover:text-[#0A2540] transition-colors"
+          >
+            Jobs
+          </Link>
+          <Link 
             href="/internships" 
             className="text-sm font-semibold text-slate-600 hover:text-[#0A2540] transition-colors"
           >
             Internships
-          </Link>
-          <Link 
-            href="/domains" 
-            className="text-sm font-semibold text-slate-600 hover:text-[#0A2540] transition-colors"
-          >
-            Finance Domains
           </Link>
           <Link 
             href="/blog" 
@@ -76,30 +76,14 @@ export default function Header() {
           </Link>
         </nav>
 
-        {/* Auth Buttons */}
+        {/* Profile Section */}
         <div className="flex items-center gap-3">
           {status === "loading" ? (
-            <div className="flex items-center gap-3">
-              <div className="w-16 h-8 bg-slate-200 rounded-full animate-pulse"></div>
-              <div className="w-24 h-8 bg-slate-200 rounded-full animate-pulse"></div>
-            </div>
-          ) : !session ? (
-            <>
-              <Link
-                href="/auth/signin"
-                className="text-sm font-semibold text-slate-600 hover:text-[#0A2540] px-3 py-2 transition-colors"
-              >
-                Sign In
-              </Link>
-              <Link
-                href="/auth/register"
-                className="bg-[#FFD700] hover:bg-[#e6c200] text-[#0A2540] text-sm font-bold px-5 py-2 rounded-xl transition-all shadow-sm hover:shadow-md"
-              >
-                Get Started →
-              </Link>
-            </>
-          ) : (
+            <div className="w-8 h-8 bg-slate-200 rounded-full animate-pulse"></div>
+          ) : session ? (
             <ProfileDropdown />
+          ) : (
+            <div className="w-8 h-8"></div> // Empty placeholder to maintain layout
           )}
         </div>
       </div>
@@ -108,16 +92,16 @@ export default function Header() {
       <div className="md:hidden border-t border-slate-100 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-12 flex items-center justify-around">
           <Link 
+            href="/jobs" 
+            className="text-xs font-semibold text-slate-600 hover:text-[#0A2540] transition-colors"
+          >
+            Jobs
+          </Link>
+          <Link 
             href="/internships" 
             className="text-xs font-semibold text-slate-600 hover:text-[#0A2540] transition-colors"
           >
             Internships
-          </Link>
-          <Link 
-            href="/domains" 
-            className="text-xs font-semibold text-slate-600 hover:text-[#0A2540] transition-colors"
-          >
-            Domains
           </Link>
           <Link 
             href="/blog" 

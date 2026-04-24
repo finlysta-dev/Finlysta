@@ -18,7 +18,7 @@ export default function PublicNavbar() {
               I
             </div>
             <span className="font-extrabold text-lg tracking-tight">
-              Internify
+              Finlysta
             </span>
           </Link>
 

@@ -94,7 +94,7 @@ export default function SignInPage() {
     {
       num: "03",
       title: "Free Forever",
-      desc: "No hidden fees. Internify will always be free for students.",
+      desc: "No hidden fees. Finlysta will always be free for students.",
       icon: (
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
           <path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20z"/><path d="M12 6v6l4 2"/>
@@ -634,7 +634,7 @@ export default function SignInPage() {
               </div>
               <h2 className="wf-success-title">Welcome back, {userName}! 👋</h2>
               <p className="wf-success-msg">
-                You've successfully signed in to <span className="wf-success-highlight">Internify</span>.<br />
+                You've successfully signed in to <span className="wf-success-highlight">Finlysta</span>.<br />
                 Ready to find your next great opportunity?
               </p>
               <p className="wf-success-redirect">Taking you to your dashboard…</p>
@@ -651,7 +651,7 @@ export default function SignInPage() {
         {/* NAV */}
         <nav className="wf-nav">
           <a href="/" className="wf-logo">
-            <img src="/Internify.png" alt="Internify Logo" />
+            <img src="/Finlysta.png" alt="Finlysta Logo" />
           </a>
           <div className="wf-nav-right">
             <button className="wf-nav-back" onClick={() => router.back()}>

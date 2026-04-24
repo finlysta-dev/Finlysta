@@ -113,11 +113,11 @@ export default function RiskCompliancePage() {
   return (
     <>
       <Head>
-        <title>Risk & Compliance Internships in India 2026 | Internify</title>
+        <title>Risk & Compliance Internships in India 2026 | Finlysta</title>
         <meta name="description" content="Find verified risk management and compliance internships at top banks like J.P. Morgan, Goldman Sachs, and HDFC Bank. Apply to roles in credit risk, market risk, operational risk, and regulatory compliance — no signup required." />
         <meta name="keywords" content="risk management internships India, compliance internships, credit risk internships, market risk internships, operational risk" />
         <meta name="robots" content="index, follow" />
-        <link rel="canonical" href="https://internify.com/risk-compliance-internships" />
+        <link rel="canonical" href="https://Finlysta.com/risk-compliance-internships" />
       </Head>
 
       <Header />

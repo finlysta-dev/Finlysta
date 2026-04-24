@@ -80,7 +80,7 @@ export default async function AdminDashboard() {
           </h1>
           <p className="text-slate-500 text-sm">
             You are logged in as{" "}
-            <span className="font-semibold">Internify Admin</span>.
+            <span className="font-semibold">Finlysta Admin</span>.
           </p>
         </div>
 
@@ -103,7 +103,7 @@ export default async function AdminDashboard() {
         </h1>
         <p className="text-slate-500 text-sm mt-1">
           You are logged in as{" "}
-          <span className="font-semibold">Internify Admin</span>. Manage users,
+          <span className="font-semibold">Finlysta Admin</span>. Manage users,
           internships and applications from here.
         </p>
       </div>

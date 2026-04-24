@@ -26,7 +26,7 @@ export default function HowItWorks() {
     {
       icon: Send,
       title: "Apply",
-      description: "Apply directly on Internify or company website",
+      description: "Apply directly on Finlysta or company website",
       fullDescription: "Submit applications quickly without complicated forms or spam portals.",
       color: "from-orange-600 to-red-500",
       bgColor: "bg-orange-100",
@@ -54,7 +54,7 @@ export default function HowItWorks() {
           </div>
           
           <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
-            How Internify Works
+            How Finlysta Works
           </h2>
           
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">
@@ -153,7 +153,7 @@ export default function HowItWorks() {
         <div className="mt-16 text-center">
           <Link href="/auth/register">
             <button className="inline-flex items-center gap-2 bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-8 py-4 rounded-xl font-semibold text-lg shadow-xl hover:shadow-2xl transition-all hover:scale-105 active:scale-98">
-              Get Early Access to Internify
+              Get Early Access to Finlysta
               <Rocket className="w-5 h-5" />
             </button>
           </Link>

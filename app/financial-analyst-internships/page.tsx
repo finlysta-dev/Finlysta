@@ -111,11 +111,11 @@ export default function FinancialAnalystPage() {
   return (
     <>
       <Head>
-        <title>Financial Analyst Internships in India 2026 | Internify</title>
+        <title>Financial Analyst Internships in India 2026 | Finlysta</title>
         <meta name="description" content="Find verified financial analyst internships at top companies like Deloitte, PwC, EY, KPMG, and Accenture. Apply to roles in FP&A, budgeting, forecasting, and financial reporting — no signup required." />
         <meta name="keywords" content="financial analyst internships India, FP&A internships, finance internships, budgeting internships" />
         <meta name="robots" content="index, follow" />
-        <link rel="canonical" href="https://internify.com/financial-analyst-internships" />
+        <link rel="canonical" href="https://Finlysta.com/financial-analyst-internships" />
       </Head>
 
       <Header />

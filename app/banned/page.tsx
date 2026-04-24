@@ -36,7 +36,7 @@ export default function BannedPage() {
         </h1>
 
         <p className="text-gray-600 mb-4">
-          Your account has been temporarily suspended for violating Internify platform rules.
+          Your account has been temporarily suspended for violating Finlysta platform rules.
         </p>
 
         <p className="text-gray-600 mb-4">
@@ -48,10 +48,10 @@ export default function BannedPage() {
         </p>
 
         <a
-          href="mailto:internifyhelp@gmail.com"
+          href="mailto:Finlystahelp@gmail.com"
           className="text-blue-600 font-medium hover:underline"
         >
-          internifyhelp@gmail.com
+          Finlystahelp@gmail.com
         </a>
 
       </div>

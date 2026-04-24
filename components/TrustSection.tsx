@@ -29,7 +29,7 @@ export default function TrustSection(){
     <section className="py-20">
 
       <h2 className="text-3xl font-bold text-center mb-12">
-        Why Students Trust Internify
+        Why Students Trust Finlysta
       </h2>
 
       <div className="grid md:grid-cols-3 gap-8">

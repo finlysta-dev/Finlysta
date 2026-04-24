@@ -112,11 +112,11 @@ export default function FinTechPage() {
   return (
     <>
       <Head>
-        <title>FinTech Internships in India 2026 | Internify</title>
+        <title>FinTech Internships in India 2026 | Finlysta</title>
         <meta name="description" content="Find verified FinTech internships at leading companies like Razorpay, PhonePe, Paytm, and CRED. Apply to roles in payments, lending, trading platforms, and digital banking — no signup required." />
         <meta name="keywords" content="FinTech internships India, financial technology internships, payments internships, digital banking internships" />
         <meta name="robots" content="index, follow" />
-        <link rel="canonical" href="https://internify.com/fintech-internships" />
+        <link rel="canonical" href="https://Finlysta.com/fintech-internships" />
       </Head>
 
       <Header />

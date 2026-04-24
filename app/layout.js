@@ -1,7 +1,7 @@
 // app/layout.js
 
 export const metadata = {
-  title: "Internify – Verified Internships",
+  title: "Finlysta – Verified Internships",
   description: "Find real, verified internship opportunities.",
 };
 
@@ -15,18 +15,18 @@ export default function RootLayout({ children }) {
             __html: JSON.stringify({
               "@context": "https://schema.org",
               "@type": "Organization",
-              "name": "Internify",
-              "url": "https://tryinternify.in",
-              "logo": "https://www.tryinternify.in/Internify.png",
+              "name": "Finlysta",
+              "url": "https://tryFinlysta.in",
+              "logo": "https://www.tryFinlysta.in/Finlysta.png",
               "sameAs": [
-                "https://www.instagram.com/internify.in/",
-                "https://www.linkedin.com/company/join-internify/",
-                "https://x.com/internify83656"
+                "https://www.instagram.com/Finlysta.in/",
+                "https://www.linkedin.com/company/join-Finlysta/",
+                "https://x.com/Finlysta83656"
               ]
             }),
           }}
         />
-        <link rel="icon" href="https://www.tryinternify.in/Internify.png" sizes="any" />
+        <link rel="icon" href="https://www.tryFinlysta.in/Finlysta.png" sizes="any" />
       </head>
       <body>{children}</body>
     </html>

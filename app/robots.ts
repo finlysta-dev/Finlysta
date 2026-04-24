@@ -16,6 +16,6 @@ export default function robots(): MetadataRoute.Robots {
         '/reset-password',   // ✅ Block reset password
       ],
     },
-    sitemap: 'https://www.tryinternify.in/sitemap.xml',
+    sitemap: 'https://www.tryFinlysta.in/sitemap.xml',
   }
 }

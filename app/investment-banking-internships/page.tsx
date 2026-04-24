@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
@@ -46,11 +46,11 @@ const formatStipend = (stipend: string) => {
   if (!stipend || stipend === "Not Disclosed" || stipend === "Not disclosed" || stipend === "") {
     return "Stipend not disclosed";
   }
-  if (stipend.includes("₹")) return stipend;
+  if (stipend.includes("?")) return stipend;
   if (!isNaN(Number(stipend)) && stipend !== "") {
-    return `₹${Number(stipend).toLocaleString()}/month`;
+    return `?${Number(stipend).toLocaleString()}/month`;
   }
-  return `₹${stipend}`;
+  return `?${stipend}`;
 };
 
 const formatPostedDate = (date: string) => {
@@ -109,11 +109,11 @@ export default function InvestmentBankingPage() {
   return (
     <>
       <Head>
-        <title>Investment Banking Internships in India 2026 | Internify</title>
-        <meta name="description" content="Explore verified investment banking internships across top firms like Goldman Sachs, JPMorgan, Morgan Stanley, and leading boutique advisory firms. Apply to roles in financial modeling, valuation, M&A, and capital markets — no signup required." />
+        <title>Investment Banking Internships in India 2026 | Finlysta</title>
+        <meta name="description" content="Explore verified investment banking internships across top firms like Goldman Sachs, JPMorgan, Morgan Stanley, and leading boutique advisory firms. Apply to roles in financial modeling, valuation, M&A, and capital markets � no signup required." />
         <meta name="keywords" content="investment banking internships India, IB internships, M&A internships, financial modeling internships, what is investment banking" />
         <meta name="robots" content="index, follow" />
-        <link rel="canonical" href="https://internify.com/investment-banking-internships-india" />
+        <link rel="canonical" href="https://Finlysta.com/investment-banking-internships-india" />
       </Head>
 
       <Header />
@@ -140,7 +140,7 @@ export default function InvestmentBankingPage() {
             <p className="text-slate-500 max-w-2xl mx-auto">
               Explore verified investment banking internships across top firms like Goldman Sachs, JPMorgan, 
               Morgan Stanley, and leading boutique advisory firms. Apply to roles in financial modeling, 
-              valuation, M&A, and capital markets — <span className="text-[#10B981] font-medium">no signup required</span>.
+              valuation, M&A, and capital markets � <span className="text-[#10B981] font-medium">no signup required</span>.
             </p>
             <p className="text-xs text-slate-400 mt-3">
               Updated daily with the latest investment banking internship opportunities across India.
@@ -239,7 +239,7 @@ export default function InvestmentBankingPage() {
                               </div>
                             </div>
                             <button className="px-5 py-2 bg-gradient-to-r from-[#8B6BA3] to-[#BDA6CE] hover:from-[#7A5A92] hover:to-[#A896C8] text-white text-sm font-semibold rounded-lg transition-all shadow-sm hover:shadow-md whitespace-nowrap">
-                              Apply →
+                              Apply ?
                             </button>
                           </div>
 
@@ -389,7 +389,7 @@ export default function InvestmentBankingPage() {
               </div>
               <div>
                 <h3 className="text-sm font-semibold text-[#0A2540] mb-1">What is the salary of an investment banking intern in India?</h3>
-                <p className="text-xs text-slate-500">Investment banking interns in India earn between ₹30,000 to ₹1,00,000 per month depending on the firm. Top global banks like Goldman Sachs and Morgan Stanley offer stipends at the higher end.</p>
+                <p className="text-xs text-slate-500">Investment banking interns in India earn between ?30,000 to ?1,00,000 per month depending on the firm. Top global banks like Goldman Sachs and Morgan Stanley offer stipends at the higher end.</p>
               </div>
               <div>
                 <h3 className="text-sm font-semibold text-[#0A2540] mb-1">How to get an investment banking internship at Goldman Sachs?</h3>
@@ -424,16 +424,16 @@ export default function InvestmentBankingPage() {
           {/* ===== CTA SECTION ===== */}
           <div className="bg-[#0A2540] rounded-xl p-8 text-center">
             <h3 className="text-white text-xl font-semibold mb-2">Start applying to verified investment banking internships today</h3>
-            <p className="text-white/60 text-sm mb-5">No signup required — apply directly to verified roles</p>
+            <p className="text-white/60 text-sm mb-5">No signup required � apply directly to verified roles</p>
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
               <Link href="/internships" className="bg-[#FFD700] text-[#0A2540] font-medium px-6 py-2.5 rounded-lg hover:bg-[#e6c200] transition">
-                Browse all finance internships →
+                Browse all finance internships ?
               </Link>
               <Link href="/equity-research-internships" className="bg-white/10 text-white font-medium px-6 py-2.5 rounded-lg hover:bg-white/15 transition">
-                Explore equity research roles →
+                Explore equity research roles ?
               </Link>
             </div>
-            <p className="text-white/30 text-[10px] mt-4">✨ Free for students • Verified listings • Updated daily</p>
+            <p className="text-white/30 text-[10px] mt-4">? Free for students � Verified listings � Updated daily</p>
           </div>
 
         </div>

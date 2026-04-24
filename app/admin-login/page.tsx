@@ -45,7 +45,7 @@ export default function AdminLoginPage() {
       <div className="bg-white p-8 rounded-lg shadow-sm border border-gray-200 w-full max-w-md">
         {/* Header */}
         <div className="text-center mb-8">
-          <h1 className="text-2xl font-bold text-gray-900">Internify Admin</h1>
+          <h1 className="text-2xl font-bold text-gray-900">Finlysta Admin</h1>
           <p className="text-sm text-gray-500 mt-1">Sign in to access dashboard</p>
         </div>
 
@@ -58,7 +58,7 @@ export default function AdminLoginPage() {
             </label>
             <input
               type="email"
-              placeholder="admin@internify.com"
+              placeholder="admin@Finlysta.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               className="w-full px-3 py-2.5 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"

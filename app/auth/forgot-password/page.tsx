@@ -481,7 +481,7 @@ export default function ForgotPassword() {
         {/* NAV */}
         <nav className="fp-nav">
           <a href="/" className="fp-nav-logo">
-            <img src="/Internify.png" alt="Internify Logo" />
+            <img src="/Finlysta.png" alt="Finlysta Logo" />
           </a>
           <div className="fp-nav-right">
             <button className="fp-nav-back" onClick={() => router.back()}>
@@ -516,7 +516,7 @@ export default function ForgotPassword() {
               {[
                 {
                   title: "Enter your email",
-                  desc: "Type in the email address linked to your Internify account.",
+                  desc: "Type in the email address linked to your Finlysta account.",
                   icon: (
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                       <rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>

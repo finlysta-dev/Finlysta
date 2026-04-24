@@ -1,4 +1,4 @@
-﻿'use client'
+'use client'
 
 import Link from "next/link"
 import { useState, useEffect } from "react"
@@ -26,7 +26,7 @@ const posts = [
     readTime: "10 min",
     category: "internship-guides",
     featured: true,
-    author: "Internify Team",
+    author: "Finlysta Team",
   },
   // ONLY add new articles here AFTER creating their page.tsx files
 ]
@@ -80,7 +80,7 @@ export default function BlogIndex() {
           <div className="max-w-3xl">
             <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full mb-6">
               <Sparkles className="w-4 h-4" />
-              <span className="text-sm font-medium">Free Resources • Updated Weekly</span>
+              <span className="text-sm font-medium">Free Resources � Updated Weekly</span>
             </div>
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-4 leading-tight">
               Blog & Resources
@@ -168,7 +168,7 @@ export default function BlogIndex() {
                           <Calendar className="w-3 h-3" />
                           {post.date}
                         </span>
-                        <span>•</span>
+                        <span>�</span>
                         <span className="flex items-center gap-1">
                           <Clock className="w-3 h-3" />
                           {post.readTime} read
@@ -219,7 +219,7 @@ export default function BlogIndex() {
         {/* More Coming Soon Message */}
         {posts.length === 1 && (
           <div className="mt-12 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-6 text-center">
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">📚 More Articles Coming Soon!</h3>
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">?? More Articles Coming Soon!</h3>
             <p className="text-gray-600 text-sm">
               We're working on new guides about remote internships, resume tips, interview questions, and more.
               Check back weekly for fresh content!

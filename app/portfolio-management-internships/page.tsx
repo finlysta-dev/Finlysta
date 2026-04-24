@@ -113,11 +113,11 @@ export default function PortfolioManagementPage() {
   return (
     <>
       <Head>
-        <title>Portfolio Management Internships in India 2026 | Internify</title>
+        <title>Portfolio Management Internships in India 2026 | Finlysta</title>
         <meta name="description" content="Find verified portfolio management internships at top AMCs like BlackRock, Fidelity, HDFC AMC, and SBI Mutual Fund. Apply to roles in asset allocation, fund management, investment research, and wealth management — no signup required." />
         <meta name="keywords" content="portfolio management internships India, asset management internships, mutual fund internships, wealth management internships, investment research" />
         <meta name="robots" content="index, follow" />
-        <link rel="canonical" href="https://internify.com/portfolio-management-internships" />
+        <link rel="canonical" href="https://Finlysta.com/portfolio-management-internships" />
       </Head>
 
       <Header />

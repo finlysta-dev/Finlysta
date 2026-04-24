@@ -156,7 +156,7 @@ export default function AdminLayoutClient({
         <div className={`p-6 border-b border-gray-100 ${!isSidebarOpen && "md:px-3"}`}>
           <Link href="/" className="flex items-center justify-center">
             {isSidebarOpen ? (
-              <img src="/Internify.png" className="h-10" alt="Logo" />
+              <img src="/Finlysta.png" className="h-10" alt="Logo" />
             ) : (
               <div className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center">
                 <span className="text-white font-bold text-lg">I</span>

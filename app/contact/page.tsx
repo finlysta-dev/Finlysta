@@ -32,7 +32,7 @@ export default function ContactPage() {
     ],
 
     recruiter: [
-      "Post internship on Internify",
+      "Post internship on Finlysta",
       "Hiring partnership",
       "Company verification",
       "Bulk hiring / multiple roles",
@@ -306,11 +306,11 @@ export default function ContactPage() {
 
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4 text-sm">
               <a
-                href="mailto:internifyhelp@gmail.com"
+                href="mailto:Finlystahelp@gmail.com"
                 className="inline-flex items-center gap-2 bg-blue-50 text-blue-600 px-6 py-3 rounded-xl hover:bg-blue-100 transition-colors font-medium"
               >
                 <Mail size={16} />
-                internifyhelp@gmail.com
+                Finlystahelp@gmail.com
               </a>
             </div>
 

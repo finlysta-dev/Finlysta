@@ -26,7 +26,7 @@ export default function PrivacyPolicy() {
             {/* Our Promise - Highlighted */}
             <div className="bg-gradient-to-r from-blue-50 to-indigo-50 p-8 rounded-2xl border border-blue-100 mb-8">
               <p className="text-gray-700 text-base leading-relaxed">
-                We respect your privacy. Any personal information shared on Internify is used only to improve the platform experience. 
+                We respect your privacy. Any personal information shared on Finlysta is used only to improve the platform experience. 
                 <span className="block mt-3 text-lg font-semibold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
                   We do not sell or misuse user data. You have full control over your profile visibility and information.
                 </span>
@@ -140,7 +140,7 @@ export default function PrivacyPolicy() {
             
             <div className="text-center">
               <p className="text-xs text-gray-400 mt-8 pt-4 border-t border-gray-100">
-                © 2026 Internify. All rights reserved. | Effective: March 1, 2026 | Version 2.0
+                © 2026 Finlysta. All rights reserved. | Effective: March 1, 2026 | Version 2.0
               </p>
             </div>
           </div>

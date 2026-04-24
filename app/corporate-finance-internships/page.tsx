@@ -112,11 +112,11 @@ export default function CorporateFinancePage() {
   return (
     <>
       <Head>
-        <title>Corporate Finance Internships in India 2026 | Internify</title>
+        <title>Corporate Finance Internships in India 2026 | Finlysta</title>
         <meta name="description" content="Find verified corporate finance internships at top companies like Tata Group, Reliance, Aditya Birla Group, and Mahindra. Apply to roles in treasury, capital structure, financial planning, and corporate strategy — no signup required." />
         <meta name="keywords" content="corporate finance internships India, treasury internships, capital structure internships, financial planning internships" />
         <meta name="robots" content="index, follow" />
-        <link rel="canonical" href="https://internify.com/corporate-finance-internships" />
+        <link rel="canonical" href="https://Finlysta.com/corporate-finance-internships" />
       </Head>
 
       <Header />

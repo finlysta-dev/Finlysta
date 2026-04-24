@@ -43,11 +43,11 @@ export async function POST(req: Request) {
       `${process.env.NEXTAUTH_URL}/auth/reset-password?token=${token}`;
 
     await transporter.sendMail({
-      from: `"Internify Support" <${process.env.EMAIL_USER}>`,
+      from: `"Finlysta Support" <${process.env.EMAIL_USER}>`,
       to: email,
-      subject: "Reset your Internify password",
+      subject: "Reset your Finlysta password",
       html: `
-      <h2>Internify Password Reset</h2>
+      <h2>Finlysta Password Reset</h2>
       <p>Click the link below to reset your password:</p>
       <a href="${resetLink}">${resetLink}</a>
       <p>This link expires in 30 minutes.</p>

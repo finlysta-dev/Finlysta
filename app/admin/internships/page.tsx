@@ -19,7 +19,7 @@ export default async function AdminInternships() {
         <div>
           <h1 className="text-2xl font-bold">Internships</h1>
           <p className="text-gray-500 text-sm">
-            Manage all internships on Internify
+            Manage all internships on Finlysta
           </p>
         </div>
 

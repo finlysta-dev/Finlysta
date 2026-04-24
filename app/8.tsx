@@ -14,7 +14,7 @@ import Link from "next/link";
 
 // ── Dynamic components with ssr:false ───────────────────
 const HomeTrendingInternships = dynamic(
-  () => import("@/components/TrendingInternships"), { ssr: false }
+  () => import("@/components/TrendingOpportunities"), { ssr: false }
 );
 const ProfileDropdown = dynamic(
   () => import("@/components/ProfileDropdown"), { ssr: false }
@@ -94,10 +94,10 @@ const CityChip = ({ city, seoUrl }: { city: string; seoUrl: string }) => (
 const FAQ = () => {
   const [open, setOpen] = useState<number | null>(null);
   const faqs = [
-    { q: "What types of finance internships are on Internify?", a: "We feature roles across Investment Banking, Equity Research, Financial Analysis, FinTech, CA Articleship, Portfolio Management, Risk & Compliance, and Corporate Finance — all manually verified before going live." },
-    { q: "Is Internify free for students?", a: "100% free. No premium tiers, no pay-to-apply, no hidden fees. Ever. Companies pay to post — students never pay to apply." },
+    { q: "What types of finance internships are on Finlysta?", a: "We feature roles across Investment Banking, Equity Research, Financial Analysis, FinTech, CA Articleship, Portfolio Management, Risk & Compliance, and Corporate Finance — all manually verified before going live." },
+    { q: "Is Finlysta free for students?", a: "100% free. No premium tiers, no pay-to-apply, no hidden fees. Ever. Companies pay to post — students never pay to apply." },
     { q: "How are internships verified?", a: "Every listing is manually reviewed: company legitimacy confirmed, role clarity checked, links tested. Average review time is 4 hours. No ghost jobs, no fake companies." },
-    { q: "How do I apply quickly?", a: "Click 'Quick Apply' on any listing. Your Internify profile is shared automatically. Average application takes under 30 seconds." },
+    { q: "How do I apply quickly?", a: "Click 'Quick Apply' on any listing. Your Finlysta profile is shared automatically. Average application takes under 30 seconds." },
     { q: "Can I find remote finance internships?", a: "Yes. Use the 'Remote' filter to find work-from-home roles in equity research, financial modeling, FinTech, and more — available nationwide." },
     { q: "Do you have paid finance internships?", a: "Both paid (💰) and unpaid/educational (📚) roles are clearly marked. Paid internships show stipend amounts when available." },
     { q: "What happens after I apply?", a: "Your application goes directly to the company's hiring team. Most respond within 5–7 business days. Track applications in your dashboard." },
@@ -201,7 +201,7 @@ export default function HomePage() {
       "mainEntity": [
         { 
           "@type": "Question", 
-          "name": "What types of finance internships are on Internify?", 
+          "name": "What types of finance internships are on Finlysta?", 
           "acceptedAnswer": { 
             "@type": "Answer", 
             "text": "Investment Banking, Equity Research, FinTech, CA Articleship, and more — all manually verified." 
@@ -209,7 +209,7 @@ export default function HomePage() {
         },
         { 
           "@type": "Question", 
-          "name": "Is Internify free for students?", 
+          "name": "Is Finlysta free for students?", 
           "acceptedAnswer": { 
             "@type": "Answer", 
             "text": "100% free. Companies pay to post." 
@@ -284,7 +284,7 @@ export default function HomePage() {
       {/* ── HEADER ─────────────────────────────────────────── */}
       <header className="bg-[#0A2540] sticky top-0 z-50 shadow-lg">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-[68px] flex items-center justify-between">
-          <Link href="/" aria-label="Internify Home" className="flex items-center gap-2.5">
+          <Link href="/" aria-label="Finlysta Home" className="flex items-center gap-2.5">
             <div className="w-8 h-8 rounded-lg bg-[#FFD700] flex items-center justify-center shadow-sm">
               <TrendingUp size={16} className="text-[#0A2540]" strokeWidth={2.5} />
             </div>
@@ -440,7 +440,7 @@ export default function HomePage() {
           </div>
         </section>
 
-        {/* ── WHY INTERNIFY ────────────────────────────────── */}
+        {/* ── WHY Finlysta ────────────────────────────────── */}
         <section className="bg-white border-y border-slate-100 py-20">
           <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-12">
@@ -450,7 +450,7 @@ export default function HomePage() {
                 <span className="text-[#10B981]">Not Everyone.</span>
               </h2>
               <p className="text-slate-500 text-sm max-w-xl mx-auto">
-                We built Internify to end ghost listings and wasted applications for finance aspirants.
+                We built Finlysta to end ghost listings and wasted applications for finance aspirants.
               </p>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
@@ -546,9 +546,9 @@ export default function HomePage() {
                 </p>
                 <div className="flex gap-2 pt-1">
                   {[
-                    { href: "https://www.linkedin.com/company/join-internify/", icon: <Linkedin size={14} />, label: "LinkedIn" },
-                    { href: "https://www.instagram.com/internify.in/", icon: <Instagram size={14} />, label: "Instagram" },
-                    { href: "https://x.com/internify83656", icon: <Twitter size={14} />, label: "Twitter" },
+                    { href: "https://www.linkedin.com/company/join-Finlysta/", icon: <Linkedin size={14} />, label: "LinkedIn" },
+                    { href: "https://www.instagram.com/Finlysta.in/", icon: <Instagram size={14} />, label: "Instagram" },
+                    { href: "https://x.com/Finlysta83656", icon: <Twitter size={14} />, label: "Twitter" },
                   ].map((s) => (
                     <a key={s.label} href={s.href} target="_blank" rel="noopener noreferrer" aria-label={s.label}
                       className="w-9 h-9 bg-white/5 text-white/50 border border-white/10 hover:border-[#FFD700]/40 hover:text-[#FFD700] rounded-lg flex items-center justify-center transition-all">
@@ -591,9 +591,9 @@ export default function HomePage() {
 
               <div className="lg:col-span-4">
                 <h4 className="text-white font-bold text-sm mb-4">Get in Touch</h4>
-                <a href="mailto:internifyhelp@gmail.com"
+                <a href="mailto:Finlystahelp@gmail.com"
                   className="flex items-center gap-2 text-sm text-white/50 hover:text-[#FFD700] transition-colors">
-                  <Mail size={13} /> internifyhelp@gmail.com
+                  <Mail size={13} /> Finlystahelp@gmail.com
                 </a>
                 <p className="text-xs text-white/30 mt-2">Response within 24 hours</p>
                 <div className="mt-6 p-4 bg-white/5 rounded-xl border border-white/10">
@@ -606,7 +606,7 @@ export default function HomePage() {
             </div>
 
             <div className="border-t border-white/10 pt-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-white/30">
-              <span>© {new Date().getFullYear()} Internify Pvt. Ltd. · All rights reserved.</span>
+              <span>© {new Date().getFullYear()} Finlysta Pvt. Ltd. · All rights reserved.</span>
               <div className="flex items-center gap-1.5">
                 Made with <Heart size={10} className="text-[#FFD700] fill-[#FFD700]" /> in India 🇮🇳
               </div>

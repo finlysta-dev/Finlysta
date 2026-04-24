@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useState, useEffect, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
@@ -68,20 +68,20 @@ const getStipendValue = (job: Internship): number => {
 const formatStipend = (stipend: string, paid?: boolean, stipendAmount?: string) => {
   if (stipendAmount && stipendAmount !== "Not Disclosed" && stipendAmount !== "") {
     if (!isNaN(Number(stipendAmount))) {
-      return `₹${Number(stipendAmount).toLocaleString()}/month`;
+      return `?${Number(stipendAmount).toLocaleString()}/month`;
     }
-    if (!stipendAmount.includes("₹")) {
-      return `₹${stipendAmount}/month`;
+    if (!stipendAmount.includes("?")) {
+      return `?${stipendAmount}/month`;
     }
     return stipendAmount;
   }
   
   if (stipend && stipend !== "Not Disclosed" && stipend !== "Not disclosed" && stipend !== "") {
     if (!isNaN(Number(stipend))) {
-      return `₹${Number(stipend).toLocaleString()}/month`;
+      return `?${Number(stipend).toLocaleString()}/month`;
     }
-    if (!stipend.includes("₹")) {
-      return `₹${stipend}`;
+    if (!stipend.includes("?")) {
+      return `?${stipend}`;
     }
     return stipend;
   }
@@ -252,7 +252,7 @@ function InternshipsContent() {
         {/* NO SIGNUP REMINDER */}
         <div className="mb-6 bg-gradient-to-r from-[#10B981]/10 to-[#0A2540]/10 rounded-xl p-3 text-center border border-[#10B981]/20">
           <p className="text-sm font-medium text-[#0A2540]">
-            ✨ Apply instantly — <span className="text-[#10B981] font-bold">no signup required</span>. 100% free for students.
+            ? Apply instantly � <span className="text-[#10B981] font-bold">no signup required</span>. 100% free for students.
           </p>
         </div>
 
@@ -306,7 +306,7 @@ function InternshipsContent() {
               </div>
 
               <div className="mb-5">
-                <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2 block">Min Stipend (₹)</label>
+                <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2 block">Min Stipend (?)</label>
                 <input
                   type="range"
                   min="0"
@@ -317,9 +317,9 @@ function InternshipsContent() {
                   className="w-full"
                 />
                 <div className="flex justify-between text-xs text-slate-500 mt-1">
-                  <span>₹0</span><span>₹10K</span><span>₹20K</span><span>₹30K</span><span>₹40K</span><span>₹50K+</span>
+                  <span>?0</span><span>?10K</span><span>?20K</span><span>?30K</span><span>?40K</span><span>?50K+</span>
                 </div>
-                <p className="text-sm text-[#0A2540] font-semibold mt-2">Min: ₹{minStipend.toLocaleString()}/month</p>
+                <p className="text-sm text-[#0A2540] font-semibold mt-2">Min: ?{minStipend.toLocaleString()}/month</p>
               </div>
 
               <div className="space-y-3 mb-5">
@@ -337,12 +337,12 @@ function InternshipsContent() {
                 <div className="pt-4 border-t border-slate-100">
                   <p className="text-xs text-slate-500 mb-2">Active filters:</p>
                   <div className="flex flex-wrap gap-2">
-                    {searchKeyword && <span className="text-xs bg-slate-100 px-2 py-1 rounded-full">🔍 {searchKeyword}</span>}
-                    {selectedCategory && <span className="text-xs bg-slate-100 px-2 py-1 rounded-full">📁 {selectedCategory}</span>}
-                    {selectedLocation && <span className="text-xs bg-slate-100 px-2 py-1 rounded-full">📍 {selectedLocation}</span>}
-                    {minStipend > 0 && <span className="text-xs bg-slate-100 px-2 py-1 rounded-full">💰 ₹{minStipend}+</span>}
-                    {workFromHome && <span className="text-xs bg-slate-100 px-2 py-1 rounded-full">🏠 Work from home</span>}
-                    {partTime && <span className="text-xs bg-slate-100 px-2 py-1 rounded-full">⏰ Part-time</span>}
+                    {searchKeyword && <span className="text-xs bg-slate-100 px-2 py-1 rounded-full">?? {searchKeyword}</span>}
+                    {selectedCategory && <span className="text-xs bg-slate-100 px-2 py-1 rounded-full">?? {selectedCategory}</span>}
+                    {selectedLocation && <span className="text-xs bg-slate-100 px-2 py-1 rounded-full">?? {selectedLocation}</span>}
+                    {minStipend > 0 && <span className="text-xs bg-slate-100 px-2 py-1 rounded-full">?? ?{minStipend}+</span>}
+                    {workFromHome && <span className="text-xs bg-slate-100 px-2 py-1 rounded-full">?? Work from home</span>}
+                    {partTime && <span className="text-xs bg-slate-100 px-2 py-1 rounded-full">? Part-time</span>}
                   </div>
                 </div>
               )}
@@ -434,7 +434,7 @@ function InternshipsContent() {
                               </div>
                             </div>
                             <button className="px-5 py-2 bg-gradient-to-r from-[#8B6BA3] to-[#BDA6CE] hover:from-[#7A5A92] hover:to-[#A896C8] text-white text-sm font-semibold rounded-lg transition-all shadow-sm hover:shadow-md whitespace-nowrap">
-                              Apply→
+                              Apply?
                             </button>
                           </div>
 

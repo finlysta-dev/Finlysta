@@ -35,7 +35,7 @@ export default function TermsPage() {
     {
       icon: RefreshCw,
       title: "Terms Updates",
-      description: "Internify may update these terms periodically to reflect platform improvements or legal requirements. Continued use indicates acceptance of updated terms.",
+      description: "Finlysta may update these terms periodically to reflect platform improvements or legal requirements. Continued use indicates acceptance of updated terms.",
       color: "from-green-600 to-emerald-500",
       bgColor: "bg-green-50",
       textColor: "text-green-600",
@@ -64,7 +64,7 @@ export default function TermsPage() {
             </h1>
             
             <p className="text-lg text-gray-600 max-w-2xl mx-auto leading-relaxed">
-              These terms govern your use of the Internify platform. Please read them carefully before accessing or using our services.
+              These terms govern your use of the Finlysta platform. Please read them carefully before accessing or using our services.
             </p>
 
             <div className="mt-8 flex justify-center gap-4">
@@ -151,7 +151,7 @@ export default function TermsPage() {
                     <span className="text-xs font-bold text-blue-600">1</span>
                   </div>
                   <p className="text-gray-700 leading-relaxed">
-                    By using Internify, you agree to provide accurate information, maintain the integrity of your profile, and use the platform responsibly.
+                    By using Finlysta, you agree to provide accurate information, maintain the integrity of your profile, and use the platform responsibly.
                   </p>
                 </div>
 
@@ -169,7 +169,7 @@ export default function TermsPage() {
                     <span className="text-xs font-bold text-green-600">3</span>
                   </div>
                   <p className="text-gray-700 leading-relaxed">
-                    Internify may update these terms periodically to reflect platform improvements or legal requirements. Continued use of the platform indicates acceptance of updated terms.
+                    Finlysta may update these terms periodically to reflect platform improvements or legal requirements. Continued use of the platform indicates acceptance of updated terms.
                   </p>
                 </div>
               </div>
@@ -183,7 +183,7 @@ export default function TermsPage() {
                 </div>
                 <h3 className="font-semibold text-gray-900 mb-2">Disclaimers</h3>
                 <p className="text-sm text-gray-600">
-                  Internify is provided &quot;as is&quot; without warranties. We do not guarantee internship placements or specific outcomes from platform usage.
+                  Finlysta is provided &quot;as is&quot; without warranties. We do not guarantee internship placements or specific outcomes from platform usage.
                 </p>
               </div>
 
@@ -193,7 +193,7 @@ export default function TermsPage() {
                 </div>
                 <h3 className="font-semibold text-gray-900 mb-2">Limitation of Liability</h3>
                 <p className="text-sm text-gray-600">
-                  Internify shall not be liable for indirect damages arising from platform use. Our liability is limited to the maximum extent permitted by law.
+                  Finlysta shall not be liable for indirect damages arising from platform use. Our liability is limited to the maximum extent permitted by law.
                 </p>
               </div>
             </div>
@@ -209,7 +209,7 @@ export default function TermsPage() {
             {/* Footer Note */}
             <div className="text-center mt-12">
               <p className="text-xs text-gray-400 pt-4 border-t border-gray-200">
-                © 2026 Internify. All rights reserved. | Version 2.0 | Effective: March 1, 2026
+                © 2026 Finlysta. All rights reserved. | Version 2.0 | Effective: March 1, 2026
               </p>
             </div>
           </div>

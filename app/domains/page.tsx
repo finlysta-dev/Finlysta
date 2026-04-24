@@ -105,11 +105,11 @@ export default function FinanceDomainsPage() {
   return (
     <>
       <Head>
-        <title>Finance Domains & Career Guide | Internify</title>
+        <title>Finance Domains & Career Guide | Finlysta</title>
         <meta name="description" content="Complete guide to finance domains including Investment Banking, Equity Research, FinTech, Portfolio Management, and more. Learn about careers, skills, and certifications." />
         <meta name="keywords" content="finance domains, finance careers, investment banking, equity research, fintech, portfolio management, CA articleship" />
         <meta name="robots" content="index, follow" />
-        <link rel="canonical" href="https://internify.com/domains" />
+        <link rel="canonical" href="https://Finlysta.com/domains" />
       </Head>
 
       <Header />

@@ -84,7 +84,7 @@ export default function RegisterPage() {
     {
       num: "03",
       title: "Free Forever",
-      desc: "No hidden fees. Internify will always be free for students.",
+      desc: "No hidden fees. Finlysta will always be free for students.",
       icon: (
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
           <path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20z"/><path d="M12 6v6l4 2"/>
@@ -603,7 +603,7 @@ export default function RegisterPage() {
               </div>
               <h2 className="wf-success-title">You're all set! 🎉</h2>
               <p className="wf-success-msg">
-                Your Internify account has been created successfully.<br />
+                Your Finlysta account has been created successfully.<br />
                 Start exploring internships made for you.
               </p>
               <p className="wf-success-redirect">Redirecting you to sign in…</p>
@@ -620,7 +620,7 @@ export default function RegisterPage() {
         {/* NAV */}
         <nav className="wf-nav">
           <a href="/" className="wf-logo">
-            <img src="/Internify.png" alt="Internify Logo" />
+            <img src="/Finlysta.png" alt="Finlysta Logo" />
           </a>
           <div className="wf-nav-right">
             <button className="wf-nav-back" onClick={() => router.back()}>
@@ -648,7 +648,7 @@ export default function RegisterPage() {
             </h1>
 
             <p className="wf-tagline">
-              Internify connects ambitious students with companies that are ready to hire — no middlemen, no gatekeeping.
+              Finlysta connects ambitious students with companies that are ready to hire — no middlemen, no gatekeeping.
             </p>
 
             <div className="wf-features">

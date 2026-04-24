@@ -106,8 +106,8 @@ const featuredInternships: Internship[] = [
 
 // ── FAQ Data ────────────────────────────────────────────────
 const faqs = [
-  { q: "What types of finance internships are on Internify?", a: "Investment Banking, Equity Research, Financial Analysis, FinTech, CA Articleship, Portfolio Management, Risk & Compliance, and Corporate Finance — all manually verified." },
-  { q: "Is Internify free for students?", a: "100% free. No premium tiers, no pay-to-apply, no hidden fees. Companies pay to post — students never pay." },
+  { q: "What types of finance internships are on Finlysta?", a: "Investment Banking, Equity Research, Financial Analysis, FinTech, CA Articleship, Portfolio Management, Risk & Compliance, and Corporate Finance — all manually verified." },
+  { q: "Is Finlysta free for students?", a: "100% free. No premium tiers, no pay-to-apply, no hidden fees. Companies pay to post — students never pay." },
   { q: "How are internships verified?", a: "Every listing is manually reviewed — company confirmed, role checked, links tested. No ghost jobs." },
   { q: "Can I find remote finance internships?", a: "Yes. Use the 'Remote' filter to find work-from-home roles in equity research, financial modeling, and FinTech." },
 ];
@@ -459,7 +459,7 @@ export default function HomePage() {
       <footer className="bg-[#0A2540] border-t border-white/10 py-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col sm:flex-row justify-between items-center gap-4 text-xs text-white/40">
-            <span>© 2026 Internify · Finance Internships in India · Investment Banking · Equity Research · FinTech</span>
+            <span>© 2026 Finlysta · Finance Internships in India · Investment Banking · Equity Research · FinTech</span>
             <div className="flex gap-4">
               <Link href="/about" className="hover:text-white/70">About</Link>
               <Link href="/privacy" className="hover:text-white/70">Privacy</Link>

@@ -1,4 +1,4 @@
-﻿import { prisma } from "@/lib/prisma";
+import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
 
 export async function GET() {
@@ -47,7 +47,7 @@ export async function GET() {
     return NextResponse.json({ 
       success: true, 
       updated: result.count + result2.count + result3.count,
-      message: `✅ Updated ${result.count + result2.count + result3.count} internships`
+      message: `? Updated ${result.count + result2.count + result3.count} internships`
     });
   } catch (error) {
     console.error("Error:", error);

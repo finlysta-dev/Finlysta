@@ -109,11 +109,11 @@ export default function EquityResearchPage() {
   return (
     <>
       <Head>
-        <title>Equity Research Internships in India 2026 | Internify</title>
+        <title>Equity Research Internships in India 2026 | Finlysta</title>
         <meta name="description" content="Find verified equity research internships at top firms like Morgan Stanley, Goldman Sachs, and Kotak Securities. Apply to roles in financial analysis, sector research, and investment recommendations — no signup required." />
         <meta name="keywords" content="equity research internships India, stock research internships, financial analysis internships" />
         <meta name="robots" content="index, follow" />
-        <link rel="canonical" href="https://internify.com/equity-research-internships" />
+        <link rel="canonical" href="https://Finlysta.com/equity-research-internships" />
       </Head>
 
       <Header />

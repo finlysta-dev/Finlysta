@@ -112,11 +112,11 @@ export default function CAArticleshipPage() {
   return (
     <>
       <Head>
-        <title>CA Articleship in India 2026 | Internify</title>
+        <title>CA Articleship in India 2026 | Finlysta</title>
         <meta name="description" content="Find verified CA articleship opportunities at top firms like Deloitte, PwC, EY, KPMG, and Grant Thornton. Apply for ICAI-approved articleship positions in audit, taxation, and compliance — no signup required." />
         <meta name="keywords" content="CA articleship India, CA internship, articleship training, CA articleship vacancies, ICAI articleship" />
         <meta name="robots" content="index, follow" />
-        <link rel="canonical" href="https://internify.com/ca-articleship-internships" />
+        <link rel="canonical" href="https://Finlysta.com/ca-articleship-internships" />
       </Head>
 
       <Header />

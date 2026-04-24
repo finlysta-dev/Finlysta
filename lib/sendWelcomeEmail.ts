@@ -8,16 +8,16 @@ export async function sendWelcomeEmail(email: string, name: string) {
 
   try {
     const data = await resend.emails.send({
-      from: "Internify <hello@tryinternify.in>",
+      from: "Finlysta <hello@tryFinlysta.in>",
       to: email,
-      subject: "Welcome to Internify! 🚀 Your Internship Journey Starts Here",
+      subject: "Welcome to Finlysta! 🚀 Your Internship Journey Starts Here",
       html: `
         <!DOCTYPE html>
         <html lang="en">
         <head>
           <meta charset="utf-8">
           <meta name="viewport" content="width=device-width, initial-scale=1.0">
-          <title>Welcome to Internify</title>
+          <title>Welcome to Finlysta</title>
           <!--[if mso]>
           <noscript>
             <xml>
@@ -71,7 +71,7 @@ export async function sendWelcomeEmail(email: string, name: string) {
                         Hey ${firstName}! 👋
                       </h1>
                       <p style="font-size:17px;color:#4B5563;margin:0 0 24px 0;line-height:1.55;">
-                        You're officially part of the Internify community.
+                        You're officially part of the Finlysta community.
                       </p>
 
                       <!-- Success banner -->
@@ -150,7 +150,7 @@ export async function sendWelcomeEmail(email: string, name: string) {
                         <tr>
                           <td align="center">
                             <a
-                              href="https://tryinternify.in/dashboard"
+                              href="https://tryFinlysta.in/dashboard"
                               style="display:inline-block;background:#4F46E5;color:#ffffff;padding:14px 36px;text-decoration:none;border-radius:10px;font-weight:700;font-size:16px;letter-spacing:0.01em;"
                             >
                               Get Started →
@@ -164,7 +164,7 @@ export async function sendWelcomeEmail(email: string, name: string) {
                         <tr>
                           <td style="border-top:1px solid #E5E7EB;padding-top:28px;">
 
-                            <p style="text-align:center;font-size:13px;font-weight:700;color:#111827;margin:0 0 20px 0;">✨ What Makes Internify Special?</p>
+                            <p style="text-align:center;font-size:13px;font-weight:700;color:#111827;margin:0 0 20px 0;">✨ What Makes Finlysta Special?</p>
 
                             <!-- Feature grid row 1 -->
                             <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:12px;">
@@ -212,13 +212,13 @@ export async function sendWelcomeEmail(email: string, name: string) {
                     <td align="center" style="padding:28px 0 8px 0;border-top:1px solid #E5E7EB;margin-top:28px;">
                       <p style="font-size:12px;color:#9CA3AF;margin:0 0 6px 0;">
                         Need help? Contact us at
-                        <a href="mailto:internifyhelp@gmail.com" style="color:#4F46E5;text-decoration:none;">internifyhelp@gmail.com</a>
+                        <a href="mailto:Finlystahelp@gmail.com" style="color:#4F46E5;text-decoration:none;">Finlystahelp@gmail.com</a>
                       </p>
                       <p style="font-size:12px;color:#9CA3AF;margin:0 0 6px 0;">
-                        © ${year} Internify. All rights reserved.
+                        © ${year} Finlysta. All rights reserved.
                       </p>
                       <p style="font-size:11px;color:#D1D5DB;margin:0;">
-                        You're receiving this because you created an account on Internify.
+                        You're receiving this because you created an account on Finlysta.
                       </p>
                     </td>
                   </tr>
