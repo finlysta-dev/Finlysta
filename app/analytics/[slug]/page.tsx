@@ -1,10 +1,10 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Eye, Users, Calendar, TrendingUp, Briefcase, MousePointer, Lock } from "lucide-react";
+import { Eye, Users, Calendar, TrendingUp, Lock } from "lucide-react";
 
-// Secret key - change this to anything you want
-const SECRET_KEY = "internify123"; // Change this to your own secret
+// Secret key - change this to your own secret
+const SECRET_KEY = "finlysta123";
 
 interface VisitorStats {
   totalVisitors: number;
@@ -32,7 +32,7 @@ interface DailyStat {
   newSubscribers: number;
 }
 
-export default function AnalyticsPage({ params }: { params: { slug?: string[] } }) {
+export default function AnalyticsPage({ params }: { params: { slug: string } }) {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [password, setPassword] = useState("");
   const [visitorStats, setVisitorStats] = useState<VisitorStats | null>(null);
@@ -40,13 +40,17 @@ export default function AnalyticsPage({ params }: { params: { slug?: string[] } 
   const [dailyStats, setDailyStats] = useState<DailyStat[]>([]);
   const [recentVisitors, setRecentVisitors] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   // Check if the URL contains the secret key
   useEffect(() => {
-    const slug = params.slug || '';
+    const slug = params.slug;
     if (slug === SECRET_KEY) {
       setIsAuthenticated(true);
       fetchAllData();
+    } else if (slug && slug !== SECRET_KEY) {
+      setIsAuthenticated(false);
+      setError("Invalid access key");
     }
   }, [params.slug]);
 
@@ -55,71 +59,75 @@ export default function AnalyticsPage({ params }: { params: { slug?: string[] } 
     if (password === SECRET_KEY) {
       setIsAuthenticated(true);
       fetchAllData();
+      setError(null);
     } else {
-      alert("Wrong secret key!");
+      setError("Wrong secret key! Access denied.");
+      setTimeout(() => setError(null), 3000);
     }
   };
 
   const fetchAllData = async () => {
-  setIsLoading(true);
-  try {
-    console.log('Fetching analytics data...');
-    
-    // Get visitor stats from tracking API
-    const statsRes = await fetch('/api/track');
-    const stats = await statsRes.json();
-    console.log('Visitor stats:', stats);
-    
-    // Get daily stats
-    const dailyRes = await fetch('/api/daily-stats');
-    const daily = await dailyRes.json();
-    console.log('Daily stats:', daily);
-    
-    // Get opportunity stats
-    const oppRes = await fetch('/api/opportunities/stats');
-    const opportunities = await oppRes.json();
-    console.log('Opportunities:', opportunities);
-    
-    // Get recent visitors
-    const visitorsRes = await fetch('/api/recent-visitors');
-    const visitors = await visitorsRes.json();
-    console.log('Recent visitors:', visitors);
+    setIsLoading(true);
+    setError(null);
+    try {
+      console.log('Fetching analytics data...');
+      
+      const statsRes = await fetch('/api/track');
+      const stats = await statsRes.json();
+      
+      const dailyRes = await fetch('/api/daily-stats');
+      const daily = await dailyRes.json();
+      
+      const oppRes = await fetch('/api/opportunities/stats');
+      const opportunitiesData = await oppRes.json();
+      
+      const visitorsRes = await fetch('/api/recent-visitors');
+      const visitors = await visitorsRes.json();
 
-    setVisitorStats({
-      totalVisitors: stats.totalVisitors || 0,
-      totalViews: stats.totalViews || 0,
-      todayVisitors: stats.todayVisitors || 0,
-      todayViews: stats.todayViews || 0,
-      uniqueSessions: stats.uniqueSessions || 0
-    });
-    
-    setDailyStats(daily || []);
-    setOpportunities(opportunities.opportunities || []);
-    setRecentVisitors(visitors || []);
-    
-  } catch (error) {
-    console.error("Error fetching analytics:", error);
-  } finally {
-    setIsLoading(false);
-  }
-};
+      setVisitorStats({
+        totalVisitors: stats.totalVisitors || 0,
+        totalViews: stats.totalViews || 0,
+        todayVisitors: stats.todayVisitors || 0,
+        todayViews: stats.todayViews || 0,
+        uniqueSessions: stats.uniqueSessions || 0
+      });
+      
+      setDailyStats(daily || []);
+      setOpportunities(opportunitiesData.opportunities || []);
+      setRecentVisitors(visitors || []);
+      
+    } catch (error) {
+      console.error("Error fetching analytics:", error);
+      setError("Failed to load analytics data");
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   if (!isAuthenticated) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
         <div className="bg-white rounded-xl shadow-lg p-8 max-w-md w-full">
           <div className="text-center mb-6">
-            <Lock size={48} className="mx-auto text-gray-400 mb-3" />
-            <h1 className="text-2xl font-bold text-gray-900">Analytics Access</h1>
-            <p className="text-gray-500 text-sm mt-1">Enter the secret key to view analytics</p>
+            <Lock size={48} className="mx-auto text-red-500 mb-3" />
+            <h1 className="text-2xl font-bold text-gray-900">Analytics Access Restricted</h1>
+            <p className="text-gray-500 text-sm mt-1">This page is for authorized administrators only</p>
           </div>
+          
+          {error && (
+            <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg">
+              <p className="text-red-600 text-sm text-center">{error}</p>
+            </div>
+          )}
+          
           <form onSubmit={handleLogin}>
             <input
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              placeholder="Enter secret key"
+              placeholder="Enter administrator key"
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 mb-4"
+              autoFocus
             />
             <button
               type="submit"
@@ -128,8 +136,9 @@ export default function AnalyticsPage({ params }: { params: { slug?: string[] } 
               Access Analytics
             </button>
           </form>
+          
           <p className="text-xs text-gray-400 text-center mt-4">
-            Hint: The secret key is in the URL
+            ⚠️ Unauthorized access is prohibited
           </p>
         </div>
       </div>
@@ -150,9 +159,12 @@ export default function AnalyticsPage({ params }: { params: { slug?: string[] } 
   return (
     <div className="min-h-screen bg-gray-50 p-6">
       <div className="max-w-7xl mx-auto">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">Analytics Dashboard</h1>
-          <p className="text-gray-500 mt-1">Track visitors, views, and opportunity performance</p>
+        <div className="mb-8 flex justify-between items-center">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900">Analytics Dashboard</h1>
+            <p className="text-gray-500 mt-1">Track visitors, views, and opportunity performance</p>
+          </div>
+          <div className="text-sm text-gray-400">Admin Mode</div>
         </div>
 
         {/* Main Stats Cards */}

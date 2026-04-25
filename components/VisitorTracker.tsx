@@ -7,6 +7,9 @@ export default function VisitorTracker() {
   const pathname = usePathname();
 
   useEffect(() => {
+    // Only run in browser, not during build/SSR
+    if (typeof window === 'undefined') return;
+    
     const trackVisit = async () => {
       try {
         // Get or create session ID

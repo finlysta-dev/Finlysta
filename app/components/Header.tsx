@@ -2,24 +2,15 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import dynamic from "next/dynamic";
-import { useSession } from "next-auth/react";
 import { useState, useEffect } from "react";
 
-const ProfileDropdown = dynamic(
-  () => import("@/components/ProfileDropdown"),
-  { ssr: false, loading: () => <div className="w-8 h-8 bg-slate-200 rounded-full animate-pulse"></div> }
-);
-
 export default function Header() {
-  const { data: session, status } = useSession();
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
     setMounted(true);
   }, []);
 
-  // Don't render anything that depends on session until mounted
   if (!mounted) {
     return (
       <header className="bg-white sticky top-0 z-50 border-b border-slate-200 shadow-sm">
@@ -46,7 +37,7 @@ export default function Header() {
         <Link href="/" className="flex items-center shrink-0" aria-label="Finlysta Home">
           <Image 
             src="/Finlysta.png" 
-            alt="Finlysta Logo - Finance Internship Platform for Students"
+            alt="Finlysta Logo - Entry Level Financial Analyst Jobs"
             width={180} 
             height={40}
             priority
@@ -56,6 +47,12 @@ export default function Header() {
 
         {/* Navigation - Desktop */}
         <nav className="hidden md:flex items-center gap-8">
+          <Link 
+            href="/" 
+            className="text-sm font-semibold text-slate-600 hover:text-[#0A2540] transition-colors"
+          >
+            Home
+          </Link>
           <Link 
             href="/jobs" 
             className="text-sm font-semibold text-slate-600 hover:text-[#0A2540] transition-colors"
@@ -76,21 +73,26 @@ export default function Header() {
           </Link>
         </nav>
 
-        {/* Profile Section */}
+        {/* Profile Section - Simplified without auth */}
         <div className="flex items-center gap-3">
-          {status === "loading" ? (
-            <div className="w-8 h-8 bg-slate-200 rounded-full animate-pulse"></div>
-          ) : session ? (
-            <ProfileDropdown />
-          ) : (
-            <div className="w-8 h-8"></div> // Empty placeholder to maintain layout
-          )}
+          <Link 
+            href="/auth/signin" 
+            className="text-sm font-semibold text-blue-600 hover:text-blue-700 transition-colors"
+          >
+            Sign In
+          </Link>
         </div>
       </div>
 
-      {/* Mobile Navigation - Hidden on desktop, visible on mobile */}
+      {/* Mobile Navigation */}
       <div className="md:hidden border-t border-slate-100 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-12 flex items-center justify-around">
+          <Link 
+            href="/" 
+            className="text-xs font-semibold text-slate-600 hover:text-[#0A2540] transition-colors"
+          >
+            Home
+          </Link>
           <Link 
             href="/jobs" 
             className="text-xs font-semibold text-slate-600 hover:text-[#0A2540] transition-colors"

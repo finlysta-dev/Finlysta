@@ -1,14 +1,12 @@
-import type { Metadata, Viewport } from 'next';
+import type { Metadata } from 'next';
 import Script from 'next/script';
 import Image from 'next/image';
 import Link from 'next/link';
 import "./globals.css";
 import Providers from "./providers";
-import BanWatcher from "@/components/BanWatcher";
-import { NotificationProvider } from "@/context/NotificationContext";
 import VisitorTracker from "@/components/VisitorTracker";
 
-export const viewport: Viewport = {
+export const viewport = {
   width: 'device-width',
   initialScale: 1,
   maximumScale: 5,
@@ -22,7 +20,7 @@ export const viewport: Viewport = {
 export const metadata: Metadata = {
   title: 'Entry Level Financial Analyst Jobs & Internships | Finlysta - Start Your Finance Career',
   description: 'Find entry level financial analyst jobs and internships in India. Start your finance career with paid internships and fresher jobs. 100% free for students.',
-  keywords: 'entry level financial analyst jobs, entry level financial analyst internships, financial analyst jobs for freshers, financial analyst internship for freshers, financial analyst fresher jobs, financial analyst entry level, junior financial analyst jobs, financial analyst no experience, financial analyst 0 experience, financial analyst graduate jobs, finance jobs for freshers, finance internship for students, finance fresher jobs, finance graduate jobs, entry level finance jobs, finance internship for freshers, paid finance internship, finance internship with stipend, financial analyst internship paid, financial analyst remote internship, financial analyst work from home, how to become a financial analyst, how to get a financial analyst job with no experience, financial analyst career path, financial analyst skills required, financial analyst salary for freshers, MBA finance fresher jobs, MBA finance internship, BCOM finance jobs, BBA finance jobs, CA fresher jobs, finance graduate jobs for freshers, financial analyst internship interview questions, how to get an internship in finance, internship for finance students, financial analyst jobs, financial analyst internship, entry level financial analyst, financial analyst fresher, finance jobs for freshers, internship for finance students, walkin for financial analyst in mumbai, openings for financial analyst in mumbai, summer internship for mba finance students, summer internship finance, financial analyst remote jobs, financial analyst paid internship, which internship is best for finance students, financial analyst jobs and internships, what is financial analyst, how to become financial analyst, financial analyst course, financial analyst certification, financial analyst skills, financial analyst resume, financial analyst salary, investment banking internship, equity research internship, fintech internship, corporate finance internship',
+  keywords: 'entry level financial analyst jobs, entry level financial analyst internships, financial analyst jobs for freshers, financial analyst internship for freshers, financial analyst fresher jobs, financial analyst entry level, junior financial analyst jobs, financial analyst no experience, financial analyst 0 experience, financial analyst graduate jobs, finance jobs for freshers, finance internship for students, finance fresher jobs, finance graduate jobs, entry level finance jobs, finance internship for freshers, paid finance internship, finance internship with stipend, financial analyst internship paid, financial analyst remote internship, financial analyst work from home, how to become a financial analyst, how to get a financial analyst job with no experience, financial analyst career path, financial analyst skills required, financial analyst salary for freshers, MBA finance fresher jobs, MBA finance internship, BCOM finance jobs, BBA finance jobs, CA fresher jobs, finance graduate jobs for freshers',
   authors: [{ name: 'Finlysta' }],
   robots: {
     index: true,
@@ -111,9 +109,6 @@ export default function RootLayout({
         <meta name="revisit-after" content="7 days" />
         <meta name="geo.region" content="IN" />
         <meta name="geo.placename" content="India" />
-        
-        {/* Additional SEO Meta Keywords */}
-        <meta name="keywords" content="entry level financial analyst jobs, entry level financial analyst internships, financial analyst jobs for freshers, financial analyst internship for freshers, financial analyst fresher jobs, financial analyst entry level, junior financial analyst jobs, financial analyst no experience, financial analyst 0 experience, financial analyst graduate jobs, finance jobs for freshers, finance internship for students, finance fresher jobs, finance graduate jobs, entry level finance jobs, finance internship for freshers, paid finance internship, finance internship with stipend, financial analyst internship paid, financial analyst remote internship, financial analyst work from home, how to become a financial analyst, how to get a financial analyst job with no experience, financial analyst career path, financial analyst skills required, financial analyst salary for freshers, MBA finance fresher jobs, MBA finance internship, BCOM finance jobs, BBA finance jobs, CA fresher jobs, financial analyst internship interview questions, how to get an internship in finance, internship for finance students, financial analyst jobs, walkin for financial analyst in mumbai, summer internship for mba finance students, summer internship finance, which internship is best for finance students, financial analyst jobs and internships, investment banking internship, equity research internship, fintech internship, corporate finance internship" />
         
         {/* Favicon Icons */}
         <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
@@ -256,11 +251,8 @@ export default function RootLayout({
       </head>
       <body suppressHydrationWarning>
         <Providers>
-          <NotificationProvider>
-            <BanWatcher />
-            {children}
-            <VisitorTracker />
-          </NotificationProvider>
+          {children}
+          <VisitorTracker />
         </Providers>
         
         {/* Google Analytics */}

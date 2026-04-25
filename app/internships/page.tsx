@@ -106,7 +106,7 @@ export default function InternshipsPage() {
     return `${Math.floor(diffDays / 30)}mo`;
   };
 
-  const formatStipend = (stipend: string) => {
+  const formatStipend = (stipend: string | undefined | null) => {
     if (!stipend || stipend === 'Not Disclosed') return null;
     return stipend;
   };
@@ -170,7 +170,7 @@ export default function InternshipsPage() {
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="Internship title, skill, or company"
-                 className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500"
                 />
               </div>
             </div>
@@ -184,7 +184,7 @@ export default function InternshipsPage() {
                   value={locationQuery}
                   onChange={(e) => setLocationQuery(e.target.value)}
                   placeholder="City or remote"
-                  className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500"
                 />
               </div>
             </div>
@@ -291,7 +291,7 @@ export default function InternshipsPage() {
                         <span>{internship.duration}</span>
                       </div>
                     )}
-                    {formatStipend(internship.stipend) && (
+                    {internship.stipend && formatStipend(internship.stipend) && (
                       <div className="flex items-center gap-2 text-sm font-semibold text-emerald-600">
                         <span>💰</span>
                         <span>{formatStipend(internship.stipend)}</span>

@@ -5,7 +5,25 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Clock, ChevronRight, Search, Star, Zap, BookOpen, ArrowLeft, Home } from 'lucide-react';
 
-const allTopics = [
+interface Topic {
+  title: string;
+  slug: string;
+  duration: string;
+  level: string;
+  description: string;
+  popular: boolean;
+}
+
+interface Category {
+  category: string;
+  slug: string;
+  icon: string;
+  iconBg: string;
+  description: string;
+  topics: Topic[];
+}
+
+const allTopics: Category[] = [
   { 
     category: 'Excel', 
     slug: 'excel', 
@@ -15,12 +33,12 @@ const allTopics = [
     topics: [
       { title: 'Pivot Tables', slug: 'pivot-tables', duration: '15 min', level: 'Intermediate', description: 'Summarize and analyze large datasets', popular: true },
       { title: 'VLOOKUP', slug: 'vlookup', duration: '12 min', level: 'Intermediate', description: 'Find and match data across spreadsheets', popular: true },
-      { title: 'Conditional Formatting', slug: 'conditional-formatting', duration: '8 min', level: 'Beginner', description: 'Highlight trends and patterns' },
-      { title: 'Data Validation', slug: 'data-validation', duration: '10 min', level: 'Beginner', description: 'Control data entry and prevent errors' },
-      { title: 'Charts & Graphs', slug: 'charts-graphs', duration: '14 min', level: 'Beginner', description: 'Visualize your Excel data' },
-      { title: 'Macros', slug: 'macros', duration: '20 min', level: 'Advanced', description: 'Automate repetitive tasks' },
-      { title: 'SUMIFS', slug: 'sumifs', duration: '10 min', level: 'Intermediate', description: 'Sum with multiple conditions' },
-      { title: 'INDEX MATCH', slug: 'index-match', duration: '15 min', level: 'Advanced', description: 'Advanced lookup alternative to VLOOKUP' }
+      { title: 'Conditional Formatting', slug: 'conditional-formatting', duration: '8 min', level: 'Beginner', description: 'Highlight trends and patterns', popular: false },
+      { title: 'Data Validation', slug: 'data-validation', duration: '10 min', level: 'Beginner', description: 'Control data entry and prevent errors', popular: false },
+      { title: 'Charts & Graphs', slug: 'charts-graphs', duration: '14 min', level: 'Beginner', description: 'Visualize your Excel data', popular: false },
+      { title: 'Macros', slug: 'macros', duration: '20 min', level: 'Advanced', description: 'Automate repetitive tasks', popular: false },
+      { title: 'SUMIFS', slug: 'sumifs', duration: '10 min', level: 'Intermediate', description: 'Sum with multiple conditions', popular: false },
+      { title: 'INDEX MATCH', slug: 'index-match', duration: '15 min', level: 'Advanced', description: 'Advanced lookup alternative to VLOOKUP', popular: false }
     ]
   },
   { 
@@ -31,10 +49,10 @@ const allTopics = [
     description: 'Query databases and manage data efficiently',
     topics: [
       { title: 'SQL Joins', slug: 'sql-joins', duration: '12 min', level: 'Intermediate', description: 'Combine data from multiple tables', popular: true },
-      { title: 'SELECT Queries', slug: 'select-queries', duration: '10 min', level: 'Beginner', description: 'Retrieve data from databases' },
-      { title: 'GROUP BY', slug: 'group-by', duration: '10 min', level: 'Intermediate', description: 'Summarize and aggregate data' },
-      { title: 'Subqueries', slug: 'subqueries', duration: '14 min', level: 'Advanced', description: 'Nested queries for complex logic' },
-      { title: 'Window Functions', slug: 'window-functions', duration: '16 min', level: 'Advanced', description: 'Advanced analytics with RANK, ROW_NUMBER' }
+      { title: 'SELECT Queries', slug: 'select-queries', duration: '10 min', level: 'Beginner', description: 'Retrieve data from databases', popular: false },
+      { title: 'GROUP BY', slug: 'group-by', duration: '10 min', level: 'Intermediate', description: 'Summarize and aggregate data', popular: false },
+      { title: 'Subqueries', slug: 'subqueries', duration: '14 min', level: 'Advanced', description: 'Nested queries for complex logic', popular: false },
+      { title: 'Window Functions', slug: 'window-functions', duration: '16 min', level: 'Advanced', description: 'Advanced analytics with RANK, ROW_NUMBER', popular: false }
     ]
   },
   { 
@@ -45,9 +63,9 @@ const allTopics = [
     description: 'Create stunning dashboards and visualizations',
     topics: [
       { title: 'Data Modeling', slug: 'data-modeling', duration: '15 min', level: 'Intermediate', description: 'Create relationships and schemas', popular: true },
-      { title: 'DAX Functions', slug: 'dax-functions', duration: '18 min', level: 'Advanced', description: 'Calculate and analyze data' },
-      { title: 'Visualizations', slug: 'visualizations', duration: '12 min', level: 'Beginner', description: 'Create interactive dashboards' },
-      { title: 'Power Query', slug: 'power-query', duration: '14 min', level: 'Intermediate', description: 'Transform and clean data' }
+      { title: 'DAX Functions', slug: 'dax-functions', duration: '18 min', level: 'Advanced', description: 'Calculate and analyze data', popular: false },
+      { title: 'Visualizations', slug: 'visualizations', duration: '12 min', level: 'Beginner', description: 'Create interactive dashboards', popular: false },
+      { title: 'Power Query', slug: 'power-query', duration: '14 min', level: 'Intermediate', description: 'Transform and clean data', popular: false }
     ]
   },
   { 
@@ -58,9 +76,9 @@ const allTopics = [
     description: 'Automate tasks and analyze data with code',
     topics: [
       { title: 'Python Basics', slug: 'python-basics', duration: '15 min', level: 'Beginner', description: 'Variables, loops, and functions', popular: true },
-      { title: 'Pandas', slug: 'pandas', duration: '20 min', level: 'Intermediate', description: 'Data manipulation and analysis' },
-      { title: 'Data Visualization', slug: 'data-visualization', duration: '18 min', level: 'Intermediate', description: 'Create charts with matplotlib' },
-      { title: 'NumPy', slug: 'numpy', duration: '14 min', level: 'Intermediate', description: 'Numerical computing with arrays' }
+      { title: 'Pandas', slug: 'pandas', duration: '20 min', level: 'Intermediate', description: 'Data manipulation and analysis', popular: false },
+      { title: 'Data Visualization', slug: 'data-visualization', duration: '18 min', level: 'Intermediate', description: 'Create charts with matplotlib', popular: false },
+      { title: 'NumPy', slug: 'numpy', duration: '14 min', level: 'Intermediate', description: 'Numerical computing with arrays', popular: false }
     ]
   },
   { 
@@ -71,16 +89,16 @@ const allTopics = [
     description: 'Understand financial statements and analysis',
     topics: [
       { title: 'Profit & Loss', slug: 'profit-loss', duration: '10 min', level: 'Beginner', description: 'Understand revenue and expenses', popular: true },
-      { title: 'Balance Sheet', slug: 'balance-sheet', duration: '12 min', level: 'Beginner', description: 'Assets, liabilities & equity' },
-      { title: 'Cash Flow', slug: 'cash-flow', duration: '14 min', level: 'Intermediate', description: 'Track money in & out' },
-      { title: 'Financial Ratios', slug: 'financial-ratios', duration: '12 min', level: 'Intermediate', description: 'Liquidity & profitability analysis' },
-      { title: 'Budgeting', slug: 'budgeting', duration: '10 min', level: 'Beginner', description: 'Plan and control finances' },
-      { title: 'Forecasting', slug: 'forecasting', duration: '14 min', level: 'Advanced', description: 'Predict future trends' }
+      { title: 'Balance Sheet', slug: 'balance-sheet', duration: '12 min', level: 'Beginner', description: 'Assets, liabilities & equity', popular: false },
+      { title: 'Cash Flow', slug: 'cash-flow', duration: '14 min', level: 'Intermediate', description: 'Track money in & out', popular: false },
+      { title: 'Financial Ratios', slug: 'financial-ratios', duration: '12 min', level: 'Intermediate', description: 'Liquidity & profitability analysis', popular: false },
+      { title: 'Budgeting', slug: 'budgeting', duration: '10 min', level: 'Beginner', description: 'Plan and control finances', popular: false },
+      { title: 'Forecasting', slug: 'forecasting', duration: '14 min', level: 'Advanced', description: 'Predict future trends', popular: false }
     ]
   }
 ];
 
-const getLevelColor = (level) => {
+const getLevelColor = (level: string) => {
   switch(level) {
     case 'Beginner': return 'bg-emerald-100 text-emerald-700 border-emerald-300';
     case 'Intermediate': return 'bg-amber-100 text-amber-700 border-amber-300';
@@ -92,15 +110,16 @@ const getLevelColor = (level) => {
 export default function LearnPage() {
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState(null);
-  const [selectedLevel, setSelectedLevel] = useState(null);
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [selectedLevel, setSelectedLevel] = useState<string | null>(null);
 
   const filteredTopics = allTopics
     .map(category => ({
       ...category,
       topics: category.topics.filter(topic => {
-        const matchesSearch = topic.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                            topic.description.toLowerCase().includes(searchQuery.toLowerCase());
+        const matchesSearch = searchQuery === '' || 
+          topic.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          topic.description.toLowerCase().includes(searchQuery.toLowerCase());
         const matchesCategory = !selectedCategory || category.slug === selectedCategory;
         const matchesLevel = !selectedLevel || topic.level === selectedLevel;
         return matchesSearch && matchesCategory && matchesLevel;
@@ -153,7 +172,7 @@ export default function LearnPage() {
               </div>
               <input
                 type="text"
-                placeholder="          Search topics, skills, or keywords..."
+                placeholder="Search topics, skills, or keywords..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-full pl-11 pr-4 py-3 bg-white border border-slate-300 rounded-xl text-slate-900 placeholder-slate-500 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 transition-all"
@@ -161,7 +180,7 @@ export default function LearnPage() {
             </div>
           </div>
 
-          {/* Quick Stats - Removed Learners */}
+          {/* Quick Stats */}
           <div className="flex flex-wrap justify-center gap-6">
             <div className="flex items-center gap-2 bg-white/80 backdrop-blur rounded-xl px-4 py-2 border border-slate-200">
               <BookOpen size={16} className="text-blue-500" />
@@ -282,7 +301,7 @@ export default function LearnPage() {
                           <span className="flex items-center gap-0.5 px-1.5 py-0.5 bg-amber-50 rounded-full text-[10px] font-medium text-amber-600">
                             <Star size={10} className="fill-amber-500" />
                             Popular
-                          </span>
+          </span>
                         )}
                       </div>
                       <ChevronRight size={14} className="text-slate-300 group-hover:text-blue-500 group-hover:translate-x-0.5 transition" />
