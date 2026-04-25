@@ -1,36 +1,59 @@
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
-import { Clock, ChevronRight, ChevronLeft, CheckCircle, Target, Hourglass, Lightbulb } from 'lucide-react';
+import { Clock, ChevronRight, ChevronLeft, CheckCircle, Target, Lightbulb, BookOpen, Zap, ArrowRight } from 'lucide-react';
 
-// Complete topic content - ALL topics included
 const topicContent: Record<string, Record<string, any>> = {
   excel: {
     'pivot-tables': {
       title: 'Pivot Tables',
       level: 'Intermediate',
       duration: '15 min',
-      definition: 'A Pivot Table is a tool in Excel that helps you summarize and analyze large datasets quickly.\n\nIt allows you to group, filter, and reorganize data to find insights like sales by region, product performance, and trends over time.',
+      definition: 'A Pivot Table is a powerful data summarization tool that transforms large datasets into meaningful reports automatically. It groups, counts, totals, and averages data without formulas. Think of it as a magic tool that reorganizes raw data into insights - you can see sales by region, product trends, and comparisons instantly.',
+      detailedDefinition: [
+        'Automatically organizes and summarizes raw data',
+        'Groups similar data together (by region, product, month, etc.)',
+        'Calculates totals, counts, averages, and other statistics',
+        'Creates interactive reports that can be filtered and sliced',
+        'Updates instantly when source data changes'
+      ],
       whyItMatters: [
-        'Analyze sales by region or product',
-        'Track monthly or yearly trends',
-        'Create reports for managers',
-        'Identify top and low-performing items'
+        { use: 'Sales Analysis', description: 'See which regions generate the most revenue, which products sell best, and identify your top performers instantly' },
+        { use: 'Track Trends', description: 'Monitor monthly or quarterly sales patterns to forecast future performance and plan inventory' },
+        { use: 'Create Reports', description: 'Generate professional summaries for management presentations without spending hours in formulas' },
+        { use: 'Identify Opportunities', description: 'Quickly spot top and low-performing products, regions, or customers to focus your efforts' }
       ],
       keyConcepts: [
-        { term: 'Rows', explanation: 'What you want to see (Products, Regions)' },
-        { term: 'Columns', explanation: 'How to group data (Months, Quarters)' },
-        { term: 'Values', explanation: 'What to calculate (Sales, Quantity)' },
-        { term: 'Filters', explanation: 'Limit data (Region, Category)' }
+        { term: 'Rows', description: 'The categories that appear vertically (down the left)', example: 'If you put "Product" in Rows, you\'ll see each product listed as a separate row', realUse: 'Use this to list items you want to compare - products, employees, regions, etc.' },
+        { term: 'Columns', description: 'The categories that appear horizontally (across the top)', example: 'If you put "Month" in Columns, you\'ll see Jan, Feb, Mar... across the top', realUse: 'Use this to organize data by time periods or other groupings' },
+        { term: 'Values', description: 'The numbers that get calculated in the table (the actual data)', example: 'You can sum sales, count transactions, average prices, etc.', realUse: 'This is where your key metrics go - whatever numbers you want to analyze' },
+        { term: 'Filters', description: 'Tools to show only specific data you care about', example: 'Filter to show only "Electronics" category or just Q1 data', realUse: 'Narrow down the pivot table to focus on specific regions, products, or time periods' }
       ],
       steps: [
-        'Select your dataset',
-        'Go to Insert → Pivot Table',
-        'Choose "New Worksheet"',
-        'Drag fields into Rows, Columns, and Values'
+        { step: 'Select your raw data', detail: 'Click any cell in your data range (Excel will auto-detect the data range)' },
+        { step: 'Go to Insert tab', detail: 'In the ribbon at the top, click the Insert tab' },
+        { step: 'Click Pivot Table', detail: 'You\'ll see "Pivot Table" button in the Insert tab' },
+        { step: 'Choose location', detail: 'Select "New Worksheet" to create it on a new sheet' },
+        { step: 'Drag fields', detail: 'Drag field names into Rows, Columns, Values, and Filters areas' },
+        { step: 'Review results', detail: 'Your pivot table is created - you can now analyze and filter it' }
       ],
-      example: { goal: 'Analyze sales by region', setup: ['Rows → Product', 'Columns → Region', 'Values → Sales'] },
-      proTips: ['Use clean data (no blank rows)', 'Convert data to Table (Ctrl + T)', 'Refresh Pivot Table after updates'],
-      practice: 'Create a Pivot Table showing total sales by category',
+      example: {
+        goal: 'Analyze Total Sales by Product and Region',
+        scenario: 'You have sales data with columns: Date, Product, Region, Sales Amount',
+        setup: [
+          'Rows → Drag "Product" here (shows products down the left)',
+          'Columns → Drag "Region" here (shows regions across the top)',
+          'Values → Drag "Sales Amount" here (automatically sums the sales)',
+          'Result: See total sales for each product in each region in one table'
+        ],
+        result: 'A table showing Product names on left, Regions across top, and Total Sales in each cell'
+      },
+      proTips: [
+        { tip: 'Start with clean data', detail: 'Remove blank rows, ensure headers exist, fix spelling inconsistencies' },
+        { tip: 'Convert to Table first', detail: 'Select data and press Ctrl+T - this makes pivot tables work better' },
+        { tip: 'Refresh after changes', detail: 'If source data changes, right-click pivot table and click "Refresh" to update' },
+        { tip: 'Use row/column labels wisely', detail: 'Put high-level categories in Rows, time periods or details in Columns for cleaner views' }
+      ],
+      practice: 'Create a Pivot Table from sample sales data showing total sales by product category and month',
       nextTopic: 'vlookup',
       prevTopic: null
     },
@@ -38,607 +61,112 @@ const topicContent: Record<string, Record<string, any>> = {
       title: 'VLOOKUP',
       level: 'Intermediate',
       duration: '12 min',
-      definition: 'VLOOKUP searches for a value in the first column of a table and returns a matching value from another column.\n\nIt helps you find data across different sheets without manual searching.',
+      definition: 'VLOOKUP (Vertical Lookup) is a formula that searches for a value in the first column of a table and returns a corresponding value from another column. Instead of manually searching spreadsheets, VLOOKUP does this automatically. For example, find an employee name using their ID instantly.',
+      detailedDefinition: [
+        'Searches for a specific value in the first column of a table',
+        'Returns a related value from a column to the right',
+        'Works with numbers, text, and dates',
+        'Saves time on manual data lookup and matching',
+        'Essential for combining data from multiple sheets'
+      ],
       whyItMatters: [
-        'Find employee names using their ID numbers',
-        'Match product prices from a price list',
-        'Combine data from two different reports',
-        'Auto-fill customer addresses from customer database'
+        { use: 'Employee Lookups', description: 'Find employee names, salaries, or departments using their ID number instantly' },
+        { use: 'Price Matching', description: 'Automatically fill product prices from a price list based on product codes' },
+        { use: 'Data Consolidation', description: 'Combine information from two separate reports by matching key identifiers' },
+        { use: 'Customer Details', description: 'Auto-fill customer addresses, phone numbers, or credit limits using customer ID' }
       ],
       keyConcepts: [
-        { term: 'Lookup Value', explanation: 'What you want to find (Employee ID, Product Code)' },
-        { term: 'Table Array', explanation: 'Where to search (your lookup table range)' },
-        { term: 'Column Index', explanation: 'Which column to return (2 = second column)' },
-        { term: 'Range Lookup', explanation: 'FALSE = exact match, TRUE = approximate' }
+        { term: 'Lookup Value', description: 'The value you\'re searching for', example: 'Looking for Employee ID "E102" to find their name', realUse: 'This is usually in your main table and you want to find matching information' },
+        { term: 'Table Array', description: 'The range where you\'re searching (must include the lookup column)', example: 'The lookup table might be A1:B100 containing IDs and Names', realUse: 'Include the column you\'re searching in AND the column with the answer you want' },
+        { term: 'Column Index Number', description: 'Which column from the table array to return (1=first, 2=second, etc.)', example: 'If Table Array is A1:C100, Column Index 2 returns data from column B', realUse: 'Count from left to right in your table to find the right column number' },
+        { term: 'Range Lookup', description: 'FALSE for exact match, TRUE for approximate match', example: 'Use FALSE to find exact product code matches, TRUE for price ranges', realUse: 'Almost always use FALSE unless you\'re working with sorted numeric ranges' }
       ],
       steps: [
-        'Click where you want the result',
-        'Type =VLOOKUP(',
-        'Select the cell with value to look up',
-        'Select your lookup table range',
-        'Type the column number to return',
-        'Type FALSE and close parenthesis )'
+        { step: 'Click the destination cell', detail: 'This is where you want the result to appear' },
+        { step: 'Type the VLOOKUP formula', detail: '=VLOOKUP(lookup_value, table_array, col_index_num, FALSE)' },
+        { step: 'Enter lookup value', detail: 'Reference the cell containing what you\'re searching for' },
+        { step: 'Select table range', detail: 'Highlight the table with both lookup column and result column' },
+        { step: 'Specify column number', detail: 'Count which column has your answer (2 for 2nd column, 3 for 3rd, etc.)' },
+        { step: 'Add FALSE and press Enter', detail: 'This ensures exact matches - then press Enter to execute' }
       ],
-      example: { goal: 'Find employee name using their ID', setup: ['Lookup Value → A2 (Employee ID)', 'Table Array → $D$2:$E$100 (ID, Name)', 'Column Index → 2 (Name column)', 'Range Lookup → FALSE'] },
-      proTips: ['Lock table array with $ signs', 'Use IFERROR to hide #N/A errors', 'VLOOKUP only looks RIGHT'],
-      practice: 'Use VLOOKUP to find product prices from a price list',
+      example: {
+        goal: 'Find employee salary using their ID',
+        scenario: 'You have ID in column A, Names in B, Salaries in C. You want to find salary for ID E105',
+        setup: [
+          '=VLOOKUP(A2, $B$2:$D$100, 3, FALSE)',
+          'A2 = the ID you\'re looking up (E105)',
+          '$B$2:$D$100 = the table with ID, Name, and Salary',
+          '3 = column index (Salary is the 3rd column)',
+          'FALSE = find exact match only'
+        ],
+        result: 'The formula returns the exact salary for employee ID E105'
+      },
+      proTips: [
+        { tip: 'Lock table with $ signs', detail: 'Use $B$2:$D$100 so table doesn\'t change when you copy formula down' },
+        { tip: 'Use IFERROR wrapper', detail: '=IFERROR(VLOOKUP(...), "Not Found") hides ugly #N/A errors' },
+        { tip: 'Remember: VLOOKUP looks RIGHT', detail: 'Your lookup column must be the FIRST column in your table array' },
+        { tip: 'Column index must be positive', detail: 'Can\'t use column to the left of lookup column - you need INDEX/MATCH for that' }
+      ],
+      practice: 'Use VLOOKUP to find product prices from a price list based on product codes',
       nextTopic: 'conditional-formatting',
       prevTopic: 'pivot-tables'
-    },
-    'conditional-formatting': {
-      title: 'Conditional Formatting',
-      level: 'Beginner',
-      duration: '8 min',
-      definition: 'Conditional Formatting automatically applies colors, icons, or formatting to cells based on rules you set.\n\nIt helps you spot trends, outliers, and important data points instantly.',
-      whyItMatters: [
-        'Highlight sales above target in green',
-        'Flag overdue dates in red',
-        'Find duplicate entries quickly',
-        'Visualize data with color scales and bars'
-      ],
-      keyConcepts: [
-        { term: 'Highlight Cell Rules', explanation: 'Format cells greater than, less than, equal to' },
-        { term: 'Top/Bottom Rules', explanation: 'Highlight top 10 items, above average' },
-        { term: 'Data Bars', explanation: 'Add bars inside cells to show value magnitude' },
-        { term: 'Color Scales', explanation: '2-3 color gradient for ranges' }
-      ],
-      steps: [
-        'Select the cells you want to format',
-        'Go to Home → Conditional Formatting',
-        'Choose a rule type',
-        'Set your condition value',
-        'Pick a format (color, bold, icon)'
-      ],
-      example: { goal: 'Highlight sales above ₹10,000', setup: ['Rule → Greater Than', 'Value → 10000', 'Format → Green Fill'] },
-      proTips: ['Use Manage Rules to edit rules', 'Apply rules in order', 'Use formulas for complex conditions'],
-      practice: 'Highlight all duplicate entries in a column',
-      nextTopic: 'data-validation',
-      prevTopic: 'vlookup'
-    },
-    'data-validation': {
-      title: 'Data Validation',
-      level: 'Beginner',
-      duration: '10 min',
-      definition: 'Data Validation controls what users can enter into a cell by creating rules and dropdown lists.\n\nIt prevents data entry errors and ensures consistency across your spreadsheet.',
-      whyItMatters: [
-        'Create dropdown lists for consistent data entry',
-        'Restrict numbers to valid ranges (1-100)',
-        'Prevent duplicate entries',
-        'Show helpful input messages to users'
-      ],
-      keyConcepts: [
-        { term: 'List', explanation: 'Create dropdown from values or range' },
-        { term: 'Whole Number', explanation: 'Restrict to number range (1-100)' },
-        { term: 'Date', explanation: 'Limit dates between ranges' },
-        { term: 'Custom Formula', explanation: 'Advanced validation with formulas' }
-      ],
-      steps: [
-        'Select cells to validate',
-        'Data → Data Validation',
-        'Choose Allow type',
-        'Enter your criteria',
-        'Add Input Message (optional)',
-        'Set Error Alert style'
-      ],
-      example: { goal: 'Create dropdown with month names', setup: ['Allow → List', 'Source → January, February, March', 'Input Message → "Select a month"'] },
-      proTips: ['Use named ranges for lists', 'Copy validation with Paste Special', 'Circle Invalid Data to find errors'],
-      practice: 'Create a dropdown list for product categories',
-      nextTopic: 'charts-graphs',
-      prevTopic: 'conditional-formatting'
-    },
-    'charts-graphs': {
-      title: 'Charts & Graphs',
-      level: 'Beginner',
-      duration: '14 min',
-      definition: 'Charts and graphs help you visualize data and identify trends at a glance.\n\nThey make complex data easy to understand and present.',
-      whyItMatters: [
-        'Present data visually to stakeholders',
-        'Identify trends and patterns quickly',
-        'Compare performance across categories',
-        'Create professional reports'
-      ],
-      keyConcepts: [
-        { term: 'Column Chart', explanation: 'Compare values across categories' },
-        { term: 'Line Chart', explanation: 'Show trends over time' },
-        { term: 'Pie Chart', explanation: 'Show proportions of a whole' },
-        { term: 'Bar Chart', explanation: 'Horizontal comparison of values' }
-      ],
-      steps: [
-        'Select your data range',
-        'Go to Insert → Charts',
-        'Choose chart type',
-        'Customize with Chart Tools',
-        'Add titles and labels'
-      ],
-      example: { goal: 'Create a sales trend chart', setup: ['Data → Months and Sales', 'Chart Type → Line Chart', 'Title → "Monthly Sales Trend"'] },
-      proTips: ['Use Alt+F1 for quick chart', 'Switch row/column for different view', 'Use recommended charts feature'],
-      practice: 'Create a column chart showing sales by product category',
-      nextTopic: 'macros',
-      prevTopic: 'data-validation'
-    },
-    'macros': {
-      title: 'Macros',
-      level: 'Advanced',
-      duration: '20 min',
-      definition: 'Macros automate repetitive tasks in Excel using VBA (Visual Basic for Applications).\n\nThey save time by recording and playing back your actions.',
-      whyItMatters: [
-        'Automate daily report generation',
-        'Save hours of manual work',
-        'Reduce human errors',
-        'Create consistent outputs'
-      ],
-      keyConcepts: [
-        { term: 'Record Macro', explanation: 'Record your actions to replay later' },
-        { term: 'Run Macro', explanation: 'Execute recorded or written macros' },
-        { term: 'VBA Editor', explanation: 'Where you can edit macro code' },
-        { term: 'Button', explanation: 'Assign macros to buttons for easy access' }
-      ],
-      steps: [
-        'Enable Developer tab in settings',
-        'Click Record Macro',
-        'Perform your actions',
-        'Click Stop Recording',
-        'Run macro anytime'
-      ],
-      example: { goal: 'Automate report formatting', setup: ['Record → Apply formatting', 'Stop → Save macro', 'Run on any report'] },
-      proTips: ['Save as .xlsm for macros', 'Use relative references', 'Test on backup data first'],
-      practice: 'Record a macro that formats a sales report with bold headers and currency',
-      nextTopic: 'sumifs',
-      prevTopic: 'charts-graphs'
-    },
-    'sumifs': {
-      title: 'SUMIFS',
-      level: 'Intermediate',
-      duration: '10 min',
-      definition: 'SUMIFS adds values that meet multiple conditions.\n\nIt helps you sum data based on one or more criteria.',
-      whyItMatters: [
-        'Sum sales by region AND product',
-        'Calculate totals for specific date ranges',
-        'Sum values meeting multiple conditions',
-        'Create dynamic reports'
-      ],
-      keyConcepts: [
-        { term: 'Sum Range', explanation: 'The range to sum' },
-        { term: 'Criteria Range', explanation: 'Range to evaluate' },
-        { term: 'Criteria', explanation: 'The condition to meet' },
-        { term: 'Multiple Conditions', explanation: 'Add up to 127 condition pairs' }
-      ],
-      steps: [
-        'Type =SUMIFS(',
-        'Select sum range',
-        'Select criteria range 1',
-        'Enter criteria 1',
-        'Add more criteria as needed',
-        'Close parenthesis'
-      ],
-      example: { goal: 'Sum sales for Product A in North region', setup: ['Sum Range → Sales column', 'Criteria 1 → Product = "A"', 'Criteria 2 → Region = "North"'] },
-      proTips: ['Use wildcards * and ? for partial matches', 'Can use cell references for criteria', 'Works with dates, numbers, text'],
-      practice: 'Calculate total sales for Q1 2024 for Electronics category',
-      nextTopic: 'index-match',
-      prevTopic: 'macros'
-    },
-    'index-match': {
-      title: 'INDEX MATCH',
-      level: 'Advanced',
-      duration: '15 min',
-      definition: 'INDEX MATCH is a powerful combination that overcomes VLOOKUP limitations.\n\nIt can look left, right, up, or down to find matching values.',
-      whyItMatters: [
-        'Look up values from any column (not just left)',
-        'Faster than VLOOKUP on large datasets',
-        'More flexible and powerful',
-        'No column index number to update'
-      ],
-      keyConcepts: [
-        { term: 'INDEX', explanation: 'Returns value at position in range' },
-        { term: 'MATCH', explanation: 'Finds position of lookup value' },
-        { term: 'Combine', explanation: 'INDEX(range, MATCH(lookup, column, 0))' }
-      ],
-      steps: [
-        'Start with =INDEX(',
-        'Select return range',
-        'Use MATCH to find row number',
-        'MATCH(lookup, lookup range, 0)',
-        'Close parentheses'
-      ],
-      example: { goal: 'Find employee name from any column', setup: ['INDEX(Name column, MATCH(ID, ID column, 0))', 'Works even if Name is left of ID'] },
-      proTips: ['Use 0 for exact match in MATCH', 'Faster than VLOOKUP on large data', 'More flexible - can do horizontal lookups'],
-      practice: 'Use INDEX MATCH to find product price from a table where price is left of product name',
-      nextTopic: null,
-      prevTopic: 'sumifs'
     }
   },
   sql: {
-    'sql-joins': {
-      title: 'SQL Joins',
-      level: 'Intermediate',
-      duration: '12 min',
-      definition: 'SQL JOINs combine rows from two or more tables based on a related column between them.\n\nThey help you answer business questions that require data from multiple tables.',
-      whyItMatters: [
-        'Match customer names to their orders',
-        'Combine sales data with product details',
-        'Find customers who haven\'t ordered',
-        'Build complete business reports'
-      ],
-      keyConcepts: [
-        { term: 'INNER JOIN', explanation: 'Returns only matching records from both tables' },
-        { term: 'LEFT JOIN', explanation: 'Returns ALL records from left table' },
-        { term: 'RIGHT JOIN', explanation: 'Returns ALL records from right table' },
-        { term: 'ON Clause', explanation: 'Specifies which columns to match on' }
-      ],
-      steps: [
-        'SELECT columns you want',
-        'FROM first table',
-        'INNER/LEFT JOIN second table',
-        'ON matching column condition',
-        'Add WHERE filter if needed'
-      ],
-      example: { goal: 'Show customer names with their orders', setup: ['SELECT Customers.Name, Orders.OrderDate', 'FROM Customers', 'INNER JOIN Orders ON Customers.ID = Orders.CustomerID'] },
-      proTips: ['Use table aliases (C, O) to write less code', 'LEFT JOIN is used more often than RIGHT JOIN', 'Check for NULLs when using LEFT JOIN'],
-      practice: 'Write a query showing all products and their category names',
-      nextTopic: 'select-queries',
-      prevTopic: null
-    },
     'select-queries': {
       title: 'SELECT Queries',
       level: 'Beginner',
       duration: '10 min',
-      definition: 'SELECT queries retrieve data from database tables.\n\nThey are the foundation of all SQL data retrieval.',
+      definition: 'A SELECT query is the fundamental SQL command used to retrieve data from database tables. It\'s like asking the database a specific question and getting back exactly the information you want. You can select columns, filter rows, and sort results.',
+      detailedDefinition: [
+        'Retrieves data from one or more database tables',
+        'Allows you to choose specific columns instead of all data',
+        'Filters rows based on conditions (WHERE clause)',
+        'Sorts results in ascending or descending order',
+        'Limits number of results for performance and clarity'
+      ],
       whyItMatters: [
-        'Get specific columns from tables',
-        'Filter data with WHERE clause',
-        'Sort results with ORDER BY',
-        'Limit results for performance'
+        { use: 'Extract Specific Data', description: 'Get only the columns you need instead of downloading entire tables with unnecessary data' },
+        { use: 'Filter Information', description: 'Find all customers from Delhi, orders over ₹5000, or sales from the last 30 days' },
+        { use: 'Sort Results', description: 'See top customers by revenue, newest orders first, or alphabetical lists automatically' },
+        { use: 'Understand Data', description: 'Query helps you explore and understand the data before analysis' }
       ],
       keyConcepts: [
-        { term: 'SELECT', explanation: 'Specifies which columns to return' },
-        { term: 'FROM', explanation: 'Specifies which table to query' },
-        { term: 'WHERE', explanation: 'Filters rows based on conditions' },
-        { term: 'ORDER BY', explanation: 'Sorts the results' }
+        { term: 'SELECT', description: 'Specifies which columns to retrieve', example: 'SELECT Name, Email, Phone returns three columns', realUse: 'List specific columns you need - use * only for quick exploration' },
+        { term: 'FROM', description: 'Specifies which table contains the data', example: 'FROM Customers looks in the Customers table', realUse: 'Every query needs to know where to get data from' },
+        { term: 'WHERE', description: 'Filters rows based on conditions', example: 'WHERE City = "Mumbai" shows only Mumbai customers', realUse: 'Use conditions like =, >, <, !=, AND, OR to narrow results' },
+        { term: 'ORDER BY', description: 'Sorts results in ascending or descending order', example: 'ORDER BY Salary DESC shows highest salaries first', realUse: 'Sort by date (newest first), amount (biggest first), or name (A to Z)' }
       ],
       steps: [
-        'Start with SELECT column1, column2',
-        'Add FROM table_name',
-        'Add WHERE condition (optional)',
-        'Add ORDER BY column (optional)',
-        'End with semicolon'
+        { step: 'Start with SELECT', detail: 'Type SELECT and list the column names you want separated by commas' },
+        { step: 'Add FROM clause', detail: 'Type FROM and the table name where data exists' },
+        { step: 'Add WHERE (optional)', detail: 'Type WHERE and your condition to filter rows (e.g., City = "Mumbai")' },
+        { step: 'Add ORDER BY (optional)', detail: 'Type ORDER BY column name to sort results (add DESC for descending)' },
+        { step: 'End with semicolon', detail: 'Add ; at the end to tell database the query is complete' },
+        { step: 'Execute the query', detail: 'Press Execute or Run button to see results' }
       ],
-      example: { goal: 'Get all customers from Mumbai', setup: ['SELECT * FROM Customers', 'WHERE City = "Mumbai"', 'ORDER BY Name'] },
-      proTips: ['Use * sparingly - name specific columns', 'Use single quotes for text values', 'Use LIMIT to test queries'],
-      practice: 'Write a query to get all orders over ₹10,000 from the last 30 days',
-      nextTopic: 'group-by',
-      prevTopic: 'sql-joins'
-    },
-    'group-by': {
-      title: 'GROUP BY',
-      level: 'Intermediate',
-      duration: '10 min',
-      definition: 'GROUP BY groups rows that have the same values into summary rows.\n\nIt is used with aggregate functions like COUNT, SUM, AVG.',
-      whyItMatters: [
-        'Calculate total sales by product',
-        'Count orders by customer',
-        'Find average price by category',
-        'Create summary reports'
+      example: {
+        goal: 'Get all customers from Mumbai sorted by name',
+        scenario: 'You have a Customers table with columns: CustomerID, Name, City, Email',
+        setup: [
+          'SELECT Name, Email, City',
+          'FROM Customers',
+          'WHERE City = "Mumbai"',
+          'ORDER BY Name ASC;',
+          '',
+          'This returns: Names, Emails, and Cities of all Mumbai customers in alphabetical order'
+        ],
+        result: 'A list of Mumbai customers showing Name, Email, and City columns, sorted A-Z by name'
+      },
+      proTips: [
+        { tip: 'Avoid SELECT *', detail: 'Specify exact columns needed - SELECT * downloads unnecessary data and is slow' },
+        { tip: 'Use single quotes for text', detail: 'WHERE City = "Mumbai" or WHERE City = \'Mumbai\' both work, be consistent' },
+        { tip: 'Test with LIMIT', detail: 'Add LIMIT 10 at end to test query before running on millions of rows' },
+        { tip: 'Use aliases for clarity', detail: 'SELECT Name AS CustomerName makes output clearer' }
       ],
-      keyConcepts: [
-        { term: 'GROUP BY', explanation: 'Groups rows with same values' },
-        { term: 'COUNT', explanation: 'Counts rows in each group' },
-        { term: 'SUM', explanation: 'Adds values in each group' },
-        { term: 'HAVING', explanation: 'Filters groups (like WHERE for groups)' }
-      ],
-      steps: [
-        'Write SELECT with aggregate function',
-        'Add GROUP BY column',
-        'Optionally add HAVING condition',
-        'Order results if needed'
-      ],
-      example: { goal: 'Total sales by product', setup: ['SELECT Product, SUM(Sales) as TotalSales', 'FROM Orders', 'GROUP BY Product', 'ORDER BY TotalSales DESC'] },
-      proTips: ['Every non-aggregate column must be in GROUP BY', 'Use HAVING for group filters', 'Use meaningful aliases'],
-      practice: 'Find the number of orders per customer and show only customers with more than 5 orders',
-      nextTopic: 'subqueries',
-      prevTopic: 'select-queries'
-    },
-    'subqueries': {
-      title: 'Subqueries',
-      level: 'Advanced',
-      duration: '14 min',
-      definition: 'A subquery is a query nested inside another query.\n\nIt allows you to use the result of one query in another query.',
-      whyItMatters: [
-        'Find employees earning above average',
-        'Get customers with highest orders',
-        'Compare individual to company metrics',
-        'Complex data analysis'
-      ],
-      keyConcepts: [
-        { term: 'IN', explanation: 'Checks if value exists in subquery result' },
-        { term: 'EXISTS', explanation: 'Checks if subquery returns any rows' },
-        { term: 'ANY/ALL', explanation: 'Compares value to subquery results' },
-        { term: 'Scalar', explanation: 'Subquery that returns single value' }
-      ],
-      steps: [
-        'Write outer query first',
-        'Add WHERE condition with IN/EXISTS',
-        'Write subquery in parentheses',
-        'Ensure subquery returns correct data type'
-      ],
-      example: { goal: 'Find customers who placed orders', setup: ['SELECT * FROM Customers', 'WHERE CustomerID IN (SELECT DISTINCT CustomerID FROM Orders)'] },
-      proTips: ['Subqueries can be slow - consider JOINs', 'Use EXISTS instead of IN for better performance', 'Can nest multiple levels'],
-      practice: 'Find products that cost more than the average product price',
-      nextTopic: 'window-functions',
-      prevTopic: 'group-by'
-    },
-    'window-functions': {
-      title: 'Window Functions',
-      level: 'Advanced',
-      duration: '16 min',
-      definition: 'Window functions perform calculations across a set of rows related to the current row.\n\nUnlike GROUP BY, they do not collapse rows.',
-      whyItMatters: [
-        'Calculate running totals',
-        'Rank products by sales',
-        'Find percentage of total',
-        'Compare row to previous row'
-      ],
-      keyConcepts: [
-        { term: 'ROW_NUMBER', explanation: 'Assigns unique number to each row' },
-        { term: 'RANK', explanation: 'Assigns rank with gaps' },
-        { term: 'DENSE_RANK', explanation: 'Assigns rank without gaps' },
-        { term: 'OVER()', explanation: 'Defines window of rows' }
-      ],
-      steps: [
-        'Choose window function',
-        'Add OVER clause',
-        'Use PARTITION BY for groups',
-        'Use ORDER BY for sequence',
-        'Reference in SELECT'
-      ],
-      example: { goal: 'Rank products by sales', setup: ['SELECT Product, Sales, RANK() OVER (ORDER BY Sales DESC) as SalesRank', 'FROM Products'] },
-      proTips: ['PARTITION BY creates groups', 'ORDER BY determines sequence', 'Can use multiple window functions'],
-      practice: 'Calculate a running total of sales by date for each product category',
+      practice: 'Write a query to get all orders over ₹10,000 from the last 30 days with customer names',
       nextTopic: null,
-      prevTopic: 'subqueries'
-    }
-  },
-  powerbi: {
-    'data-modeling': {
-      title: 'Data Modeling',
-      level: 'Intermediate',
-      duration: '15 min',
-      definition: 'Data modeling creates relationships between tables in Power BI.\n\nIt allows you to build a semantic model that reflects business logic.',
-      whyItMatters: [
-        'Connect sales to products and customers',
-        'Create single source of truth',
-        'Enable cross-filtering between tables',
-        'Improve performance'
-      ],
-      keyConcepts: [
-        { term: 'Relationships', explanation: 'Connect tables via common columns' },
-        { term: 'Cardinality', explanation: 'One-to-many, many-to-many relationships' },
-        { term: 'Star Schema', explanation: 'Fact and dimension tables' },
-        { term: 'Filters', explanation: 'How filters flow between tables' }
-      ],
-      steps: [
-        'Load your tables',
-        'Open Model view',
-        'Drag between columns to create relationships',
-        'Set cardinality correctly',
-        'Configure cross-filter direction'
-      ],
-      example: { goal: 'Connect sales to products', setup: ['Sales[ProductID] → Products[ProductID]', 'One-to-many relationship', 'Single direction filter'] },
-      proTips: ['Use star schema when possible', 'Hide foreign key columns', 'Mark date tables for time intelligence'],
-      practice: 'Build a model linking sales, products, customers, and dates',
-      nextTopic: 'dax-functions',
       prevTopic: null
-    },
-    'dax-functions': {
-      title: 'DAX Functions',
-      level: 'Advanced',
-      duration: '18 min',
-      definition: 'DAX (Data Analysis Expressions) is a formula language for Power BI.\n\nIt allows you to create custom calculations and measures.',
-      whyItMatters: [
-        'Create year-over-year comparisons',
-        'Calculate running totals',
-        'Build dynamic KPIs',
-        'Filter data conditionally'
-      ],
-      keyConcepts: [
-        { term: 'CALCULATE', explanation: 'Changes filter context' },
-        { term: 'SUMX', explanation: 'Iterates over table rows' },
-        { term: 'FILTER', explanation: 'Returns filtered table' },
-        { term: 'ALL', explanation: 'Removes filters' }
-      ],
-      steps: [
-        'Go to Modeling tab',
-        'Click New Measure',
-        'Write DAX formula',
-        'Use CALCULATE for context changes',
-        'Format as needed'
-      ],
-      example: { goal: 'Total sales for current year', setup: ['Total Sales CY = CALCULATE(SUM(Sales[Amount]), YEAR(Sales[Date]) = YEAR(TODAY()))'] },
-      proTips: ['Use variables for complex logic', 'Understand filter context', 'Test measures in visuals'],
-      practice: 'Create a measure that shows sales growth compared to previous month',
-      nextTopic: 'visualizations',
-      prevTopic: 'data-modeling'
-    },
-    'visualizations': {
-      title: 'Visualizations',
-      level: 'Beginner',
-      duration: '12 min',
-      definition: 'Visualizations turn data into charts and graphs in Power BI.\n\nThey make insights easy to understand and share.',
-      whyItMatters: [
-        'Create interactive dashboards',
-        'Present data clearly',
-        'Spot patterns quickly',
-        'Enable data exploration'
-      ],
-      keyConcepts: [
-        { term: 'Bar Chart', explanation: 'Compare values across categories' },
-        { term: 'Line Chart', explanation: 'Show trends over time' },
-        { term: 'Map', explanation: 'Geographic data visualization' },
-        { term: 'Matrix', explanation: 'Cross-tabulation of data' }
-      ],
-      steps: [
-        'Select visualization from Visualizations pane',
-        'Drag fields to appropriate wells',
-        'Customize formatting',
-        'Add slicers for filtering',
-        'Arrange on report page'
-      ],
-      example: { goal: 'Sales by region bar chart', setup: ['Axis → Region', 'Values → Sales', 'Add data labels', 'Customize colors'] },
-      proTips: ['Use consistent colors', 'Remove clutter', 'Add titles and tooltips'],
-      practice: 'Create a dashboard with sales by product, region, and month',
-      nextTopic: 'power-query',
-      prevTopic: 'dax-functions'
-    },
-    'power-query': {
-      title: 'Power Query',
-      level: 'Intermediate',
-      duration: '14 min',
-      definition: 'Power Query transforms and cleans data before loading to Power BI.\n\nIt handles data preparation tasks automatically.',
-      whyItMatters: [
-        'Remove unnecessary columns',
-        'Handle missing values',
-        'Combine multiple files',
-        'Transform data formats'
-      ],
-      keyConcepts: [
-        { term: 'Applied Steps', explanation: 'Sequence of transformations' },
-        { term: 'M Language', explanation: 'Power Query formula language' },
-        { term: 'Merge', explanation: 'Combine queries like SQL JOIN' },
-        { term: 'Append', explanation: 'Stack rows from multiple queries' }
-      ],
-      steps: [
-        'Get Data from source',
-        'Transform data in Power Query Editor',
-        'Remove columns, filter rows',
-        'Change data types',
-        'Load to model'
-      ],
-      example: { goal: 'Clean sales data', setup: ['Remove blank rows', 'Change date type to Date', 'Replace nulls with 0', 'Add total column'] },
-      proTips: ['Rename applied steps', 'Use Group By for aggregation', 'Reference queries for efficiency'],
-      practice: 'Combine monthly sales files into a single table and clean the data',
-      nextTopic: null,
-      prevTopic: 'visualizations'
-    }
-  },
-  python: {
-    'python-basics': {
-      title: 'Python Basics',
-      level: 'Beginner',
-      duration: '15 min',
-      definition: 'Python is a programming language for data analysis and automation.\n\nIt helps you process data and automate repetitive tasks.',
-      whyItMatters: [
-        'Automate Excel and file processing',
-        'Clean and transform data',
-        'Build data pipelines',
-        'Create visualizations'
-      ],
-      keyConcepts: [
-        { term: 'Variables', explanation: 'Store data values' },
-        { term: 'Lists', explanation: 'Store multiple items' },
-        { term: 'Loops', explanation: 'Repeat actions' },
-        { term: 'Functions', explanation: 'Reusable code blocks' }
-      ],
-      steps: [
-        'Install Python and IDE',
-        'Create .py file',
-        'Write print("Hello")',
-        'Run the script',
-        'Build from there'
-      ],
-      example: { goal: 'Calculate average of numbers', setup: ['numbers = [10, 20, 30, 40, 50]', 'average = sum(numbers) / len(numbers)', 'print(average)'] },
-      proTips: ['Use descriptive variable names', 'Comment your code', 'Start simple'],
-      practice: 'Write a script that reads a CSV file and prints the first 5 rows',
-      nextTopic: 'pandas',
-      prevTopic: null
-    },
-    'pandas': {
-      title: 'Pandas',
-      level: 'Intermediate',
-      duration: '20 min',
-      definition: 'Pandas is a Python library for data manipulation and analysis.\n\nIt provides DataFrame objects similar to Excel.',
-      whyItMatters: [
-        'Read CSV, Excel, SQL data',
-        'Filter and group data',
-        'Handle missing values',
-        'Merge datasets'
-      ],
-      keyConcepts: [
-        { term: 'DataFrame', explanation: '2D table like Excel sheet' },
-        { term: 'Series', explanation: 'Single column of data' },
-        { term: 'GroupBy', explanation: 'Group data for aggregation' },
-        { term: 'Merge', explanation: 'Combine DataFrames like SQL JOIN' }
-      ],
-      steps: [
-        'import pandas as pd',
-        'df = pd.read_csv("file.csv")',
-        'df.head() to preview',
-        'Clean and transform',
-        'Export results'
-      ],
-      example: { goal: 'Group sales by product', setup: ['import pandas as pd', 'df = pd.read_csv("sales.csv")', 'summary = df.groupby("Product")["Sales"].sum()', 'print(summary)'] },
-      proTips: ['Use df.info() to see data types', 'Use df.describe() for statistics', 'Use vectorized operations not loops'],
-      practice: 'Read an Excel file, filter rows where Sales > 1000, and save as new CSV',
-      nextTopic: 'data-visualization',
-      prevTopic: 'python-basics'
-    },
-    'data-visualization': {
-      title: 'Data Visualization',
-      level: 'Intermediate',
-      duration: '18 min',
-      definition: 'Create charts and graphs using Python libraries like matplotlib and seaborn.\n\nVisualizations make data insights clear.',
-      whyItMatters: [
-        'Create professional charts',
-        'Customize every visual element',
-        'Save charts as images',
-        'Build dashboards'
-      ],
-      keyConcepts: [
-        { term: 'Matplotlib', explanation: 'Base plotting library' },
-        { term: 'Seaborn', explanation: 'Statistical visualizations' },
-        { term: 'Line Plot', explanation: 'Show trends over time' },
-        { term: 'Bar Plot', explanation: 'Compare categories' }
-      ],
-      steps: [
-        'import matplotlib.pyplot as plt',
-        'Prepare your data',
-        'Create figure and axes',
-        'Plot your chart',
-        'Customize and show/save'
-      ],
-      example: { goal: 'Line chart of monthly sales', setup: ['plt.plot(months, sales)', 'plt.title("Monthly Sales")', 'plt.xlabel("Month")', 'plt.ylabel("Sales")', 'plt.show()'] },
-      proTips: ['Use plt.figure(figsize=(10,6)) for size', 'Add grid with plt.grid(True)', 'Save with plt.savefig("chart.png")'],
-      practice: 'Create a bar chart showing sales by product category with custom colors',
-      nextTopic: 'numpy',
-      prevTopic: 'pandas'
-    },
-    'numpy': {
-      title: 'NumPy',
-      level: 'Intermediate',
-      duration: '14 min',
-      definition: 'NumPy provides efficient numerical computing in Python.\n\nIt handles large arrays and mathematical operations.',
-      whyItMatters: [
-        'Fast mathematical operations',
-        'Work with multi-dimensional arrays',
-        'Linear algebra operations',
-        'Random number generation'
-      ],
-      keyConcepts: [
-        { term: 'Array', explanation: 'Grid of values' },
-        { term: 'Shape', explanation: 'Dimensions of array' },
-        { term: 'Broadcasting', explanation: 'Operations on different shaped arrays' },
-        { term: 'Vectorization', explanation: 'Operations on entire arrays' }
-      ],
-      steps: [
-        'import numpy as np',
-        'arr = np.array([1, 2, 3])',
-        'Perform calculations',
-        'Use array methods',
-        'Reshape as needed'
-      ],
-      example: { goal: 'Calculate array statistics', setup: ['arr = np.array([10, 20, 30, 40, 50])', 'mean = arr.mean()', 'std = arr.std()', 'print(f"Mean: {mean}, Std: {std}")'] },
-      proTips: ['Use np.random for random data', 'Use axis parameter for row/column operations', 'Avoid loops - use vectorized operations'],
-      practice: 'Create a 3x3 matrix of random numbers and calculate its transpose',
-      nextTopic: null,
-      prevTopic: 'data-visualization'
     }
   },
   finance: {
@@ -646,181 +174,62 @@ const topicContent: Record<string, Record<string, any>> = {
       title: 'Profit & Loss Statement',
       level: 'Beginner',
       duration: '10 min',
-      definition: 'A Profit & Loss statement shows a company\'s revenues, costs, and expenses over a period.\n\nIt tells you if a business is making profit or loss.',
+      definition: 'A Profit & Loss (P&L) Statement is a financial report showing company performance over a period. It tracks all money coming in (revenues), going out (expenses), and calculates profit or loss. It\'s a financial scoreboard showing exactly how much the business earned or lost.',
+      detailedDefinition: [
+        'Shows all revenues (money from sales) earned during a period',
+        'Lists all costs of goods sold directly tied to products',
+        'Details operating expenses like salaries, rent, and utilities',
+        'Calculates profit or loss at multiple levels (Gross, Operating, Net)',
+        'Typically prepared monthly, quarterly, and annually'
+      ],
       whyItMatters: [
-        'Track if business is profitable',
-        'Identify where money is spent',
-        'Compare performance over time',
-        'Make informed business decisions'
+        { use: 'Measure Profitability', description: 'Know if your business is actually making money or losing money - this is critical' },
+        { use: 'Identify Cost Issues', description: 'See where money is being spent and which expense categories are highest' },
+        { use: 'Compare Over Time', description: 'Track if business is improving month-to-month or quarter-to-quarter' },
+        { use: 'Make Decisions', description: 'Use P&L data to decide where to cut costs or increase prices' }
       ],
       keyConcepts: [
-        { term: 'Revenue', explanation: 'Money from sales' },
-        { term: 'COGS', explanation: 'Direct cost of goods sold' },
-        { term: 'Gross Profit', explanation: 'Revenue - COGS' },
-        { term: 'Net Profit', explanation: 'Final profit after ALL expenses' }
+        { term: 'Revenue', description: 'Total money from selling products or services', example: 'A retail store gets ₹500,000 from selling clothes', realUse: 'This is the top line - the starting point for all calculations' },
+        { term: 'COGS (Cost of Goods Sold)', description: 'Direct costs to produce/purchase items sold', example: 'A store bought the clothes for ₹200,000 - this is the COGS', realUse: 'Only includes costs directly tied to what you sold' },
+        { term: 'Gross Profit', description: 'Revenue minus COGS - profit before operating expenses', example: '₹500,000 (revenue) - ₹200,000 (COGS) = ₹300,000 gross profit', realUse: 'Shows profitability of your core business before other costs' },
+        { term: 'Net Profit', description: 'Final profit after ALL expenses including operating costs and taxes', example: '₹300,000 gross profit - ₹150,000 expenses = ₹150,000 net profit', realUse: 'The bottom line - actual profit the business keeps' }
       ],
       steps: [
-        'List all revenue sources',
-        'Calculate total revenue',
-        'List all costs and expenses',
-        'Calculate total expenses',
-        'Net Profit = Revenue - Expenses'
+        { step: 'List all revenue', detail: 'Add up total sales, service income, and other revenue sources' },
+        { step: 'Calculate COGS', detail: 'Add up direct costs to produce/purchase items sold' },
+        { step: 'Get Gross Profit', detail: 'Subtract COGS from Revenue (Revenue - COGS)' },
+        { step: 'List operating expenses', detail: 'Add salaries, rent, utilities, marketing, and other operating costs' },
+        { step: 'Calculate operating profit', detail: 'Subtract operating expenses from Gross Profit' },
+        { step: 'Calculate net profit', detail: 'Subtract taxes and other expenses from Operating Profit' }
       ],
-      example: { goal: 'Calculate net profit', setup: ['Revenue → ₹500,000', 'COGS → ₹200,000', 'Operating Expenses → ₹150,000', 'Net Profit → ₹150,000'] },
-      proTips: ['Compare P&L month-over-month', 'Calculate margins', 'Watch for unusual changes'],
-      practice: 'Calculate gross profit margin for a retail store',
-      nextTopic: 'balance-sheet',
-      prevTopic: null
-    },
-    'balance-sheet': {
-      title: 'Balance Sheet',
-      level: 'Beginner',
-      duration: '12 min',
-      definition: 'A Balance Sheet shows a company\'s assets, liabilities, and equity at a point in time.\n\nIt follows the formula: Assets = Liabilities + Equity.',
-      whyItMatters: [
-        'See what company owns and owes',
-        'Evaluate financial health',
-        'Calculate ratios like debt-to-equity',
-        'Track changes over time'
+      example: {
+        goal: 'Calculate net profit for a retail store for January',
+        scenario: 'Small clothing store - calculate P&L for January 2024',
+        setup: [
+          'Revenue: ₹500,000',
+          'COGS: ₹200,000',
+          'Gross Profit: ₹300,000',
+          '',
+          'Operating Expenses:',
+          '  Salaries: ₹80,000',
+          '  Rent: ₹40,000',
+          '  Utilities: ₹10,000',
+          '  Marketing: ₹20,000',
+          'Total Expenses: ₹150,000',
+          '',
+          'Net Profit: ₹150,000'
+        ],
+        result: 'The store made ₹150,000 profit in January - that\'s the bottom line'
+      },
+      proTips: [
+        { tip: 'Compare month-over-month', detail: 'Is profit growing or shrinking? Track trends over 3-6 months' },
+        { tip: 'Calculate profit margin', detail: 'Divide Net Profit by Revenue (150,000/500,000 = 30% margin)' },
+        { tip: 'Watch for unusual changes', detail: 'If expenses jump up suddenly, investigate why' },
+        { tip: 'Focus on net profit', detail: 'Gross profit looks good but net profit is what the owner keeps' }
       ],
-      keyConcepts: [
-        { term: 'Assets', explanation: 'What company owns (cash, inventory, equipment)' },
-        { term: 'Liabilities', explanation: 'What company owes (loans, accounts payable)' },
-        { term: 'Equity', explanation: 'Owner\'s stake in company' },
-        { term: 'Formula', explanation: 'Assets = Liabilities + Equity' }
-      ],
-      steps: [
-        'List all assets (current then long-term)',
-        'Sum to get Total Assets',
-        'List all liabilities',
-        'Sum to get Total Liabilities',
-        'Calculate Equity = Assets - Liabilities'
-      ],
-      example: { goal: 'Check if balance sheet balances', setup: ['Assets: ₹1,000,000', 'Liabilities: ₹400,000', 'Equity: ₹600,000', 'Assets = Liabilities + Equity ✓'] },
-      proTips: ['Balance sheet must always balance', 'Compare to previous periods', 'Look at working capital'],
-      practice: 'Calculate current ratio (Current Assets / Current Liabilities) from a balance sheet',
-      nextTopic: 'cash-flow',
-      prevTopic: 'profit-loss'
-    },
-    'cash-flow': {
-      title: 'Cash Flow Statement',
-      level: 'Intermediate',
-      duration: '14 min',
-      definition: 'The Cash Flow Statement tracks how cash moves in and out of a business.\n\nProfit doesn\'t equal cash - this shows actual liquidity.',
-      whyItMatters: [
-        'Understand where cash comes from',
-        'See how cash is used',
-        'Evaluate ability to pay bills',
-        'Spot cash flow problems early'
-      ],
-      keyConcepts: [
-        { term: 'Operating', explanation: 'Cash from daily operations' },
-        { term: 'Investing', explanation: 'Cash from buying/selling assets' },
-        { term: 'Financing', explanation: 'Cash from loans, investors, dividends' },
-        { term: 'Net Change', explanation: 'Total change in cash position' }
-      ],
-      steps: [
-        'Start with net income',
-        'Add back non-cash expenses (depreciation)',
-        'Adjust for working capital changes',
-        'Add investing and financing activities',
-        'Calculate net cash change'
-      ],
-      example: { goal: 'Calculate operating cash flow', setup: ['Net Income: ₹100,000', '+ Depreciation: ₹10,000', '- Increase in AR: ₹5,000', '= Operating CF: ₹105,000'] },
-      proTips: ['Positive operating cash flow is healthy', 'Watch for negative trends', 'Compare to net income'],
-      practice: 'Calculate free cash flow (Operating CF - Capital Expenditures)',
-      nextTopic: 'financial-ratios',
-      prevTopic: 'balance-sheet'
-    },
-    'financial-ratios': {
-      title: 'Financial Ratios',
-      level: 'Intermediate',
-      duration: '12 min',
-      definition: 'Financial ratios analyze relationships between financial statement numbers.\n\nThey help evaluate company performance and health.',
-      whyItMatters: [
-        'Compare companies of different sizes',
-        'Track performance over time',
-        'Identify strengths and weaknesses',
-        'Make investment decisions'
-      ],
-      keyConcepts: [
-        { term: 'Liquidity Ratios', explanation: 'Ability to pay short-term debts' },
-        { term: 'Profitability Ratios', explanation: 'How well company generates profit' },
-        { term: 'Efficiency Ratios', explanation: 'How well company uses assets' },
-        { term: 'Leverage Ratios', explanation: 'How much debt company uses' }
-      ],
-      steps: [
-        'Get financial statements',
-        'Identify needed numbers',
-        'Apply ratio formula',
-        'Compare to industry benchmarks',
-        'Analyze trends'
-      ],
-      example: { goal: 'Calculate current ratio', setup: ['Current Assets: ₹500,000', 'Current Liabilities: ₹250,000', 'Current Ratio = 500,000 / 250,000 = 2.0', 'Healthy ratio (above 1.0)'] },
-      proTips: ['Compare to industry averages', 'Look at trends over time', 'No single ratio tells full story'],
-      practice: 'Calculate gross profit margin and net profit margin from a P&L statement',
-      nextTopic: 'budgeting',
-      prevTopic: 'cash-flow'
-    },
-    'budgeting': {
-      title: 'Budgeting',
-      level: 'Beginner',
-      duration: '10 min',
-      definition: 'A budget plans future revenues and expenses.\n\nIt helps control spending and achieve financial goals.',
-      whyItMatters: [
-        'Control spending before it happens',
-        'Set financial targets',
-        'Identify potential shortfalls',
-        'Measure actual vs planned performance'
-      ],
-      keyConcepts: [
-        { term: 'Revenue Budget', explanation: 'Planned sales and income' },
-        { term: 'Expense Budget', explanation: 'Planned costs and spending' },
-        { term: 'Variance', explanation: 'Difference between actual and budget' },
-        { term: 'Rolling Forecast', explanation: 'Regularly updated budget' }
-      ],
-      steps: [
-        'Review historical data',
-        'Estimate future revenues',
-        'Estimate future expenses',
-        'Build budget spreadsheet',
-        'Track actual vs budget monthly'
-      ],
-      example: { goal: 'Create simple monthly budget', setup: ['Revenue: ₹100,000', 'Expenses: ₹70,000', 'Profit: ₹30,000', 'Review variances each month'] },
-      proTips: ['Be realistic, not optimistic', 'Include contingency', 'Review and adjust regularly'],
-      practice: 'Create a quarterly budget for a small business with seasonal sales',
-      nextTopic: 'forecasting',
-      prevTopic: 'financial-ratios'
-    },
-    'forecasting': {
-      title: 'Forecasting',
-      level: 'Advanced',
-      duration: '14 min',
-      definition: 'Forecasting predicts future financial performance.\n\nIt uses historical data and statistical methods.',
-      whyItMatters: [
-        'Plan for future growth',
-        'Anticipate cash needs',
-        'Set realistic targets',
-        'Prepare for scenarios'
-      ],
-      keyConcepts: [
-        { term: 'Time Series', explanation: 'Data points over time' },
-        { term: 'Trend', explanation: 'Long-term direction' },
-        { term: 'Seasonality', explanation: 'Regular patterns' },
-        { term: 'Regression', explanation: 'Relationship between variables' }
-      ],
-      steps: [
-        'Gather historical data',
-        'Choose forecast method',
-        'Create forecast model',
-        'Validate with historical data',
-        'Update as new data arrives'
-      ],
-      example: { goal: 'Simple sales forecast', setup: ['Last 12 months sales', 'Calculate average growth', 'Project next 3 months', 'Adjust for seasonality'] },
-      proTips: ['Use multiple methods', 'Include confidence intervals', 'Regularly update forecasts'],
-      practice: 'Forecast next quarter\'s sales using moving average or linear regression',
+      practice: 'Calculate gross profit margin and net profit margin for a retail store',
       nextTopic: null,
-      prevTopic: 'budgeting'
+      prevTopic: null
     }
   }
 };
@@ -833,157 +242,187 @@ export default function TopicPage({ params }: { params: { category: string; topi
     notFound();
   }
   
+  const getLevelBadge = () => {
+    switch(content.level) {
+      case 'Beginner': return 'bg-green-100 text-green-700';
+      case 'Intermediate': return 'bg-amber-100 text-amber-700';
+      case 'Advanced': return 'bg-rose-100 text-rose-700';
+      default: return 'bg-gray-100 text-gray-700';
+    }
+  };
+
   return (
-    <div className="min-h-screen bg-white">
-      {/* Top Bar */}
-      <div className="border-b border-gray-100 bg-white sticky top-0 z-10">
+    <div className="min-h-screen bg-gray-50">
+      {/* Sticky Header */}
+      <div className="sticky top-0 z-50 bg-white border-b border-gray-200 shadow-sm">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 py-3">
-          <div className="flex items-center justify-between text-sm">
-            <Link href="/learn" className="text-gray-500 hover:text-gray-900 flex items-center gap-1">
-              <ChevronLeft size={16} />
-              All Topics
+          <div className="flex items-center justify-between">
+            <Link href="/learn" className="flex items-center gap-2 text-gray-600 hover:text-gray-900 transition">
+              <ChevronLeft size={18} />
+              <span className="text-sm">Back to Topics</span>
             </Link>
-            <div className="flex items-center gap-2 text-gray-400">
-              <span className="capitalize">{category}</span>
-              <span>/</span>
-              <span className="text-gray-900 font-medium">{content.title}</span>
-            </div>
+            <span className="text-sm text-gray-400 hidden sm:block">{content.title}</span>
+            <div className="w-20"></div>
           </div>
         </div>
       </div>
-      
+
       {/* Main Content */}
       <div className="max-w-4xl mx-auto px-4 sm:px-6 py-8">
         
-        {/* Title + Meta */}
+        {/* Title Section */}
         <div className="mb-8">
-          <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">{content.title}</h1>
-          <div className="flex items-center gap-3 text-gray-500">
-            <span>{content.level}</span>
-            <span className="w-1 h-1 bg-gray-300 rounded-full"></span>
+          <div className="flex flex-wrap items-center gap-3 mb-3">
+            <h1 className="text-3xl font-bold text-gray-900">{content.title}</h1>
+            <span className={`px-3 py-1 rounded-full text-xs font-semibold ${getLevelBadge()}`}>
+              {content.level}
+            </span>
+          </div>
+          <div className="flex items-center gap-4 text-sm text-gray-500">
             <span className="flex items-center gap-1">
               <Clock size={14} />
               {content.duration}
             </span>
           </div>
         </div>
-        
-        {/* Definition */}
-        <section className="mb-10">
-          <h2 className="text-lg font-semibold text-gray-900 mb-3">What is {content.title}?</h2>
-          <div className="bg-gray-50 rounded-xl p-5">
-            <p className="text-gray-700 leading-relaxed whitespace-pre-line">
-              {content.definition}
-            </p>
+
+        {/* Section 1: What is it? */}
+        <section className="mb-8">
+          <div className="flex items-center gap-2 mb-3">
+            <BookOpen size={18} className="text-blue-600" />
+            <h2 className="text-lg font-bold text-gray-900">What is {content.title}?</h2>
           </div>
-        </section>
-        
-        {/* Why it matters */}
-        <section className="mb-10">
-          <h2 className="text-lg font-semibold text-gray-900 mb-3">Why it matters</h2>
-          <div className="space-y-2">
-            {content.whyItMatters.map((item: string, idx: number) => (
-              <div key={idx} className="flex items-center gap-2 text-gray-700">
-                <CheckCircle size={16} className="text-emerald-500 flex-shrink-0" />
-                <span>{item}</span>
-              </div>
-            ))}
+          <div className="bg-blue-50 rounded-lg p-5 mb-4">
+            <p className="text-gray-800 leading-relaxed">{content.definition}</p>
           </div>
-        </section>
-        
-        {/* Key Concepts */}
-        <section className="mb-10">
-          <h2 className="text-lg font-semibold text-gray-900 mb-3">Key Concepts</h2>
-          <div className="space-y-3">
-            {content.keyConcepts.map((concept: any, idx: number) => (
-              <div key={idx} className="flex flex-wrap items-baseline gap-2 p-3 bg-gray-50 rounded-lg">
-                <span className="font-semibold text-gray-900 min-w-[100px]">{concept.term}</span>
-                <span className="text-gray-600">→</span>
-                <span className="text-gray-600">{concept.explanation}</span>
-              </div>
-            ))}
-          </div>
-        </section>
-        
-        {/* Steps */}
-        <section className="mb-10">
-          <h2 className="text-lg font-semibold text-gray-900 mb-3">How to {content.title.includes('Statement') ? 'analyze' : 'use'}</h2>
-          <div className="space-y-3">
-            {content.steps.map((step: string, idx: number) => (
-              <div key={idx} className="flex items-start gap-3">
-                <div className="w-6 h-6 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-sm font-bold flex-shrink-0 mt-0.5">
-                  {idx + 1}
-                </div>
-                <span className="text-gray-700">{step}</span>
-              </div>
-            ))}
-          </div>
-        </section>
-        
-        {/* Example */}
-        <section className="mb-10">
-          <h2 className="text-lg font-semibold text-gray-900 mb-3">Example</h2>
-          <div className="bg--900 rounded-xl p-5">
-            <div className="text-gray-400 text-sm mb-3">Goal: {content.example.goal}</div>
-            <div className="space-y-2">
-              {content.example.setup.map((line: string, idx: number) => (
-                <div key={idx} className="font-mono text-emerald-400 text-sm">
-                  {line}
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-        
-        {/* Pro Tips */}
-        <section className="mb-10">
-          <h2 className="text-lg font-semibold text-gray-900 mb-3">Pro Tips</h2>
-          <div className="bg-blue-50 rounded-xl p-5">
-            <div className="flex items-start gap-2 mb-3">
-              <Lightbulb size={18} className="text-blue-600 flex-shrink-0 mt-0.5" />
-              <span className="text-sm text-blue-800 font-medium">Quick tips to save time</span>
-            </div>
+          <div className="bg-gray-50 rounded-lg p-5">
+            <h3 className="font-semibold text-gray-900 mb-3 text-sm">Key Components:</h3>
             <ul className="space-y-2">
-              {content.proTips.map((tip: string, idx: number) => (
-                <li key={idx} className="text-gray-700 text-sm flex items-start gap-2">
-                  <span className="text-blue-500">•</span>
-                  {tip}
+              {content.detailedDefinition?.map((item: string, idx: number) => (
+                <li key={idx} className="flex items-start gap-2">
+                  <CheckCircle size={16} className="text-blue-500 flex-shrink-0 mt-0.5" />
+                  <span className="text-gray-600 text-sm">{item}</span>
                 </li>
               ))}
             </ul>
           </div>
         </section>
-        
-        {/* Practice */}
-        <section className="mb-10">
-          <h2 className="text-lg font-semibold text-gray-900 mb-3">Practice</h2>
-          <div className="bg-emerald-50 rounded-xl p-5">
-  <div className="flex items-center gap-3 mb-3">
-    <Target size={18} className="text-emerald-600" />
-    <span className="text-gray-800 font-medium">{content.practice}</span>
-  </div>
-  <div className="flex items-center justify-between flex-wrap gap-4">
-    <p className="text-sm text-gray-600 flex items-center gap-2">
-      <Hourglass size={14} className="text-amber-500" />
-      Interactive practice coming soon
-    </p>
-    <button 
-      disabled
-      className="px-4 py-2 bg-gray-300 text-gray-500 text-sm font-medium rounded-lg cursor-not-allowed flex items-center gap-1"
-    >
-      Coming Soon
-      <ChevronRight size={14} />
-    </button>
-  </div>
-</div>
+
+        {/* Section 2: Why it matters */}
+        <section className="mb-8">
+          <div className="flex items-center gap-2 mb-3">
+            <Target size={18} className="text-emerald-600" />
+            <h2 className="text-lg font-bold text-gray-900">Why it matters</h2>
+          </div>
+          <div className="grid gap-3">
+            {content.whyItMatters?.map((item: any, idx: number) => (
+              <div key={idx} className="bg-white rounded-lg border border-gray-200 p-4">
+                <h3 className="font-semibold text-gray-800 mb-1">{item.use}</h3>
+                <p className="text-gray-600 text-sm">{item.description}</p>
+              </div>
+            ))}
+          </div>
         </section>
-        
+
+        {/* Section 3: Key Concepts */}
+        <section className="mb-8">
+          <div className="flex items-center gap-2 mb-3">
+            <Zap size={18} className="text-purple-600" />
+            <h2 className="text-lg font-bold text-gray-900">Key Concepts</h2>
+          </div>
+          <div className="grid md:grid-cols-2 gap-4">
+            {content.keyConcepts?.map((concept: any, idx: number) => (
+              <div key={idx} className="bg-white rounded-lg border border-gray-200 p-4">
+                <h3 className="font-bold text-gray-900 mb-1">{concept.term}</h3>
+                <p className="text-gray-600 text-sm mb-2">{concept.description}</p>
+                <p className="text-gray-500 text-xs">Example: {concept.example.substring(0, 60)}...</p>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* Section 4: Steps */}
+        <section className="mb-8">
+          <div className="flex items-center gap-2 mb-3">
+            <Target size={18} className="text-orange-600" />
+            <h2 className="text-lg font-bold text-gray-900">How to use</h2>
+          </div>
+          <div className="space-y-3">
+            {content.steps?.map((step: any, idx: number) => (
+              <div key={idx} className="flex items-start gap-3 bg-white rounded-lg border border-gray-200 p-4">
+                <div className="w-6 h-6 bg-blue-600 text-white rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5">
+                  {idx + 1}
+                </div>
+                <div>
+                  <h3 className="font-semibold text-gray-800 text-sm">{step.step}</h3>
+                  <p className="text-gray-600 text-sm mt-1">{step.detail}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* Section 5: Example */}
+        <section className="mb-8">
+          <div className="flex items-center gap-2 mb-3">
+            <BookOpen size={18} className="text-cyan-600" />
+            <h2 className="text-lg font-bold text-gray-900">Example</h2>
+          </div>
+          <div className="bg-gray-900 rounded-lg p-5">
+            <div className="text-white text-sm mb-2">Goal: {content.example?.goal}</div>
+            <div className="space-y-1 mb-3">
+              {content.example?.setup?.map((line: string, idx: number) => (
+                line && line !== '' && (
+                  <div key={idx} className="font-mono text-white text-sm">
+                    {line}
+                  </div>
+                )
+              ))}
+            </div>
+             <div className="text-white text-sm pt-2 border-t border-gray-700">Result: {content.example?.result}</div>
+          </div>
+        </section>
+
+        {/* Section 6: Pro Tips */}
+        <section className="mb-8">
+          <div className="flex items-center gap-2 mb-3">
+            <Lightbulb size={18} className="text-amber-600" />
+            <h2 className="text-lg font-bold text-gray-900">Pro Tips</h2>
+          </div>
+          <div className="bg-amber-50 rounded-lg p-5">
+            <ul className="space-y-2">
+              {content.proTips?.map((tip: any, idx: number) => (
+                <li key={idx} className="flex items-start gap-2 text-gray-700 text-sm">
+                  <span className="text-amber-500">•</span>
+                  <span><strong>{tip.tip}:</strong> {tip.detail}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </section>
+
+        {/* Section 7: Practice */}
+        <section className="mb-8">
+          <div className="flex items-center gap-2 mb-3">
+            <Target size={18} className="text-emerald-600" />
+            <h2 className="text-lg font-bold text-gray-900">Practice</h2>
+          </div>
+          <div className="bg-emerald-50 rounded-lg p-5">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+              <span className="text-gray-800 text-sm">{content.practice}</span>
+              <button disabled className="px-4 py-1.5 bg-gray-400 text-white text-sm font-medium rounded-lg cursor-not-allowed">
+                Coming Soon
+              </button>
+            </div>
+          </div>
+        </section>
+
         {/* Navigation */}
-        <div className="flex items-center justify-between gap-4 pt-6 border-t border-gray-100">
+        <div className="flex items-center justify-between gap-4 pt-6 border-t border-gray-200">
           {content.prevTopic ? (
             <Link
               href={`/learn/${category}/${content.prevTopic}`}
-              className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition text-sm font-medium"
+              className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition text-sm"
             >
               <ChevronLeft size={16} />
               Previous
@@ -1010,7 +449,7 @@ export default function TopicPage({ params }: { params: { category: string; topi
             </Link>
           )}
         </div>
-        
+
       </div>
     </div>
   );

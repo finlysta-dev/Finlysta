@@ -20,9 +20,9 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  title: 'Entry Level Financial Analyst Jobs & Internships 2026 | Finlysta - Start Your Finance Career',
-  description: 'Find 2,400+ entry level financial analyst jobs and internships in India. Start your finance career with paid internships and fresher jobs. 100% free for students.',
-  keywords: 'entry level financial analyst jobs, entry level financial analyst internships, financial analyst jobs for freshers, financial analyst internship for freshers, financial analyst fresher jobs, financial analyst entry level, junior financial analyst jobs, financial analyst no experience, financial analyst 0 experience, financial analyst graduate jobs, finance jobs for freshers, finance internship for students, finance fresher jobs, finance graduate jobs, entry level finance jobs, finance internship for freshers, paid finance internship, finance internship with stipend, financial analyst internship paid, financial analyst remote internship, financial analyst work from home, financial analyst jobs mumbai fresher, financial analyst jobs delhi fresher, financial analyst jobs bangalore fresher, financial analyst jobs hyderabad fresher, financial analyst jobs chennai fresher, financial analyst jobs pune fresher, financial analyst internship mumbai, financial analyst internship delhi, financial analyst internship bangalore, financial analyst internship hyderabad, financial analyst internship chennai, financial analyst internship pune, how to become a financial analyst, how to get a financial analyst job with no experience, financial analyst career path, financial analyst skills required, financial analyst salary for freshers, MBA finance fresher jobs, MBA finance internship, BCOM finance jobs, BBA finance jobs, CA fresher jobs, finance graduate jobs for freshers',
+  title: 'Entry Level Financial Analyst Jobs & Internships | Finlysta - Start Your Finance Career',
+  description: 'Find entry level financial analyst jobs and internships in India. Start your finance career with paid internships and fresher jobs. 100% free for students.',
+  keywords: 'entry level financial analyst jobs, entry level financial analyst internships, financial analyst jobs for freshers, financial analyst internship for freshers, financial analyst fresher jobs, financial analyst entry level, junior financial analyst jobs, financial analyst no experience, financial analyst 0 experience, financial analyst graduate jobs, finance jobs for freshers, finance internship for students, finance fresher jobs, finance graduate jobs, entry level finance jobs, finance internship for freshers, paid finance internship, finance internship with stipend, financial analyst internship paid, financial analyst remote internship, financial analyst work from home, how to become a financial analyst, how to get a financial analyst job with no experience, financial analyst career path, financial analyst skills required, financial analyst salary for freshers, MBA finance fresher jobs, MBA finance internship, BCOM finance jobs, BBA finance jobs, CA fresher jobs, finance graduate jobs for freshers, financial analyst internship interview questions, how to get an internship in finance, internship for finance students, financial analyst jobs, financial analyst internship, entry level financial analyst, financial analyst fresher, finance jobs for freshers, internship for finance students, walkin for financial analyst in mumbai, openings for financial analyst in mumbai, summer internship for mba finance students, summer internship finance, financial analyst remote jobs, financial analyst paid internship, which internship is best for finance students, financial analyst jobs and internships, what is financial analyst, how to become financial analyst, financial analyst course, financial analyst certification, financial analyst skills, financial analyst resume, financial analyst salary, investment banking internship, equity research internship, fintech internship, corporate finance internship',
   authors: [{ name: 'Finlysta' }],
   robots: {
     index: true,
@@ -39,8 +39,8 @@ export const metadata: Metadata = {
     canonical: 'https://www.finlysta.com',
   },
   openGraph: {
-    title: 'Entry Level Financial Analyst Jobs & Internships 2026 | Finlysta - Start Your Finance Career',
-    description: 'Find 2,400+ entry level financial analyst jobs and internships in India. Start your finance career with paid internships and fresher jobs. 100% free for students.',
+    title: 'Entry Level Financial Analyst Jobs & Internships | Finlysta',
+    description: 'Find entry level financial analyst jobs and internships in India. Start your finance career with paid internships and fresher jobs. 100% free for students.',
     url: 'https://www.finlysta.com',
     siteName: 'Finlysta',
     locale: 'en_IN',
@@ -56,8 +56,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Entry Level Financial Analyst Jobs & Internships 2026 | Finlysta',
-    description: 'Find 2,400+ entry level financial analyst jobs and internships in India. Start your finance career with paid internships and fresher jobs. 100% free.',
+    title: 'Entry Level Financial Analyst Jobs & Internships | Finlysta',
+    description: 'Find entry level financial analyst jobs and internships in India. Start your finance career. 100% free.',
     images: ['https://www.finlysta.com/twitter-image.png'],
     creator: '@Finlysta',
     site: '@Finlysta',
@@ -112,8 +112,8 @@ export default function RootLayout({
         <meta name="geo.region" content="IN" />
         <meta name="geo.placename" content="India" />
         
-        {/* Additional SEO Keywords Meta - Only Entry Level */}
-        <meta name="keywords" content="entry level financial analyst jobs, entry level financial analyst internships, financial analyst jobs for freshers, financial analyst internship for freshers, financial analyst fresher jobs, financial analyst entry level, junior financial analyst jobs, financial analyst no experience, financial analyst 0 experience, financial analyst graduate jobs, finance jobs for freshers, finance internship for students, finance fresher jobs, finance graduate jobs, entry level finance jobs, finance internship for freshers, paid finance internship, finance internship with stipend, financial analyst internship paid, financial analyst remote internship, financial analyst work from home, how to become a financial analyst, how to get a financial analyst job with no experience, financial analyst career path, financial analyst skills required, financial analyst salary for freshers, MBA finance fresher jobs, MBA finance internship, BCOM finance jobs, BBA finance jobs, CA fresher jobs" />
+        {/* Additional SEO Meta Keywords */}
+        <meta name="keywords" content="entry level financial analyst jobs, entry level financial analyst internships, financial analyst jobs for freshers, financial analyst internship for freshers, financial analyst fresher jobs, financial analyst entry level, junior financial analyst jobs, financial analyst no experience, financial analyst 0 experience, financial analyst graduate jobs, finance jobs for freshers, finance internship for students, finance fresher jobs, finance graduate jobs, entry level finance jobs, finance internship for freshers, paid finance internship, finance internship with stipend, financial analyst internship paid, financial analyst remote internship, financial analyst work from home, how to become a financial analyst, how to get a financial analyst job with no experience, financial analyst career path, financial analyst skills required, financial analyst salary for freshers, MBA finance fresher jobs, MBA finance internship, BCOM finance jobs, BBA finance jobs, CA fresher jobs, financial analyst internship interview questions, how to get an internship in finance, internship for finance students, financial analyst jobs, walkin for financial analyst in mumbai, summer internship for mba finance students, summer internship finance, which internship is best for finance students, financial analyst jobs and internships, investment banking internship, equity research internship, fintech internship, corporate finance internship" />
         
         {/* Favicon Icons */}
         <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
@@ -131,7 +131,7 @@ export default function RootLayout({
               "name": "Finlysta",
               "url": "https://www.finlysta.com",
               "logo": "https://www.finlysta.com/Finlysta.png",
-              "description": "India's #1 entry level financial analyst job board. Find paid internships and fresher jobs in financial analysis, corporate finance, and fintech.",
+              "description": "Entry level financial analyst job board. Find paid internships and fresher jobs in financial analysis, corporate finance, and fintech.",
               "foundingDate": "2026",
               "foundingLocation": "India",
               "areaServed": "India",
@@ -190,50 +190,18 @@ export default function RootLayout({
               "name": "Finlysta",
               "url": "https://www.finlysta.com",
               "logo": "https://www.finlysta.com/Finlysta.png",
-              "description": "India's fastest-growing entry level financial analyst job platform for freshers",
+              "description": "Entry level financial analyst job platform for freshers",
               "address": {
                 "@type": "PostalAddress",
                 "addressCountry": "IN"
               },
               "priceRange": "₹0",
-              "telephone": "+91-XXXXXXXXXX",
               "email": "finlystahelp@gmail.com"
             })
           }}
         />
         
-        {/* JobPosting Schema for Entry Level */}
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
-              "@context": "https://schema.org",
-              "@type": "JobPosting",
-              "title": "Entry Level Financial Analyst Jobs & Internships",
-              "description": "Browse 2,400+ entry level financial analyst jobs and internships across India. Perfect for freshers, graduates, and students starting their finance career.",
-              "employmentType": ["FULL_TIME", "INTERN", "PART_TIME"],
-              "experienceRequirements": "0-2 years",
-              "experienceInPlaceOfEducation": false,
-              "hiringOrganization": {
-                "@type": "Organization",
-                "name": "Finlysta",
-                "sameAs": "https://www.finlysta.com"
-              },
-              "jobLocation": {
-                "@type": "Place",
-                "address": {
-                  "@type": "PostalAddress",
-                  "addressCountry": "India"
-                }
-              },
-              "skills": "Financial Analysis, Excel, Financial Modeling, SQL, Power BI, Communication Skills",
-              "educationRequirements": "Bachelor's Degree in Finance, Accounting, Economics, BCOM, BBA, MBA Finance",
-              "validThrough": "2026-12-31"
-            })
-          }}
-        />
-        
-        {/* FAQ Schema - Focused on Entry Level */}
+        {/* FAQ Schema */}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
@@ -243,10 +211,10 @@ export default function RootLayout({
               "mainEntity": [
                 {
                   "@type": "Question",
-                  "name": "How to get an entry level financial analyst job with no experience?",
+                  "name": "How to get a financial analyst job with no experience?",
                   "acceptedAnswer": {
                     "@type": "Answer",
-                    "text": "Start with financial analyst internships, build skills in Excel and financial modeling, get certifications, network with professionals, and apply to entry level positions on Finlysta. Many companies hire freshers for financial analyst roles."
+                    "text": "Start with financial analyst internships, build skills in Excel and financial modeling, get certifications, and apply to entry level positions on Finlysta."
                   }
                 },
                 {
@@ -254,15 +222,7 @@ export default function RootLayout({
                   "name": "What skills are required for entry level financial analyst jobs?",
                   "acceptedAnswer": {
                     "@type": "Answer",
-                    "text": "Key skills for freshers include Excel, basic financial modeling, financial statement analysis, attention to detail, analytical thinking, and good communication skills."
-                  }
-                },
-                {
-                  "@type": "Question",
-                  "name": "What is the salary for entry level financial analyst in India?",
-                  "acceptedAnswer": {
-                    "@type": "Answer",
-                    "text": "Entry level financial analyst salary in India ranges from ₹3-6 LPA. Internships typically offer ₹15,000-30,000 per month. Top companies may offer higher packages for freshers."
+                    "text": "Key skills include Excel, financial modeling, financial statement analysis, analytical thinking, and communication skills."
                   }
                 },
                 {
@@ -270,39 +230,23 @@ export default function RootLayout({
                   "name": "Is Finlysta free for job seekers?",
                   "acceptedAnswer": {
                     "@type": "Answer",
-                    "text": "Yes, Finlysta is 100% free for students and freshers. Companies pay to post jobs — you never pay to apply or find entry level financial analyst opportunities."
+                    "text": "Yes, Finlysta is 100% free for students and freshers. You never pay to apply or find opportunities."
                   }
                 },
                 {
                   "@type": "Question",
-                  "name": "How are entry level financial analyst jobs verified?",
+                  "name": "How to get an internship in finance?",
                   "acceptedAnswer": {
                     "@type": "Answer",
-                    "text": "Every listing is manually reviewed — company confirmed, role checked for genuine entry level positions, links tested. No ghost jobs, no spam."
+                    "text": "Apply through Finlysta, build a strong resume, learn Excel and financial modeling, and prepare for interview questions."
                   }
                 },
                 {
                   "@type": "Question",
-                  "name": "Can I find remote entry level financial analyst jobs?",
+                  "name": "Which internship is best for finance students?",
                   "acceptedAnswer": {
                     "@type": "Answer",
-                    "text": "Yes. Use the 'Remote' filter to find work-from-home entry level financial analyst roles and internships."
-                  }
-                },
-                {
-                  "@type": "Question",
-                  "name": "Which companies hire freshers for financial analyst roles?",
-                  "acceptedAnswer": {
-                    "@type": "Answer",
-                    "text": "Top companies include Deloitte, EY, KPMG, PwC, Amazon, JP Morgan, Goldman Sachs, and many startups. Check Finlysta regularly for new entry level opportunities."
-                  }
-                },
-                {
-                  "@type": "Question",
-                  "name": "What qualifications do I need for a financial analyst internship?",
-                  "acceptedAnswer": {
-                    "@type": "Answer",
-                    "text": "Bachelor's degree in Finance, BCOM, BBA, Economics, or MBA Finance students. Basic Excel knowledge is usually required."
+                    "text": "Investment banking, equity research, financial analysis, and fintech internships are popular choices for finance students."
                   }
                 }
               ]
@@ -315,7 +259,6 @@ export default function RootLayout({
           <NotificationProvider>
             <BanWatcher />
             {children}
-            {/* Visitor Tracker - Tracks page views and user sessions */}
             <VisitorTracker />
           </NotificationProvider>
         </Providers>
@@ -340,76 +283,6 @@ export default function RootLayout({
                 allow_google_signals: true,
                 allow_enhanced_conversions: true
               });
-              
-              window.gtagEvent = function(eventName, eventParams = {}) {
-                gtag('event', eventName, eventParams);
-              };
-            `,
-          }}
-        />
-        
-        {/* Amplitude Analytics */}
-        <Script
-          strategy="lazyOnload"
-          src="https://cdn.amplitude.com/libs/amplitude-8.21.0-min-gz.js"
-        />
-        <Script
-          id="amplitude"
-          strategy="lazyOnload"
-          dangerouslySetInnerHTML={{
-            __html: `
-              (function() {
-                function initAmplitude() {
-                  if (typeof amplitude !== 'undefined' && amplitude.init) {
-                    try {
-                      amplitude.init('finlysta_analytics_key', null, {
-                        defaultTracking: {
-                          pageViews: true,
-                          sessions: true,
-                          formInteractions: false,
-                          fileDownloads: false,
-                          linkClicks: false
-                        },
-                        logLevel: 'WARN',
-                        optOut: false,
-                        saveEvents: true,
-                        includeUtm: true,
-                        includeReferrer: true,
-                        includeGclid: true
-                      });
-                    } catch (error) {
-                      console.warn('Amplitude initialization error:', error);
-                    }
-                  } else {
-                    setTimeout(initAmplitude, 1000);
-                  }
-                }
-                
-                if (document.readyState === 'complete') {
-                  initAmplitude();
-                } else {
-                  window.addEventListener('load', initAmplitude);
-                }
-                
-                window.trackEvent = function(eventName, eventProperties) {
-                  if (typeof amplitude !== 'undefined' && amplitude.track) {
-                    try {
-                      amplitude.track(eventName, eventProperties);
-                    } catch (error) {
-                      console.warn('Amplitude track error:', error);
-                    }
-                  }
-                };
-                
-                window.identifyUser = function(userId, userProperties) {
-                  if (typeof amplitude !== 'undefined' && amplitude.setUserId) {
-                    amplitude.setUserId(userId);
-                    if (userProperties) {
-                      amplitude.setUserProperties(userProperties);
-                    }
-                  }
-                };
-              })();
             `,
           }}
         />

@@ -86,10 +86,10 @@ const TryForFree = () => {
   return (
     <div className="bg-gradient-to-r from-[#0A2540] to-[#1a3a5c] py-16 md:py-20">
       <div className="max-w-4xl mx-auto px-4 text-center">
-        <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-black mb-4">
+        <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-white mb-4">
           Skip the clutter.
         </h2>
-        <p className="text-xl md:text-2xl text-black/90 mb-10">
+        <p className="text-xl md:text-2xl text-white/90 mb-10">
           Find financial analyst internships and entry-level jobs faster.
         </p>
         
@@ -109,6 +109,32 @@ const TryForFree = () => {
         </div>
       </div>
     </div>
+  );
+};
+
+// SEO Schema Component
+const SEOSchema = () => {
+  return (
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{
+        __html: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "WebSite",
+          "name": "Finlysta",
+          "url": "https://finlysta.com",
+          "description": "Find entry level financial analyst jobs and internships in India. Start your finance career with paid internships and fresher jobs.",
+          "potentialAction": {
+            "@type": "SearchAction",
+            "target": {
+              "@type": "EntryPoint",
+              "urlTemplate": "https://finlysta.com/internships?search={search_term}"
+            },
+            "query-input": "required name=search_term"
+          }
+        })
+      }}
+    />
   );
 };
 
@@ -161,6 +187,7 @@ export default function HomePageContent() {
 
   return (
     <div className="bg-[#F8FAFC] min-h-screen font-sans">
+      <SEOSchema />
       <Header />
 
       <main>
@@ -281,7 +308,7 @@ export default function HomePageContent() {
                 <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Follow us on</p>
                 <div className="flex gap-3">
                   <a 
-                    href="https://www.linkedin.com/company/join-Finlysta/" 
+                    href="https://www.linkedin.com/company/finlysta/ " 
                     target="_blank" 
                     rel="noopener noreferrer" 
                     aria-label="Follow Finlysta on LinkedIn" 

@@ -1,31 +1,254 @@
-import prisma from "@/lib/prisma";
+import { Metadata } from 'next';
+import { notFound } from 'next/navigation';
+import Link from 'next/link';
+import { ArrowLeft, Calendar, Clock, Tag, Share2, Bookmark } from 'lucide-react';
+import prisma from '@/lib/prisma';
 
-export default async function ResourcePage({ params }: any) {
+// Generate metadata for SEO
+export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
+  try {
+    const resource = await prisma.careerResource.findUnique({
+      where: { slug: params.slug }
+    });
 
-  const resource = await prisma.careerResource.findUnique({
-    where: { slug: params.slug }
-  });
+    if (!resource) {
+      return {
+        title: 'Blog Post Not Found | Finlysta',
+        description: 'The blog post you are looking for does not exist.',
+      };
+    }
 
-  if (!resource) return <div>Not found</div>;
+    // Calculate read time (approx 200 words per minute)
+    const wordCount = resource.content?.split(/\s+/).length || 0;
+    const readTime = Math.ceil(wordCount / 200);
 
-  return (
+    return {
+      title: `${resource.title} | Finlysta Blog`,
+      description: resource.excerpt,
+      keywords: `${resource.category}, financial analyst career, finance jobs, entry level finance, career tips, ${resource.title}`,
+      authors: [{ name: 'Finlysta Team' }],
+      openGraph: {
+        title: resource.title,
+        description: resource.excerpt,
+        type: 'article',
+        publishedTime: resource.createdAt.toISOString(),
+        modifiedTime: resource.updatedAt.toISOString(),
+        url: `https://finlysta.com/resources/${resource.slug}`,
+        siteName: 'Finlysta',
+        images: [
+          {
+            url: resource.coverImage || 'https://finlysta.com/og-image.png',
+            width: 1200,
+            height: 630,
+            alt: resource.title,
+          },
+        ],
+      },
+      twitter: {
+        card: 'summary_large_image',
+        title: resource.title,
+        description: resource.excerpt,
+        images: [resource.coverImage || 'https://finlysta.com/og-image.png'],
+      },
+      robots: {
+        index: true,
+        follow: true,
+      },
+      alternates: {
+        canonical: `https://finlysta.com/resources/${resource.slug}`,
+      },
+    };
+  } catch (error) {
+    console.error('Error generating metadata:', error);
+    return {
+      title: 'Blog Post | Finlysta',
+      description: 'Read our latest blog posts about financial analyst careers.',
+    };
+  }
+}
 
-    <div className="p-8 max-w-3xl mx-auto">
+export default async function ResourcePage({ params }: { params: { slug: string } }) {
+  try {
+    const resource = await prisma.careerResource.findUnique({
+      where: { slug: params.slug }
+    });
 
-      <h1 className="text-3xl font-bold mb-4">
-        {resource.title}
-      </h1>
+    if (!resource) {
+      notFound();
+    }
 
-      <p className="text-gray-600 mb-6">
-        {resource.excerpt}
-      </p>
+    // Calculate read time
+    const wordCount = resource.content?.split(/\s+/).length || 0;
+    const readTime = Math.ceil(wordCount / 200);
 
-      <div className="whitespace-pre-line">
-        {resource.content}
+    // Format category for display
+    const getCategoryLabel = (category: string) => {
+      const categories: Record<string, string> = {
+        'resume-tips': 'Resume Tips',
+        'jobs': 'Job Search',
+        'roadmap': 'Career Roadmaps',
+        'profile-tips': 'Profile Tips',
+        'interview': 'Interview Prep',
+        'skills': 'Skill Development',
+      };
+      return categories[category] || category.replace('-', ' ');
+    };
+
+    const getCategoryColor = (category: string) => {
+      const colors: Record<string, string> = {
+        'resume-tips': 'bg-blue-100 text-blue-700',
+        'jobs': 'bg-indigo-100 text-indigo-700',
+        'roadmap': 'bg-purple-100 text-purple-700',
+        'profile-tips': 'bg-emerald-100 text-emerald-700',
+        'interview': 'bg-green-100 text-green-700',
+        'skills': 'bg-pink-100 text-pink-700',
+      };
+      return colors[category] || 'bg-gray-100 text-gray-700';
+    };
+
+    return (
+      <div className="min-h-screen bg-gray-50">
+        {/* Back Button */}
+        <div className="bg-white border-b border-gray-200 sticky top-0 z-10">
+          <div className="max-w-4xl mx-auto px-4 sm:px-6 py-4">
+            <Link 
+              href="/blogs" 
+              className="inline-flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors group"
+            >
+              <ArrowLeft size={18} className="group-hover:-translate-x-0.5 transition-transform" />
+              <span className="text-sm font-medium">Back to Blogs</span>
+            </Link>
+          </div>
+        </div>
+
+        {/* Article Container */}
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 py-8">
+          <article className="bg-white rounded-xl shadow-sm overflow-hidden">
+            
+            {/* Header Section */}
+            <div className="p-6 sm:p-8 md:p-10">
+              {/* Category Badge */}
+              <div className="mb-4">
+                <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium ${getCategoryColor(resource.category)}`}>
+                  {getCategoryLabel(resource.category)}
+                </span>
+              </div>
+
+              {/* Title */}
+              <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 mb-4 leading-tight">
+                {resource.title}
+              </h1>
+
+              {/* Meta Info */}
+              <div className="flex flex-wrap items-center gap-4 text-sm text-gray-500 mb-6 pb-6 border-b border-gray-100">
+                <div className="flex items-center gap-1.5">
+                  <Calendar size={14} />
+                  <span>
+                    {new Date(resource.createdAt).toLocaleDateString('en-US', {
+                      month: 'long',
+                      day: 'numeric',
+                      year: 'numeric'
+                    })}
+                  </span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <Clock size={14} />
+                  <span>{readTime} min read</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <Tag size={14} />
+                  <span className="capitalize">{resource.type}</span>
+                </div>
+              </div>
+
+              {/* Excerpt */}
+              <div className="bg-blue-50 rounded-lg p-5 mb-8 border-l-4 border-blue-500">
+                <p className="text-gray-700 text-base leading-relaxed">
+                  {resource.excerpt}
+                </p>
+              </div>
+
+              {/* Content */}
+              <div className="prose prose-lg max-w-none">
+                {resource.content?.split('\n').map((paragraph: string, idx: number) => {
+                  if (paragraph.trim()) {
+                    return (
+                      <p key={idx} className="text-gray-700 mb-5 leading-relaxed">
+                        {paragraph}
+                      </p>
+                    );
+                  }
+                  return <div key={idx} className="h-4"></div>;
+                })}
+              </div>
+            </div>
+
+            {/* Footer Section */}
+            <div className="border-t border-gray-100 p-6 sm:p-8 bg-gray-50">
+              <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+                <div className="text-center sm:text-left">
+                  <p className="text-sm text-gray-500 mb-1">Was this article helpful?</p>
+                  <p className="text-xs text-gray-400">Share it with others who might benefit</p>
+                </div>
+                <div className="flex items-center gap-3">
+                  <button className="flex items-center gap-1.5 px-4 py-2 bg-white border border-gray-200 rounded-lg text-gray-600 hover:bg-gray-50 transition text-sm">
+                    <Bookmark size={14} />
+                    Save
+                  </button>
+                  <button className="flex items-center gap-1.5 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition text-sm">
+                    <Share2 size={14} />
+                    Share
+                  </button>
+                </div>
+              </div>
+            </div>
+          </article>
+
+          {/* Related Posts Section - Optional */}
+          <div className="mt-8 text-center">
+            <Link 
+              href="/blogs"
+              className="inline-flex items-center gap-2 text-blue-600 hover:text-blue-700 font-medium transition-colors"
+            >
+              ← Browse all blog posts
+            </Link>
+          </div>
+        </div>
+
+        {/* JSON-LD Schema for Article */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "Article",
+              "headline": resource.title,
+              "description": resource.excerpt,
+              "author": {
+                "@type": "Organization",
+                "name": "Finlysta"
+              },
+              "datePublished": resource.createdAt.toISOString(),
+              "dateModified": resource.updatedAt.toISOString(),
+              "mainEntityOfPage": {
+                "@type": "WebPage",
+                "@id": `https://finlysta.com/resources/${resource.slug}`
+              },
+              "publisher": {
+                "@type": "Organization",
+                "name": "Finlysta",
+                "logo": {
+                  "@type": "ImageObject",
+                  "url": "https://finlysta.com/Finlysta.png"
+                }
+              }
+            })
+          }}
+        />
       </div>
-
-    </div>
-
-  );
-
+    );
+  } catch (error) {
+    console.error('Error fetching resource:', error);
+    notFound();
+  }
 }

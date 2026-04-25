@@ -3,30 +3,20 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import {
-  TrendingUp, Landmark, BookOpen, Calculator, PenTool,
-  Wallet, GraduationCap, ArrowRight, Clock, ChevronRight,
-  BarChart3, Database, FileSpreadsheet, Code, ChevronLeft,
-  Table, Filter, LineChart, GitBranch, Cpu, Sparkles,
-  Target, Award, Zap, Eye, Star, Rocket
+  TrendingUp, Landmark, Wallet, Calculator, LineChart,
+  BarChart3, Database, FileSpreadsheet, Code, Clock,
+  ChevronRight, ChevronLeft, ArrowRight, Table, Filter, GitBranch, Cpu
 } from "lucide-react";
 
 const FinanceTopics = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [isHovered, setIsHovered] = useState(false);
 
   const categories = [
     { 
       name: "Finance", 
       icon: BarChart3, 
-      color: "emerald", 
-      gradient: "from-emerald-500 to-emerald-600",
-      lightBg: "bg-emerald-50",
-      borderColor: "border-emerald-200",
-      text: "text-emerald-600",
-      textDark: "text-emerald-700",
+      color: "emerald",
       link: "/learn/finance",
-      badge: "Popular",
-      description: "Financial statements, ratios & analysis",
       topics: [
         { name: "Profit & Loss", slug: "profit-loss", desc: "Revenue, expenses & profit", duration: "15 min", icon: TrendingUp, level: "Beginner" },
         { name: "Balance Sheet", slug: "balance-sheet", desc: "Assets, liabilities & equity", duration: "20 min", icon: Landmark, level: "Beginner" },
@@ -39,15 +29,8 @@ const FinanceTopics = () => {
     { 
       name: "Excel", 
       icon: FileSpreadsheet, 
-      color: "blue", 
-      gradient: "from-blue-500 to-blue-600",
-      lightBg: "bg-blue-50",
-      borderColor: "border-blue-200",
-      text: "text-blue-600",
-      textDark: "text-blue-700",
+      color: "blue",
       link: "/learn/excel",
-      badge: "Essential",
-      description: "Formulas, pivot tables & automation",
       topics: [
         { name: "Data Validation", slug: "data-validation", desc: "Control data entry", duration: "12 min", icon: Table, level: "Beginner" },
         { name: "Pivot Tables", slug: "pivot-tables", desc: "Summarize & analyze", duration: "18 min", icon: Table, level: "Intermediate" },
@@ -60,15 +43,8 @@ const FinanceTopics = () => {
     { 
       name: "SQL", 
       icon: Database, 
-      color: "cyan", 
-      gradient: "from-cyan-500 to-cyan-600",
-      lightBg: "bg-cyan-50",
-      borderColor: "border-cyan-200",
-      text: "text-cyan-600",
-      textDark: "text-cyan-700",
+      color: "cyan",
       link: "/learn/sql",
-      badge: "Core",
-      description: "Queries, joins & optimization",
       topics: [
         { name: "SQL Joins", slug: "sql-joins", desc: "Combine tables", duration: "16 min", icon: Database, level: "Intermediate" },
         { name: "SELECT Queries", slug: "select-queries", desc: "Retrieve data", duration: "12 min", icon: Database, level: "Beginner" },
@@ -81,15 +57,8 @@ const FinanceTopics = () => {
     { 
       name: "Power BI", 
       icon: BarChart3, 
-      color: "orange", 
-      gradient: "from-orange-500 to-orange-600",
-      lightBg: "bg-orange-50",
-      borderColor: "border-orange-200",
-      text: "text-orange-600",
-      textDark: "text-orange-700",
+      color: "orange",
       link: "/learn/powerbi",
-      badge: "Trending",
-      description: "Data modeling, DAX & dashboards",
       topics: [
         { name: "Data Modeling", slug: "data-modeling", desc: "Relationships & schemas", duration: "18 min", icon: Database, level: "Intermediate" },
         { name: "DAX Functions", slug: "dax-functions", desc: "Calculate & analyze", duration: "22 min", icon: Calculator, level: "Advanced" },
@@ -102,15 +71,8 @@ const FinanceTopics = () => {
     { 
       name: "Python", 
       icon: Code, 
-      color: "purple", 
-      gradient: "from-purple-500 to-purple-600",
-      lightBg: "bg-purple-50",
-      borderColor: "border-purple-200",
-      text: "text-purple-600",
-      textDark: "text-purple-700",
+      color: "purple",
       link: "/learn/python",
-      badge: "Advanced",
-      description: "Loops, pandas & visualization",
       topics: [
         { name: "Python Basics", slug: "python-basics", desc: "Variables, loops & functions", duration: "14 min", icon: Code, level: "Beginner" },
         { name: "Pandas", slug: "pandas", desc: "Data manipulation", duration: "20 min", icon: Table, level: "Intermediate" },
@@ -123,169 +85,105 @@ const FinanceTopics = () => {
   ];
 
   useEffect(() => {
-    if (!isHovered) {
-      const interval = setInterval(() => {
-        setCurrentIndex((prevIndex) => (prevIndex + 1) % categories.length);
-      }, 8000);
-      return () => clearInterval(interval);
-    }
-  }, [isHovered, categories.length]);
-
-  const nextCategory = () => {
-    setCurrentIndex((prevIndex) => (prevIndex + 1) % categories.length);
-  };
-
-  const prevCategory = () => {
-    setCurrentIndex((prevIndex) => (prevIndex - 1 + categories.length) % categories.length);
-  };
+    const interval = setInterval(() => {
+      setCurrentIndex((prevIndex) => (prevIndex + 1) % categories.length);
+    }, 8000);
+    return () => clearInterval(interval);
+  }, []);
 
   const currentCategory = categories[currentIndex];
-  const CurrentIcon = currentCategory.icon;
+
+  const getColorClasses = (color: string) => {
+    const colors: Record<string, any> = {
+      emerald: { bg: "bg-emerald-50", border: "border-emerald-200", text: "text-emerald-700", icon: "text-emerald-600" },
+      blue: { bg: "bg-blue-50", border: "border-blue-200", text: "text-blue-700", icon: "text-blue-600" },
+      cyan: { bg: "bg-cyan-50", border: "border-cyan-200", text: "text-cyan-700", icon: "text-cyan-600" },
+      orange: { bg: "bg-orange-50", border: "border-orange-200", text: "text-orange-700", icon: "text-orange-600" },
+      purple: { bg: "bg-purple-50", border: "border-purple-200", text: "text-purple-700", icon: "text-purple-600" }
+    };
+    return colors[color] || colors.emerald;
+  };
 
   const getLevelColor = (level: string) => {
     switch(level) {
-      case "Beginner": return "bg-emerald-50 text-emerald-600 border-emerald-200";
-      case "Intermediate": return "bg-amber-50 text-amber-600 border-amber-200";
-      case "Advanced": return "bg-rose-50 text-rose-600 border-rose-200";
-      default: return "bg-slate-50 text-slate-500 border-slate-200";
+      case "Beginner": return "bg-green-100 text-green-700";
+      case "Intermediate": return "bg-yellow-100 text-yellow-700";
+      case "Advanced": return "bg-red-100 text-red-700";
+      default: return "bg-gray-100 text-gray-700";
     }
   };
 
+  const colorClasses = getColorClasses(currentCategory.color);
+  const CurrentIcon = currentCategory.icon;
+
   return (
-    <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 bg-gradient-to-b from-white to-slate-50">
-      
-      {/* Hero Section */}
-      <div className="text-center mb-14">
-        <div className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full shadow-md mb-5">
-          <Rocket size={14} className="text-white" />
-          <span className="text-black text-xs font-bold uppercase tracking-wider">Learning Hub</span>
-          <Sparkles size={12} className="text-white" />
+    <div className="bg-white min-h-screen">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        
+        {/* HEADER - Added the text in middle */}
+        <div className="text-center mb-6">
+          <h1 className="text-4xl font-bold text-gray-900 mb-2">Learning Hub - Master Financial Analyst Skills</h1>
+          <p className="text-gray-600 text-lg">Bite-sized lessons to build your financial analyst knowledge</p>
         </div>
-        
-        <h2 className="text-4xl md:text-5xl font-bold text-black mb-2">
-          Master Financial Analyst
-        </h2>
-        
-        <p className="text-slate-500 text-md max-w-md mx-auto leading-relaxed">
-          Bite-sized lessons to build your financial analyst knowledge
-        </p>
-        
-        {/* LINE BREAK ADDED HERE */}
-        <div className="h-4"></div>
-        
-        {/* Simple Category Row - No Big Box */}
-        <div className="mb-10">
-          <div className="flex items-center justify-between gap-4">
-            <button
-              onClick={prevCategory}
-              className="w-10 h-10 rounded-full bg-white border border-slate-200 flex items-center justify-center hover:bg-slate-50 transition-all shadow-sm flex-shrink-0"
-            >
-              <ChevronLeft size={20} className="text-slate-600" />
-            </button>
 
-            <div className="flex-1 flex items-center justify-center gap-3">
-              {categories.map((cat, idx) => (
-                <button
-                  key={idx}
-                  onClick={() => setCurrentIndex(idx)}
-                  className={`transition-all duration-300 px-4 py-2 rounded-full ${
-                    idx === currentIndex 
-                      ? `${cat.lightBg} shadow-sm border ${cat.borderColor}` 
-                      : "hover:bg-slate-50"
-                  }`}
-                >
-                  <div className="flex items-center gap-2">
-                    <div className={`w-8 h-8 rounded-lg ${idx === currentIndex ? cat.lightBg : "bg-slate-50"} flex items-center justify-center`}>
-                      <cat.icon className={`w-4 h-4 ${idx === currentIndex ? cat.text : "text-slate-500"}`} strokeWidth={1.8} />
-                    </div>
-                    <span className={`text-sm font-medium ${idx === currentIndex ? cat.text : "text-slate-600"}`}>
-                      {cat.name}
-                    </span>
-                  </div>
-                </button>
-              ))}
-            </div>
-
-            <button
-              onClick={nextCategory}
-              className="w-10 h-10 rounded-full bg-white border border-slate-200 flex items-center justify-center hover:bg-slate-50 transition-all shadow-sm flex-shrink-0"
-            >
-              <ChevronRight size={20} className="text-slate-600" />
-            </button>
-          </div>
-
-          {/* Category Description Below - No Box */}
-          <div className="text-center mt-4">
-            <p className="text-slate-500 text-sm">{currentCategory.description}</p>
-            <Link 
-              href={currentCategory.link} 
-              className="inline-flex items-center gap-1 text-sm font-medium text-emerald-600 hover:text-emerald-700 mt-1 transition-colors"
-            >
-              <span>Explore {currentCategory.name}</span>
-              <ArrowRight size={12} />
-            </Link>
-          </div>
-
-          {/* Dots Indicator */}
-          <div className="flex justify-center gap-2 mt-4">
-            {categories.map((_, idx) => (
+        {/* CATEGORY TABS - Removed gap */}
+        <div className="mb-8 flex gap-2 overflow-x-auto pb-2 justify-center">
+          {categories.map((cat, idx) => {
+            const colors = getColorClasses(cat.color);
+            return (
               <button
                 key={idx}
                 onClick={() => setCurrentIndex(idx)}
-                className={`h-1.5 rounded-full transition-all duration-300 ${
-                  idx === currentIndex ? "w-6 bg-emerald-500" : "w-1.5 bg-slate-300"
+                className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium whitespace-nowrap transition-all ${
+                  idx === currentIndex
+                    ? `${colors.bg} ${colors.text} border border-current`
+                    : "bg-gray-100 text-gray-700 hover:bg-gray-200"
                 }`}
-              />
-            ))}
-          </div>
+              >
+                <cat.icon size={18} />
+                {cat.name}
+              </button>
+            );
+          })}
         </div>
 
-        {/* Topics Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+        {/* COURSE GRID */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
           {currentCategory.topics.map((topic, idx) => {
             const Icon = topic.icon;
             const levelColor = getLevelColor(topic.level);
-            
+
             return (
               <Link
                 key={idx}
                 href={`${currentCategory.link}/${topic.slug}`}
-                className="group block"
+                className="group"
               >
-                <div className="bg-white rounded-xl border border-slate-200 p-5 hover:shadow-xl hover:border-slate-300 transition-all duration-300 hover:-translate-y-1">
+                <div className="bg-white border border-gray-200 rounded-lg p-5 hover:shadow-md hover:border-gray-300 transition-all">
                   
-                  {/* Header Row */}
-                  <div className="flex items-center justify-between mb-4">
-                    <div className={`w-12 h-12 rounded-xl ${currentCategory.lightBg} border ${currentCategory.borderColor} flex items-center justify-center group-hover:scale-110 transition-transform duration-300`}>
-                      <Icon className={`w-6 h-6 ${currentCategory.text}`} strokeWidth={1.8} />
+                  {/* Top Row */}
+                  <div className="flex items-start justify-between mb-4">
+                    <div className={`w-10 h-10 rounded-lg ${colorClasses.bg} flex items-center justify-center`}>
+                      <Icon size={20} className={colorClasses.icon} />
                     </div>
-                    <div className="flex items-center gap-2">
-                      <span className="text-xs text-slate-400 flex items-center gap-1">
-                        <Clock size={11} />
-                        {topic.duration}
-                      </span>
-                      <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full border ${levelColor}`}>
-                        {topic.level}
-                      </span>
-                    </div>
+                    <span className={`text-xs font-semibold px-2 py-1 rounded ${levelColor}`}>
+                      {topic.level}
+                    </span>
                   </div>
-                  
+
                   {/* Content */}
-                  <h4 className="text-lg font-bold text-slate-800 mb-2 group-hover:text-emerald-600 transition-colors">
+                  <h3 className="text-lg font-semibold text-gray-900 mb-2 group-hover:text-gray-700">
                     {topic.name}
-                  </h4>
-                  
-                  <p className="text-slate-500 text-sm mb-4 leading-relaxed">
-                    {topic.desc}
-                  </p>
-                  
-                  {/* CTA Button */}
-                  <div className="flex items-center justify-between pt-3 border-t border-slate-100">
-                    <span className="text-xs text-slate-400">Learn now</span>
-                    <div className={`flex items-center gap-2 text-sm font-semibold ${currentCategory.textDark} group-hover:gap-3 transition-all`}>
-                      <span>Start Learning</span>
-                      <ChevronRight size={14} className="transition-transform group-hover:translate-x-1" />
+                  </h3>
+                  <p className="text-sm text-gray-600 mb-4">{topic.desc}</p>
+
+                  {/* Footer */}
+                  <div className="flex items-center justify-between pt-4 border-t border-gray-100">
+                    <div className="flex items-center gap-1 text-xs text-gray-500">
+                      <Clock size={14} />
+                      {topic.duration}
                     </div>
+                    <ArrowRight size={16} className="text-gray-400 group-hover:text-gray-700 transition-colors" />
                   </div>
                 </div>
               </Link>
@@ -293,53 +191,27 @@ const FinanceTopics = () => {
           })}
         </div>
 
-        {/* Explore Section - Text color changed to black */}
-        <div className="text-center mb-10">
-          <Link 
-            href="/learn" 
-            className="inline-flex items-center gap-3 px-8 py-3.5 bg-gradient-to-r from-slate-800 to-slate-700 hover:from-slate-700 hover:to-slate-600 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 group"
+        {/* BOTTOM CTA */}
+        <div className="mt-16 bg-gray-100 rounded-lg p-8 text-center">
+          <h2 className="text-2xl font-bold text-gray-900 mb-3">Ready to start learning?</h2>
+          <p className="text-gray-600 mb-6">Step-by-step path to master core finance analyst skills</p>
+          <Link
+            href="/learn"
+            className="inline-flex items-center gap-2 px-6 py-3 bg-gray-900 text-white font-semibold rounded-lg hover:bg-gray-800 transition-colors"
           >
-            <Target size={18} className="text-white" />
-            <span className="text-black">Explore All Topics</span>
-            <ArrowRight size={16} className="text-white group-hover:translate-x-1 transition-transform" />
+            Explore All Topics
+            <ArrowRight size={18} />
           </Link>
-          <p className="text-sm text-slate-400 mt-3 flex items-center justify-center gap-2">
-            <Zap size={12} />
-            More topics will be added soon
-          </p>
         </div>
 
-        {/* Learning Path Card - Fixed visibility */}
-        <div className="bg-gradient-to-r from-slate-800 to-slate-700 rounded-xl p-6 shadow-lg">
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-5">
-            <div className="flex items-center gap-4">
-              <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center shadow-lg">
-                <Award size={24} className="text-black" />
-              </div>
-              <div>
-                <div className="flex items-center gap-2 mb-1">
-                  <h4 className="text-xl font-bold text-black">Your Financial Analyst Journey</h4>
-                </div>
-                <p className="text-slate-300 text-md">Step-by-step path to master core finance analyst skills</p>
-              </div>
-            </div>
-            <Link 
-              href="/learning-path" 
-              className="flex items-center gap-2 px-6 py-2.5 bg-emerald-500 hover:bg-emerald-600 text-white font-semibold text-sm rounded-xl transition-all shadow-md group"
-            >
-              <span>Start Learning</span>
-              <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
-            </Link>
-          </div>
-        </div>
       </div>
-    </section>
+    </div>
   );
 };
 
 // Lock icon component
 const Lock = () => (
-  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
   </svg>
 );
