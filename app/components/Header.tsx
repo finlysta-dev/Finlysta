@@ -66,22 +66,15 @@ export default function Header() {
             Internships
           </Link>
           <Link 
-            href="/blog" 
+            href="/resources" 
             className="text-sm font-semibold text-slate-600 hover:text-[#0A2540] transition-colors"
           >
-            Blog
+            Blogs
           </Link>
         </nav>
 
-        {/* Profile Section - Simplified without auth */}
-        <div className="flex items-center gap-3">
-          <Link 
-            href="/auth/signin" 
-            className="text-sm font-semibold text-blue-600 hover:text-blue-700 transition-colors"
-          >
-            Sign In
-          </Link>
-        </div>
+        {/* Empty div to maintain layout */}
+        <div className="w-10"></div>
       </div>
 
       {/* Mobile Navigation */}
@@ -106,10 +99,10 @@ export default function Header() {
             Internships
           </Link>
           <Link 
-            href="/blog" 
+            href="/resources" 
             className="text-xs font-semibold text-slate-600 hover:text-[#0A2540] transition-colors"
           >
-            Blog
+            Blogs
           </Link>
         </div>
       </div>

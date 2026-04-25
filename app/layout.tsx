@@ -18,6 +18,7 @@ export const viewport = {
 };
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://www.finlysta.com'),
   title: 'Entry Level Financial Analyst Jobs & Internships | Finlysta - Start Your Finance Career',
   description: 'Find entry level financial analyst jobs and internships in India. Start your finance career with paid internships and fresher jobs. 100% free for students.',
   keywords: 'entry level financial analyst jobs, entry level financial analyst internships, financial analyst jobs for freshers, financial analyst internship for freshers, financial analyst fresher jobs, financial analyst entry level, junior financial analyst jobs, financial analyst no experience, financial analyst 0 experience, financial analyst graduate jobs, finance jobs for freshers, finance internship for students, finance fresher jobs, finance graduate jobs, entry level finance jobs, finance internship for freshers, paid finance internship, finance internship with stipend, financial analyst internship paid, financial analyst remote internship, financial analyst work from home, how to become a financial analyst, how to get a financial analyst job with no experience, financial analyst career path, financial analyst skills required, financial analyst salary for freshers, MBA finance fresher jobs, MBA finance internship, BCOM finance jobs, BBA finance jobs, CA fresher jobs, finance graduate jobs for freshers',

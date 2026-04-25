@@ -86,10 +86,10 @@ const TryForFree = () => {
   return (
     <div className="bg-gradient-to-r from-[#0A2540] to-[#1a3a5c] py-16 md:py-20">
       <div className="max-w-4xl mx-auto px-4 text-center">
-        <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-white mb-4">
+        <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-black mb-4">
           Skip the clutter.
         </h2>
-        <p className="text-xl md:text-2xl text-white/90 mb-10">
+        <p className="text-xl md:text-2xl text-black/90 mb-10">
           Find financial analyst internships and entry-level jobs faster.
         </p>
         
