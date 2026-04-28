@@ -5,9 +5,10 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import {
   Search, MapPin, ChevronRight, TrendingUp, Shield, Clock,
-  BarChart3, Landmark, Building2, Heart, Linkedin, Instagram,
+  BarChart3, Landmark, Building2, Heart, Linkedin, Instagram, GraduationCap,
   Twitter, Mail, ArrowRight, BookOpen, DollarSign, PieChart,
   Activity, CheckCircle, ChevronDown, Rocket, Briefcase, Sparkles,
+  Target, Award, Users
 } from "lucide-react";
 import Link from "next/link";
 import Header from "./components/Header";
@@ -81,7 +82,7 @@ const FAQ = () => {
   );
 };
 
-// Try for Free Section Component - Simplified (No Stats Table)
+// Try for Free Section Component
 const TryForFree = () => {
   return (
     <div className="bg-gradient-to-r from-[#0A2540] to-[#1a3a5c] py-16 md:py-20">
@@ -89,12 +90,12 @@ const TryForFree = () => {
         <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-black mb-4">
           Skip the clutter.
         </h2>
-        <p className="text-xl md:text-2xl text-black/90 mb-10">
-          Find financial analyst internships and entry-level jobs faster.
+        <p className="text-xl md:text-2xl text-gray-200 mb-10">
+         Get your first finance job or internship faster.
         </p>
         
         <div className="flex justify-center">
-          <Link href="/internships">
+          <Link href="/jobs">
             <button 
               className="px-8 py-3 md:px-10 md:py-4 text-base md:text-lg font-bold rounded-lg transition-all duration-300 hover:scale-105 cursor-pointer"
               style={{
@@ -103,7 +104,7 @@ const TryForFree = () => {
                 boxShadow: "0 4px 15px rgba(0, 0, 0, 0.2)"
               }}
             >
-              Try Finlysta for free →
+              Start Exploring Jobs →
             </button>
           </Link>
         </div>
@@ -142,8 +143,14 @@ const SEOSchema = () => {
 export default function HomePageContent() {
   const [isMounted, setIsMounted] = useState(false);
   const router = useRouter();
-  const [searchQuery, setSearchQuery] = useState("");
-  const [locationQuery, setLocationQuery] = useState("");
+
+  const popularRoles = [
+    { name: "Financial Analyst", icon: "📊" },
+    { name: "Junior Financial Analyst", icon: "📈" },
+    { name: "FP&A Analyst", icon: "💰" },
+    { name: "Financial Reporting Analyst", icon: "📋" },
+    { name: "Financial Data Analyst", icon: "📉" }
+  ];
 
   useEffect(() => {
     setIsMounted(true);
@@ -166,12 +173,12 @@ export default function HomePageContent() {
     };
   }, []);
 
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault();
-    const params = new URLSearchParams();
-    if (searchQuery.trim()) params.set("search", searchQuery.trim());
-    if (locationQuery.trim()) params.set("location", locationQuery.trim());
-    router.push(`/internships?${params.toString()}`);
+  const handleFindJobs = () => {
+    router.push(`/jobs`);
+  };
+
+  const handleBrowseInternships = () => {
+    router.push(`/internships`);
   };
 
   if (!isMounted) {
@@ -192,93 +199,123 @@ export default function HomePageContent() {
 
       <main>
         {/* HERO SECTION */}
-        <section className="relative bg-gradient-to-b from-[#EEF2FF] to-[#F8FAFC] py-16 md:py-20 overflow-hidden">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex flex-col lg:flex-row items-start gap-8">
+        <section className="relative bg-gradient-to-b from-[#EEF2FF] to-[#F8FAFC] py-16 md:py-24 overflow-hidden">
+          <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+            
+            {/* Centered Content */}
+            <div className="text-center">
+              {/* New Badge - India's Only Job Board for Entry-Level Financial Analysts */}
+              <div className="inline-flex items-center gap-2 bg-gradient-to-r from-[#FFD700]/20 to-[#FFA500]/20 rounded-full px-4 py-1.5 mb-6">
+                <Target size={14} className="text-[#FFD700]" />
+                <span className="text-xs font-semibold text-[#0A2540]">India's Only Job Board for Entry-Level Financial Analysts</span>
+              </div>
               
-              {/* Left Side - Text Content */}
-              <div className="flex-1 text-left">
-                <div className="max-w-2xl">
-                  <h1 className="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-black text-[#0A2540] mb-6 leading-tight">
-                    The Biggest Job Board
-                    <br />
-                    Dedicated to Financial Analyst Jobs & Internships
-                  </h1>
-                  
-                  <p className="text-base sm:text-lg text-slate-600 mb-6 leading-relaxed">
-                    Find your perfect financial analyst position from the largest collection of opportunities requiring skills in Excel, SQL, Python, Tableau, Power BI, financial modeling, forecasting, and data visualization.
-                  </p>
-                  
-                  <p className="text-base sm:text-lg text-slate-600 mb-6 leading-relaxed">
-                    Browse remote, hybrid, and on-site roles with transparent salary ranges - every single listing is a financial analyst position, nothing else.
-                  </p>
-                  
-                  <p className="text-base sm:text-lg text-slate-600 mb-8 leading-relaxed italic">
-                    So enjoy your search journey and apply one day the day will be yours.
-                  </p>
-
-                  {/* Search Form */}
-                  <form onSubmit={handleSearch} className="bg-white shadow-xl overflow-hidden rounded-lg">
-                    <div className="flex flex-col md:flex-row">
-                      <div className="flex-1 relative">
-                        <div className="absolute left-4 top-1/2 -translate-y-1/2">
-                          <Search className="w-5 h-5 text-[#FFD700]" />
-                        </div>
-                        <input
-                          type="text"
-                          value={searchQuery}
-                          onChange={(e) => setSearchQuery(e.target.value)}
-                          placeholder="Job title, skill, or company"
-                          className="w-full pl-12 pr-4 py-4 outline-none text-slate-700 placeholder:text-slate-400"
-                        />
-                      </div>
-                      <div className="flex-1 relative border-t md:border-t-0 md:border-l border-slate-200">
-                        <div className="absolute left-4 top-1/2 -translate-y-1/2">
-                          <MapPin className="w-5 h-5 text-[#FFD700]" />
-                        </div>
-                        <input
-                          type="text"
-                          value={locationQuery}
-                          onChange={(e) => setLocationQuery(e.target.value)}
-                          placeholder="City, state, or remote"
-                          className="w-full pl-12 pr-4 py-4 outline-none text-slate-700 placeholder:text-slate-400"
-                        />
-                      </div>
-                      <button
-                        type="submit"
-                        className="bg-[#FFD700] hover:bg-[#e6c200] text-[#0A2540] font-bold px-8 py-4 transition-all duration-300"
-                      >
-                        Find Job →
-                      </button>
-                    </div>
-                  </form>
-                </div>
+              <h1 className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-black text-[#0A2540] mb-4 leading-tight">
+                Find Entry-Level Financial Analyst Jobs & Internships
+                <span className="block bg-gradient-to-r from-[#FFD700] to-[#FFA500] bg-clip-text text-transparent"></span>
+              </h1>
+              
+              <div className="max-w-2xl mx-auto space-y-4 mb-8">
+                <p className="text-base sm:text-lg text-slate-600 leading-relaxed">
+                  🎯 <span className="font-semibold text-[#0A2540]"></span>Match your skills — From Excel & SQL to Financial Modeling — to real opportunities.
+                </p>
               </div>
 
-              {/* Right Side - Image with Floating Animation */}
-              <div className="flex-1 flex justify-start lg:justify-start">
-                <div className="relative w-full max-w-lg md:max-w-xl lg:max-w-2xl xl:max-w-3xl animate-float">
-                  <Image
-                    src="/team.png"
-                    alt="Financial Analyst professional at work"
-                    width={700}
-                    height={700}
-                    className="object-cover w-full h-auto"
-                    priority
-                    draggable={false}
-                  />
+              {/* Two Button Layout */}
+              <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-8">
+                <button
+                  onClick={handleFindJobs}
+                  className="bg-gradient-to-r from-[#FFD700] to-[#FFA500] hover:from-[#e6c200] hover:to-[#e69500] text-[#0A2540] font-bold px-8 py-4 rounded-xl transition-all duration-300 flex items-center justify-center gap-2 text-base group min-w-[200px]"
+                >
+                  <Briefcase size={20} />
+                  <span>Find My First Job</span>
+                  <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
+                </button>
+                
+                <button
+                  onClick={handleBrowseInternships}
+                  className="px-8 py-4 rounded-xl transition-all duration-300 font-bold flex items-center justify-center gap-2 text-base min-w-[200px]"
+                  style={{
+                    background: "linear-gradient(135deg, #FFD700 0%, #FFA500 100%)",
+                    color: "#0A2540",
+                    boxShadow: "0 4px 15px rgba(0, 0, 0, 0.2)"
+                  }}
+                >
+                  <GraduationCap size={20} />
+                  <span>Explore Internships</span>
+                </button>
+              </div>
+
+              {/* Explore Roles Section - Changed from "Popular Searches" */}
+              <div className="mt-8 pt-4 border-t border-gray-200">
+                <p className="text-sm text-slate-500 mb-3">🔥 Explore Roles:</p>
+                <div className="flex flex-wrap justify-center gap-2">
+                  {popularRoles.map((role, idx) => (
+                    <button
+                      key={idx}
+                      onClick={() => {
+                        router.push(`/jobs?search=${encodeURIComponent(role.name)}`);
+                      }}
+                      className="px-3 py-1.5 bg-white border border-gray-200 rounded-full text-sm text-slate-600 hover:border-[#FFD700] hover:text-black transition-all duration-300 flex items-center gap-1 whitespace-nowrap"
+                    >
+                      <span className="text-base">{role.icon}</span>
+                      <span>{role.name}</span>
+                    </button>
+                  ))}
                 </div>
               </div>
             </div>
           </div>
         </section>
 
-        {/* TRENDING OPPORTUNITIES SECTION */}
+        {/* 🔥 JOBS SECTION - TrendingInternships */}
         <TrendingInternships />
 
-        {/* FINANCE TOPICS SECTION */}
+        {/* POPULAR SEARCHES - Already above in hero section */}
+
+        {/* CAREER PATH - Roadmap Image Section */}
+        <section className="py-12 md:py-16 bg-white">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center mb-8">
+              <div className="inline-flex items-center gap-2 bg-gradient-to-r from-[#FFD700]/20 to-[#FFA500]/20 rounded-full px-4 py-1.5 mb-3">
+                <TrendingUp size={14} className="text-[#FFD700]" />
+                <span className="text-xs font-semibold text-[#0A2540]">Career Path</span>
+              </div>
+              <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-[#0A2540] mb-3">
+                How to Become a Financial Analyst <span className="text-[#FFD700]">(Step-by-Step)</span>
+              </h2>
+              <p className="text-sm md:text-base text-slate-500 max-w-2xl mx-auto">
+                From learning basics to landing your first job — follow a clear roadmap.
+              </p>
+            </div>
+            
+            {/* Roadmap Image */}
+            <div className="relative overflow-hidden rounded-2xl shadow-xl border border-gray-100 bg-white p-4">
+              <div className="relative w-full">
+                <Image
+                  src="/roadmap.png"
+                  alt="How to Become a Financial Analyst - Step by step career roadmap"
+                  width={1200}
+                  height={600}
+                  className="w-full h-auto object-contain rounded-lg"
+                  priority
+                  unoptimized
+                />
+              </div>
+            </div>
+            
+            <div className="text-center mt-6">
+              <p className="text-sm text-slate-500">
+                🎯 From mastering fundamentals to getting hired — your complete career roadmap
+              </p>
+            </div>
+          </div>
+        </section>
+
+        {/* LEARNING SECTION - FinanceTopics */}
         <FinanceTopics />
 
+        {/* NEWSLETTER SECTION - Updated Heading */}
         <Newsletter />
 
         {/* FAQ SECTION */}
@@ -303,7 +340,7 @@ export default function HomePageContent() {
                   className="object-contain"
                 />
               </Link>
-              <p className="text-sm text-slate-600 leading-relaxed max-w-xs">Finlysta is the biggest job board dedicated exclusively to Financial Analyst positions. Find your perfect role requiring skills in Excel, SQL, Python, financial modeling, and more.</p>
+              <p className="text-sm text-slate-600 leading-relaxed max-w-xs">Finlysta is a job board built exclusively for entry-level financial analyst roles and internships.</p>
               <div className="space-y-2 pt-1">
                 <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Follow us on</p>
                 <div className="flex gap-3">
@@ -312,27 +349,9 @@ export default function HomePageContent() {
                     target="_blank" 
                     rel="noopener noreferrer" 
                     aria-label="Follow Finlysta on LinkedIn" 
-                    className="w-9 h-9 bg-slate-100 text-slate-600 hover:bg-[#0077B5] hover:text-white rounded-lg flex items-center justify-center transition-all duration-300"
+                    className="w-9 h-9 bg-slate-100 text-slate-600 hover:bg-[#0077B5] hover:text-black rounded-lg flex items-center justify-center transition-all duration-300"
                   >
                     <Linkedin size={16} />
-                  </a>
-                  <a 
-                    href="https://www.instagram.com/Finlysta.in/" 
-                    target="_blank" 
-                    rel="noopener noreferrer" 
-                    aria-label="Follow Finlysta on Instagram" 
-                    className="w-9 h-9 bg-slate-100 text-slate-600 hover:bg-[#E4405F] hover:text-white rounded-lg flex items-center justify-center transition-all duration-300"
-                  >
-                    <Instagram size={16} />
-                  </a>
-                  <a 
-                    href="https://x.com/Finlysta83656" 
-                    target="_blank" 
-                    rel="noopener noreferrer" 
-                    aria-label="Follow Finlysta on Twitter" 
-                    className="w-9 h-9 bg-slate-100 text-slate-600 hover:bg-[#1DA1F2] hover:text-white rounded-lg flex items-center justify-center transition-all duration-300"
-                  >
-                    <Twitter size={16} />
                   </a>
                 </div>
               </div>
@@ -343,7 +362,6 @@ export default function HomePageContent() {
                 <li><Link href="/jobs" className="hover:text-[#0A2540] transition-colors">All Jobs</Link></li>
                 <li><Link href="/internships" className="hover:text-[#0A2540] transition-colors">All Internships</Link></li>
                 <li><Link href="/jobs/remote" className="hover:text-[#0A2540] transition-colors">Remote Jobs</Link></li>
-                <li><Link href="/resources" className="hover:text-[#0A2540] transition-colors">Career Resources</Link></li>
               </ul>
             </div>
             <div className="lg:col-span-2">
@@ -358,10 +376,10 @@ export default function HomePageContent() {
             </div>
             <div className="lg:col-span-4">
               <h4 className="text-slate-900 font-bold text-sm mb-4">Get in Touch</h4>
-              <a href="mailto:Finlystahelp@gmail.com" className="flex items-center gap-2 text-sm text-slate-500 hover:text-[#0A2540] transition-colors">
-                <Mail size={13} /> Finlystahelp@gmail.com
+              <a href="mailto:support@finlysta.com" className="flex items-center gap-2 text-sm text-slate-500 hover:text-[#0A2540] transition-colors">
+                <Mail size={13} /> support@finlysta.com
               </a>
-              <p className="text-xs text-slate-400 mt-3">Response within 24 hours</p>
+              <p className="text-xs text-slate-400 mt-3">Have a question? We’re here to help — expect a reply within 24 hours.</p>
             </div>
           </div>
           <div className="border-t border-slate-100 pt-5 pb-6">
@@ -378,22 +396,6 @@ export default function HomePageContent() {
       </footer>
 
       <style jsx global>{`
-        @keyframes float {
-          0% {
-            transform: translateY(0px);
-          }
-          50% {
-            transform: translateY(-10px);
-          }
-          100% {
-            transform: translateY(0px);
-          }
-        }
-        
-        .animate-float {
-          animation: float 4s ease-in-out infinite;
-        }
-        
         .line-clamp-2 {
           display: -webkit-box;
           -webkit-line-clamp: 2;

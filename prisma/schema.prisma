@@ -208,6 +208,10 @@ model Subscriber {
   // Email marketing preferences
   preferences   Json?     // Store preferences as JSON (categories, frequency, etc.)
   
+  // NEW: Job & Internship Preferences
+  interestedIn  String?   // "jobs", "internships", or null (can also be comma-separated if multiple allowed)
+  frequency     String?   // "daily", "weekly", "monthly"
+  
   // Tracking
   lastEmailSent DateTime?
   emailCount    Int       @default(0)
@@ -224,7 +228,10 @@ model Subscriber {
   @@index([email])
   @@index([status])
   @@index([subscribedAt])
+  @@index([interestedIn])
+  @@index([frequency])
 }
+
 
 // Newsletter campaigns (for admin to send emails)
 model NewsletterCampaign {

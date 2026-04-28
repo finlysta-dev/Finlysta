@@ -1,7 +1,10 @@
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
+import Image from 'next/image';
 import { ArrowLeft, Calendar, Clock, Tag, Share2, Bookmark } from 'lucide-react';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 import prisma from '@/lib/prisma';
 
 // Generate metadata for SEO
@@ -18,8 +21,8 @@ export async function generateMetadata({ params }: { params: { slug: string } })
       };
     }
 
-    // Calculate read time (approx 200 words per minute)
-    const wordCount = resource.content?.split(/\s+/).length || 0;
+    const plainText = resource.content?.replace(/<[^>]*>/g, '') || '';
+    const wordCount = plainText.split(/\s+/).length;
     const readTime = Math.ceil(wordCount / 200);
 
     return {
@@ -33,7 +36,7 @@ export async function generateMetadata({ params }: { params: { slug: string } })
         type: 'article',
         publishedTime: resource.createdAt.toISOString(),
         modifiedTime: resource.updatedAt.toISOString(),
-        url: `https://finlysta.com/resources/${resource.slug}`,
+        url: `https://finlysta.com/blogs/${resource.slug}`,
         siteName: 'Finlysta',
         images: [
           {
@@ -55,7 +58,7 @@ export async function generateMetadata({ params }: { params: { slug: string } })
         follow: true,
       },
       alternates: {
-        canonical: `https://finlysta.com/resources/${resource.slug}`,
+        canonical: `https://finlysta.com/blogs/${resource.slug}`,
       },
     };
   } catch (error) {
@@ -67,7 +70,7 @@ export async function generateMetadata({ params }: { params: { slug: string } })
   }
 }
 
-export default async function ResourcePage({ params }: { params: { slug: string } }) {
+export default async function BlogPage({ params }: { params: { slug: string } }) {
   try {
     const resource = await prisma.careerResource.findUnique({
       where: { slug: params.slug }
@@ -77,11 +80,10 @@ export default async function ResourcePage({ params }: { params: { slug: string 
       notFound();
     }
 
-    // Calculate read time
-    const wordCount = resource.content?.split(/\s+/).length || 0;
+    const plainText = resource.content?.replace(/<[^>]*>/g, '') || '';
+    const wordCount = plainText.split(/\s+/).length;
     const readTime = Math.ceil(wordCount / 200);
 
-    // Format category for display
     const getCategoryLabel = (category: string) => {
       const categories: Record<string, string> = {
         'resume-tips': 'Resume Tips',
@@ -90,6 +92,7 @@ export default async function ResourcePage({ params }: { params: { slug: string 
         'profile-tips': 'Profile Tips',
         'interview': 'Interview Prep',
         'skills': 'Skill Development',
+        'career': 'Career Guide',
       };
       return categories[category] || category.replace('-', ' ');
     };
@@ -102,6 +105,7 @@ export default async function ResourcePage({ params }: { params: { slug: string 
         'profile-tips': 'bg-emerald-100 text-emerald-700',
         'interview': 'bg-green-100 text-green-700',
         'skills': 'bg-pink-100 text-pink-700',
+        'career': 'bg-amber-100 text-amber-700',
       };
       return colors[category] || 'bg-gray-100 text-gray-700';
     };
@@ -125,21 +129,32 @@ export default async function ResourcePage({ params }: { params: { slug: string 
         <div className="max-w-4xl mx-auto px-4 sm:px-6 py-8">
           <article className="bg-white rounded-xl shadow-sm overflow-hidden">
             
+            {/* Cover Image */}
+            {resource.coverImage && (
+              <div className="relative w-full h-64 md:h-80 overflow-hidden bg-gray-100">
+                <Image
+                  src={resource.coverImage}
+                  alt={resource.title}
+                  fill
+                  className="object-cover"
+                  priority
+                  unoptimized
+                />
+              </div>
+            )}
+            
             {/* Header Section */}
             <div className="p-6 sm:p-8 md:p-10">
-              {/* Category Badge */}
               <div className="mb-4">
                 <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium ${getCategoryColor(resource.category)}`}>
                   {getCategoryLabel(resource.category)}
                 </span>
               </div>
 
-              {/* Title */}
               <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 mb-4 leading-tight">
                 {resource.title}
               </h1>
 
-              {/* Meta Info */}
               <div className="flex flex-wrap items-center gap-4 text-sm text-gray-500 mb-6 pb-6 border-b border-gray-100">
                 <div className="flex items-center gap-1.5">
                   <Calendar size={14} />
@@ -168,18 +183,51 @@ export default async function ResourcePage({ params }: { params: { slug: string 
                 </p>
               </div>
 
-              {/* Content */}
-              <div className="prose prose-lg max-w-none">
-                {resource.content?.split('\n').map((paragraph: string, idx: number) => {
-                  if (paragraph.trim()) {
-                    return (
-                      <p key={idx} className="text-gray-700 mb-5 leading-relaxed">
-                        {paragraph}
-                      </p>
-                    );
-                  }
-                  return <div key={idx} className="h-4"></div>;
-                })}
+              {/* Markdown Content with custom styling */}
+              <div className="markdown-content">
+                <ReactMarkdown 
+                  remarkPlugins={[remarkGfm]}
+                  components={{
+                    h1: ({ children }) => <h1 className="text-3xl font-bold text-gray-900 mt-8 mb-4 pb-2 border-b border-gray-200">{children}</h1>,
+                    h2: ({ children }) => <h2 className="text-2xl font-bold text-gray-900 mt-8 mb-3 pb-2 border-b border-gray-200">{children}</h2>,
+                    h3: ({ children }) => <h3 className="text-xl font-semibold text-gray-900 mt-6 mb-3">{children}</h3>,
+                    p: ({ children }) => <p className="text-gray-700 leading-relaxed mb-4">{children}</p>,
+                    ul: ({ children }) => <ul className="list-disc pl-6 mb-4 space-y-1 text-gray-700">{children}</ul>,
+                    ol: ({ children }) => <ol className="list-decimal pl-6 mb-4 space-y-1 text-gray-700">{children}</ol>,
+                    li: ({ children }) => <li className="mb-1">{children}</li>,
+                    a: ({ href, children }) => (
+                      <a href={href} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+                        {children}
+                      </a>
+                    ),
+                    strong: ({ children }) => <strong className="font-semibold text-gray-900">{children}</strong>,
+                    hr: () => <hr className="my-6 border-gray-200" />,
+                    blockquote: ({ children }) => (
+                      <blockquote className="border-l-4 border-blue-500 bg-blue-50 p-4 my-4 italic text-gray-700">
+                        {children}
+                      </blockquote>
+                    ),
+                    table: ({ children }) => (
+                      <div className="overflow-x-auto my-4">
+                        <table className="min-w-full border border-gray-200 rounded-lg">
+                          {children}
+                        </table>
+                      </div>
+                    ),
+                    th: ({ children }) => (
+                      <th className="border border-gray-200 px-4 py-2 bg-gray-100 font-semibold text-gray-900">
+                        {children}
+                      </th>
+                    ),
+                    td: ({ children }) => (
+                      <td className="border border-gray-200 px-4 py-2 text-gray-700">
+                        {children}
+                      </td>
+                    ),
+                  }}
+                >
+                  {resource.content || ''}
+                </ReactMarkdown>
               </div>
             </div>
 
@@ -204,7 +252,6 @@ export default async function ResourcePage({ params }: { params: { slug: string 
             </div>
           </article>
 
-          {/* Related Posts Section - Optional */}
           <div className="mt-8 text-center">
             <Link 
               href="/blogs"
@@ -215,7 +262,7 @@ export default async function ResourcePage({ params }: { params: { slug: string 
           </div>
         </div>
 
-        {/* JSON-LD Schema for Article */}
+        {/* JSON-LD Schema */}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
@@ -232,7 +279,7 @@ export default async function ResourcePage({ params }: { params: { slug: string 
               "dateModified": resource.updatedAt.toISOString(),
               "mainEntityOfPage": {
                 "@type": "WebPage",
-                "@id": `https://finlysta.com/resources/${resource.slug}`
+                "@id": `https://finlysta.com/blogs/${resource.slug}`
               },
               "publisher": {
                 "@type": "Organization",
@@ -248,7 +295,7 @@ export default async function ResourcePage({ params }: { params: { slug: string 
       </div>
     );
   } catch (error) {
-    console.error('Error fetching resource:', error);
+    console.error('Error fetching blog:', error);
     notFound();
   }
 }

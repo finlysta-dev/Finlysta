@@ -66,7 +66,7 @@ export default function Header() {
             Internships
           </Link>
           <Link 
-            href="/resources" 
+            href="/blogs" 
             className="text-sm font-semibold text-slate-600 hover:text-[#0A2540] transition-colors"
           >
             Blogs
@@ -77,30 +77,30 @@ export default function Header() {
         <div className="w-10"></div>
       </div>
 
-      {/* Mobile Navigation */}
+      {/* Mobile Navigation - FIXED with proper spacing */}
       <div className="md:hidden border-t border-slate-100 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-12 flex items-center justify-around">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex items-center justify-center gap-6">
           <Link 
             href="/" 
-            className="text-xs font-semibold text-slate-600 hover:text-[#0A2540] transition-colors"
+            className="text-sm font-semibold text-slate-600 hover:text-[#0A2540] transition-colors"
           >
             Home
           </Link>
           <Link 
             href="/jobs" 
-            className="text-xs font-semibold text-slate-600 hover:text-[#0A2540] transition-colors"
+            className="text-sm font-semibold text-slate-600 hover:text-[#0A2540] transition-colors"
           >
             Jobs
           </Link>
           <Link 
             href="/internships" 
-            className="text-xs font-semibold text-slate-600 hover:text-[#0A2540] transition-colors"
+            className="text-sm font-semibold text-slate-600 hover:text-[#0A2540] transition-colors"
           >
             Internships
           </Link>
           <Link 
-            href="/resources" 
-            className="text-xs font-semibold text-slate-600 hover:text-[#0A2540] transition-colors"
+            href="/blogs" 
+            className="text-sm font-semibold text-slate-600 hover:text-[#0A2540] transition-colors"
           >
             Blogs
           </Link>

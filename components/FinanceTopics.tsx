@@ -20,9 +20,9 @@ const FinanceTopics = () => {
       topics: [
         { name: "Profit & Loss", slug: "profit-loss", desc: "Revenue, expenses & profit", duration: "15 min", icon: TrendingUp, level: "Beginner" },
         { name: "Balance Sheet", slug: "balance-sheet", desc: "Assets, liabilities & equity", duration: "20 min", icon: Landmark, level: "Beginner" },
+        { name: "Budgeting", slug: "budgeting", desc: "Plan & control finances", duration: "16 min", icon: Calculator, level: "Beginner" },
         { name: "Cash Flow", slug: "cash-flow", desc: "Track money in & out", duration: "22 min", icon: Wallet, level: "Intermediate" },
         { name: "Financial Ratios", slug: "financial-ratios", desc: "Liquidity & profitability", duration: "18 min", icon: TrendingUp, level: "Intermediate" },
-        { name: "Budgeting", slug: "budgeting", desc: "Plan & control finances", duration: "16 min", icon: Calculator, level: "Beginner" },
         { name: "Forecasting", slug: "forecasting", desc: "Predict future trends", duration: "14 min", icon: LineChart, level: "Advanced" }
       ]
     },
@@ -33,10 +33,10 @@ const FinanceTopics = () => {
       link: "/learn/excel",
       topics: [
         { name: "Data Validation", slug: "data-validation", desc: "Control data entry", duration: "12 min", icon: Table, level: "Beginner" },
-        { name: "Pivot Tables", slug: "pivot-tables", desc: "Summarize & analyze", duration: "18 min", icon: Table, level: "Intermediate" },
-        { name: "VLOOKUP", slug: "vlookup", desc: "Find & match data", duration: "15 min", icon: FileSpreadsheet, level: "Intermediate" },
         { name: "Conditional Formatting", slug: "conditional-formatting", desc: "Highlight trends", duration: "10 min", icon: Filter, level: "Beginner" },
         { name: "Charts & Graphs", slug: "charts-graphs", desc: "Visualize data", duration: "14 min", icon: LineChart, level: "Beginner" },
+        { name: "Pivot Tables", slug: "pivot-tables", desc: "Summarize & analyze", duration: "18 min", icon: Table, level: "Intermediate" },
+        { name: "VLOOKUP", slug: "vlookup", desc: "Find & match data", duration: "15 min", icon: FileSpreadsheet, level: "Intermediate" },
         { name: "Macros", slug: "macros", desc: "Automate tasks", duration: "20 min", icon: Code, level: "Advanced" }
       ]
     },
@@ -46,12 +46,12 @@ const FinanceTopics = () => {
       color: "cyan",
       link: "/learn/sql",
       topics: [
-        { name: "SQL Joins", slug: "sql-joins", desc: "Combine tables", duration: "16 min", icon: Database, level: "Intermediate" },
         { name: "SELECT Queries", slug: "select-queries", desc: "Retrieve data", duration: "12 min", icon: Database, level: "Beginner" },
+        { name: "SQL Joins", slug: "sql-joins", desc: "Combine tables", duration: "16 min", icon: Database, level: "Intermediate" },
         { name: "Group By", slug: "group-by", desc: "Summarize data", duration: "14 min", icon: Table, level: "Intermediate" },
+        { name: "Indexes", slug: "indexes", desc: "Optimize performance", duration: "15 min", icon: Cpu, level: "Intermediate" },
         { name: "Subqueries", slug: "subqueries", desc: "Nested queries", duration: "18 min", icon: GitBranch, level: "Advanced" },
-        { name: "Window Functions", slug: "window-functions", desc: "Advanced analytics", duration: "20 min", icon: LineChart, level: "Advanced" },
-        { name: "Indexes", slug: "indexes", desc: "Optimize performance", duration: "15 min", icon: Cpu, level: "Intermediate" }
+        { name: "Window Functions", slug: "window-functions", desc: "Advanced analytics", duration: "20 min", icon: LineChart, level: "Advanced" }
       ]
     },
     { 
@@ -60,11 +60,11 @@ const FinanceTopics = () => {
       color: "orange",
       link: "/learn/powerbi",
       topics: [
-        { name: "Data Modeling", slug: "data-modeling", desc: "Relationships & schemas", duration: "18 min", icon: Database, level: "Intermediate" },
-        { name: "DAX Functions", slug: "dax-functions", desc: "Calculate & analyze", duration: "22 min", icon: Calculator, level: "Advanced" },
         { name: "Visualizations", slug: "visualizations", desc: "Create dashboards", duration: "15 min", icon: BarChart3, level: "Beginner" },
-        { name: "Power Query", slug: "power-query", desc: "Transform data", duration: "16 min", icon: FileSpreadsheet, level: "Intermediate" },
         { name: "Filters & Slicers", slug: "filters-slicers", desc: "Interactive reports", duration: "12 min", icon: Filter, level: "Beginner" },
+        { name: "Data Modeling", slug: "data-modeling", desc: "Relationships & schemas", duration: "18 min", icon: Database, level: "Intermediate" },
+        { name: "Power Query", slug: "power-query", desc: "Transform data", duration: "16 min", icon: FileSpreadsheet, level: "Intermediate" },
+        { name: "DAX Functions", slug: "dax-functions", desc: "Calculate & analyze", duration: "22 min", icon: Calculator, level: "Advanced" },
         { name: "Row-Level Security", slug: "row-level-security", desc: "Control access", duration: "14 min", icon: Lock, level: "Advanced" }
       ]
     },
@@ -75,9 +75,9 @@ const FinanceTopics = () => {
       link: "/learn/python",
       topics: [
         { name: "Python Basics", slug: "python-basics", desc: "Variables, loops & functions", duration: "14 min", icon: Code, level: "Beginner" },
-        { name: "Pandas", slug: "pandas", desc: "Data manipulation", duration: "20 min", icon: Table, level: "Intermediate" },
         { name: "Functions", slug: "functions", desc: "Reusable code", duration: "12 min", icon: GitBranch, level: "Beginner" },
         { name: "Lists & Dicts", slug: "lists-dicts", desc: "Data structures", duration: "10 min", icon: Database, level: "Beginner" },
+        { name: "Pandas", slug: "pandas", desc: "Data manipulation", duration: "20 min", icon: Table, level: "Intermediate" },
         { name: "NumPy", slug: "numpy", desc: "Numerical computing", duration: "16 min", icon: Calculator, level: "Intermediate" },
         { name: "Data Visualization", slug: "data-viz", desc: "Matplotlib & seaborn", duration: "18 min", icon: LineChart, level: "Advanced" }
       ]
@@ -122,7 +122,7 @@ const FinanceTopics = () => {
         
         {/* HEADER - Added the text in middle */}
         <div className="text-center mb-6">
-          <h1 className="text-4xl font-bold text-gray-900 mb-2">Learning Hub - Master Financial Analyst Skills</h1>
+          <h1 className="text-4xl font-bold text-gray-900 mb-2">Learning Hub - Skills You Need to Get Hired</h1>
           <p className="text-gray-600 text-lg">Bite-sized lessons to build your financial analyst knowledge</p>
         </div>
 

@@ -1,9 +1,10 @@
+// app/api/career-resources/route.ts
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 
 export async function GET() {
   try {
-    const resources = await prisma.careerResource.findMany({
+    const blogs = await prisma.careerResource.findMany({
       where: {
         published: true
       },
@@ -12,11 +13,11 @@ export async function GET() {
       }
     });
     
-    return NextResponse.json(resources);
+    return NextResponse.json(blogs);
   } catch (error) {
-    console.error('Error fetching resources:', error);
+    console.error('Error fetching blogs:', error);
     return NextResponse.json(
-      { error: 'Failed to fetch resources' },
+      { error: 'Failed to fetch blogs' },
       { status: 500 }
     );
   }

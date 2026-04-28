@@ -33,7 +33,7 @@ interface Resource {
   downloadCount: number;
 }
 
-export default function ResourcesPage() {
+export default function BlogsPage() {
   const [resources, setResources] = useState<Resource[]>([]);
   const [category, setCategory] = useState("all");
   const [loading, setLoading] = useState(true);
@@ -41,9 +41,10 @@ export default function ResourcesPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const router = useRouter();
 
-  // Category configuration - Only the categories you need
+  // Category configuration
   const categories = [
     { id: "all", label: "All Blogs", icon: BookOpen, color: "bg-gray-600 text-white", description: "All Blogs in one place" },
+    { id: "career", label: "Career Guide", icon: Briefcase, color: "bg-amber-600 text-white", description: "Career guidance and tips" },
     { id: "resume-tips", label: "Resume Tips", icon: FileText, color: "bg-blue-600 text-white", description: "Create winning resumes that get noticed" },
     { id: "jobs", label: "Job Search", icon: Briefcase, color: "bg-indigo-600 text-white", description: "Tips and strategies for job hunting" },
     { id: "roadmap", label: "Career Roadmaps", icon: Map, color: "bg-purple-600 text-white", description: "Step-by-step career progression guides" },
@@ -51,13 +52,14 @@ export default function ResourcesPage() {
   ];
 
   useEffect(() => {
-    fetchResources();
+    fetchBlogs();
   }, []);
 
-  const fetchResources = async () => {
+  const fetchBlogs = async () => {
     try {
       setLoading(true);
-      const res = await fetch("/api/resources");
+      // ✅ FIXED: Changed from /api/resources to /api/career-resources
+      const res = await fetch("/api/career-resources");
       const data = await res.json();
       
       if (Array.isArray(data)) {
@@ -70,8 +72,8 @@ export default function ResourcesPage() {
         setResources([]);
       }
     } catch (err) {
-      console.error("Error fetching resources:", err);
-      setError("Failed to load resources");
+      console.error("Error fetching blogs:", err);
+      setError("Failed to load blogs");
     } finally {
       setLoading(false);
     }
@@ -123,7 +125,7 @@ export default function ResourcesPage() {
           <div className="text-red-500 text-5xl mb-4">⚠️</div>
           <h2 className="text-2xl font-bold text-gray-800 mb-2">Something went wrong</h2>
           <p className="text-gray-600">{error}</p>
-          <button onClick={fetchResources} className="mt-4 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+          <button onClick={fetchBlogs} className="mt-4 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
             Try Again
           </button>
         </div>
@@ -180,7 +182,7 @@ export default function ResourcesPage() {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         
-        {/* Category Tabs - Horizontal row, no wrapping */}
+        {/* Category Tabs */}
         <div className="mb-8">
           <div className="flex flex-wrap gap-3">
             {categories.map((cat) => {
@@ -223,7 +225,7 @@ export default function ResourcesPage() {
           </div>
         )}
 
-        {/* Results Stats - Only show if there are resources */}
+        {/* Results Stats */}
         {filteredResources.length > 0 && (
           <div className="mb-5 flex items-center justify-between flex-wrap gap-3">
             <p className="text-sm text-gray-500">
@@ -265,7 +267,8 @@ export default function ResourcesPage() {
                   key={resource.id}
                   onClick={() => {
                     if (resource.type === "text") {
-                      router.push(`/resources/${resource.slug}`);
+                      // ✅ FIXED: Changed from /resources to /blogs
+                      router.push(`/blogs/${resource.slug}`);
                     } else if (resource.type === "pdf" && resource.fileUrl) {
                       window.open(resource.fileUrl, '_blank');
                     } else if (resource.type === "link" && resource.link) {
