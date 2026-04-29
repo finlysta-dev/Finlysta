@@ -254,7 +254,7 @@ const Newsletter = () => {
                   <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
                 ) : (
                   <>
-                    <span>Get New Jobs in Your Inbox →</span>
+                    <span>Get New Jobs in Your Inbox </span>
                     <ArrowRight size={16} />
                   </>
                 )}

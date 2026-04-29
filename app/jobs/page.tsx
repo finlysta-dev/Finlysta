@@ -16,18 +16,15 @@ interface Job {
   createdAt: string;
 }
 
-// ❌ REMOVED metadata export - cannot be in "use client" component
-// SEO will be handled by parent layout or separate metadata file
-
 export default function JobsPage() {
   const [jobs, setJobs] = useState<Job[]>([]);
   const [filteredJobs, setFilteredJobs] = useState<Job[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [locationQuery, setLocationQuery] = useState('');
   const [activeFilters, setActiveFilters] = useState<string[]>([]);
 
-  // Skills only - removed locations
   const popularTags = [
     'Excel', 'Python', 'Power BI', 'SQL', 'Financial Modeling',
     'Tableau', 'Forecasting', 'Budgeting', 'Data Analysis', 'VBA',
@@ -40,27 +37,47 @@ export default function JobsPage() {
 
   const fetchJobs = async () => {
     setIsLoading(true);
+    setError(null);
     try {
-      const response = await fetch('/api/opportunities?type=job');
+      // Fetch all opportunities first (both jobs and internships)
+      const response = await fetch('/api/opportunities');
+      
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
+      
       const data = await response.json();
+      console.log('API Response:', data); // Debug: See what API returns
       
       if (Array.isArray(data)) {
-        const formattedJobs = data.map((job: any) => ({
+        // Filter only jobs (type = 'job')
+        const allJobs = data.filter((item: any) => item.type === 'job');
+        
+        const formattedJobs = allJobs.map((job: any) => ({
           id: job.id,
           title: job.title,
-          company: job.company,
-          location: job.location,
-          workMode: job.workMode,
+          company: job.company || 'Company',
+          location: job.location || 'India',
+          workMode: job.workMode || 'On-site',
           salary: job.salary,
           skills: job.skills || [],
-          isVerified: job.isVerified,
-          createdAt: job.createdAt
+          isVerified: job.isVerified || false,
+          createdAt: job.createdAt || new Date().toISOString()
         }));
+        
+        console.log('Formatted Jobs:', formattedJobs); // Debug: See formatted jobs
         setJobs(formattedJobs);
         setFilteredJobs(formattedJobs);
+      } else {
+        console.error('API did not return array:', data);
+        setJobs([]);
+        setFilteredJobs([]);
       }
     } catch (error) {
       console.error('Error fetching jobs:', error);
+      setError('Failed to load jobs. Please try again later.');
+      setJobs([]);
+      setFilteredJobs([]);
     } finally {
       setIsLoading(false);
     }
@@ -135,6 +152,24 @@ export default function JobsPage() {
     );
   }
 
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="text-red-500 text-5xl mb-4">⚠️</div>
+          <h2 className="text-xl font-semibold text-gray-800 mb-2">Something went wrong</h2>
+          <p className="text-gray-600">{error}</p>
+          <button 
+            onClick={fetchJobs} 
+            className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+          >
+            Try Again
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Breadcrumb */}
@@ -154,7 +189,7 @@ export default function JobsPage() {
           <h1 className="text-3xl font-bold text-gray-900 mb-2">Find Entry Level Financial Analyst Jobs</h1>
           <p className="text-gray-500 mb-6">Discover fresher-friendly opportunities at top companies. Start your finance career today.</p>
           
-          {/* Search Form - Fixed icon alignment */}
+          {/* Search Form */}
           <div className="flex flex-col md:flex-row gap-4 mb-8">
             <div className="flex-1">
               <div className="relative">
@@ -184,12 +219,15 @@ export default function JobsPage() {
                 />
               </div>
             </div>
-            <button className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-8 py-3 rounded-lg transition whitespace-nowrap">
+            <button 
+              onClick={() => fetchJobs()}
+              className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-8 py-3 rounded-lg transition whitespace-nowrap"
+            >
               Find Job →
             </button>
           </div>
 
-          {/* Popular Tags - Skills Only */}
+          {/* Popular Tags */}
           <div>
             <h2 className="text-sm font-medium text-gray-700 mb-3">Popular Skills:</h2>
             <div className="flex flex-wrap gap-2">
@@ -235,20 +273,11 @@ export default function JobsPage() {
           </div>
         )}
 
-        {/* Active Filter Title */}
-        {activeFilters.length > 0 && (
-          <div className="mb-4">
-            <h2 className="text-lg font-semibold text-gray-900">
-              {activeFilters.join(' + ')} Jobs
-            </h2>
-          </div>
-        )}
-
         {/* Section Title */}
         <div className="mb-6">
           <h2 className="text-xl font-semibold text-gray-900">Latest Jobs</h2>
           <p className="text-sm text-gray-500 mt-1">
-            Showing {filteredJobs.length} entry level positions
+            Showing {filteredJobs.length} entry level position{filteredJobs.length !== 1 ? 's' : ''}
           </p>
         </div>
 
@@ -274,10 +303,8 @@ export default function JobsPage() {
                 className="block bg-white border border-gray-200 rounded-lg p-5 hover:shadow-md hover:border-gray-300 transition-all group"
               >
                 <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
-                  {/* Left side - Job Info */}
                   <div className="flex-1">
                     <div className="flex items-start gap-3">
-                      {/* Company Logo */}
                       <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center text-white font-bold text-sm flex-shrink-0">
                         {getCompanyInitials(job.company)}
                       </div>
@@ -314,7 +341,6 @@ export default function JobsPage() {
                     </div>
                   </div>
                   
-                  {/* Right side - Meta Info */}
                   <div className="flex flex-row md:flex-col items-center md:items-end gap-3 md:gap-1">
                     <span className="text-xs text-gray-400 bg-gray-100 px-2 py-1 rounded">
                       {formatDate(job.createdAt)}
@@ -331,26 +357,6 @@ export default function JobsPage() {
           </div>
         )}
       </div>
-
-      {/* Job Search Schema (Hidden but helps SEO) */}
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "ItemList",
-            "name": "Entry Level Financial Analyst Jobs",
-            "description": "Browse entry level financial analyst jobs and fresher opportunities",
-            "numberOfItems": filteredJobs.length,
-            "itemListElement": filteredJobs.slice(0, 10).map((job, index) => ({
-              "@type": "ListItem",
-              "position": index + 1,
-              "url": `https://finlysta.com/opportunities/jobs/${job.id}`,
-              "name": job.title
-            }))
-          })
-        }}
-      />
     </div>
   );
 }

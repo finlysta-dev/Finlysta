@@ -101,10 +101,6 @@ export async function POST(request: Request) {
     
     // Send welcome email
     try {
-      const interestType = interestedIn === 'jobs,internships' 
-        ? 'Jobs & Internships' 
-        : interestedIn === 'jobs' ? 'Jobs' : 'Internships';
-      
       const interestText = wantsJobs && wantsInternships 
         ? 'jobs and internships'
         : wantsJobs 
@@ -147,7 +143,6 @@ export async function POST(request: Request) {
               overflow: hidden;
               box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
             }
-            /* Header Section - WHITE BACKGROUND */
             .header {
               background: #ffffff;
               padding: 40px 32px;
@@ -171,7 +166,6 @@ export async function POST(request: Request) {
               font-size: 14px;
               margin-top: 8px;
             }
-            /* Content */
             .content {
               padding: 40px 32px;
             }
@@ -193,7 +187,6 @@ export async function POST(request: Request) {
               line-height: 1.6;
               margin-bottom: 24px;
             }
-            /* Feature Cards */
             .features-grid {
               display: flex;
               flex-direction: column;
@@ -221,13 +214,6 @@ export async function POST(request: Request) {
               color: #64748b;
               line-height: 1.5;
             }
-            /* Divider */
-            .divider {
-              height: 1px;
-              background: #e2e8f0;
-              margin: 28px 0;
-            }
-            /* Value Section */
             .value-section {
               background: #f0f9ff;
               border-radius: 16px;
@@ -253,25 +239,6 @@ export async function POST(request: Request) {
               color: #0f172a;
               font-size: 14px;
             }
-            /* CTA Button */
-            .cta-button {
-              display: inline-block;
-              background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
-              color: white;
-              text-decoration: none;
-              padding: 14px 32px;
-              border-radius: 40px;
-              font-weight: 600;
-              font-size: 16px;
-              margin: 16px 0;
-              transition: all 0.2s;
-              text-align: center;
-            }
-            .cta-button:hover {
-              transform: translateY(-2px);
-              box-shadow: 0 8px 20px rgba(37, 99, 235, 0.2);
-            }
-            /* Note */
             .note {
               background: #fefce8;
               border-left: 3px solid #eab308;
@@ -281,7 +248,6 @@ export async function POST(request: Request) {
               font-size: 13px;
               color: #854d0e;
             }
-            /* Footer */
             .footer {
               background: #f8fafc;
               padding: 28px 32px;
@@ -296,9 +262,6 @@ export async function POST(request: Request) {
               text-decoration: none;
               font-size: 12px;
               margin: 0 8px;
-            }
-            .footer-links a:hover {
-              color: #2563eb;
             }
             .social-links {
               margin: 16px 0;
@@ -315,32 +278,22 @@ export async function POST(request: Request) {
               margin-top: 16px;
             }
             @media (max-width: 480px) {
-              .content {
-                padding: 28px 20px;
-              }
-              .header {
-                padding: 32px 24px;
-              }
-              .greeting {
-                font-size: 22px;
-              }
-              .logo {
-                max-width: 110px;
-              }
+              .content { padding: 28px 20px; }
+              .header { padding: 32px 24px; }
+              .greeting { font-size: 22px; }
+              .logo { max-width: 110px; }
             }
           </style>
         </head>
         <body>
           <div class="email-container">
             <div class="email-card">
-              <!-- Header - WHITE BACKGROUND -->
               <div class="header">
                 <img src="https://finlysta.com/Finlysta.png" alt="Finlysta" class="logo">
                 <h1>Welcome to Finlysta 🚀</h1>
                 <div class="header-sub">Your launchpad for a career in finance</div>
               </div>
               
-              <!-- Content -->
               <div class="content">
                 <div class="greeting">
                   Hey <span>${name || 'there'}</span>! 👋
@@ -354,7 +307,6 @@ export async function POST(request: Request) {
                   We know how frustrating job hunting can be. Endless scrolling, outdated listings, and no clarity on what's legit. That's why we built Finlysta — to make finding your first finance role simple and stress-free.
                 </p>
                 
-                <!-- What You'll Get -->
                 <div class="features-grid">
                   <div class="feature-card">
                     <div class="feature-icon">📬</div>
@@ -378,7 +330,6 @@ export async function POST(request: Request) {
                   </div>
                 </div>
                 
-                <!-- Value Proposition -->
                 <div class="value-section">
                   <div class="value-title">✨ Here's what makes Finlysta different:</div>
                   <ul class="value-list">
@@ -389,14 +340,28 @@ export async function POST(request: Request) {
                   </ul>
                 </div>
                 
-                <!-- Quick Win / Next Step -->
                 <div class="note">
                   💡 <strong>Quick tip:</strong> Check the opportunities daily — the best roles get filled fast. We recommend checking every morning!
                 </div>
                 
-                <!-- CTA -->
-                <div style="text-align: center;">
-                  <a href="${mainCtaLink}" class="cta-button">
+                <!-- CTA BUTTON WITH INLINE STYLES - FIXED -->
+                <div style="text-align: center; margin: 24px 0 16px 0;">
+                  <a href="${mainCtaLink}" 
+                     style="
+                       display: inline-block;
+                       background: #2563eb;
+                       background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+                       color: #ffffff !important;
+                       text-decoration: none;
+                       padding: 14px 32px;
+                       border-radius: 40px;
+                       font-weight: 600;
+                       font-size: 16px;
+                       text-align: center;
+                       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+                       -webkit-text-fill-color: #ffffff;
+                     "
+                     target="_blank">
                     Browse ${interestText} →
                   </a>
                 </div>
@@ -406,7 +371,6 @@ export async function POST(request: Request) {
                 </p>
               </div>
               
-              <!-- Footer -->
               <div class="footer">
                 <div class="footer-links">
                   <a href="https://finlysta.com/jobs">Jobs</a> •
@@ -439,10 +403,8 @@ export async function POST(request: Request) {
       
       // Only send if Resend API key exists
       if (process.env.RESEND_API_KEY) {
-        // Try with your domain first, fallback to test domain
         let fromEmail = "Finlysta <newsletter@finlysta.com>";
         
-        // If you're having issues, use test domain
         if (process.env.USE_TEST_EMAIL === 'true') {
           fromEmail = "Finlysta <onboarding@resend.dev>";
         }
