@@ -2,7 +2,8 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { Search, MapPin, ChevronRight, X, Loader2, Briefcase, Building2, Calendar, Award, Zap } from 'lucide-react';
+import Image from 'next/image';
+import { Search, MapPin, ChevronRight, X, Loader2, Briefcase, Building2, Calendar, Award, Zap, CheckCircle } from 'lucide-react';
 
 interface Internship {
   id: string;
@@ -16,6 +17,10 @@ interface Internship {
   isVerified: boolean;
   isActivelyHiring: boolean;
   createdAt: string;
+  companyLogo?: string;
+  description?: string;
+  responsibilities?: string;
+  qualifications?: string;
 }
 
 export default function InternshipsPage() {
@@ -25,6 +30,7 @@ export default function InternshipsPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [locationQuery, setLocationQuery] = useState('');
   const [activeFilters, setActiveFilters] = useState<string[]>([]);
+  const [imageErrors, setImageErrors] = useState<{ [key: string]: boolean }>({});
 
   const popularTags = [
     'Excel', 'Python', 'Power BI', 'SQL', 'Financial Modeling',
@@ -54,7 +60,11 @@ export default function InternshipsPage() {
           skills: internship.skills || [],
           isVerified: internship.isVerified,
           isActivelyHiring: internship.isActivelyHiring,
-          createdAt: internship.createdAt
+          createdAt: internship.createdAt,
+          companyLogo: internship.companyLogo,
+          description: internship.overview || internship.description || internship.shortDescription || '',
+          responsibilities: internship.responsibilities || '',
+          qualifications: internship.qualifications || ''
         }));
         setInternships(formattedInternships);
         setFilteredInternships(formattedInternships);
@@ -94,6 +104,32 @@ export default function InternshipsPage() {
     setFilteredInternships(filtered);
   }, [searchQuery, locationQuery, activeFilters, internships]);
 
+  const handleImageError = (id: string) => {
+    setImageErrors(prev => ({ ...prev, [id]: true }));
+  };
+
+  const getCompanyInitials = (company: string) => {
+    if (!company) return 'IN';
+    const words = company.split(' ');
+    if (words.length === 1) {
+      return company.substring(0, 2).toUpperCase();
+    }
+    return (words[0][0] + words[1][0]).toUpperCase();
+  };
+
+  const getCompanyColor = (company: string) => {
+    const colors = [
+      'from-emerald-500 to-emerald-600',
+      'from-blue-500 to-blue-600',
+      'from-purple-500 to-purple-600',
+      'from-orange-500 to-orange-600',
+      'from-cyan-500 to-cyan-600',
+      'from-rose-500 to-rose-600',
+    ];
+    const index = company.length % colors.length;
+    return colors[index];
+  };
+
   const formatDate = (date: string) => {
     if (!date) return 'Recently';
     const postedDate = new Date(date);
@@ -111,6 +147,17 @@ export default function InternshipsPage() {
     return stipend;
   };
 
+  const getFirstResponsibility = (responsibilities: string, maxLength: number = 100) => {
+    if (!responsibilities) return '';
+    // Remove HTML tags
+    const cleanText = responsibilities.replace(/<[^>]*>/g, '');
+    // Get first sentence or first line
+    const firstLine = cleanText.split('\n')[0];
+    const firstSentence = firstLine.split('.')[0];
+    if (firstSentence.length <= maxLength) return firstSentence;
+    return firstSentence.substring(0, maxLength) + '...';
+  };
+
   const addFilter = (tag: string) => {
     if (!activeFilters.includes(tag)) {
       setActiveFilters([...activeFilters, tag]);
@@ -125,11 +172,6 @@ export default function InternshipsPage() {
     setActiveFilters([]);
     setSearchQuery('');
     setLocationQuery('');
-  };
-
-  const getCompanyInitials = (company: string) => {
-    if (!company) return 'IN';
-    return company.substring(0, 2).toUpperCase();
   };
 
   if (isLoading) {
@@ -170,7 +212,7 @@ export default function InternshipsPage() {
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="Internship title, skill, or company"
-                   className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                  className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500"
                 />
               </div>
             </div>
@@ -184,11 +226,14 @@ export default function InternshipsPage() {
                   value={locationQuery}
                   onChange={(e) => setLocationQuery(e.target.value)}
                   placeholder="City or remote"
-                   className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                  className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500"
                 />
               </div>
             </div>
-            <button className="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold px-8 py-3 rounded-lg transition whitespace-nowrap">
+            <button 
+              onClick={() => fetchInternships()} 
+              className="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold px-8 py-3 rounded-lg transition whitespace-nowrap"
+            >
               Find Internship →
             </button>
           </div>
@@ -252,93 +297,123 @@ export default function InternshipsPage() {
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredInternships.map((internship) => (
-              <Link
-                key={internship.id}
-                href={`/opportunities/internships/${internship.id}`}
-                className="group block bg-white rounded-xl border border-gray-200 hover:shadow-lg hover:border-emerald-200 transition-all duration-300 hover:-translate-y-1 overflow-hidden"
-              >
-                <div className="p-5">
-                  {/* Header */}
-                  <div className="flex items-start justify-between mb-4">
-                    <div className="flex items-center gap-3">
-                      <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-500 to-emerald-600 flex items-center justify-center text-white font-bold text-base shadow-sm">
-                        {getCompanyInitials(internship.company)}
+            {filteredInternships.map((internship) => {
+              const hasLogoError = imageErrors[internship.id];
+              const responsibility = getFirstResponsibility(internship.responsibilities || '');
+              
+              return (
+                <Link
+                  key={internship.id}
+                  href={`/opportunities/internships/${internship.id}`}
+                  className="group block bg-white rounded-xl border border-gray-200 hover:shadow-lg hover:border-emerald-200 transition-all duration-300 hover:-translate-y-1 overflow-hidden"
+                >
+                  <div className="p-5">
+                    {/* Header with Logo */}
+                    <div className="flex items-start gap-3 mb-3">
+                      {/* Company Logo */}
+                      <div className="flex-shrink-0">
+                        {!hasLogoError && internship.companyLogo ? (
+                          <div className="w-12 h-12 rounded-xl overflow-hidden bg-gray-50 border border-gray-100 flex items-center justify-center shadow-sm">
+                            <img
+                              src={internship.companyLogo}
+                              alt={`${internship.company} logo`}
+                              className="w-10 h-10 object-contain"
+                              loading="lazy"
+                              onError={() => handleImageError(internship.id)}
+                            />
+                          </div>
+                        ) : (
+                          <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${getCompanyColor(internship.company)} flex items-center justify-center shadow-sm`}>
+                            <span className="text-white font-bold text-sm">
+                              {getCompanyInitials(internship.company)}
+                            </span>
+                          </div>
+                        )}
                       </div>
-                      <div>
+                      
+                      <div className="flex-1 min-w-0">
                         <h3 className="font-bold text-gray-900 group-hover:text-emerald-600 transition line-clamp-1">
                           {internship.title}
                         </h3>
                         <p className="text-sm text-gray-500">{internship.company}</p>
                       </div>
+                      <span className="text-xs text-gray-400 bg-gray-100 px-2 py-1 rounded whitespace-nowrap">
+                        {formatDate(internship.createdAt)}
+                      </span>
                     </div>
-                    <span className="text-xs text-gray-400 bg-gray-100 px-2 py-1 rounded">
-                      {formatDate(internship.createdAt)}
-                    </span>
-                  </div>
 
-                  {/* Details */}
-                  <div className="space-y-2 mb-4">
-                    <div className="flex items-center gap-2 text-sm text-gray-500">
-                      <MapPin size={14} />
-                      <span>{internship.location}</span>
-                      <span className="w-1 h-1 bg-gray-300 rounded-full"></span>
-                      <span className="capitalize">{internship.workMode}</span>
-                    </div>
-                    {internship.duration && (
+                    {/* Responsibility - MAIN CONTENT (removed description/overview) */}
+                    {responsibility && (
+                      <div className="mb-3">
+                        <p className="text-sm text-gray-600 line-clamp-3 leading-relaxed">
+                          {responsibility}
+                        </p>
+                      </div>
+                    )}
+
+                    {/* Details */}
+                    <div className="space-y-2 mb-4">
                       <div className="flex items-center gap-2 text-sm text-gray-500">
-                        <Calendar size={14} />
-                        <span>{internship.duration}</span>
+                        <MapPin size={14} />
+                        <span>{internship.location}</span>
+                        <span className="w-1 h-1 bg-gray-300 rounded-full"></span>
+                        <span className="capitalize">{internship.workMode}</span>
+                      </div>
+                      {internship.duration && (
+                        <div className="flex items-center gap-2 text-sm text-gray-500">
+                          <Calendar size={14} />
+                          <span>{internship.duration}</span>
+                        </div>
+                      )}
+                      {internship.stipend && formatStipend(internship.stipend) && (
+                        <div className="flex items-center gap-2 text-sm font-semibold text-emerald-600">
+                          <span>💰</span>
+                          <span>{formatStipend(internship.stipend)}</span>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Skills */}
+                    {internship.skills && internship.skills.length > 0 && (
+                      <div className="flex flex-wrap gap-1.5 mb-4">
+                        {internship.skills.slice(0, 3).map((skill) => (
+                          <span key={skill} className="text-[10px] px-2 py-1 bg-gray-100 text-gray-600 rounded-full">
+                            {skill}
+                          </span>
+                        ))}
+                        {internship.skills.length > 3 && (
+                          <span className="text-[10px] px-2 py-1 bg-gray-100 text-gray-500 rounded-full">
+                            +{internship.skills.length - 3}
+                          </span>
+                        )}
                       </div>
                     )}
-                    {internship.stipend && formatStipend(internship.stipend) && (
-                      <div className="flex items-center gap-2 text-sm font-semibold text-emerald-600">
-                        <span>💰</span>
-                        <span>{formatStipend(internship.stipend)}</span>
+
+                    {/* Footer */}
+                    <div className="flex items-center justify-between pt-3 border-t border-gray-100">
+                      <div className="flex items-center gap-2">
+                        {internship.isVerified && (
+                          <span className="flex items-center gap-0.5 text-[10px] text-green-600 bg-green-50 px-2 py-0.5 rounded-full">
+                            <Award size={10} />
+                            Verified
+                          </span>
+                        )}
+                        {internship.isActivelyHiring && (
+                          <span className="flex items-center gap-0.5 text-[10px] text-orange-600 bg-orange-50 px-2 py-0.5 rounded-full">
+                            <Zap size={10} />
+                            Actively Hiring
+                          </span>
+                        )}
                       </div>
-                    )}
-                  </div>
-
-                  {/* Skills */}
-                  {internship.skills && internship.skills.length > 0 && (
-                    <div className="flex flex-wrap gap-1.5 mb-4">
-                      {internship.skills.slice(0, 3).map((skill) => (
-                        <span key={skill} className="text-[10px] px-2 py-1 bg-gray-100 text-gray-600 rounded-full">
-                          {skill}
-                        </span>
-                      ))}
-                      {internship.skills.length > 3 && (
-                        <span className="text-[10px] px-2 py-1 bg-gray-100 text-gray-500 rounded-full">
-                          +{internship.skills.length - 3}
-                        </span>
-                      )}
-                    </div>
-                  )}
-
-                  {/* Footer */}
-                  <div className="flex items-center justify-between pt-3 border-t border-gray-100">
-                    <div className="flex items-center gap-2">
-                      {internship.isVerified && (
-                        <span className="flex items-center gap-0.5 text-[10px] text-green-600 bg-green-50 px-2 py-0.5 rounded-full">
-                          <Award size={10} />
-                          Verified
-                        </span>
-                      )}
-                      {internship.isActivelyHiring && (
-                        <span className="flex items-center gap-0.5 text-[10px] text-orange-600 bg-orange-50 px-2 py-0.5 rounded-full">
-                          <Zap size={10} />
-                          Actively Hiring
-                        </span>
-                      )}
-                    </div>
-                    <div className="flex items-center gap-1 text-emerald-600 text-sm font-medium group-hover:gap-2 transition-all">
-                      <span>Apply Now</span>
-                      <ChevronRight size={14} className="group-hover:translate-x-0.5 transition" />
+                      <div className="flex items-center gap-1 text-emerald-600 text-sm font-medium group-hover:gap-2 transition-all">
+                        <span>Apply Now</span>
+                        <ChevronRight size={14} className="group-hover:translate-x-0.5 transition" />
+                      </div>
                     </div>
                   </div>
-                </div>
-              </Link>
-            ))}
+                </Link>
+              );
+            })}
           </div>
         )}
       </div>

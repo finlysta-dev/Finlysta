@@ -3,10 +3,11 @@
 import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
+import Image from 'next/image';
 import {
   ArrowLeft, MapPin, Clock, Building2, Calendar,
   CheckCircle, Bookmark, Share2, Briefcase, Zap,
-  TrendingUp, ExternalLink
+  TrendingUp, ExternalLink, Award, DollarSign, GraduationCap
 } from 'lucide-react';
 
 interface Opportunity {
@@ -61,7 +62,6 @@ export default function OpportunityDetailPage() {
     setSaved(savedItems.includes(id));
   }, [id]);
 
-  // Track view when opportunity is loaded
   useEffect(() => {
     if (opportunity && id && !viewTracked) {
       trackView();
@@ -70,17 +70,12 @@ export default function OpportunityDetailPage() {
 
   const trackView = async () => {
     try {
-      console.log('Tracking view for opportunity:', id);
-      const response = await fetch('/api/track-opportunity-view', {
+      await fetch('/api/track-opportunity-view', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ opportunityId: id })
       });
-      const data = await response.json();
-      console.log('Track response:', data);
       setViewTracked(true);
-      
-      // Update local opportunity view count
       if (opportunity) {
         setOpportunity({
           ...opportunity,
@@ -166,6 +161,7 @@ export default function OpportunityDetailPage() {
     
     if (diffDays === 0) return 'Today';
     if (diffDays === 1) return 'Yesterday';
+    if (diffDays === 2) return '2 days ago';
     if (diffDays < 7) return `${diffDays} days ago`;
     if (diffDays < 30) return `${Math.floor(diffDays / 7)} weeks ago`;
     return `${Math.floor(diffDays / 30)} months ago`;
@@ -201,12 +197,11 @@ export default function OpportunityDetailPage() {
     return (words[0][0] + words[1][0]).toUpperCase();
   };
 
-  // Get related opportunities (same type, different id)
   const getRelatedOpportunities = () => {
     if (!allOpportunities.length || !opportunity) return [];
     return allOpportunities
       .filter(opp => opp.type === opportunity.type && opp.id !== opportunity.id)
-      .slice(0, 6);
+      .slice(0, 3);
   };
 
   if (loading) {
@@ -214,7 +209,7 @@ export default function OpportunityDetailPage() {
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
           <div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading...</p>
+          <p className="text-gray-600">Loading job details...</p>
         </div>
       </div>
     );
@@ -246,27 +241,27 @@ export default function OpportunityDetailPage() {
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
       <div className="bg-white border-b border-gray-200 sticky top-0 z-10">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 py-4">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 py-4">
           <div className="flex items-center justify-between">
             <button
               onClick={() => router.back()}
-              className="flex items-center gap-2 text-gray-600 hover:text-gray-900 transition"
+              className="flex items-center gap-2 text-gray-600 hover:text-gray-900 transition group"
             >
-              <ArrowLeft size={20} />
-              <span>Back</span>
+              <ArrowLeft size={18} className="group-hover:-translate-x-0.5 transition-transform" />
+              <span className="text-sm font-medium">Back to Jobs</span>
             </button>
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2">
               <button
                 onClick={handleSave}
                 className="p-2 rounded-lg hover:bg-gray-100 transition"
               >
-                <Bookmark size={20} className={saved ? 'text-blue-600 fill-blue-600' : 'text-gray-600'} />
+                <Bookmark size={18} className={saved ? 'text-blue-600 fill-blue-600' : 'text-gray-500'} />
               </button>
               <button
                 onClick={handleShare}
                 className="p-2 rounded-lg hover:bg-gray-100 transition"
               >
-                <Share2 size={20} className="text-gray-600" />
+                <Share2 size={18} className="text-gray-500" />
               </button>
             </div>
           </div>
@@ -274,37 +269,43 @@ export default function OpportunityDetailPage() {
       </div>
 
       {/* Main Content */}
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 py-8">
-        {/* Posted Date - Clean simple badge */}
-        <div className="mb-4">
-          <span className="inline-flex items-center gap-2 px-3 py-1 bg-gray-100 text-gray-600 text-sm rounded-full">
-            <Calendar size={14} />
-            Posted {getTimeAgo(opportunity.postedAt)} • {formatDate(opportunity.postedAt)}
-          </span>
-        </div>
-
-        {/* Company Logo & Title */}
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 mb-6">
-          <div className="flex items-start gap-5">
-            <div className="w-16 h-16 rounded-xl bg-gradient-to-br from-gray-900 to-gray-700 flex items-center justify-center text-white font-bold text-xl shadow-md flex-shrink-0">
-              {getCompanyInitials(opportunity.company)}
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 py-8">
+        
+        {/* Hero Section with Company Info */}
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden mb-6">
+          {/* Cover Banner */}
+          <div className="h-24 bg-gradient-to-r from-blue-500/10 to-purple-500/10"></div>
+          
+          <div className="px-6 pb-6">
+            {/* Company Logo & Title */}
+            <div className="flex items-end -mt-12 mb-4">
+              <div className="w-24 h-24 rounded-xl bg-gradient-to-br from-gray-900 to-gray-700 flex items-center justify-center text-white font-bold text-2xl shadow-lg flex-shrink-0 border-4 border-white">
+                {getCompanyInitials(opportunity.company)}
+              </div>
             </div>
-            <div className="flex-1">
-              <h1 className="text-2xl font-bold text-gray-900 mb-2">{opportunity.title}</h1>
-              <div className="flex items-center gap-3 flex-wrap">
-                <div className="flex items-center gap-1.5">
-                  <Building2 size={14} className="text-gray-400" />
-                  <span className="text-gray-700 font-medium">{opportunity.company}</span>
+            
+            <div className="flex flex-wrap justify-between items-start gap-4">
+              <div>
+                <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">{opportunity.title}</h1>
+                <div className="flex items-center gap-2 flex-wrap">
+                  <span className="text-gray-600">{opportunity.company}</span>
+                  <span className="text-gray-300">•</span>
+                  <div className="flex items-center gap-1.5">
+                    <Calendar size={14} className="text-gray-400" />
+                    <span className="text-sm text-gray-500">Posted {getTimeAgo(opportunity.postedAt)}</span>
+                  </div>
                 </div>
+              </div>
+              <div className="flex gap-2">
                 {opportunity.isVerified && (
-                  <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-green-50 text-green-700 text-xs font-medium rounded-full">
-                    <CheckCircle size={12} />
+                  <span className="inline-flex items-center gap-1 px-3 py-1.5 bg-green-50 text-green-700 text-xs font-medium rounded-full">
+                    <CheckCircle size={14} />
                     Verified
                   </span>
                 )}
                 {opportunity.isActivelyHiring && (
-                  <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-orange-50 text-orange-600 text-xs font-medium rounded-full">
-                    <Zap size={12} />
+                  <span className="inline-flex items-center gap-1 px-3 py-1.5 bg-orange-50 text-orange-600 text-xs font-medium rounded-full">
+                    <Zap size={14} />
                     Actively Hiring
                   </span>
                 )}
@@ -313,120 +314,169 @@ export default function OpportunityDetailPage() {
           </div>
         </div>
 
-        {/* Key Info Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
-          <div className="bg-white rounded-xl border border-gray-100 p-4">
-            <div className="flex items-center gap-2 mb-1">
-              <MapPin size={14} className="text-gray-400" />
-              <span className="text-xs text-gray-500">Location</span>
-            </div>
-            <p className="text-sm font-medium text-gray-900">{getLocationDisplay()}</p>
-          </div>
-
-          <div className="bg-white rounded-xl border border-gray-100 p-4">
-            <div className="flex items-center gap-2 mb-1">
-              <Clock size={14} className="text-gray-400" />
-              <span className="text-xs text-gray-500">Duration</span>
-            </div>
-            <p className="text-sm font-medium text-gray-900">{opportunity.duration || 'Not specified'}</p>
-          </div>
-
-          {opportunity.salary && (
-            <div className="bg-white rounded-xl border border-gray-100 p-4">
-              <div className="flex items-center gap-2 mb-1">
-                <span className="text-xs text-gray-500">💰 Stipend</span>
+        {/* Two Column Layout */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Main Content - Left Column (2/3) */}
+          <div className="lg:col-span-2 space-y-6">
+            
+            {/* Quick Info Cards */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <div className="bg-white rounded-xl border border-gray-100 p-4">
+                <div className="flex items-center gap-2 mb-1">
+                  <MapPin size={16} className="text-blue-500" />
+                  <span className="text-xs text-gray-500 uppercase tracking-wide">Location</span>
+                </div>
+                <p className="text-sm font-semibold text-gray-900">{getLocationDisplay()}</p>
               </div>
-              <p className="text-sm font-semibold text-green-600">
-                {opportunity.type === 'job' ? opportunity.salary : formatStipend(opportunity.salary)}
-              </p>
+              
+              <div className="bg-white rounded-xl border border-gray-100 p-4">
+                <div className="flex items-center gap-2 mb-1">
+                  <Clock size={16} className="text-blue-500" />
+                  <span className="text-xs text-gray-500 uppercase tracking-wide">Duration / Type</span>
+                </div>
+                <p className="text-sm font-semibold text-gray-900">
+                  {opportunity.duration || opportunity.experience || 'Full Time'}
+                </p>
+              </div>
+              
+              {opportunity.salary && (
+                <div className="bg-white rounded-xl border border-gray-100 p-4">
+                  <div className="flex items-center gap-2 mb-1">
+                    <DollarSign size={16} className="text-green-500" />
+                    <span className="text-xs text-gray-500 uppercase tracking-wide">
+                      {opportunity.type === 'job' ? 'Salary' : 'Stipend'}
+                    </span>
+                  </div>
+                  <p className="text-sm font-bold text-green-600">
+                    {opportunity.type === 'job' ? opportunity.salary : formatStipend(opportunity.salary)}
+                  </p>
+                </div>
+              )}
             </div>
-          )}
+
+            {/* About Company */}
+            {opportunity.aboutCompany && (
+              <div className="bg-white rounded-xl border border-gray-100 p-6">
+                <div className="flex items-center gap-2 mb-4">
+                  <Building2 size={18} className="text-blue-500" />
+                  <h2 className="text-lg font-bold text-gray-900">About {opportunity.company}</h2>
+                </div>
+                <p className="text-gray-600 text-sm leading-relaxed">
+                  {opportunity.aboutCompany}
+                </p>
+              </div>
+            )}
+
+            {/* Overview */}
+            {opportunity.overview && (
+              <div className="bg-white rounded-xl border border-gray-100 p-6">
+                <h2 className="text-lg font-bold text-gray-900 mb-4">Role Overview</h2>
+                <p className="text-gray-600 text-sm leading-relaxed">
+                  {opportunity.overview}
+                </p>
+              </div>
+            )}
+
+            {/* Skills */}
+            {opportunity.skills && opportunity.skills.length > 0 && (
+              <div className="bg-white rounded-xl border border-gray-100 p-6">
+                <h2 className="text-lg font-bold text-gray-900 mb-4">Required Skills</h2>
+                <div className="flex flex-wrap gap-2">
+                  {opportunity.skills.map((skill, index) => (
+                    <span key={index} className="px-3 py-1.5 bg-gray-100 text-gray-700 rounded-lg text-sm font-medium hover:bg-gray-200 transition">
+                      {skill}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Responsibilities */}
+            {opportunity.responsibilities && (
+              <div className="bg-white rounded-xl border border-gray-100 p-6">
+                <h2 className="text-lg font-bold text-gray-900 mb-4">Key Responsibilities</h2>
+                <div className="prose prose-sm max-w-none">
+                  {opportunity.responsibilities.split('\n').map((para, idx) => (
+                    <p key={idx} className="text-gray-600 text-sm leading-relaxed mb-3">
+                      {para}
+                    </p>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Qualifications */}
+            {opportunity.qualifications && (
+              <div className="bg-white rounded-xl border border-gray-100 p-6">
+                <div className="flex items-center gap-2 mb-4">
+                  <GraduationCap size={18} className="text-purple-500" />
+                  <h2 className="text-lg font-bold text-gray-900">Qualifications</h2>
+                </div>
+                <div className="prose prose-sm max-w-none">
+                  {opportunity.qualifications.split('\n').map((para, idx) => (
+                    <p key={idx} className="text-gray-600 text-sm leading-relaxed mb-3">
+                      {para}
+                    </p>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Benefits */}
+            {opportunity.benefits && (
+              <div className="bg-white rounded-xl border border-gray-100 p-6">
+                <div className="flex items-center gap-2 mb-4">
+                  <Award size={18} className="text-yellow-500" />
+                  <h2 className="text-lg font-bold text-gray-900">Perks & Benefits</h2>
+                </div>
+                <div className="prose prose-sm max-w-none">
+                  {opportunity.benefits.split('\n').map((para, idx) => (
+                    <p key={idx} className="text-gray-600 text-sm leading-relaxed mb-3">
+                      {para}
+                    </p>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Sidebar - Right Column (1/3) */}
+          <div className="space-y-6">
+            {/* Apply Card - Sticky */}
+            <div className="sticky top-24">
+              <div className="bg-white rounded-xl border border-gray-100 p-6 shadow-sm">
+                <div className="text-center mb-4">
+                  <div className="text-3xl mb-2">📋</div>
+                  <h3 className="text-lg font-bold text-gray-900">Ready to apply?</h3>
+                  <p className="text-xs text-gray-500 mt-1">Don't miss this opportunity</p>
+                </div>
+                
+                <button
+                  onClick={handleApply}
+                  className="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition transform hover:scale-[1.02] text-center flex items-center justify-center gap-2"
+                >
+                  <ExternalLink size={16} />
+                  Apply Now
+                </button>
+                
+                <div className="mt-4 pt-4 border-t border-gray-100 text-center">
+                  <p className="text-xs text-gray-400">Application deadline: {opportunity.deadline ? formatDate(opportunity.deadline) : 'Not specified'}</p>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
 
-        {/* About Company */}
-        {opportunity.aboutCompany && (
-          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 mb-6">
-            <h2 className="text-lg font-semibold text-gray-900 mb-3">About {opportunity.company}</h2>
-            <p className="text-gray-600 text-sm leading-relaxed">
-              {opportunity.aboutCompany}
-            </p>
-          </div>
-        )}
-
-        {/* Overview */}
-        {opportunity.overview && (
-          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 mb-6">
-            <h2 className="text-lg font-semibold text-gray-900 mb-3">Overview</h2>
-            <p className="text-gray-600 text-sm leading-relaxed whitespace-pre-line">
-              {opportunity.overview}
-            </p>
-          </div>
-        )}
-
-        {/* Required Skills */}
-        {opportunity.skills && opportunity.skills.length > 0 && (
-          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 mb-6">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">Required Skills</h2>
-            <div className="flex flex-wrap gap-2">
-              {opportunity.skills.map((skill, index) => (
-                <span key={index} className="px-3 py-1.5 bg-gray-100 text-gray-700 rounded-lg text-sm font-medium">
-                  {skill}
-                </span>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Key Responsibilities */}
-        {opportunity.responsibilities && (
-          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 mb-6">
-            <h2 className="text-lg font-semibold text-gray-900 mb-3">Key Responsibilities</h2>
-            <div className="text-gray-600 text-sm leading-relaxed whitespace-pre-line">
-              {opportunity.responsibilities}
-            </div>
-          </div>
-        )}
-
-        {/* Qualifications */}
-        {opportunity.qualifications && (
-          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 mb-6">
-            <h2 className="text-lg font-semibold text-gray-900 mb-3">Qualifications</h2>
-            <div className="text-gray-600 text-sm leading-relaxed whitespace-pre-line">
-              {opportunity.qualifications}
-            </div>
-          </div>
-        )}
-
-        {/* Perks & Benefits */}
-        {opportunity.benefits && (
-          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 mb-6">
-            <h2 className="text-lg font-semibold text-gray-900 mb-3">Perks & Benefits</h2>
-            <div className="text-gray-600 text-sm leading-relaxed whitespace-pre-line">
-              {opportunity.benefits}
-            </div>
-          </div>
-        )}
-
-        {/* Apply Button Section */}
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 mb-8">
-          <button
-            onClick={handleApply}
-            className="w-full py-3.5 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl transition transform hover:scale-[1.02] text-center"
-          >
-            Apply Now
-          </button>
-        </div>
-
-        {/* Related Opportunities Section - At the bottom */}
+        {/* Related Opportunities Section */}
         {relatedOpportunities.length > 0 && (
-          <div className="mt-8">
+          <div className="mt-10">
             <div className="flex items-center gap-2 mb-5">
               <TrendingUp size={20} className="text-blue-600" />
               <h2 className="text-xl font-bold text-gray-900">
                 Similar {opportunity.type === 'job' ? 'Jobs' : 'Internships'}
               </h2>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               {relatedOpportunities.map((related) => (
                 <Link
                   key={related.id}
@@ -443,19 +493,11 @@ export default function OpportunityDetailPage() {
                           {related.title}
                         </h3>
                         <p className="text-xs text-gray-500 mt-0.5">{related.company}</p>
-                        <div className="flex items-center gap-2 mt-2 flex-wrap">
+                        <div className="flex items-center gap-2 mt-2">
                           <div className="flex items-center gap-1">
                             <MapPin size={10} className="text-gray-400" />
-                            <span className="text-xs text-gray-500">{related.location}</span>
+                            <span className="text-xs text-gray-500 truncate">{related.location.split(',')[0]}</span>
                           </div>
-                          {related.salary && (
-                            <>
-                              <span className="text-xs text-gray-300">•</span>
-                              <span className="text-xs font-medium text-green-600">
-                                {formatStipend(related.salary) || related.salary}
-                              </span>
-                            </>
-                          )}
                         </div>
                       </div>
                     </div>

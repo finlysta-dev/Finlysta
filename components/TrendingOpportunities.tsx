@@ -29,6 +29,7 @@ interface Opportunity {
   type: string;
   experience?: string | null;
   views?: number;
+  slug: string;
 }
 
 // Helper functions
@@ -210,9 +211,14 @@ const JobCard = ({ job, imageErrors, handleImageError }: {
           </div>
 
           <div className="flex-1 min-w-0">
-            <h3 className="text-lg font-bold text-gray-900 group-hover:text-[#0A2540] transition-colors line-clamp-1 mb-1">
-              {job.title}
-            </h3>
+            {/* Job Title - Clickable Link */}
+            <Link href={`/opportunities/jobs/${job.id}`}>
+              <h3 className="text-lg font-bold text-gray-900 hover:text-blue-600 hover:underline transition-colors line-clamp-1 mb-1 cursor-pointer">
+                {job.title}
+              </h3>
+            </Link>
+            {/* Underline line after title */}
+            <div className="w-12 h-0.5 bg-blue-500 rounded-full mb-2"></div>
             <div className="flex items-center gap-2 flex-wrap">
               <Building2 size={14} className="text-gray-400" />
               <span className="text-sm font-medium text-gray-700">{job.company}</span>
@@ -345,9 +351,14 @@ const InternshipCard = ({ internship, imageErrors, handleImageError }: {
           </div>
 
           <div className="flex-1 min-w-0">
-            <h3 className="text-lg font-bold text-gray-900 group-hover:text-[#0A2540] transition-colors line-clamp-1 mb-1">
-              {internship.title}
-            </h3>
+            {/* Internship Title - Clickable Link */}
+            <Link href={`/opportunities/internships/${internship.id}`}>
+              <h3 className="text-lg font-bold text-gray-900 hover:text-emerald-600 hover:underline transition-colors line-clamp-1 mb-1 cursor-pointer">
+                {internship.title}
+              </h3>
+            </Link>
+            {/* Underline line after title */}
+            <div className="w-12 h-0.5 bg-emerald-500 rounded-full mb-2"></div>
             <div className="flex items-center gap-2 flex-wrap">
               <Building2 size={14} className="text-gray-400" />
               <span className="text-sm font-medium text-gray-700">{internship.company}</span>
@@ -456,7 +467,12 @@ export default function TrendingOpportunities() {
     setIsLoading(true);
     setError(null);
     try {
-      const res = await fetch('/api/opportunities?limit=20');
+      const res = await fetch('/api/opportunities?limit=20', {
+        cache: 'no-store',
+        headers: {
+          'Cache-Control': 'no-cache'
+        }
+      });
       const data = await res.json();
       
       if (res.ok && Array.isArray(data)) {
@@ -555,7 +571,7 @@ export default function TrendingOpportunities() {
             activeFilter === "all" ? "bg-[#0A2540] text-white shadow-md" : "bg-gray-100 text-gray-600 hover:bg-gray-200"
           }`}
         >
-          All ({jobCount + internshipCount})
+          All
         </button>
         <button
           onClick={() => setActiveFilter("jobs")}
@@ -563,7 +579,7 @@ export default function TrendingOpportunities() {
             activeFilter === "jobs" ? "bg-[#0A2540] text-white shadow-md" : "bg-gray-100 text-gray-600 hover:bg-gray-200"
           }`}
         >
-          Jobs ({jobCount})
+          Jobs
         </button>
         <button
           onClick={() => setActiveFilter("internships")}
@@ -571,7 +587,20 @@ export default function TrendingOpportunities() {
             activeFilter === "internships" ? "bg-[#0A2540] text-white shadow-md" : "bg-gray-100 text-gray-600 hover:bg-gray-200"
           }`}
         >
-          Internships ({internshipCount})
+          Internships
+        </button>
+      </div>
+
+      {/* Refresh Button */}
+      <div className="flex justify-end mb-4">
+        <button
+          onClick={() => fetchData()}
+          className="flex items-center gap-2 px-3 py-1.5 text-sm text-gray-500 hover:text-gray-700 transition-colors"
+        >
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+          </svg>
+          Refresh
         </button>
       </div>
 

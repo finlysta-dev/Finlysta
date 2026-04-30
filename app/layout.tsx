@@ -79,7 +79,7 @@ export const metadata: Metadata = {
     statusBarStyle: 'black-translucent',
   },
   verification: {
-    google: 'pFMAqcI7R1rA_0xWzK7w5zl79-8RvsnoPfa7lOIdEHA',
+    google: 'BfRqajHG-sL52c0zcQaP_PCRfQ1ZJ3-6DmqeeeSC0bw',
   },
 };
 

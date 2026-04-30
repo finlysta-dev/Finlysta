@@ -2,7 +2,8 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { Search, MapPin, ChevronRight, X, Loader2, Briefcase, Building2 } from 'lucide-react';
+import Image from 'next/image';
+import { Search, MapPin, ChevronRight, X, Loader2, Briefcase, Building2, ExternalLink } from 'lucide-react';
 
 interface Job {
   id: string;
@@ -14,6 +15,8 @@ interface Job {
   skills: string[];
   isVerified: boolean;
   createdAt: string;
+  companyLogo?: string;
+  description?: string;
 }
 
 export default function JobsPage() {
@@ -24,6 +27,7 @@ export default function JobsPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [locationQuery, setLocationQuery] = useState('');
   const [activeFilters, setActiveFilters] = useState<string[]>([]);
+  const [imageErrors, setImageErrors] = useState<{ [key: string]: boolean }>({});
 
   const popularTags = [
     'Excel', 'Python', 'Power BI', 'SQL', 'Financial Modeling',
@@ -39,7 +43,6 @@ export default function JobsPage() {
     setIsLoading(true);
     setError(null);
     try {
-      // Fetch all opportunities first (both jobs and internships)
       const response = await fetch('/api/opportunities');
       
       if (!response.ok) {
@@ -47,11 +50,11 @@ export default function JobsPage() {
       }
       
       const data = await response.json();
-      console.log('API Response:', data); // Debug: See what API returns
+      console.log('API Response:', data);
       
       if (Array.isArray(data)) {
-        // Filter only jobs (type = 'job')
-        const allJobs = data.filter((item: any) => item.type === 'job');
+        // Filter jobs (type = 'job' OR 'Full-time')
+        const allJobs = data.filter((item: any) => item.type === 'job' || item.type === 'Full-time');
         
         const formattedJobs = allJobs.map((job: any) => ({
           id: job.id,
@@ -62,10 +65,12 @@ export default function JobsPage() {
           salary: job.salary,
           skills: job.skills || [],
           isVerified: job.isVerified || false,
-          createdAt: job.createdAt || new Date().toISOString()
+          createdAt: job.createdAt || new Date().toISOString(),
+          companyLogo: job.companyLogo,
+          description: job.overview || job.description || job.shortDescription || ''
         }));
         
-        console.log('Formatted Jobs:', formattedJobs); // Debug: See formatted jobs
+        console.log('Formatted Jobs:', formattedJobs);
         setJobs(formattedJobs);
         setFilteredJobs(formattedJobs);
       } else {
@@ -111,6 +116,32 @@ export default function JobsPage() {
     setFilteredJobs(filtered);
   }, [searchQuery, locationQuery, activeFilters, jobs]);
 
+  const handleImageError = (id: string) => {
+    setImageErrors(prev => ({ ...prev, [id]: true }));
+  };
+
+  const getCompanyInitials = (company: string) => {
+    if (!company) return 'IN';
+    const words = company.split(' ');
+    if (words.length === 1) {
+      return company.substring(0, 2).toUpperCase();
+    }
+    return (words[0][0] + words[1][0]).toUpperCase();
+  };
+
+  const getCompanyColor = (company: string) => {
+    const colors = [
+      'from-blue-600 to-blue-800',
+      'from-emerald-600 to-teal-600',
+      'from-purple-600 to-indigo-600',
+      'from-red-600 to-rose-600',
+      'from-orange-600 to-amber-600',
+      'from-cyan-600 to-sky-600',
+    ];
+    const index = company.length % colors.length;
+    return colors[index];
+  };
+
   const formatDate = (date: string) => {
     if (!date) return 'Recently';
     const postedDate = new Date(date);
@@ -139,9 +170,10 @@ export default function JobsPage() {
     setLocationQuery('');
   };
 
-  const getCompanyInitials = (company: string) => {
-    if (!company) return 'IN';
-    return company.substring(0, 2).toUpperCase();
+  const truncateDescription = (text: string, maxLength: number = 100) => {
+    if (!text) return '';
+    if (text.length <= maxLength) return text;
+    return text.substring(0, maxLength) + '...';
   };
 
   if (isLoading) {
@@ -296,64 +328,111 @@ export default function JobsPage() {
           </div>
         ) : (
           <div className="space-y-4">
-            {filteredJobs.map((job) => (
-              <Link
-                key={job.id}
-                href={`/opportunities/jobs/${job.id}`}
-                className="block bg-white border border-gray-200 rounded-lg p-5 hover:shadow-md hover:border-gray-300 transition-all group"
-              >
-                <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
-                  <div className="flex-1">
-                    <div className="flex items-start gap-3">
-                      <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center text-white font-bold text-sm flex-shrink-0">
-                        {getCompanyInitials(job.company)}
-                      </div>
-                      
-                      <div className="flex-1">
-                        <h3 className="font-semibold text-gray-900 group-hover:text-blue-600 transition text-lg">
-                          {job.title}
-                        </h3>
-                        
-                        <div className="flex flex-wrap items-center gap-3 mt-1 text-sm text-gray-500">
-                          <span className="font-medium text-gray-700">{job.company}</span>
-                          <span className="flex items-center gap-1">
-                            <MapPin size={14} />
-                            {job.location}
-                          </span>
-                          <span className="capitalize">{job.workMode}</span>
+            {filteredJobs.map((job) => {
+              const hasLogoError = imageErrors[job.id];
+              const description = truncateDescription(job.description || '');
+              
+              return (
+                <Link
+                  key={job.id}
+                  href={`/opportunities/jobs/${job.id}`}
+                  className="block bg-white border border-gray-200 rounded-lg p-5 hover:shadow-md hover:border-gray-300 transition-all group"
+                >
+                  <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
+                    <div className="flex-1">
+                      <div className="flex items-start gap-4">
+                        {/* Company Logo */}
+                        <div className="flex-shrink-0">
+                          {!hasLogoError && job.companyLogo ? (
+                            <div className="w-14 h-14 rounded-xl overflow-hidden bg-gray-50 border border-gray-100 flex items-center justify-center shadow-sm group-hover:shadow-md transition-all">
+                              <img
+                                src={job.companyLogo}
+                                alt={`${job.company} logo`}
+                                className="w-12 h-12 object-contain"
+                                loading="lazy"
+                                onError={() => handleImageError(job.id)}
+                              />
+                            </div>
+                          ) : (
+                            <div className={`w-14 h-14 rounded-xl bg-gradient-to-br ${getCompanyColor(job.company)} flex items-center justify-center shadow-sm group-hover:shadow-md transition-all`}>
+                              <span className="text-white font-bold text-lg">
+                                {getCompanyInitials(job.company)}
+                              </span>
+                            </div>
+                          )}
                         </div>
                         
-                        {job.skills && job.skills.length > 0 && (
-                          <div className="flex flex-wrap gap-2 mt-3">
-                            {job.skills.slice(0, 4).map((skill) => (
-                              <span key={skill} className="text-xs px-2 py-0.5 bg-gray-100 text-gray-600 rounded">
-                                {skill}
-                              </span>
-                            ))}
-                            {job.skills.length > 4 && (
-                              <span className="text-xs px-2 py-0.5 bg-gray-100 text-gray-500 rounded">
-                                +{job.skills.length - 4}
-                              </span>
+                        <div className="flex-1">
+                          {/* Job Title with Underline on Hover */}
+                          <h3 className="font-bold text-gray-900 group-hover:text-blue-600 group-hover:underline transition text-lg">
+                            {job.title}
+                          </h3>
+                          
+                          {/* Company Name */}
+                          <div className="flex items-center gap-2 mt-1">
+                            <Building2 size={14} className="text-gray-400" />
+                            <span className="text-sm font-medium text-gray-700">{job.company}</span>
+                            {job.isVerified && (
+                              <span className="text-xs bg-green-50 text-green-700 px-1.5 py-0.5 rounded-full">✓ Verified</span>
                             )}
                           </div>
-                        )}
+                          
+                          {/* Location and Work Mode */}
+                          <div className="flex flex-wrap items-center gap-3 mt-2 text-sm text-gray-500">
+                            <span className="flex items-center gap-1">
+                              <MapPin size={14} />
+                              {job.location}
+                            </span>
+                            <span className="capitalize px-2 py-0.5 bg-gray-100 rounded-full text-xs">
+                              {job.workMode}
+                            </span>
+                          </div>
+                          
+                          {/* Description Line */}
+                          {description && (
+                            <p className="text-sm text-gray-500 mt-2 line-clamp-2">
+                              {description}
+                            </p>
+                          )}
+                          
+                          {/* Skills Tags */}
+                          {job.skills && job.skills.length > 0 && (
+                            <div className="flex flex-wrap gap-2 mt-3">
+                              {job.skills.slice(0, 4).map((skill) => (
+                                <span key={skill} className="text-xs px-2 py-1 bg-gray-100 text-gray-600 rounded-full">
+                                  {skill}
+                                </span>
+                              ))}
+                              {job.skills.length > 4 && (
+                                <span className="text-xs px-2 py-1 bg-gray-100 text-gray-500 rounded-full">
+                                  +{job.skills.length - 4}
+                                </span>
+                              )}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                    
+                    {/* Right side - Meta Info with Bold Arrow */}
+                    <div className="flex flex-row md:flex-col items-center md:items-end gap-3 md:gap-2">
+                      <span className="text-xs text-gray-400 bg-gray-100 px-2 py-1 rounded">
+                        {formatDate(job.createdAt)}
+                      </span>
+                      <span className="text-xs text-gray-500">Full Time</span>
+                      {job.salary && (
+                        <span className="text-xs font-semibold text-green-600">{job.salary}</span>
+                      )}
+                      {/* Bold Arrow Icon */}
+                      <div className="flex items-center gap-1 text-blue-600 font-semibold text-sm group-hover:gap-2 transition-all duration-300">
+                        <span>View Job</span>
+                        <ChevronRight size={16} className="font-bold" />
                       </div>
                     </div>
                   </div>
-                  
-                  <div className="flex flex-row md:flex-col items-center md:items-end gap-3 md:gap-1">
-                    <span className="text-xs text-gray-400 bg-gray-100 px-2 py-1 rounded">
-                      {formatDate(job.createdAt)}
-                    </span>
-                    <span className="text-xs text-gray-500">Full Time</span>
-                    {job.salary && (
-                      <span className="text-xs text-green-600 font-medium">{job.salary}</span>
-                    )}
-                    <ChevronRight size={16} className="text-gray-300 group-hover:text-blue-500 transition hidden md:block" />
-                  </div>
-                </div>
-              </Link>
-            ))}
+                </Link>
+              );
+            })}
           </div>
         )}
       </div>

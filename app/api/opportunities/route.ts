@@ -29,12 +29,27 @@ export async function GET(request: NextRequest) {
     
     console.log(`Found ${opportunities.length} opportunities`);
     
-    return NextResponse.json(opportunities);
+    // Return response with no-cache headers
+    return NextResponse.json(opportunities, {
+      headers: {
+        'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
+        'Pragma': 'no-cache',
+        'Expires': '0',
+        'Surrogate-Control': 'no-store'
+      }
+    });
   } catch (error) {
     console.error('Error fetching opportunities:', error);
     return NextResponse.json(
       { error: 'Failed to fetch opportunities' },
-      { status: 500 }
+      { 
+        status: 500,
+        headers: {
+          'Cache-Control': 'no-store, no-cache, must-revalidate',
+          'Pragma': 'no-cache',
+          'Expires': '0'
+        }
+      }
     );
   }
 }
