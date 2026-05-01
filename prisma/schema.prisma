@@ -73,7 +73,7 @@ model Opportunity {
   @@index([published])
 }
 
-// Anonymous view tracking
+// Anonymous view tracking for opportunities
 model OpportunityView {
   id            String   @id @default(cuid())
   opportunityId String
@@ -86,7 +86,7 @@ model OpportunityView {
   @@index([sessionId])
 }
 
-// Anonymous click tracking
+// Anonymous click tracking for opportunities
 model OpportunityClick {
   id            String   @id @default(cuid())
   opportunityId String
@@ -165,7 +165,7 @@ model ContactMessage {
   @@index([createdAt])
 }
 
-// Admin users (for future)
+// Admin users
 model Admin {
   id        String    @id @default(cuid())
   email     String    @unique
@@ -178,7 +178,7 @@ model Admin {
   @@index([email])
 }
 
-// Daily stats for analytics dashboard
+// Daily stats for analytics dashboard (UPDATED with blog fields)
 model DailyStat {
   id            String   @id @default(cuid())
   date          DateTime @unique
@@ -187,10 +187,81 @@ model DailyStat {
   totalClicks   Int      @default(0)
   applications  Int      @default(0)
   newSubscribers Int     @default(0)
+  
+  // Blog specific stats
+  blogViews       Int      @default(0)
+  blogClicks      Int      @default(0)
+  uniqueBlogReaders Int    @default(0)
+  
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
   @@index([date])
+}
+
+// BLOG MODELS - Complete blog analytics system
+
+model Blog {
+  id          String   @id @default(cuid())
+  title       String
+  slug        String   @unique
+  content     String?
+  excerpt     String?
+  coverImage  String?
+  author      String?  @default("Admin")
+  category    String?
+  tags        String[]
+  published   Boolean  @default(true)
+  publishedAt DateTime @default(now())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  // Analytics counters
+  views       Int      @default(0)
+  clicks      Int      @default(0)
+  avgReadTime Int?     // Average time spent reading in seconds
+  
+  // Relations
+  viewsLog    BlogView[]
+  clicksLog   BlogClick[]
+  
+  @@index([slug])
+  @@index([published])
+  @@index([category])
+  @@index([publishedAt])
+}
+
+model BlogView {
+  id        String   @id @default(cuid())
+  blogId    String
+  sessionId String?
+  ipAddress String?
+  userAgent String?
+  referrer  String?
+  readTime  Int?     // Time spent on page in seconds
+  viewedAt  DateTime @default(now())
+  
+  blog      Blog     @relation(fields: [blogId], references: [id], onDelete: Cascade)
+  
+  @@index([blogId])
+  @@index([sessionId])
+  @@index([viewedAt])
+}
+
+model BlogClick {
+  id        String   @id @default(cuid())
+  blogId    String
+  sessionId String?
+  targetUrl String   // Where the click went (external link, internal link, etc.)
+  linkText  String?  // Text of the clicked link
+  linkType  String?  // "external", "internal", "download", etc.
+  clickedAt DateTime @default(now())
+  
+  blog      Blog     @relation(fields: [blogId], references: [id], onDelete: Cascade)
+  
+  @@index([blogId])
+  @@index([sessionId])
+  @@index([clickedAt])
 }
 
 // NEWSLETTER / EMAIL SUBSCRIBERS
@@ -208,7 +279,7 @@ model Subscriber {
   // Email marketing preferences
   preferences   Json?     // Store preferences as JSON (categories, frequency, etc.)
   
-  // NEW: Job & Internship Preferences
+  // Job & Internship Preferences
   interestedIn  String?   // "jobs", "internships", or null (can also be comma-separated if multiple allowed)
   frequency     String?   // "daily", "weekly", "monthly"
   
@@ -231,7 +302,6 @@ model Subscriber {
   @@index([interestedIn])
   @@index([frequency])
 }
-
 
 // Newsletter campaigns (for admin to send emails)
 model NewsletterCampaign {

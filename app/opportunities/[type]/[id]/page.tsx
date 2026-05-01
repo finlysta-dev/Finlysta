@@ -3,7 +3,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
-import Image from 'next/image';
 import {
   ArrowLeft, MapPin, Clock, Building2, Calendar,
   CheckCircle, Bookmark, Share2, Briefcase, Zap,
@@ -72,10 +71,19 @@ export default function OpportunityDetailPage() {
 
   const trackView = async () => {
     try {
-      await fetch('/api/track-opportunity-view', {
+      let sessionId = localStorage.getItem('visitor_session_id');
+      if (!sessionId) {
+        sessionId = `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+        localStorage.setItem('visitor_session_id', sessionId);
+      }
+
+      await fetch('/api/analytics/opportunity-view', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ opportunityId: id })
+        body: JSON.stringify({ 
+          slug: opportunity?.slug,
+          sessionId 
+        })
       });
       setViewTracked(true);
       if (opportunity) {
@@ -137,14 +145,41 @@ export default function OpportunityDetailPage() {
   };
 
   const handleApply = async () => {
-    await fetch('/api/track-opportunity-click', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ opportunityId: id })
-    });
-    
-    if (opportunity?.applyLink) {
-      window.open(opportunity.applyLink, '_blank');
+    try {
+      let sessionId = localStorage.getItem('visitor_session_id');
+      if (!sessionId) {
+        sessionId = `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+        localStorage.setItem('visitor_session_id', sessionId);
+      }
+      
+      // Track the click using the analytics API
+      await fetch('/api/analytics/opportunity-click', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          opportunityId: opportunity?.id,
+          sessionId 
+        })
+      });
+      
+      // Update local state
+      if (opportunity) {
+        setOpportunity({
+          ...opportunity,
+          applyClicks: (opportunity.applyClicks || 0) + 1
+        });
+      }
+      
+      // Open the apply link in a new tab
+      if (opportunity?.applyLink) {
+        window.open(opportunity.applyLink, '_blank');
+      }
+    } catch (error) {
+      console.error('Failed to track click:', error);
+      // Still open the link even if tracking fails
+      if (opportunity?.applyLink) {
+        window.open(opportunity.applyLink, '_blank');
+      }
     }
   };
 
@@ -170,7 +205,6 @@ export default function OpportunityDetailPage() {
     return `${Math.floor(diffDays / 30)} months ago`;
   };
 
-  // ✅ FIXED: Added explicit return type to resolve TypeScript error
   const formatStipend = (salary: string): string | null => {
     if (!salary) return null;
     
@@ -197,7 +231,6 @@ export default function OpportunityDetailPage() {
       return `₹${amount.toLocaleString()}`;
     }
     
-    // ✅ FIXED: If it contains '/month', remove it and call recursively
     if (salary.includes('/month')) {
       const cleanSalary = salary.replace('/month', '');
       return formatStipend(cleanSalary);
@@ -331,7 +364,7 @@ export default function OpportunityDetailPage() {
           
           <div className="px-6 pb-6">
             <div className="flex items-end -mt-12 mb-4">
-              {/* Company Logo - Fixed size and containment */}
+              {/* Company Logo */}
               <div className="w-24 h-24 rounded-xl bg-white border-4 border-white shadow-lg flex-shrink-0 overflow-hidden flex items-center justify-center">
                 {!logoError && opportunity.companyLogo ? (
                   <div className="w-full h-full flex items-center justify-center p-2">
@@ -384,7 +417,7 @@ export default function OpportunityDetailPage() {
 
         {/* Two Column Layout */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Main Content - Left Column (2/3) */}
+          {/* Main Content - Left Column */}
           <div className="lg:col-span-2 space-y-6">
             
             {/* Quick Info Cards */}
@@ -511,7 +544,7 @@ export default function OpportunityDetailPage() {
             )}
           </div>
 
-          {/* Sidebar - Right Column (1/3) */}
+          {/* Sidebar - Right Column */}
           <div className="space-y-6">
             {/* Apply Card */}
             <div className="sticky top-24">

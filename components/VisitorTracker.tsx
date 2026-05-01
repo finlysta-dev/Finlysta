@@ -7,9 +7,6 @@ export default function VisitorTracker() {
   const pathname = usePathname();
 
   useEffect(() => {
-    // Only run in browser, not during build/SSR
-    if (typeof window === 'undefined') return;
-    
     const trackVisit = async () => {
       try {
         // Get or create session ID
@@ -18,36 +15,55 @@ export default function VisitorTracker() {
           sessionId = `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
           localStorage.setItem('visitor_session_id', sessionId);
         }
-
-        // Get IP address (using free API)
-        let ipAddress = '127.0.0.1';
-        try {
-          const ipResponse = await fetch('https://api.ipify.org?format=json');
-          const ipData = await ipResponse.json();
-          ipAddress = ipData.ip;
-        } catch (error) {
-          console.log('Using local IP');
-        }
-
-        // Send tracking data to your API
-        await fetch('/api/track', {
+        
+        // Track page view
+        await fetch('/api/analytics/track', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
+            sessionId,
             page: pathname,
-            sessionId: sessionId,
-            ipAddress: ipAddress,
+            referrer: document.referrer,
             userAgent: navigator.userAgent,
-            timestamp: new Date().toISOString()
-          })
+          }),
         });
+        
+        // Track opportunity view if on opportunity page
+        // Check for /opportunities/[slug] or /jobs/[slug] pattern
+        const opportunityMatch = pathname?.match(/\/(opportunities|jobs)\/([^\/]+)/);
+        if (opportunityMatch) {
+          const slug = opportunityMatch[2];
+          await fetch('/api/analytics/opportunity-view', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              slug,
+              sessionId,
+            }),
+          });
+        }
+        
+        // Track blog view if on blog page
+        const blogMatch = pathname?.match(/\/blog\/([^\/]+)/);
+        if (blogMatch) {
+          const blogSlug = blogMatch[1];
+          await fetch('/api/analytics/blog-view', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              blogSlug,
+              sessionId,
+              pageUrl: pathname,
+            }),
+          });
+        }
       } catch (error) {
-        console.error('Tracking failed:', error);
+        console.error('Tracking error:', error);
       }
     };
-
+    
     trackVisit();
   }, [pathname]);
-
+  
   return null;
 }
