@@ -19,9 +19,9 @@ export const viewport = {
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://www.finlysta.com'),
-  title: 'Entry Level Financial Analyst Jobs & Internships | Finlysta - Start Your Finance Career',
+  // ✅ FIXED: Shortened title (under 580 pixels)
+  title: 'Entry Level Financial Analyst Jobs & Internships | Finlysta',
   description: 'Find entry level financial analyst jobs and internships in India. Start your finance career with paid internships and fresher jobs. 100% free for students.',
-  // ✅ FIXED: Reduced from 30+ to 15 high-quality keywords
   keywords: 'entry level financial analyst jobs India, financial analyst internship for freshers, junior financial analyst jobs, finance internships India, finance jobs for freshers, FP&A analyst jobs, financial reporting analyst jobs, remote financial analyst jobs, finance internships with stipend, MBA finance fresher jobs',
   authors: [{ name: 'Finlysta' }],
   robots: {
@@ -105,9 +105,8 @@ export default function RootLayout({
         <meta name="referrer" content="strict-origin-when-cross-origin" />
         <meta name="format-detection" content="telephone=no, date=no, email=no, address=no" />
         
-        {/* SEO Meta Tags */}
+        {/* SEO Meta Tags - ✅ Fixed language markup */}
         <meta name="robots" content="index, follow" />
-        <meta name="language" content="English" />
         <meta name="revisit-after" content="7 days" />
         <meta name="geo.region" content="IN" />
         <meta name="geo.placename" content="India" />

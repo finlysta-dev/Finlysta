@@ -50,6 +50,8 @@ export default function OpportunityDetailPage() {
   const [error, setError] = useState<string | null>(null);
   const [saved, setSaved] = useState(false);
   const [viewTracked, setViewTracked] = useState(false);
+  const [logoError, setLogoError] = useState(false);
+  const [relatedLogosError, setRelatedLogosError] = useState<{ [key: string]: boolean }>({});
 
   useEffect(() => {
     if (id) {
@@ -104,6 +106,7 @@ export default function OpportunityDetailPage() {
       
       if (found) {
         setOpportunity(found);
+        setLogoError(false);
       } else {
         setError('Opportunity not found');
       }
@@ -169,14 +172,36 @@ export default function OpportunityDetailPage() {
 
   const formatStipend = (salary: string) => {
     if (!salary) return null;
-    const match = salary.match(/(\d+),?(\d+)?/);
-    if (match) {
-      const amount = parseInt(match[0].replace(/,/g, ''));
-      if (amount >= 1000) {
-        return `₹${(amount / 1000).toFixed(0)}k/month`;
-      }
+    
+    if (salary.includes('₹') && !salary.includes('/month')) {
+      return salary;
     }
-    return salary.includes('₹') ? salary : `₹${salary}`;
+    
+    const rangeMatch = salary.match(/(\d+)\s*-\s*(\d+)/);
+    if (rangeMatch) {
+      const min = parseInt(rangeMatch[1]);
+      const max = parseInt(rangeMatch[2]);
+      if (min >= 1000 && max >= 1000) {
+        return `₹${min/1000}k - ${max/1000}k`;
+      }
+      return `₹${min.toLocaleString()} - ${max.toLocaleString()}`;
+    }
+    
+    const singleMatch = salary.match(/(\d+)/);
+    if (singleMatch) {
+      const amount = parseInt(singleMatch[1]);
+      if (amount >= 1000) {
+        return `₹${amount/1000}k`;
+      }
+      return `₹${amount.toLocaleString()}`;
+    }
+    
+    if (salary.includes('/month')) {
+      const cleanSalary = salary.replace('/month', '');
+      return formatStipend(cleanSalary);
+    }
+    
+    return salary;
   };
 
   const getLocationDisplay = () => {
@@ -197,10 +222,34 @@ export default function OpportunityDetailPage() {
     return (words[0][0] + words[1][0]).toUpperCase();
   };
 
+  const getCompanyColor = (company: string) => {
+    const colors = [
+      'from-blue-600 to-blue-800',
+      'from-emerald-600 to-teal-600',
+      'from-purple-600 to-indigo-600',
+      'from-red-600 to-rose-600',
+      'from-orange-600 to-amber-600',
+      'from-cyan-600 to-sky-600',
+    ];
+    const index = company.length % colors.length;
+    return colors[index];
+  };
+
+  const handleRelatedLogoError = (id: string) => {
+    setRelatedLogosError(prev => ({ ...prev, [id]: true }));
+  };
+
+  const formatPoints = (text: string) => {
+    if (!text) return [];
+    const points = text.split(/\.\s+/).filter(p => p.trim().length > 0);
+    return points.map(point => point.trim());
+  };
+
   const getRelatedOpportunities = () => {
     if (!allOpportunities.length || !opportunity) return [];
     return allOpportunities
       .filter(opp => opp.type === opportunity.type && opp.id !== opportunity.id)
+      .sort((a, b) => new Date(b.postedAt).getTime() - new Date(a.postedAt).getTime())
       .slice(0, 3);
   };
 
@@ -236,6 +285,9 @@ export default function OpportunityDetailPage() {
   }
 
   const relatedOpportunities = getRelatedOpportunities();
+  const responsibilitiesPoints = formatPoints(opportunity.responsibilities || '');
+  const qualificationsPoints = formatPoints(opportunity.qualifications || '');
+  const benefitsPoints = formatPoints(opportunity.benefits || '');
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -273,14 +325,28 @@ export default function OpportunityDetailPage() {
         
         {/* Hero Section with Company Info */}
         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden mb-6">
-          {/* Cover Banner */}
           <div className="h-24 bg-gradient-to-r from-blue-500/10 to-purple-500/10"></div>
           
           <div className="px-6 pb-6">
-            {/* Company Logo & Title */}
             <div className="flex items-end -mt-12 mb-4">
-              <div className="w-24 h-24 rounded-xl bg-gradient-to-br from-gray-900 to-gray-700 flex items-center justify-center text-white font-bold text-2xl shadow-lg flex-shrink-0 border-4 border-white">
-                {getCompanyInitials(opportunity.company)}
+              {/* Company Logo - Fixed size and containment */}
+              <div className="w-24 h-24 rounded-xl bg-white border-4 border-white shadow-lg flex-shrink-0 overflow-hidden flex items-center justify-center">
+                {!logoError && opportunity.companyLogo ? (
+                  <div className="w-full h-full flex items-center justify-center p-2">
+                    <img
+                      src={opportunity.companyLogo}
+                      alt={opportunity.company}
+                      className="max-w-full max-h-full object-contain"
+                      onError={() => setLogoError(true)}
+                    />
+                  </div>
+                ) : (
+                  <div className={`w-full h-full bg-gradient-to-br ${getCompanyColor(opportunity.company)} flex items-center justify-center`}>
+                    <span className="text-white font-bold text-2xl">
+                      {getCompanyInitials(opportunity.company)}
+                    </span>
+                  </div>
+                )}
               </div>
             </div>
             
@@ -391,58 +457,61 @@ export default function OpportunityDetailPage() {
               </div>
             )}
 
-            {/* Responsibilities */}
-            {opportunity.responsibilities && (
+            {/* Key Responsibilities */}
+            {responsibilitiesPoints.length > 0 && (
               <div className="bg-white rounded-xl border border-gray-100 p-6">
                 <h2 className="text-lg font-bold text-gray-900 mb-4">Key Responsibilities</h2>
-                <div className="prose prose-sm max-w-none">
-                  {opportunity.responsibilities.split('\n').map((para, idx) => (
-                    <p key={idx} className="text-gray-600 text-sm leading-relaxed mb-3">
-                      {para}
-                    </p>
+                <ul className="space-y-2">
+                  {responsibilitiesPoints.map((point, idx) => (
+                    <li key={idx} className="flex items-start gap-2 text-gray-600 text-sm">
+                      <span className="text-blue-500 mt-0.5">•</span>
+                      <span className="leading-relaxed">{point}</span>
+                    </li>
                   ))}
-                </div>
+                </ul>
               </div>
             )}
 
             {/* Qualifications */}
-            {opportunity.qualifications && (
+            {qualificationsPoints.length > 0 && (
               <div className="bg-white rounded-xl border border-gray-100 p-6">
                 <div className="flex items-center gap-2 mb-4">
                   <GraduationCap size={18} className="text-purple-500" />
                   <h2 className="text-lg font-bold text-gray-900">Qualifications</h2>
                 </div>
-                <div className="prose prose-sm max-w-none">
-                  {opportunity.qualifications.split('\n').map((para, idx) => (
-                    <p key={idx} className="text-gray-600 text-sm leading-relaxed mb-3">
-                      {para}
-                    </p>
+                <ul className="space-y-2">
+                  {qualificationsPoints.map((point, idx) => (
+                    <li key={idx} className="flex items-start gap-2 text-gray-600 text-sm">
+                      <span className="text-purple-500 mt-0.5">•</span>
+                      <span className="leading-relaxed">{point}</span>
+                    </li>
                   ))}
-                </div>
+                </ul>
               </div>
             )}
 
-            {/* Benefits */}
-            {opportunity.benefits && (
+            {/* Perks & Benefits */}
+            {benefitsPoints.length > 0 && (
               <div className="bg-white rounded-xl border border-gray-100 p-6">
                 <div className="flex items-center gap-2 mb-4">
                   <Award size={18} className="text-yellow-500" />
                   <h2 className="text-lg font-bold text-gray-900">Perks & Benefits</h2>
                 </div>
-                <div className="prose prose-sm max-w-none">
-                  {opportunity.benefits.split('\n').map((para, idx) => (
-                    <p key={idx} className="text-gray-600 text-sm leading-relaxed mb-3">
-                      {para}
-                    </p>
+                <ul className="space-y-2">
+                  {benefitsPoints.map((point, idx) => (
+                    <li key={idx} className="flex items-start gap-2 text-gray-600 text-sm">
+                      <span className="text-yellow-500 mt-0.5">•</span>
+                      <span className="leading-relaxed">{point}</span>
+                    </li>
                   ))}
-                </div>
+                </ul>
               </div>
             )}
           </div>
 
           {/* Sidebar - Right Column (1/3) */}
           <div className="space-y-6">
-            {/* Apply Card - Sticky */}
+            {/* Apply Card */}
             <div className="sticky top-24">
               <div className="bg-white rounded-xl border border-gray-100 p-6 shadow-sm">
                 <div className="text-center mb-4">
@@ -477,33 +546,50 @@ export default function OpportunityDetailPage() {
               </h2>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              {relatedOpportunities.map((related) => (
-                <Link
-                  key={related.id}
-                  href={`/opportunities/${related.type === 'job' ? 'jobs' : 'internships'}/${related.id}`}
-                  className="block group"
-                >
-                  <div className="bg-white rounded-xl border border-gray-100 p-4 hover:border-blue-200 hover:shadow-md transition-all h-full">
-                    <div className="flex items-start gap-3">
-                      <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center text-xs font-bold text-gray-700 flex-shrink-0">
-                        {getCompanyInitials(related.company)}
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <h3 className="text-sm font-semibold text-gray-900 group-hover:text-blue-600 line-clamp-1">
-                          {related.title}
-                        </h3>
-                        <p className="text-xs text-gray-500 mt-0.5">{related.company}</p>
-                        <div className="flex items-center gap-2 mt-2">
-                          <div className="flex items-center gap-1">
-                            <MapPin size={10} className="text-gray-400" />
-                            <span className="text-xs text-gray-500 truncate">{related.location.split(',')[0]}</span>
+              {relatedOpportunities.map((related) => {
+                const hasLogoError = relatedLogosError[related.id];
+                return (
+                  <Link
+                    key={related.id}
+                    href={`/opportunities/${related.type === 'job' ? 'jobs' : 'internships'}/${related.id}`}
+                    className="block group"
+                  >
+                    <div className="bg-white rounded-xl border border-gray-100 p-4 hover:border-blue-200 hover:shadow-md transition-all h-full">
+                      <div className="flex items-start gap-3">
+                        {/* Related Company Logo - Fixed size */}
+                        <div className="flex-shrink-0">
+                          {!hasLogoError && related.companyLogo ? (
+                            <div className="w-10 h-10 rounded-lg bg-gray-50 flex items-center justify-center p-1.5">
+                              <img
+                                src={related.companyLogo}
+                                alt={related.company}
+                                className="max-w-full max-h-full object-contain"
+                                onError={() => handleRelatedLogoError(related.id)}
+                              />
+                            </div>
+                          ) : (
+                            <div className={`w-10 h-10 rounded-lg bg-gradient-to-br ${getCompanyColor(related.company)} flex items-center justify-center text-white font-bold text-xs`}>
+                              {getCompanyInitials(related.company)}
+                            </div>
+                          )}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <h3 className="text-sm font-semibold text-gray-900 group-hover:text-blue-600 line-clamp-1">
+                            {related.title}
+                          </h3>
+                          <p className="text-xs text-gray-500 mt-0.5">{related.company}</p>
+                          <div className="flex items-center gap-2 mt-2">
+                            <div className="flex items-center gap-1">
+                              <MapPin size={10} className="text-gray-400" />
+                              <span className="text-xs text-gray-500 truncate">{related.location.split(',')[0]}</span>
+                            </div>
                           </div>
                         </div>
                       </div>
                     </div>
-                  </div>
-                </Link>
-              ))}
+                  </Link>
+                );
+              })}
             </div>
           </div>
         )}

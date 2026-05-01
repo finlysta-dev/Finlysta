@@ -204,7 +204,6 @@ export default function HomePageContent() {
             
             {/* Centered Content */}
             <div className="text-center">
-              {/* New Badge - India's Only Job Board for Entry-Level Financial Analysts */}
               <div className="inline-flex items-center gap-2 bg-gradient-to-r from-[#FFD700]/20 to-[#FFA500]/20 rounded-full px-4 py-1.5 mb-6">
                 <Target size={14} className="text-[#FFD700]" />
                 <span className="text-xs font-semibold text-[#0A2540]">India's Only Job Board for Entry-Level Financial Analysts</span>
@@ -221,7 +220,6 @@ export default function HomePageContent() {
                 </p>
               </div>
 
-              {/* Two Button Layout */}
               <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-8">
                 <button
                   onClick={handleFindJobs}
@@ -246,7 +244,6 @@ export default function HomePageContent() {
                 </button>
               </div>
 
-              {/* Explore Roles Section - Changed from "Popular Searches" */}
               <div className="mt-8 pt-4 border-t border-gray-200">
                 <p className="text-sm text-slate-500 mb-3">🔥 Explore Roles:</p>
                 <div className="flex flex-wrap justify-center gap-2">
@@ -268,10 +265,8 @@ export default function HomePageContent() {
           </div>
         </section>
 
-        {/* 🔥 JOBS SECTION - TrendingInternships */}
+        {/* TRENDING OPPORTUNITIES SECTION */}
         <TrendingInternships />
-
-        {/* POPULAR SEARCHES - Already above in hero section */}
 
         {/* CAREER PATH - Roadmap Image Section */}
         <section className="py-12 md:py-16 bg-white">
@@ -289,7 +284,6 @@ export default function HomePageContent() {
               </p>
             </div>
             
-            {/* Roadmap Image */}
             <div className="relative overflow-hidden rounded-2xl shadow-xl border border-gray-100 bg-white p-4">
               <div className="relative w-full">
                 <Image
@@ -315,7 +309,92 @@ export default function HomePageContent() {
         {/* LEARNING SECTION - FinanceTopics */}
         <FinanceTopics />
 
-        {/* NEWSLETTER SECTION - Updated Heading */}
+        {/* SEO CONTENT SECTION - UPDATED */}
+        <section className="py-16 bg-white">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="max-w-4xl mx-auto">
+              <h1 className="text-3xl md:text-4xl font-bold text-[#0A2540] mb-6">
+                Entry Level Financial Analyst Jobs & Internships in India
+              </h1>
+              
+              <div className="space-y-5 text-gray-600 leading-relaxed">
+                <p>
+                  <strong className="text-[#0A2540]">Finlysta</strong> is India's dedicated job board for 
+                  <strong> entry level financial analyst jobs and internships</strong>. Whether you're a fresh graduate 
+                  or a finance student looking for your first break, we connect you with verified opportunities at 
+                  top companies across the country.
+                </p>
+                
+                <p>
+                  Unlike traditional job portals filled with senior-level positions, Finlysta focuses exclusively on 
+                  <strong> fresher-friendly roles</strong>. Every listing is manually verified by our team — no spam, 
+                  no ghost jobs, just real opportunities for aspiring financial analysts.
+                </p>
+                
+                <h2 className="text-2xl font-bold text-[#0A2540] mt-8 mb-4">
+                  Why Choose Finlysta for Your Finance Career?
+                </h2>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                  <div className="flex items-start gap-3 p-3 bg-gray-50 rounded-lg">
+                    <CheckCircle size={18} className="text-green-500 flex-shrink-0 mt-0.5" />
+                    <div>
+                      <h3 className="font-semibold text-[#0A2540]">100% Free for Job Seekers</h3>
+                      <p className="text-sm text-gray-500">No hidden charges. Ever.</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-3 p-3 bg-gray-50 rounded-lg">
+                    <Shield size={18} className="text-blue-500 flex-shrink-0 mt-0.5" />
+                    <div>
+                      <h3 className="font-semibold text-[#0A2540]">Manually Verified Listings</h3>
+                      <p className="text-sm text-gray-500">Every job is checked before listing.</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-3 p-3 bg-gray-50 rounded-lg">
+                    <Target size={18} className="text-[#FFD700] flex-shrink-0 mt-0.5" />
+                    <div>
+                      <h3 className="font-semibold text-[#0A2540]">Only Entry-Level Roles</h3>
+                      <p className="text-sm text-gray-500">No senior positions. Just fresher jobs.</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-3 p-3 bg-gray-50 rounded-lg">
+                    <Clock size={18} className="text-orange-500 flex-shrink-0 mt-0.5" />
+                    <div>
+                      <h3 className="font-semibold text-[#0A2540]">Updated Daily</h3>
+                      <p className="text-sm text-gray-500">Fresh opportunities every day.</p>
+                    </div>
+                  </div>
+                </div>
+                
+                <h2 className="text-2xl font-bold text-[#0A2540] mt-8 mb-4">
+                  Top Locations for Finance Jobs in India
+                </h2>
+                
+                <p>
+                  We feature entry-level financial analyst opportunities across major financial hubs including
+                  <strong> Mumbai, Bangalore, Delhi NCR, Pune, Hyderabad, Chennai, Kolkata, and Ahmedabad</strong>.
+                  We also list remote and hybrid roles for candidates seeking work-from-home flexibility.
+                </p>
+                
+                <div className="bg-gray-50 p-6 rounded-xl mt-8">
+                  <h3 className="text-lg font-bold text-[#0A2540] mb-3">Quick Links</h3>
+                  <div className="flex flex-wrap gap-4">
+                    <Link href="/jobs" className="text-blue-600 hover:underline text-sm">Browse All Jobs</Link>
+                    <Link href="/internships" className="text-blue-600 hover:underline text-sm">Browse Internships</Link>
+                    <Link href="/blogs" className="text-blue-600 hover:underline text-sm">Career Blogs</Link>
+                    <Link href="/learn" className="text-blue-600 hover:underline text-sm">Learning Hub</Link>
+                  </div>
+                </div>
+                
+                <p className="text-sm text-gray-400 mt-6 text-center">
+                  Last updated: {new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* NEWSLETTER SECTION */}
         <Newsletter />
 
         {/* FAQ SECTION */}

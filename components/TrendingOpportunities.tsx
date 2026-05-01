@@ -62,7 +62,7 @@ const getLocationDisplay = (location: string, workMode: string) => {
   return `${cleanLocation} (On-site)`;
 };
 
-// Premium salary formatting
+// Proper salary formatting
 const formatSalary = (salary: string | null | undefined) => {
   if (!salary || salary === "Not Disclosed" || salary === "Not disclosed" || salary === "") {
     return null;
@@ -94,22 +94,67 @@ const formatSalary = (salary: string | null | undefined) => {
   return `₹${cleanAmount}`;
 };
 
-// Premium stipend formatting
+// Fixed: Proper stipend formatting - shows /month ONLY if specified in database
 const formatStipend = (stipendAmount: string | null | undefined) => {
   if (!stipendAmount || stipendAmount === "Not Disclosed" || stipendAmount === "Not disclosed" || stipendAmount === "") {
     return null;
   }
-  let cleanAmount = stipendAmount.replace(/₹/g, '').replace(/\/month/g, '').replace(/per month/g, '').trim();
   
-  let numValue = parseInt(cleanAmount.replace(/[^0-9]/g, ''));
-  if (!isNaN(numValue) && numValue > 0) {
-    if (numValue >= 1000) {
-      return `₹${(numValue/1000).toFixed(0)}k/month`;
-    }
-    return `₹${numValue.toLocaleString()}/month`;
+  let originalValue = stipendAmount.toString();
+  let hasMonthSuffix = false;
+  
+  if (originalValue.toLowerCase().includes('/month') || originalValue.toLowerCase().includes('per month')) {
+    hasMonthSuffix = true;
   }
   
-  return `₹${cleanAmount}/month`;
+  let cleanAmount = originalValue;
+  cleanAmount = cleanAmount.replace(/₹/g, '');
+  cleanAmount = cleanAmount.replace(/\/month/g, '').replace(/per month/g, '').trim();
+  
+  if (cleanAmount.toLowerCase().includes('monthly stipend')) {
+    return 'Monthly stipend';
+  }
+  
+  const rangeMatch = cleanAmount.match(/(\d+)\s*[-–]\s*(\d+)/);
+  if (rangeMatch) {
+    const min = parseInt(rangeMatch[1]);
+    const max = parseInt(rangeMatch[2]);
+    if (!isNaN(min) && !isNaN(max)) {
+      let formattedStipend = '';
+      if (min >= 1000 && max >= 1000) {
+        formattedStipend = `₹${min/1000}k - ${max/1000}k`;
+      } else {
+        formattedStipend = `₹${min.toLocaleString()} - ${max.toLocaleString()}`;
+      }
+      if (hasMonthSuffix) {
+        formattedStipend += '/month';
+      }
+      return formattedStipend;
+    }
+  }
+  
+  const singleMatch = cleanAmount.match(/(\d+)/);
+  if (singleMatch) {
+    const amount = parseInt(singleMatch[1]);
+    if (!isNaN(amount)) {
+      let formattedStipend = '';
+      if (amount >= 1000) {
+        formattedStipend = `₹${amount/1000}k`;
+      } else {
+        formattedStipend = `₹${amount.toLocaleString()}`;
+      }
+      if (hasMonthSuffix) {
+        formattedStipend += '/month';
+      }
+      return formattedStipend;
+    }
+  }
+  
+  let result = cleanAmount;
+  if (!result.startsWith('₹')) {
+    result = `₹${result}`;
+  }
+  return result;
 };
 
 const getDescription = (item: Opportunity) => {
@@ -145,7 +190,6 @@ const formatPostedDate = (date: string) => {
   return `${Math.floor(diffDays / 30)}mo`;
 };
 
-// Track opportunity click
 const trackOpportunityClick = async (id: string, type: string) => {
   try {
     await fetch('/api/track-opportunity-click', {
@@ -158,7 +202,6 @@ const trackOpportunityClick = async (id: string, type: string) => {
   }
 };
 
-// Track apply click
 const trackApplyClick = async (id: string, type: string, applyLink: string) => {
   try {
     await fetch('/api/track-opportunity-click', {
@@ -188,7 +231,6 @@ const JobCard = ({ job, imageErrors, handleImageError }: {
   return (
     <div className="group bg-white rounded-xl border border-gray-100 hover:border-gray-200 hover:shadow-lg transition-all duration-300 hover:-translate-y-1 overflow-hidden flex flex-col h-full">
       <div className="p-5 flex flex-col h-full">
-        {/* Header with Company Logo */}
         <div className="flex items-start gap-4 mb-4">
           <div className="flex-shrink-0">
             {!hasLogoError && job.companyLogo ? (
@@ -211,13 +253,11 @@ const JobCard = ({ job, imageErrors, handleImageError }: {
           </div>
 
           <div className="flex-1 min-w-0">
-            {/* Job Title - Clickable Link */}
             <Link href={`/opportunities/jobs/${job.id}`}>
               <h3 className="text-lg font-bold text-gray-900 hover:text-blue-600 hover:underline transition-colors line-clamp-1 mb-1 cursor-pointer">
                 {job.title}
               </h3>
             </Link>
-            {/* Underline line after title */}
             <div className="w-12 h-0.5 bg-blue-500 rounded-full mb-2"></div>
             <div className="flex items-center gap-2 flex-wrap">
               <Building2 size={14} className="text-gray-400" />
@@ -238,7 +278,6 @@ const JobCard = ({ job, imageErrors, handleImageError }: {
           </div>
         </div>
 
-        {/* Key Info Cards */}
         <div className="grid grid-cols-3 gap-2 mb-4">
           <div className="flex items-center gap-2 bg-gray-50 rounded-lg px-3 py-2">
             <MapPin size={14} className="text-emerald-500" />
@@ -260,14 +299,12 @@ const JobCard = ({ job, imageErrors, handleImageError }: {
           )}
         </div>
 
-        {/* Description */}
         {description && (
           <p className="text-sm text-gray-500 leading-relaxed mb-3 line-clamp-2">
             {description}
           </p>
         )}
 
-        {/* Skills Tags */}
         {displaySkills.length > 0 && (
           <div className="flex flex-wrap gap-2 mb-4">
             {displaySkills.map((skill: string, i: number) => (
@@ -283,7 +320,6 @@ const JobCard = ({ job, imageErrors, handleImageError }: {
           </div>
         )}
 
-        {/* Footer with Apply Now - Simple text only */}
         <div className="flex items-center justify-between mt-auto pt-3 border-t border-gray-100">
           <div className="flex items-center gap-1.5 text-xs text-gray-400">
             <Calendar size={12} />
@@ -328,7 +364,6 @@ const InternshipCard = ({ internship, imageErrors, handleImageError }: {
   return (
     <div className="group bg-white rounded-xl border border-gray-100 hover:border-gray-200 hover:shadow-lg transition-all duration-300 hover:-translate-y-1 overflow-hidden flex flex-col h-full">
       <div className="p-5 flex flex-col h-full">
-        {/* Header with Company Logo */}
         <div className="flex items-start gap-4 mb-4">
           <div className="flex-shrink-0">
             {!hasLogoError && internship.companyLogo ? (
@@ -351,13 +386,11 @@ const InternshipCard = ({ internship, imageErrors, handleImageError }: {
           </div>
 
           <div className="flex-1 min-w-0">
-            {/* Internship Title - Clickable Link */}
             <Link href={`/opportunities/internships/${internship.id}`}>
               <h3 className="text-lg font-bold text-gray-900 hover:text-emerald-600 hover:underline transition-colors line-clamp-1 mb-1 cursor-pointer">
                 {internship.title}
               </h3>
             </Link>
-            {/* Underline line after title */}
             <div className="w-12 h-0.5 bg-emerald-500 rounded-full mb-2"></div>
             <div className="flex items-center gap-2 flex-wrap">
               <Building2 size={14} className="text-gray-400" />
@@ -378,7 +411,6 @@ const InternshipCard = ({ internship, imageErrors, handleImageError }: {
           </div>
         </div>
 
-        {/* Key Info Cards */}
         <div className="grid grid-cols-3 gap-2 mb-4">
           <div className="flex items-center gap-2 bg-gray-50 rounded-lg px-3 py-2">
             <MapPin size={14} className="text-emerald-500" />
@@ -398,14 +430,12 @@ const InternshipCard = ({ internship, imageErrors, handleImageError }: {
           )}
         </div>
 
-        {/* Description */}
         {description && (
           <p className="text-sm text-gray-500 leading-relaxed mb-3 line-clamp-2">
             {description}
           </p>
         )}
 
-        {/* Skills Tags */}
         {displaySkills.length > 0 && (
           <div className="flex flex-wrap gap-2 mb-4">
             {displaySkills.map((skill: string, i: number) => (
@@ -421,7 +451,6 @@ const InternshipCard = ({ internship, imageErrors, handleImageError }: {
           </div>
         )}
 
-        {/* Footer with Apply Now - Simple text only */}
         <div className="flex items-center justify-between mt-auto pt-3 border-t border-gray-100">
           <div className="flex items-center gap-1.5 text-xs text-gray-400">
             <Calendar size={12} />
@@ -451,9 +480,10 @@ const InternshipCard = ({ internship, imageErrors, handleImageError }: {
   );
 };
 
-// Main Component
+// Main Component with View More functionality
 export default function TrendingOpportunities() {
-  const [opportunities, setOpportunities] = useState<Opportunity[]>([]);
+  const [allOpportunities, setAllOpportunities] = useState<Opportunity[]>([]);
+  const [visibleCount, setVisibleCount] = useState(6);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [activeFilter, setActiveFilter] = useState<"all" | "jobs" | "internships">("all");
@@ -467,7 +497,7 @@ export default function TrendingOpportunities() {
     setIsLoading(true);
     setError(null);
     try {
-      const res = await fetch('/api/opportunities?limit=20', {
+      const res = await fetch('/api/opportunities?limit=50', {
         cache: 'no-store',
         headers: {
           'Cache-Control': 'no-cache'
@@ -479,14 +509,14 @@ export default function TrendingOpportunities() {
         const sortedData = [...data].sort((a, b) => 
           new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
         );
-        setOpportunities(sortedData);
+        setAllOpportunities(sortedData);
       } else {
-        setOpportunities([]);
+        setAllOpportunities([]);
       }
     } catch (error) {
       console.error("Error fetching opportunities:", error);
       setError("Unable to load opportunities. Please try again later.");
-      setOpportunities([]);
+      setAllOpportunities([]);
     } finally {
       setIsLoading(false);
     }
@@ -497,7 +527,7 @@ export default function TrendingOpportunities() {
   };
 
   const getFilteredData = () => {
-    let filtered = [...opportunities];
+    let filtered = [...allOpportunities];
     if (activeFilter === "jobs") {
       filtered = filtered.filter(opp => opp.type === "job");
     } else if (activeFilter === "internships") {
@@ -507,8 +537,17 @@ export default function TrendingOpportunities() {
   };
 
   const filteredOpportunities = getFilteredData();
-  const jobCount = opportunities.filter(opp => opp.type === "job").length;
-  const internshipCount = opportunities.filter(opp => opp.type === "internship").length;
+  const displayedOpportunities = filteredOpportunities.slice(0, visibleCount);
+  const hasMore = visibleCount < filteredOpportunities.length;
+
+  const handleViewMore = () => {
+    setVisibleCount(prev => prev + 6);
+  };
+
+  const handleRefresh = () => {
+    setVisibleCount(6);
+    fetchData();
+  };
 
   if (isLoading) {
     return (
@@ -554,7 +593,7 @@ export default function TrendingOpportunities() {
     );
   }
 
-  if (opportunities.length === 0) return null;
+  if (allOpportunities.length === 0) return null;
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -563,10 +602,13 @@ export default function TrendingOpportunities() {
         <p className="text-gray-500 text-sm mt-1">Discover the best opportunities matching your skills</p>
       </div>
       
-      {/* Filter Tabs */}
+      {/* Filter Tabs - WITHOUT COUNTS */}
       <div className="flex flex-wrap justify-center gap-2 mb-8">
         <button
-          onClick={() => setActiveFilter("all")}
+          onClick={() => {
+            setActiveFilter("all");
+            setVisibleCount(6);
+          }}
           className={`px-5 py-2 rounded-full text-sm font-semibold transition-all duration-300 ${
             activeFilter === "all" ? "bg-[#0A2540] text-white shadow-md" : "bg-gray-100 text-gray-600 hover:bg-gray-200"
           }`}
@@ -574,7 +616,10 @@ export default function TrendingOpportunities() {
           All
         </button>
         <button
-          onClick={() => setActiveFilter("jobs")}
+          onClick={() => {
+            setActiveFilter("jobs");
+            setVisibleCount(6);
+          }}
           className={`px-5 py-2 rounded-full text-sm font-semibold transition-all duration-300 ${
             activeFilter === "jobs" ? "bg-[#0A2540] text-white shadow-md" : "bg-gray-100 text-gray-600 hover:bg-gray-200"
           }`}
@@ -582,7 +627,10 @@ export default function TrendingOpportunities() {
           Jobs
         </button>
         <button
-          onClick={() => setActiveFilter("internships")}
+          onClick={() => {
+            setActiveFilter("internships");
+            setVisibleCount(6);
+          }}
           className={`px-5 py-2 rounded-full text-sm font-semibold transition-all duration-300 ${
             activeFilter === "internships" ? "bg-[#0A2540] text-white shadow-md" : "bg-gray-100 text-gray-600 hover:bg-gray-200"
           }`}
@@ -594,7 +642,7 @@ export default function TrendingOpportunities() {
       {/* Refresh Button */}
       <div className="flex justify-end mb-4">
         <button
-          onClick={() => fetchData()}
+          onClick={handleRefresh}
           className="flex items-center gap-2 px-3 py-1.5 text-sm text-gray-500 hover:text-gray-700 transition-colors"
         >
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -606,7 +654,7 @@ export default function TrendingOpportunities() {
 
       {/* Cards Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {filteredOpportunities.map((opportunity) => (
+        {displayedOpportunities.map((opportunity) => (
           opportunity.type === "job" ? (
             <JobCard key={opportunity.id} job={opportunity} imageErrors={imageErrors} handleImageError={handleImageError} />
           ) : (
@@ -615,12 +663,19 @@ export default function TrendingOpportunities() {
         ))}
       </div>
 
-      {/* View All Link */}
-      {filteredOpportunities.length > 0 && (
+      {/* View More Button - Stays visible until all opportunities are loaded */}
+      {hasMore && (
         <div className="text-center mt-8">
-          <Link href="/opportunities" className="inline-flex items-center gap-2 text-sm font-medium text-gray-600 hover:text-[#0A2540] transition-colors">
-            View All Opportunities <ChevronRight size={14} />
-          </Link>
+          <button
+            onClick={handleViewMore}
+            className="inline-flex items-center gap-2 px-6 py-3 bg-white border-2 border-[#FFD700] text-[#0A2540] font-semibold rounded-lg hover:bg-[#FFD700]/10 transition-all duration-300"
+          >
+            View More Opportunities
+            <ChevronRight size={16} />
+          </button>
+          <p className="text-xs text-gray-400 mt-2">
+            Showing {displayedOpportunities.length} of {filteredOpportunities.length} opportunities
+          </p>
         </div>
       )}
     </div>
