@@ -170,7 +170,8 @@ export default function OpportunityDetailPage() {
     return `${Math.floor(diffDays / 30)} months ago`;
   };
 
-  const formatStipend = (salary: string) => {
+  // ✅ FIXED: Added explicit return type to resolve TypeScript error
+  const formatStipend = (salary: string): string | null => {
     if (!salary) return null;
     
     if (salary.includes('₹') && !salary.includes('/month')) {
@@ -196,6 +197,7 @@ export default function OpportunityDetailPage() {
       return `₹${amount.toLocaleString()}`;
     }
     
+    // ✅ FIXED: If it contains '/month', remove it and call recursively
     if (salary.includes('/month')) {
       const cleanSalary = salary.replace('/month', '');
       return formatStipend(cleanSalary);
@@ -556,7 +558,7 @@ export default function OpportunityDetailPage() {
                   >
                     <div className="bg-white rounded-xl border border-gray-100 p-4 hover:border-blue-200 hover:shadow-md transition-all h-full">
                       <div className="flex items-start gap-3">
-                        {/* Related Company Logo - Fixed size */}
+                        {/* Related Company Logo */}
                         <div className="flex-shrink-0">
                           {!hasLogoError && related.companyLogo ? (
                             <div className="w-10 h-10 rounded-lg bg-gray-50 flex items-center justify-center p-1.5">
