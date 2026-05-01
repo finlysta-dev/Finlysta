@@ -87,7 +87,7 @@ const TryForFree = () => {
   return (
     <div className="bg-gradient-to-r from-[#0A2540] to-[#1a3a5c] py-16 md:py-20">
       <div className="max-w-4xl mx-auto px-4 text-center">
-        <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-black mb-4">
+        <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-white mb-4">
           Skip the clutter.
         </h2>
         <p className="text-xl md:text-2xl text-gray-200 mb-10">
@@ -209,10 +209,10 @@ export default function HomePageContent() {
                 <span className="text-xs font-semibold text-[#0A2540]">India's Only Job Board for Entry-Level Financial Analysts</span>
               </div>
               
-              <h1 className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-black text-[#0A2540] mb-4 leading-tight">
+              <h2 className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-black text-[#0A2540] mb-4 leading-tight">
                 Find Entry-Level Financial Analyst Jobs & Internships
                 <span className="block bg-gradient-to-r from-[#FFD700] to-[#FFA500] bg-clip-text text-transparent"></span>
-              </h1>
+              </h2>
               
               <div className="max-w-2xl mx-auto space-y-4 mb-8">
                 <p className="text-base sm:text-lg text-slate-600 leading-relaxed">
@@ -441,6 +441,8 @@ export default function HomePageContent() {
                 <li><Link href="/jobs" className="hover:text-[#0A2540] transition-colors">All Jobs</Link></li>
                 <li><Link href="/internships" className="hover:text-[#0A2540] transition-colors">All Internships</Link></li>
                 <li><Link href="/jobs/remote" className="hover:text-[#0A2540] transition-colors">Remote Jobs</Link></li>
+              <li><Link href="/blogs" className="hover:text-[#0A2540] transition-colors">Career Blogs</Link></li>
+              <li><Link href="/learn" className="hover:text-[#0A2540] transition-colors">Learning Hub</Link></li>
               </ul>
             </div>
             <div className="lg:col-span-2">
