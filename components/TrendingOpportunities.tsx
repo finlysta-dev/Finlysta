@@ -62,11 +62,30 @@ const getLocationDisplay = (location: string, workMode: string) => {
   return `${cleanLocation} (On-site)`;
 };
 
+// Check if text contains words that shouldn't have ₹ symbol
+const shouldAddRupeeSymbol = (text: string): boolean => {
+  const noRupeeKeywords = [
+    'paid', 'competitive', 'negotiable', 'unpaid', 
+    'performance-based', 'incentive', 'based on',
+    'as per', 'market', 'standard', 'best in industry',
+    'company standards', 'as per company', 'industry standards'
+  ];
+  
+  const lowerText = text.toLowerCase();
+  return !noRupeeKeywords.some(keyword => lowerText.includes(keyword));
+};
+
 // Proper salary formatting
 const formatSalary = (salary: string | null | undefined) => {
   if (!salary || salary === "Not Disclosed" || salary === "Not disclosed" || salary === "") {
     return null;
   }
+  
+  // If it contains words that shouldn't have ₹ symbol, return as is
+  if (!shouldAddRupeeSymbol(salary)) {
+    return salary;
+  }
+  
   let cleanAmount = salary.replace(/₹/g, '').trim();
   
   if (cleanAmount.includes("LPA")) {
@@ -94,13 +113,19 @@ const formatSalary = (salary: string | null | undefined) => {
   return `₹${cleanAmount}`;
 };
 
-// Fixed: Proper stipend formatting - shows /month ONLY if specified in database
+// Fixed: Proper stipend formatting - won't add ₹ if text contains words
 const formatStipend = (stipendAmount: string | null | undefined) => {
   if (!stipendAmount || stipendAmount === "Not Disclosed" || stipendAmount === "Not disclosed" || stipendAmount === "") {
     return null;
   }
   
   let originalValue = stipendAmount.toString();
+  
+  // If it contains words that shouldn't have ₹ symbol, return as is
+  if (!shouldAddRupeeSymbol(originalValue)) {
+    return originalValue;
+  }
+  
   let hasMonthSuffix = false;
   
   if (originalValue.toLowerCase().includes('/month') || originalValue.toLowerCase().includes('per month')) {
@@ -602,7 +627,7 @@ export default function TrendingOpportunities() {
         <p className="text-gray-500 text-sm mt-1">Discover the best opportunities matching your skills</p>
       </div>
       
-      {/* Filter Tabs - WITHOUT COUNTS */}
+      {/* Filter Tabs */}
       <div className="flex flex-wrap justify-center gap-2 mb-8">
         <button
           onClick={() => {
@@ -663,7 +688,7 @@ export default function TrendingOpportunities() {
         ))}
       </div>
 
-      {/* View More Button - Stays visible until all opportunities are loaded */}
+      {/* View More Button */}
       {hasMore && (
         <div className="text-center mt-8">
           <button
