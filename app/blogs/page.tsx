@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import Image from 'next/image';
 import { 
   FileText, 
   Link as LinkIcon, 
@@ -39,16 +40,17 @@ export default function BlogsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
+  const [imageErrors, setImageErrors] = useState<Record<string, boolean>>({});
   const router = useRouter();
 
-  // Category configuration
+  // Category configuration - ALL WITH BLUE COLOR
   const categories = [
-    { id: "all", label: "All Blogs", icon: BookOpen, color: "bg-gray-600 text-white", description: "All Blogs in one place" },
-    { id: "career", label: "Career Guide", icon: Briefcase, color: "bg-amber-600 text-white", description: "Career guidance and tips" },
+    { id: "all", label: "All Blogs", icon: BookOpen, color: "bg-blue-600 text-white", description: "All Blogs in one place" },
+    { id: "career", label: "Career Guide", icon: Briefcase, color: "bg-blue-600 text-white", description: "Career guidance and tips" },
     { id: "resume-tips", label: "Resume Tips", icon: FileText, color: "bg-blue-600 text-white", description: "Create winning resumes that get noticed" },
-    { id: "jobs", label: "Job Search", icon: Briefcase, color: "bg-indigo-600 text-white", description: "Tips and strategies for job hunting" },
-    { id: "roadmap", label: "Career Roadmaps", icon: Map, color: "bg-purple-600 text-white", description: "Step-by-step career progression guides" },
-    { id: "profile-tips", label: "Profile Tips", icon: UserCheck, color: "bg-emerald-600 text-white", description: "Optimize your professional profile" },
+    { id: "jobs", label: "Job Search", icon: Briefcase, color: "bg-blue-600 text-white", description: "Tips and strategies for job hunting" },
+    { id: "roadmap", label: "Career Roadmaps", icon: Map, color: "bg-blue-600 text-white", description: "Step-by-step career progression guides" },
+    { id: "profile-tips", label: "Profile Tips", icon: UserCheck, color: "bg-blue-600 text-white", description: "Optimize your professional profile" },
   ];
 
   useEffect(() => {
@@ -58,7 +60,6 @@ export default function BlogsPage() {
   const fetchBlogs = async () => {
     try {
       setLoading(true);
-      // ✅ FIXED: Changed from /api/resources to /api/career-resources
       const res = await fetch("/api/career-resources");
       const data = await res.json();
       
@@ -103,6 +104,29 @@ export default function BlogsPage() {
       day: 'numeric',
       year: 'numeric'
     });
+  };
+
+  // Function to get Google Drive direct image URL
+  const getGoogleDriveImageUrl = (url: string) => {
+    if (!url) return null;
+    
+    // Check if it's a Google Drive link
+    const driveMatch = url.match(/\/d\/([^\/]+)/);
+    if (driveMatch) {
+      const fileId = driveMatch[1];
+      return `https://drive.google.com/uc?export=view&id=${fileId}`;
+    }
+    
+    // Check if it's already a direct image URL
+    if (url.includes('uc?export=view') || url.includes('usercontent')) {
+      return url;
+    }
+    
+    return url;
+  };
+
+  const handleImageError = (resourceId: string) => {
+    setImageErrors(prev => ({ ...prev, [resourceId]: true }));
   };
 
   const currentCategory = categories.find(c => c.id === category);
@@ -180,7 +204,7 @@ export default function BlogsPage() {
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12 py-6">
         
         {/* Category Tabs */}
         <div className="mb-8">
@@ -198,7 +222,7 @@ export default function BlogsPage() {
                     inline-flex items-center gap-2 px-4 py-2.5 rounded-lg font-medium text-sm
                     transition-all duration-200 whitespace-nowrap
                     ${isActive 
-                      ? `${cat.color} shadow-md` 
+                      ? 'bg-blue-600 text-white shadow-md' 
                       : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-200'
                     }
                   `}
@@ -261,13 +285,14 @@ export default function BlogsPage() {
             {filteredResources.map((resource) => {
               const TypeIcon = getTypeIcon(resource.type);
               const categoryInfo = categories.find(c => c.id === resource.category) || categories[0];
+              const coverImageUrl = resource.coverImage ? getGoogleDriveImageUrl(resource.coverImage) : null;
+              const hasImageError = imageErrors[resource.id];
               
               return (
                 <div
                   key={resource.id}
                   onClick={() => {
                     if (resource.type === "text") {
-                      // ✅ FIXED: Changed from /resources to /blogs
                       router.push(`/blogs/${resource.slug}`);
                     } else if (resource.type === "pdf" && resource.fileUrl) {
                       window.open(resource.fileUrl, '_blank');
@@ -277,26 +302,45 @@ export default function BlogsPage() {
                   }}
                   className="group bg-white rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 cursor-pointer overflow-hidden border border-gray-100 hover:border-blue-200 hover:-translate-y-1"
                 >
+                  {/* Cover Image Section - FIXED: Full image visible */}
+                  {coverImageUrl && !hasImageError && (
+                    <div className="relative w-full bg-gray-100">
+                      <img
+                        src={coverImageUrl}
+                        alt={resource.title}
+                        className="w-full h-auto object-contain"
+                        onError={() => handleImageError(resource.id)}
+                      />
+                    </div>
+                  )}
+                  
+                  {/* No Image Fallback */}
+                  {(!coverImageUrl || hasImageError) && (
+                    <div className="relative w-full h-48 overflow-hidden bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center">
+                      <BookOpen className="w-16 h-16 text-white/30" />
+                    </div>
+                  )}
+                  
                   <div className="p-5">
                     {/* Category Badge */}
                     <div className="flex items-center justify-between mb-3">
-                      <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium ${categoryInfo.color}`}>
+                      <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-blue-600 text-white">
                         <categoryInfo.icon className="h-3 w-3" />
                         {categoryInfo.label}
                       </span>
                       <span className="inline-flex items-center gap-1 px-2 py-1 rounded-md bg-gray-100 text-gray-500 text-xs">
                         <TypeIcon className="h-3 w-3" />
-                        {resource.type}
+                        {resource.type === 'text' ? 'Article' : resource.type}
                       </span>
                     </div>
 
                     {/* Title */}
-                    <h3 className="text-lg font-bold text-gray-900 mb-2 group-hover:text-blue-600 transition line-clamp-2">
+                    <h3 className="text-lg font-bold text-gray-900 mb-2 group-hover:text-blue-600 transition line-clamp-2 min-h-[56px]">
                       {resource.title}
                     </h3>
 
                     {/* Excerpt */}
-                    <p className="text-sm text-gray-500 mb-4 line-clamp-2">
+                    <p className="text-sm text-gray-500 mb-4 line-clamp-2 min-h-[40px]">
                       {resource.excerpt}
                     </p>
 

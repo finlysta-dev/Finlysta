@@ -30,6 +30,7 @@ export default function BlogPage({ params }: { params: { slug: string } }) {
   const [error, setError] = useState<string | null>(null);
   const [saved, setSaved] = useState(false);
   const [viewTracked, setViewTracked] = useState(false);
+  const [imageError, setImageError] = useState(false);
 
   useEffect(() => {
     fetchBlog();
@@ -114,6 +115,32 @@ export default function BlogPage({ params }: { params: { slug: string } }) {
     }
   };
 
+  // Function to convert Google Drive URL to direct image URL
+  const getDirectImageUrl = (url: string | null) => {
+    if (!url) return null;
+    
+    // If it's already a direct Google Drive image URL
+    if (url.includes('googleusercontent.com')) return url;
+    if (url.includes('uc?export=view')) return url;
+    
+    // Extract file ID from various Google Drive URL formats
+    const patterns = [
+      /\/d\/([^\/]+)/,           
+      /id=([^&]+)/,               
+      /uc\?id=([^&]+)/,          
+      /file\/d\/([^\/]+)/        
+    ];
+    
+    for (const pattern of patterns) {
+      const match = url.match(pattern);
+      if (match) {
+        return `https://drive.google.com/uc?export=view&id=${match[1]}`;
+      }
+    }
+    
+    return url;
+  };
+
   const handleSave = () => {
     const savedItems = JSON.parse(localStorage.getItem('saved_blogs') || '[]');
     if (!saved) {
@@ -167,6 +194,7 @@ export default function BlogPage({ params }: { params: { slug: string } }) {
   const plainText = resource.content?.replace(/<[^>]*>/g, '') || '';
   const wordCount = plainText.split(/\s+/).length;
   const readTime = Math.ceil(wordCount / 200);
+  const directImageUrl = getDirectImageUrl(resource.coverImage);
 
   const getCategoryLabel = (category: string) => {
     const categories: Record<string, string> = {
@@ -213,19 +241,28 @@ export default function BlogPage({ params }: { params: { slug: string } }) {
       <div className="max-w-4xl mx-auto px-4 sm:px-6 py-8">
         <article className="bg-white rounded-xl shadow-sm overflow-hidden">
           
-          {/* Cover Image */}
-          {resource.coverImage && (
-            <div className="relative w-full h-64 md:h-80 overflow-hidden bg-gray-100">
-              <Image
-                src={resource.coverImage}
-                alt={resource.title}
-                fill
-                className="object-cover"
-                priority
-                unoptimized
-              />
-            </div>
-          )}
+          {/* Cover Image - FIXED: Using regular img tag for external images */}
+          {/* Cover Image - Full visibility fix */}
+{directImageUrl && !imageError && (
+  <div className="relative w-full bg-gray-100">
+    <img
+      src={directImageUrl}
+      alt={resource.title}
+      className="w-full h-auto object-contain"
+      onError={() => setImageError(true)}
+    />
+  </div>
+)}
+
+{/* Fallback when no image or image fails */}
+{(!directImageUrl || imageError) && (
+  <div className="relative w-full h-64 md:h-96 overflow-hidden bg-gradient-to-r from-blue-500 to-indigo-600 flex items-center justify-center">
+    <div className="text-center text-white px-4">
+      <Bookmark size={48} className="mx-auto mb-2 opacity-50" />
+      <p className="text-lg font-medium line-clamp-2">{resource.title}</p>
+    </div>
+  </div>
+)}
           
           {/* Header Section */}
           <div className="p-6 sm:p-8 md:p-10">
@@ -267,8 +304,8 @@ export default function BlogPage({ params }: { params: { slug: string } }) {
               </p>
             </div>
 
-            {/* Markdown Content with custom styling and click tracking */}
-            <div className="markdown-content">
+            {/* Markdown Content */}
+            <div className="markdown-content prose prose-blue max-w-none">
               <ReactMarkdown 
                 remarkPlugins={[remarkGfm]}
                 components={{
@@ -318,23 +355,6 @@ export default function BlogPage({ params }: { params: { slug: string } }) {
                     <blockquote className="border-l-4 border-blue-500 bg-blue-50 p-4 my-4 italic text-gray-700">
                       {children}
                     </blockquote>
-                  ),
-                  table: ({ children }) => (
-                    <div className="overflow-x-auto my-4">
-                      <table className="min-w-full border border-gray-200 rounded-lg">
-                        {children}
-                      </table>
-                    </div>
-                  ),
-                  th: ({ children }) => (
-                    <th className="border border-gray-200 px-4 py-2 bg-gray-100 font-semibold text-gray-900">
-                      {children}
-                    </th>
-                  ),
-                  td: ({ children }) => (
-                    <td className="border border-gray-200 px-4 py-2 text-gray-700">
-                      {children}
-                    </td>
                   ),
                 }}
               >

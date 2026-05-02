@@ -2,8 +2,6 @@ User-agent: *
 Allow: /
 Disallow: /api/
 Disallow: /admin/
-Disallow: /dashboard/
-Disallow: /auth/
-Disallow: /profile/
+Disallow: /analytics123/
 
-Sitemap: https://finlysta.com/sitemap.xml
+Sitemap: https://www.finlysta.com/sitemap.xml
