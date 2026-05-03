@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import {
   TrendingUp, Landmark, Wallet, Calculator, LineChart,
   BarChart3, Database, FileSpreadsheet, Code, Clock,
@@ -120,13 +121,13 @@ const FinanceTopics = () => {
     <div className="bg-white min-h-screen">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         
-        {/* HEADER - Added the text in middle */}
+        {/* HEADER - FIXED: Changed H1 to H2 to avoid duplicate H1 on homepage */}
         <div className="text-center mb-6">
-          <h1 className="text-4xl font-bold text-gray-900 mb-2">Learning Hub - Skills You Need to Get Hired</h1>
+          <h2 className="text-4xl font-bold text-gray-900 mb-2">Learning Hub - Skills You Need to Get Hired</h2>
           <p className="text-gray-600 text-lg">Bite-sized lessons to build your financial analyst knowledge</p>
         </div>
 
-        {/* CATEGORY TABS - Removed gap */}
+        {/* CATEGORY TABS */}
         <div className="mb-8 flex gap-2 overflow-x-auto pb-2 justify-center">
           {categories.map((cat, idx) => {
             const colors = getColorClasses(cat.color);
@@ -139,6 +140,7 @@ const FinanceTopics = () => {
                     ? `${colors.bg} ${colors.text} border border-current`
                     : "bg-gray-100 text-gray-700 hover:bg-gray-200"
                 }`}
+                aria-label={`View ${cat.name} learning topics`}
               >
                 <cat.icon size={18} />
                 {cat.name}
@@ -158,6 +160,7 @@ const FinanceTopics = () => {
                 key={idx}
                 href={`${currentCategory.link}/${topic.slug}`}
                 className="group"
+                aria-label={`Learn ${topic.name} - ${topic.desc}`}
               >
                 <div className="bg-white border border-gray-200 rounded-lg p-5 hover:shadow-md hover:border-gray-300 transition-all">
                   
@@ -181,7 +184,7 @@ const FinanceTopics = () => {
                   <div className="flex items-center justify-between pt-4 border-t border-gray-100">
                     <div className="flex items-center gap-1 text-xs text-gray-500">
                       <Clock size={14} />
-                      {topic.duration}
+                      <span>{topic.duration}</span>
                     </div>
                     <ArrowRight size={16} className="text-gray-400 group-hover:text-gray-700 transition-colors" />
                   </div>
@@ -193,11 +196,12 @@ const FinanceTopics = () => {
 
         {/* BOTTOM CTA */}
         <div className="mt-16 bg-gray-100 rounded-lg p-8 text-center">
-          <h2 className="text-2xl font-bold text-gray-900 mb-3">Ready to start learning?</h2>
+          <h3 className="text-2xl font-bold text-gray-900 mb-3">Ready to start learning?</h3>
           <p className="text-gray-600 mb-6">Step-by-step path to master core finance analyst skills</p>
           <Link
             href="/learn"
             className="inline-flex items-center gap-2 px-6 py-3 bg-gray-900 text-white font-semibold rounded-lg hover:bg-gray-800 transition-colors"
+            aria-label="Explore all learning topics"
           >
             Explore All Topics
             <ArrowRight size={18} />

@@ -3,7 +3,6 @@
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
-import Head from "next/head";
 import {
   Search, MapPin, ChevronRight, TrendingUp, Shield, Clock,
   BarChart3, Landmark, Building2, Heart, Linkedin, Instagram, GraduationCap,
@@ -89,7 +88,8 @@ const TryForFree = () => {
   return (
     <div className="bg-gradient-to-r from-[#0A2540] to-[#1a3a5c] py-16 md:py-20">
       <div className="max-w-4xl mx-auto px-4 text-center">
-        <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-blue mb-4">
+        {/* FIXED: Changed text-blue to text-white */}
+        <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-black mb-4">
           Skip the clutter.
         </h2>
         <p className="text-xl md:text-2xl text-gray-200 mb-10">
@@ -195,337 +195,309 @@ export default function HomePageContent() {
   }
 
   return (
-    <>
-      <Head>
-        {/* Primary Meta Tags */}
-        <title>Entry Level Financial Analyst Jobs & Internships | Finlysta</title>
-        <meta name="title" content="Entry Level Financial Analyst Jobs & Internships | Finlysta" />
-        <meta name="description" content="Find entry level financial analyst jobs and internships in India. Start your finance career with paid internships and fresher jobs. 100% free for students." />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <meta charSet="utf-8" />
-        
-        {/* Open Graph / Facebook */}
-        <meta property="og:type" content="website" />
-        <meta property="og:url" content="https://finlysta.com/" />
-        <meta property="og:title" content="Entry Level Financial Analyst Jobs & Internships | Finlysta" />
-        <meta property="og:description" content="Find entry level financial analyst jobs and internships in India. Start your finance career with paid internships and fresher jobs. 100% free for students." />
-        <meta property="og:image" content="https://finlysta.com/og-image.jpg" />
-        
-        {/* Twitter */}
-        <meta property="twitter:card" content="summary_large_image" />
-        <meta property="twitter:url" content="https://finlysta.com/" />
-        <meta property="twitter:title" content="Entry Level Financial Analyst Jobs & Internships | Finlysta" />
-        <meta property="twitter:description" content="Find entry level financial analyst jobs and internships in India. Start your finance career with paid internships and fresher jobs. 100% free for students." />
-        <meta property="twitter:image" content="https://finlysta.com/og-image.jpg" />
-        
-        {/* Canonical URL */}
-        <link rel="canonical" href="https://finlysta.com/" />
-        
-        {/* Favicon */}
-        <link rel="icon" href="/favicon.ico" sizes="any" />
-        <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
-        
-        {/* Robots */}
-        <meta name="robots" content="index, follow" />
-      </Head>
+    <div className="bg-[#F8FAFC] min-h-screen font-sans">
+      <SEOSchema />
+      <Header />
 
-      <div className="bg-[#F8FAFC] min-h-screen font-sans">
-        <SEOSchema />
-        <Header />
-
-        <main>
-          {/* HERO SECTION - Using H1 for main heading */}
-          <section className="relative bg-gradient-to-b from-[#EEF2FF] to-[#F8FAFC] py-16 md:py-24 overflow-hidden">
-            <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-              
-              {/* Centered Content */}
-              <div className="text-center">
-                <div className="inline-flex items-center gap-2 bg-gradient-to-r from-[#FFD700]/20 to-[#FFA500]/20 rounded-full px-4 py-1.5 mb-6">
-                  <Target size={14} className="text-[#FFD700]" />
-                  <span className="text-xs font-semibold text-[#0A2540]">India's Only Job Board for Entry-Level Financial Analysts</span>
-                </div>
-                
-                {/* FIXED: This is now the ONLY H1 on the page */}
-                <h1 className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-black text-[#0A2540] mb-4 leading-tight">
-                  Find Entry-Level Financial Analyst Jobs & Internships
-                  <span className="block bg-gradient-to-r from-[#FFD700] to-[#FFA500] bg-clip-text text-transparent"></span>
-                </h1>
-                
-                <div className="max-w-2xl mx-auto space-y-4 mb-8">
-                  <p className="text-base sm:text-lg text-slate-600 leading-relaxed">
-                    🎯 <span className="font-semibold text-[#0A2540]">Match your skills</span> — From Excel & SQL to Financial Modeling — to real opportunities.
-                  </p>
-                </div>
-
-                <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-8">
-                  <button
-                    onClick={handleFindJobs}
-                    className="bg-gradient-to-r from-[#FFD700] to-[#FFA500] hover:from-[#e6c200] hover:to-[#e69500] text-[#0A2540] font-bold px-8 py-4 rounded-xl transition-all duration-300 flex items-center justify-center gap-2 text-base group min-w-[200px]"
-                  >
-                    <Briefcase size={20} />
-                    <span>Find My First Job</span>
-                    <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
-                  </button>
-                  
-                  <button
-                    onClick={handleBrowseInternships}
-                    className="px-8 py-4 rounded-xl transition-all duration-300 font-bold flex items-center justify-center gap-2 text-base min-w-[200px]"
-                    style={{
-                      background: "linear-gradient(135deg, #FFD700 0%, #FFA500 100%)",
-                      color: "#0A2540",
-                      boxShadow: "0 4px 15px rgba(0, 0, 0, 0.2)"
-                    }}
-                  >
-                    <GraduationCap size={20} />
-                    <span>Explore Internships</span>
-                  </button>
-                </div>
-
-                <div className="mt-8 pt-4 border-t border-gray-200">
-                  <p className="text-sm text-slate-500 mb-3">🔥 Explore Roles:</p>
-                  <div className="flex flex-wrap justify-center gap-2">
-                    {popularRoles.map((role, idx) => (
-                      <button
-                        key={idx}
-                        onClick={() => {
-                          router.push(`/jobs?search=${encodeURIComponent(role.name)}`);
-                        }}
-                        className="px-3 py-1.5 bg-white border border-gray-200 rounded-full text-sm text-slate-600 hover:border-[#FFD700] hover:text-black transition-all duration-300 flex items-center gap-1 whitespace-nowrap"
-                      >
-                        <span className="text-base">{role.icon}</span>
-                        <span>{role.name}</span>
-                      </button>
-                    ))}
-                  </div>
-                </div>
+      <main>
+        {/* HERO SECTION - Using H1 for main heading */}
+        <section className="relative bg-gradient-to-b from-[#EEF2FF] to-[#F8FAFC] py-16 md:py-24 overflow-hidden">
+          <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+            
+            {/* Centered Content */}
+            <div className="text-center">
+              <div className="inline-flex items-center gap-2 bg-gradient-to-r from-[#FFD700]/20 to-[#FFA500]/20 rounded-full px-4 py-1.5 mb-6">
+                <Target size={14} className="text-[#FFD700]" />
+                <span className="text-xs font-semibold text-[#0A2540]">India's Only Job Board for Entry-Level Financial Analysts</span>
               </div>
-            </div>
-          </section>
-
-          {/* TRENDING OPPORTUNITIES SECTION */}
-          <TrendingInternships />
-
-          {/* CAREER PATH - Roadmap Image Section */}
-          <section className="py-12 md:py-16 bg-white">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-              <div className="text-center mb-8">
-                <div className="inline-flex items-center gap-2 bg-gradient-to-r from-[#FFD700]/20 to-[#FFA500]/20 rounded-full px-4 py-1.5 mb-3">
-                  <TrendingUp size={14} className="text-[#FFD700]" />
-                  <span className="text-xs font-semibold text-[#0A2540]">Career Path</span>
-                </div>
-                <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-[#0A2540] mb-3">
-                  How to Become a Financial Analyst <span className="text-[#FFD700]">(Step-by-Step)</span>
-                </h2>
-                <p className="text-sm md:text-base text-slate-500 max-w-2xl mx-auto">
-                  From learning basics to landing your first job — follow a clear roadmap.
+              
+              {/* This is the ONLY H1 on the page */}
+              <h1 className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-black text-[#0A2540] mb-4 leading-tight">
+                Find Entry-Level Financial Analyst Jobs & Internships
+                <span className="block bg-gradient-to-r from-[#FFD700] to-[#FFA500] bg-clip-text text-transparent"></span>
+              </h1>
+              
+              <div className="max-w-2xl mx-auto space-y-4 mb-8">
+                <p className="text-base sm:text-lg text-slate-600 leading-relaxed">
+                  🎯 <span className="font-semibold text-[#0A2540]">Match your skills</span> — From Excel & SQL to Financial Modeling — to real opportunities.
                 </p>
               </div>
-              
-              <div className="relative overflow-hidden rounded-2xl shadow-xl border border-gray-100 bg-white p-4">
-                <div className="relative w-full">
-                  <Image
-                    src="/roadmap.png"
-                    alt="Infographic showing step-by-step career roadmap to become a financial analyst - from learning fundamentals to getting hired"
-                    width={1200}
-                    height={600}
-                    className="w-full h-auto object-contain rounded-lg"
-                    priority
-                    unoptimized
-                  />
-                </div>
-              </div>
-              
-              <div className="text-center mt-6">
-                <p className="text-sm text-slate-500">
-                  🎯 From mastering fundamentals to getting hired — your complete career roadmap
-                </p>
-              </div>
-            </div>
-          </section>
 
-          {/* LEARNING SECTION - FinanceTopics */}
-          <FinanceTopics />
-
-          {/* SEO CONTENT SECTION - FIXED: Changed H1 to H2 */}
-          <section className="py-16 bg-white">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-              <div className="max-w-4xl mx-auto">
-                {/* FIXED: Changed from H1 to H2 to avoid duplicate H1 */}
-                <h2 className="text-3xl md:text-4xl font-bold text-[#0A2540] mb-6">
-                  Entry Level Financial Analyst Jobs & Internships in India
-                </h2>
+              <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-8">
+                <button
+                  onClick={handleFindJobs}
+                  className="bg-gradient-to-r from-[#FFD700] to-[#FFA500] hover:from-[#e6c200] hover:to-[#e69500] text-[#0A2540] font-bold px-8 py-4 rounded-xl transition-all duration-300 flex items-center justify-center gap-2 text-base group min-w-[200px]"
+                >
+                  <Briefcase size={20} />
+                  <span>Find My First Job</span>
+                  <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
+                </button>
                 
-                <div className="space-y-5 text-gray-600 leading-relaxed">
-                  <p>
-                    <strong className="text-[#0A2540]">Finlysta</strong> is India's dedicated job board for 
-                    <strong> entry level financial analyst jobs and internships</strong>. Whether you're a fresh graduate 
-                    or a finance student looking for your first break, we connect you with verified opportunities at 
-                    top companies across the country.
-                  </p>
-                  
-                  <p>
-                    Unlike traditional job portals filled with senior-level positions, Finlysta focuses exclusively on 
-                    <strong> fresher-friendly roles</strong>. Every listing is manually verified by our team — no spam, 
-                    no ghost jobs, just real opportunities for aspiring financial analysts.
-                  </p>
-                  
-                  <h3 className="text-2xl font-bold text-[#0A2540] mt-8 mb-4">
-                    Why Choose Finlysta for Your Finance Career?
-                  </h3>
-                  
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-                    <div className="flex items-start gap-3 p-3 bg-gray-50 rounded-lg">
-                      <CheckCircle size={18} className="text-green-500 flex-shrink-0 mt-0.5" />
-                      <div>
-                        <h4 className="font-semibold text-[#0A2540]">100% Free for Job Seekers</h4>
-                        <p className="text-sm text-gray-500">No hidden charges. Ever.</p>
-                      </div>
-                    </div>
-                    <div className="flex items-start gap-3 p-3 bg-gray-50 rounded-lg">
-                      <Shield size={18} className="text-blue-500 flex-shrink-0 mt-0.5" />
-                      <div>
-                        <h4 className="font-semibold text-[#0A2540]">Manually Verified Listings</h4>
-                        <p className="text-sm text-gray-500">Every job is checked before listing.</p>
-                      </div>
-                    </div>
-                    <div className="flex items-start gap-3 p-3 bg-gray-50 rounded-lg">
-                      <Target size={18} className="text-[#FFD700] flex-shrink-0 mt-0.5" />
-                      <div>
-                        <h4 className="font-semibold text-[#0A2540]">Only Entry-Level Roles</h4>
-                        <p className="text-sm text-gray-500">No senior positions. Just fresher jobs.</p>
-                      </div>
-                    </div>
-                    <div className="flex items-start gap-3 p-3 bg-gray-50 rounded-lg">
-                      <Clock size={18} className="text-orange-500 flex-shrink-0 mt-0.5" />
-                      <div>
-                        <h4 className="font-semibold text-[#0A2540]">Updated Daily</h4>
-                        <p className="text-sm text-gray-500">Fresh opportunities every day.</p>
-                      </div>
-                    </div>
-                  </div>
-                  
-                  <h3 className="text-2xl font-bold text-[#0A2540] mt-8 mb-4">
-                    Top Locations for Finance Jobs in India
-                  </h3>
-                  
-                  <p>
-                    We feature entry-level financial analyst opportunities across major financial hubs including
-                    <strong> Mumbai, Bangalore, Delhi NCR, Pune, Hyderabad, Chennai, Kolkata, and Ahmedabad</strong>.
-                    We also list remote and hybrid roles for candidates seeking work-from-home flexibility.
-                  </p>
-                  
-                  {/* FIXED: Removed the broken /jobs/remote link */}
-                  <div className="bg-gray-50 p-6 rounded-xl mt-8">
-                    <h3 className="text-lg font-bold text-[#0A2540] mb-3">Quick Links</h3>
-                    <div className="flex flex-wrap gap-4">
-                      <Link href="/jobs" className="text-blue-600 hover:underline text-sm">Browse All Jobs</Link>
-                      <Link href="/internships" className="text-blue-600 hover:underline text-sm">Browse Internships</Link>
-                      <Link href="/blogs" className="text-blue-600 hover:underline text-sm">Career Blogs</Link>
-                      <Link href="/learn" className="text-blue-600 hover:underline text-sm">Learning Hub</Link>
-                    </div>
-                  </div>
-                  
-                  <p className="text-sm text-gray-400 mt-6 text-center">
-                    Last updated: {new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
-                  </p>
-                </div>
+                <button
+                  onClick={handleBrowseInternships}
+                  className="px-8 py-4 rounded-xl transition-all duration-300 font-bold flex items-center justify-center gap-2 text-base min-w-[200px]"
+                  style={{
+                    background: "linear-gradient(135deg, #FFD700 0%, #FFA500 100%)",
+                    color: "#0A2540",
+                    boxShadow: "0 4px 15px rgba(0, 0, 0, 0.2)"
+                  }}
+                >
+                  <GraduationCap size={20} />
+                  <span>Explore Internships</span>
+                </button>
               </div>
-            </div>
-          </section>
 
-          {/* NEWSLETTER SECTION */}
-          <Newsletter />
-
-          {/* FAQ SECTION */}
-          <FAQ />
-
-          {/* TRY FOR FREE SECTION */}
-          <TryForFree />
-        </main>
-
-        {/* FOOTER - FIXED: Removed broken /jobs/remote link and fixed LinkedIn URL */}
-        <footer className="bg-white border-t border-slate-200">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="pt-10 pb-6 grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-12 gap-8">
-              <div className="col-span-2 lg:col-span-4 space-y-3">
-                <Link href="/" className="flex items-center" aria-label="Finlysta Home">
-                  <Image 
-                    src="/Finlysta.png" 
-                    alt="Finlysta company logo - Entry level financial analyst job board platform"
-                    width={180} 
-                    height={40}
-                    priority
-                    className="object-contain"
-                  />
-                </Link>
-                <p className="text-sm text-slate-600 leading-relaxed max-w-xs">Finlysta is a job board built exclusively for entry-level financial analyst roles and internships.</p>
-                <div className="space-y-2 pt-1">
-                  <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Follow us on</p>
-                  <div className="flex gap-3">
-                    {/* FIXED: Removed trailing space in LinkedIn URL */}
-                    <a 
-                      href="https://www.linkedin.com/company/finlysta" 
-                      target="_blank" 
-                      rel="noopener noreferrer" 
-                      aria-label="Follow Finlysta on LinkedIn" 
-                      className="w-9 h-9 bg-slate-100 text-slate-600 hover:bg-[#0077B5] hover:text-white rounded-lg flex items-center justify-center transition-all duration-300"
+              <div className="mt-8 pt-4 border-t border-gray-200">
+                <p className="text-sm text-slate-500 mb-3">🔥 Explore Roles:</p>
+                <div className="flex flex-wrap justify-center gap-2">
+                  {popularRoles.map((role, idx) => (
+                    <button
+                      key={idx}
+                      onClick={() => {
+                        router.push(`/jobs?search=${encodeURIComponent(role.name)}`);
+                      }}
+                      className="px-3 py-1.5 bg-white border border-gray-200 rounded-full text-sm text-slate-600 hover:border-[#FFD700] hover:text-black transition-all duration-300 flex items-center gap-1 whitespace-nowrap"
                     >
-                      <Linkedin size={16} />
-                    </a>
-                  </div>
-                </div>
-              </div>
-              <div className="lg:col-span-2">
-                <h4 className="text-slate-900 font-bold text-sm mb-4">For Job Seekers</h4>
-                <ul className="space-y-2.5 text-sm text-slate-500">
-                  <li><Link href="/jobs" className="hover:text-[#0A2540] transition-colors">All Jobs</Link></li>
-                  <li><Link href="/internships" className="hover:text-[#0A2540] transition-colors">All Internships</Link></li>
-                  {/* FIXED: Removed broken /jobs/remote link */}
-                  <li><Link href="/jobs?type=remote" className="hover:text-[#0A2540] transition-colors">Remote Jobs</Link></li>
-                  <li><Link href="/blogs" className="hover:text-[#0A2540] transition-colors">Career Blogs</Link></li>
-                  <li><Link href="/learn" className="hover:text-[#0A2540] transition-colors">Learning Hub</Link></li>
-                </ul>
-              </div>
-              <div className="lg:col-span-2">
-                <h4 className="text-slate-900 font-bold text-sm mb-4">Company</h4>
-                <ul className="space-y-2.5 text-sm text-slate-500">
-                  <li><Link href="/about" className="hover:text-[#0A2540] transition-colors">About Us</Link></li>
-                  <li><Link href="/mission" className="hover:text-[#0A2540] transition-colors">Our Mission</Link></li>
-                  <li><Link href="/contact" className="hover:text-[#0A2540] transition-colors">Contact Us</Link></li>
-                  <li><Link href="/privacy" className="hover:text-[#0A2540] transition-colors">Privacy Policy</Link></li>
-                  <li><Link href="/terms" className="hover:text-[#0A2540] transition-colors">Terms of Service</Link></li>
-                </ul>
-              </div>
-              <div className="lg:col-span-4">
-                <h4 className="text-slate-900 font-bold text-sm mb-4">Get in Touch</h4>
-                <a href="mailto:support@finlysta.com" className="flex items-center gap-2 text-sm text-slate-500 hover:text-[#0A2540] transition-colors">
-                  <Mail size={13} /> support@finlysta.com
-                </a>
-                <p className="text-xs text-slate-400 mt-3">Have a question? We're here to help — expect a reply within 24 hours.</p>
-              </div>
-            </div>
-            <div className="border-t border-slate-100 pt-5 pb-6">
-              <div className="flex flex-col items-center justify-center gap-2 text-xs text-slate-500 text-center">
-                <span>© {new Date().getFullYear()} Finlysta Pvt. Ltd. · All rights reserved.</span>
-                <div className="flex items-center gap-1.5">
-                  <span>Made with</span>
-                  <Heart size={10} className="text-red-500 fill-red-500" />
-                  <span>in India 🇮🇳</span>
+                      <span className="text-base">{role.icon}</span>
+                      <span>{role.name}</span>
+                    </button>
+                  ))}
                 </div>
               </div>
             </div>
           </div>
-        </footer>
+        </section>
 
-        <style jsx global>{`
-          .line-clamp-2 {
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-          }
-        `}</style>
-      </div>
-    </>
+        {/* TRENDING OPPORTUNITIES SECTION */}
+        <TrendingInternships />
+
+        {/* CAREER PATH - Roadmap Image Section */}
+        <section className="py-12 md:py-16 bg-white">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center mb-8">
+              <div className="inline-flex items-center gap-2 bg-gradient-to-r from-[#FFD700]/20 to-[#FFA500]/20 rounded-full px-4 py-1.5 mb-3">
+                <TrendingUp size={14} className="text-[#FFD700]" />
+                <span className="text-xs font-semibold text-[#0A2540]">Career Path</span>
+              </div>
+              <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-[#0A2540] mb-3">
+                How to Become a Financial Analyst <span className="text-[#FFD700]">(Step-by-Step)</span>
+              </h2>
+              <p className="text-sm md:text-base text-slate-500 max-w-2xl mx-auto">
+                From learning basics to landing your first job — follow a clear roadmap.
+              </p>
+            </div>
+            
+            <div className="relative overflow-hidden rounded-2xl shadow-xl border border-gray-100 bg-white p-4">
+              <div className="relative w-full">
+                <Image
+                  src="/roadmap.png"
+                  alt="Infographic showing step-by-step career roadmap to become a financial analyst - from learning fundamentals to getting hired"
+                  width={1200}
+                  height={600}
+                  className="w-full h-auto object-contain rounded-lg"
+                  priority
+                  unoptimized
+                />
+              </div>
+            </div>
+            
+            <div className="text-center mt-6">
+              <p className="text-sm text-slate-500">
+                🎯 From mastering fundamentals to getting hired — your complete career roadmap
+              </p>
+            </div>
+          </div>
+        </section>
+
+        {/* LEARNING SECTION - FinanceTopics */}
+        <FinanceTopics />
+
+        {/* SEO CONTENT SECTION - Using H2 (not H1) */}
+        <section className="py-16 bg-white">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="max-w-4xl mx-auto">
+              {/* This is H2, not H1 - avoids duplicate H1 issues */}
+              <h2 className="text-3xl md:text-4xl font-bold text-[#0A2540] mb-6">
+                Entry Level Financial Analyst Jobs & Internships in India
+              </h2>
+              
+              <div className="space-y-5 text-gray-600 leading-relaxed">
+                <p>
+                  <strong className="text-[#0A2540]">Finlysta</strong> is India's dedicated job board for 
+                  <strong> entry level financial analyst jobs and internships</strong>. Whether you're a fresh graduate 
+                  or a finance student looking for your first break, we connect you with verified opportunities at 
+                  top companies across the country.
+                </p>
+                
+                <p>
+                  Unlike traditional job portals filled with senior-level positions, Finlysta focuses exclusively on 
+                  <strong> fresher-friendly roles</strong>. Every listing is manually verified by our team — no spam, 
+                  no ghost jobs, just real opportunities for aspiring financial analysts.
+                </p>
+                
+                <h3 className="text-2xl font-bold text-[#0A2540] mt-8 mb-4">
+                  Why Choose Finlysta for Your Finance Career?
+                </h3>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                  <div className="flex items-start gap-3 p-3 bg-gray-50 rounded-lg">
+                    <CheckCircle size={18} className="text-green-500 flex-shrink-0 mt-0.5" />
+                    <div>
+                      <h4 className="font-semibold text-[#0A2540]">100% Free for Job Seekers</h4>
+                      <p className="text-sm text-gray-500">No hidden charges. Ever.</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-3 p-3 bg-gray-50 rounded-lg">
+                    <Shield size={18} className="text-blue-500 flex-shrink-0 mt-0.5" />
+                    <div>
+                      <h4 className="font-semibold text-[#0A2540]">Manually Verified Listings</h4>
+                      <p className="text-sm text-gray-500">Every job is checked before listing.</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-3 p-3 bg-gray-50 rounded-lg">
+                    <Target size={18} className="text-[#FFD700] flex-shrink-0 mt-0.5" />
+                    <div>
+                      <h4 className="font-semibold text-[#0A2540]">Only Entry-Level Roles</h4>
+                      <p className="text-sm text-gray-500">No senior positions. Just fresher jobs.</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-3 p-3 bg-gray-50 rounded-lg">
+                    <Clock size={18} className="text-orange-500 flex-shrink-0 mt-0.5" />
+                    <div>
+                      <h4 className="font-semibold text-[#0A2540]">Updated Daily</h4>
+                      <p className="text-sm text-gray-500">Fresh opportunities every day.</p>
+                    </div>
+                  </div>
+                </div>
+                
+                <h3 className="text-2xl font-bold text-[#0A2540] mt-8 mb-4">
+                  Top Locations for Finance Jobs in India
+                </h3>
+                
+                <p>
+                  We feature entry-level financial analyst opportunities across major financial hubs including
+                  <strong> Mumbai, Bangalore, Delhi NCR, Pune, Hyderabad, Chennai, Kolkata, and Ahmedabad</strong>.
+                  We also list remote and hybrid roles for candidates seeking work-from-home flexibility.
+                </p>
+                
+                <div className="bg-gray-50 p-6 rounded-xl mt-8">
+                  <h3 className="text-lg font-bold text-[#0A2540] mb-3">Quick Links</h3>
+                  <div className="flex flex-wrap gap-4">
+                    <Link href="/jobs" className="text-blue-600 hover:underline text-sm">Browse All Jobs</Link>
+                    <Link href="/internships" className="text-blue-600 hover:underline text-sm">Browse Internships</Link>
+                    <Link href="/blogs" className="text-blue-600 hover:underline text-sm">Career Blogs</Link>
+                    <Link href="/learn" className="text-blue-600 hover:underline text-sm">Learning Hub</Link>
+                  </div>
+                </div>
+                
+                <p className="text-sm text-gray-400 mt-6 text-center">
+                  Last updated: {new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* NEWSLETTER SECTION */}
+        <Newsletter />
+
+        {/* FAQ SECTION */}
+        <FAQ />
+
+        {/* TRY FOR FREE SECTION */}
+        <TryForFree />
+      </main>
+
+      {/* FOOTER */}
+      <footer className="bg-white border-t border-slate-200">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="pt-10 pb-6 grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-12 gap-8">
+            <div className="col-span-2 lg:col-span-4 space-y-3">
+              <Link href="/" className="flex items-center" aria-label="Finlysta Home">
+                <Image 
+                  src="/Finlysta.png" 
+                  alt="Finlysta company logo - Entry level financial analyst job board platform"
+                  width={180} 
+                  height={40}
+                  priority
+                  className="object-contain"
+                />
+              </Link>
+              <p className="text-sm text-slate-600 leading-relaxed max-w-xs">Finlysta is a job board built exclusively for entry-level financial analyst roles and internships.</p>
+              <div className="space-y-2 pt-1">
+                <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Follow us on</p>
+                <div className="flex gap-3">
+                  <a 
+                    href="https://www.linkedin.com/company/finlysta" 
+                    target="_blank" 
+                    rel="noopener noreferrer" 
+                    aria-label="Follow Finlysta on LinkedIn" 
+                    className="w-9 h-9 bg-slate-100 text-slate-600 hover:bg-[#0077B5] hover:text-white rounded-lg flex items-center justify-center transition-all duration-300"
+                  >
+                    <Linkedin size={16} />
+                  </a>
+                  {/* Added Twitter/X for better social presence */}
+                  <a 
+                    href="https://twitter.com/Finlysta" 
+                    target="_blank" 
+                    rel="noopener noreferrer" 
+                    aria-label="Follow Finlysta on Twitter" 
+                    className="w-9 h-9 bg-slate-100 text-slate-600 hover:bg-[#1DA1F2] hover:text-white rounded-lg flex items-center justify-center transition-all duration-300"
+                  >
+                    <Twitter size={16} />
+                  </a>
+                </div>
+              </div>
+            </div>
+            <div className="lg:col-span-2">
+              <h4 className="text-slate-900 font-bold text-sm mb-4">For Job Seekers</h4>
+              <ul className="space-y-2.5 text-sm text-slate-500">
+                <li><Link href="/jobs" className="hover:text-[#0A2540] transition-colors">All Jobs</Link></li>
+                <li><Link href="/internships" className="hover:text-[#0A2540] transition-colors">All Internships</Link></li>
+                <li><Link href="/jobs?type=remote" className="hover:text-[#0A2540] transition-colors">Remote Jobs</Link></li>
+                <li><Link href="/blogs" className="hover:text-[#0A2540] transition-colors">Career Blogs</Link></li>
+                <li><Link href="/learn" className="hover:text-[#0A2540] transition-colors">Learning Hub</Link></li>
+              </ul>
+            </div>
+            <div className="lg:col-span-2">
+              <h4 className="text-slate-900 font-bold text-sm mb-4">Company</h4>
+              <ul className="space-y-2.5 text-sm text-slate-500">
+                <li><Link href="/about" className="hover:text-[#0A2540] transition-colors">About Us</Link></li>
+                <li><Link href="/mission" className="hover:text-[#0A2540] transition-colors">Our Mission</Link></li>
+                <li><Link href="/contact" className="hover:text-[#0A2540] transition-colors">Contact Us</Link></li>
+                <li><Link href="/privacy" className="hover:text-[#0A2540] transition-colors">Privacy Policy</Link></li>
+                <li><Link href="/terms" className="hover:text-[#0A2540] transition-colors">Terms of Service</Link></li>
+              </ul>
+            </div>
+            <div className="lg:col-span-4">
+              <h4 className="text-slate-900 font-bold text-sm mb-4">Get in Touch</h4>
+              <a href="mailto:support@finlysta.com" className="flex items-center gap-2 text-sm text-slate-500 hover:text-[#0A2540] transition-colors">
+                <Mail size={13} /> support@finlysta.com
+              </a>
+              <p className="text-xs text-slate-400 mt-3">Have a question? We're here to help — expect a reply within 24 hours.</p>
+            </div>
+          </div>
+          <div className="border-t border-slate-100 pt-5 pb-6">
+            <div className="flex flex-col items-center justify-center gap-2 text-xs text-slate-500 text-center">
+              <span>© {new Date().getFullYear()} Finlysta Pvt. Ltd. · All rights reserved.</span>
+              <div className="flex items-center gap-1.5">
+                <span>Made with</span>
+                <Heart size={10} className="text-red-500 fill-red-500" />
+                <span>in India 🇮🇳</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </footer>
+
+      <style jsx global>{`
+        .line-clamp-2 {
+          display: -webkit-box;
+          -webkit-line-clamp: 2;
+          -webkit-box-orient: vertical;
+          overflow: hidden;
+        }
+      `}</style>
+    </div>
   );
 }

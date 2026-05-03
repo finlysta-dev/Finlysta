@@ -260,9 +260,10 @@ const JobCard = ({ job, imageErrors, handleImageError }: {
           <div className="flex-shrink-0">
             {!hasLogoError && job.companyLogo ? (
               <div className="w-16 h-16 rounded-xl overflow-hidden bg-gray-50 border border-gray-100 flex items-center justify-center shadow-sm group-hover:shadow-md transition-all">
+                {/* FIXED: Added proper alt attribute */}
                 <img
                   src={job.companyLogo}
-                  alt={`${job.company} logo`}
+                  alt={`${job.company} company logo - ${job.title} position`}
                   className="w-14 h-14 object-contain"
                   loading="lazy"
                   onError={() => handleImageError(job.id)}
@@ -393,9 +394,10 @@ const InternshipCard = ({ internship, imageErrors, handleImageError }: {
           <div className="flex-shrink-0">
             {!hasLogoError && internship.companyLogo ? (
               <div className="w-16 h-16 rounded-xl overflow-hidden bg-gray-50 border border-gray-100 flex items-center justify-center shadow-sm group-hover:shadow-md transition-all">
+                {/* FIXED: Added proper alt attribute */}
                 <img
                   src={internship.companyLogo}
-                  alt={`${internship.company} logo`}
+                  alt={`${internship.company} company logo - ${internship.title} internship opportunity`}
                   className="w-14 h-14 object-contain"
                   loading="lazy"
                   onError={() => handleImageError(internship.id)}
