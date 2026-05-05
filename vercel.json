@@ -56,6 +56,28 @@
       "source": "/index.php",
       "destination": "/",
       "permanent": true
+    },
+    {
+      "source": "(.*)",
+      "has": [
+        {
+          "type": "host",
+          "value": "finlysta.com"
+        }
+      ],
+      "destination": "https://www.finlysta.com/$1",
+      "permanent": true
+    },
+    {
+      "source": "(.*)",
+      "has": [
+        {
+          "type": "host",
+          "value": "http://finlysta.com"
+        }
+      ],
+      "destination": "https://www.finlysta.com/$1",
+      "permanent": true
     }
   ]
 }
