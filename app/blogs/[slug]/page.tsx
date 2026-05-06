@@ -2,10 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
 import { ArrowLeft, Calendar, Clock, Tag, Share2, Bookmark } from 'lucide-react';
-import ReactMarkdown from 'react-markdown';
-import remarkGfm from 'remark-gfm';
 
 interface BlogPost {
   id: string;
@@ -31,22 +28,28 @@ export default function BlogPage({ params }: { params: { slug: string } }) {
   const [saved, setSaved] = useState(false);
   const [viewTracked, setViewTracked] = useState(false);
   const [imageError, setImageError] = useState(false);
+  
+  const slug = params.slug;
 
   useEffect(() => {
-    fetchBlog();
-  }, [params.slug]);
+    if (slug) {
+      fetchBlog();
+    }
+  }, [slug]);
 
   useEffect(() => {
-    if (resource && !viewTracked) {
+    if (resource && !viewTracked && slug) {
       trackBlogView();
     }
-  }, [resource, viewTracked]);
+  }, [resource, viewTracked, slug]);
 
   const fetchBlog = async () => {
+    if (!slug) return;
+    
     try {
       setLoading(true);
       setError(null);
-      const response = await fetch(`/api/blogs/${params.slug}`);
+      const response = await fetch(`/api/blogs/${slug}`);
       
       if (response.status === 404) {
         setError('Blog post not found');
@@ -69,6 +72,8 @@ export default function BlogPage({ params }: { params: { slug: string } }) {
   };
 
   const trackBlogView = async () => {
+    if (!slug) return;
+    
     try {
       let sessionId = localStorage.getItem('visitor_session_id');
       if (!sessionId) {
@@ -80,7 +85,7 @@ export default function BlogPage({ params }: { params: { slug: string } }) {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          blogSlug: params.slug,
+          blogSlug: slug,
           sessionId,
           pageUrl: window.location.pathname,
         }),
@@ -92,6 +97,8 @@ export default function BlogPage({ params }: { params: { slug: string } }) {
   };
 
   const trackBlogClick = async (targetUrl: string, linkText: string) => {
+    if (!slug) return;
+    
     try {
       let sessionId = localStorage.getItem('visitor_session_id');
       if (!sessionId) {
@@ -103,7 +110,7 @@ export default function BlogPage({ params }: { params: { slug: string } }) {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          blogSlug: params.slug,
+          blogSlug: slug,
           sessionId,
           targetUrl,
           linkText: linkText || 'link',
@@ -119,11 +126,9 @@ export default function BlogPage({ params }: { params: { slug: string } }) {
   const getDirectImageUrl = (url: string | null) => {
     if (!url) return null;
     
-    // If it's already a direct Google Drive image URL
     if (url.includes('googleusercontent.com')) return url;
     if (url.includes('uc?export=view')) return url;
     
-    // Extract file ID from various Google Drive URL formats
     const patterns = [
       /\/d\/([^\/]+)/,           
       /id=([^&]+)/,               
@@ -142,13 +147,15 @@ export default function BlogPage({ params }: { params: { slug: string } }) {
   };
 
   const handleSave = () => {
+    if (!slug) return;
+    
     const savedItems = JSON.parse(localStorage.getItem('saved_blogs') || '[]');
     if (!saved) {
-      savedItems.push(params.slug);
+      savedItems.push(slug);
       localStorage.setItem('saved_blogs', JSON.stringify(savedItems));
       setSaved(true);
     } else {
-      const filtered = savedItems.filter((item: string) => item !== params.slug);
+      const filtered = savedItems.filter((item: string) => item !== slug);
       localStorage.setItem('saved_blogs', JSON.stringify(filtered));
       setSaved(false);
     }
@@ -157,6 +164,30 @@ export default function BlogPage({ params }: { params: { slug: string } }) {
   const handleShare = () => {
     navigator.clipboard.writeText(window.location.href);
     alert('Link copied to clipboard!');
+  };
+
+  // Process content to handle external links for tracking
+  const processContent = (html: string) => {
+    if (!html) return '';
+    
+    // Create a temporary div to parse HTML
+    const tempDiv = document.createElement('div');
+    tempDiv.innerHTML = html;
+    
+    // Find all anchor tags and add click tracking
+    const links = tempDiv.querySelectorAll('a');
+    links.forEach((link) => {
+      const href = link.getAttribute('href');
+      if (href && href.startsWith('http')) {
+        link.addEventListener('click', (e) => {
+          e.preventDefault();
+          trackBlogClick(href, link.textContent || 'link');
+          window.open(href, '_blank');
+        });
+      }
+    });
+    
+    return tempDiv.innerHTML;
   };
 
   if (loading) {
@@ -205,6 +236,7 @@ export default function BlogPage({ params }: { params: { slug: string } }) {
       'interview': 'Interview Prep',
       'skills': 'Skill Development',
       'career': 'Career Guide',
+      'Networking Guide': 'Networking Guide',
     };
     return categories[category] || category.replace('-', ' ');
   };
@@ -218,12 +250,121 @@ export default function BlogPage({ params }: { params: { slug: string } }) {
       'interview': 'bg-green-100 text-green-700',
       'skills': 'bg-pink-100 text-pink-700',
       'career': 'bg-amber-100 text-amber-700',
+      'Networking Guide': 'bg-teal-100 text-teal-700',
     };
     return colors[category] || 'bg-gray-100 text-gray-700';
   };
 
+  // Custom CSS for HTML content
+  const htmlStyles = `
+    .blog-html-content h1 {
+      font-size: 1.875rem;
+      font-weight: 700;
+      margin-top: 2rem;
+      margin-bottom: 1rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid #e5e7eb;
+      color: #111827;
+    }
+    .blog-html-content h2 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin-top: 1.75rem;
+      margin-bottom: 0.75rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid #e5e7eb;
+      color: #111827;
+    }
+    .blog-html-content h3 {
+      font-size: 1.25rem;
+      font-weight: 600;
+      margin-top: 1.5rem;
+      margin-bottom: 0.75rem;
+      color: #111827;
+    }
+    .blog-html-content p {
+      color: #374151;
+      line-height: 1.625;
+      margin-bottom: 1rem;
+    }
+    .blog-html-content ul {
+      list-style-type: disc;
+      padding-left: 1.5rem;
+      margin-bottom: 1rem;
+      color: #374151;
+    }
+    .blog-html-content ol {
+      list-style-type: decimal;
+      padding-left: 1.5rem;
+      margin-bottom: 1rem;
+      color: #374151;
+    }
+    .blog-html-content li {
+      margin-bottom: 0.25rem;
+    }
+    .blog-html-content a {
+      color: #2563eb;
+      text-decoration: underline;
+    }
+    .blog-html-content a:hover {
+      color: #1d4ed8;
+    }
+    .blog-html-content hr {
+      margin: 1.5rem 0;
+      border-color: #e5e7eb;
+    }
+    .blog-html-content blockquote {
+      border-left: 4px solid #3b82f6;
+      background-color: #eff6ff;
+      padding: 1rem;
+      margin: 1rem 0;
+      font-style: italic;
+      color: #374151;
+    }
+    .blog-html-content table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1rem 0;
+    }
+    .blog-html-content th {
+      background-color: #2563eb;
+      color: white;
+      padding: 0.75rem;
+      text-align: left;
+    }
+    .blog-html-content td {
+      padding: 0.75rem;
+      border-bottom: 1px solid #e5e7eb;
+    }
+    .blog-html-content img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 0.5rem;
+    }
+    .blog-html-content .key-takeaways {
+      background: #f0f9ff;
+      border-left: 4px solid #0066cc;
+      padding: 1.25rem;
+      margin: 1.25rem 0;
+      border-radius: 0.5rem;
+    }
+    .blog-html-content .pro-tip {
+      background: #fef3c7;
+      border-left: 4px solid #f59e0b;
+      padding: 1rem;
+      margin: 1rem 0;
+      border-radius: 0.5rem;
+    }
+    .blog-html-content input[type="checkbox"] {
+      margin-right: 0.5rem;
+    }
+  `;
+
   return (
     <div className="min-h-screen bg-gray-50">
+      {/* Custom Styles */}
+      <style>{htmlStyles}</style>
+
       {/* Back Button */}
       <div className="bg-white border-b border-gray-200 sticky top-0 z-10">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 py-4">
@@ -241,28 +382,27 @@ export default function BlogPage({ params }: { params: { slug: string } }) {
       <div className="max-w-4xl mx-auto px-4 sm:px-6 py-8">
         <article className="bg-white rounded-xl shadow-sm overflow-hidden">
           
-          {/* Cover Image - FIXED: Using regular img tag for external images */}
-          {/* Cover Image - Full visibility fix */}
-{directImageUrl && !imageError && (
-  <div className="relative w-full bg-gray-100">
-    <img
-      src={directImageUrl}
-      alt={resource.title}
-      className="w-full h-auto object-contain"
-      onError={() => setImageError(true)}
-    />
-  </div>
-)}
+          {/* Cover Image */}
+          {directImageUrl && !imageError && (
+            <div className="relative w-full bg-gray-100">
+              <img
+                src={directImageUrl}
+                alt={resource.title}
+                className="w-full h-auto object-contain"
+                onError={() => setImageError(true)}
+              />
+            </div>
+          )}
 
-{/* Fallback when no image or image fails */}
-{(!directImageUrl || imageError) && (
-  <div className="relative w-full h-64 md:h-96 overflow-hidden bg-gradient-to-r from-blue-500 to-indigo-600 flex items-center justify-center">
-    <div className="text-center text-white px-4">
-      <Bookmark size={48} className="mx-auto mb-2 opacity-50" />
-      <p className="text-lg font-medium line-clamp-2">{resource.title}</p>
-    </div>
-  </div>
-)}
+          {/* Fallback when no image or image fails */}
+          {(!directImageUrl || imageError) && (
+            <div className="relative w-full h-64 md:h-96 overflow-hidden bg-gradient-to-r from-blue-500 to-indigo-600 flex items-center justify-center">
+              <div className="text-center text-white px-4">
+                <Bookmark size={48} className="mx-auto mb-2 opacity-50" />
+                <p className="text-lg font-medium line-clamp-2">{resource.title}</p>
+              </div>
+            </div>
+          )}
           
           {/* Header Section */}
           <div className="p-6 sm:p-8 md:p-10">
@@ -304,63 +444,11 @@ export default function BlogPage({ params }: { params: { slug: string } }) {
               </p>
             </div>
 
-            {/* Markdown Content */}
-            <div className="markdown-content prose prose-blue max-w-none">
-              <ReactMarkdown 
-                remarkPlugins={[remarkGfm]}
-                components={{
-                  h1: ({ children }) => <h1 className="text-3xl font-bold text-gray-900 mt-8 mb-4 pb-2 border-b border-gray-200">{children}</h1>,
-                  h2: ({ children }) => <h2 className="text-2xl font-bold text-gray-900 mt-8 mb-3 pb-2 border-b border-gray-200">{children}</h2>,
-                  h3: ({ children }) => <h3 className="text-xl font-semibold text-gray-900 mt-6 mb-3">{children}</h3>,
-                  p: ({ children }) => <p className="text-gray-700 leading-relaxed mb-4">{children}</p>,
-                  ul: ({ children }) => <ul className="list-disc pl-6 mb-4 space-y-1 text-gray-700">{children}</ul>,
-                  ol: ({ children }) => <ol className="list-decimal pl-6 mb-4 space-y-1 text-gray-700">{children}</ol>,
-                  li: ({ children }) => <li className="mb-1">{children}</li>,
-                  a: ({ href, children }) => {
-                    const linkText = typeof children === 'string' ? children : '';
-                    const isExternal = href && !href.startsWith(window.location.origin);
-                    
-                    if (isExternal) {
-                      return (
-                        <a 
-                          href={href} 
-                          onClick={(e) => {
-                            e.preventDefault();
-                            trackBlogClick(href || '', linkText);
-                            setTimeout(() => {
-                              window.open(href, '_blank');
-                            }, 100);
-                          }}
-                          className="text-blue-600 hover:underline cursor-pointer"
-                          target="_blank"
-                          rel="noopener noreferrer"
-                        >
-                          {children} 🔗
-                        </a>
-                      );
-                    }
-                    
-                    return (
-                      <a 
-                        href={href} 
-                        className="text-blue-600 hover:underline"
-                      >
-                        {children}
-                      </a>
-                    );
-                  },
-                  strong: ({ children }) => <strong className="font-semibold text-gray-900">{children}</strong>,
-                  hr: () => <hr className="my-6 border-gray-200" />,
-                  blockquote: ({ children }) => (
-                    <blockquote className="border-l-4 border-blue-500 bg-blue-50 p-4 my-4 italic text-gray-700">
-                      {children}
-                    </blockquote>
-                  ),
-                }}
-              >
-                {resource.content || ''}
-              </ReactMarkdown>
-            </div>
+            {/* HTML Content - FIXED: Using dangerouslySetInnerHTML instead of ReactMarkdown */}
+            <div 
+              className="blog-html-content"
+              dangerouslySetInnerHTML={{ __html: resource.content || '' }}
+            />
           </div>
 
           {/* Footer Section */}
