@@ -1,7 +1,5 @@
 import type { Metadata } from 'next';
 import Script from 'next/script';
-import Image from 'next/image';
-import Link from 'next/link';
 import { Suspense, lazy } from 'react';
 import "./globals.css";
 import Providers from "./providers";
@@ -63,7 +61,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'Entry Level Financial Analyst Jobs & Internships | Finlysta',
     description: 'Find entry level financial analyst jobs and internships in India. Start your finance career. 100% free.',
-    images: ['https://www.finlysta.com/og-image.png'], // ✅ Use same image
+    images: ['https://www.finlysta.com/og-image.png'],
     creator: '@Finlysta',
     site: '@Finlysta',
   },
@@ -118,23 +116,11 @@ export default function RootLayout({
           fetchPriority="high"
         />
         
-        {/* ✅ REMOVED: Hardcoded CSS preload - Next.js handles this */}
-        
-        {/* Security Headers */}
-        <meta httpEquiv="X-Content-Type-Options" content="nosniff" />
-        <meta httpEquiv="X-Frame-Options" content="DENY" />
-        <meta httpEquiv="X-XSS-Protection" content="1; mode=block" />
-        <meta name="referrer" content="strict-origin-when-cross-origin" />
-        <meta name="format-detection" content="telephone=no, date=no, email=no, address=no" />
-        
         {/* SEO Meta Tags */}
         <meta name="robots" content="index, follow" />
         <meta name="revisit-after" content="7 days" />
-        
-        {/* ✅ REMOVED: Non-standard geo meta tags */}
-        
-        {/* ✅ Language meta */}
         <meta name="language" content="English" />
+        <meta name="referrer" content="strict-origin-when-cross-origin" />
         
         {/* Favicon Icons - All formats */}
         <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
@@ -144,7 +130,7 @@ export default function RootLayout({
         <link rel="icon" href="/icon.svg" type="image/svg+xml" />
         <link rel="manifest" href="/site.webmanifest" />
         
-        {/* ✅ COMBINED: Single Organization Schema */}
+        {/* ✅ Organization Schema - WITHOUT plaintext email */}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
@@ -160,14 +146,15 @@ export default function RootLayout({
               "areaServed": "India",
               "sameAs": [
                 "https://www.linkedin.com/company/finlysta",
-                "https://twitter.com/Finlysta"
+                "https://twitter.com/Finlysta",
+                "https://www.instagram.com/Finlysta.in/"
               ],
               "contactPoint": {
                 "@type": "ContactPoint",
-                "email": "finlystahelp@gmail.com",
                 "contactType": "customer support",
                 "availableLanguage": ["English", "Hindi"],
-                "responseTime": "PT24H"
+                "responseTime": "PT24H",
+                "url": "https://www.finlysta.com/contact"
               }
             })
           }}
@@ -214,7 +201,24 @@ export default function RootLayout({
           }}
         />
         
-        {/* ✅ REMOVED: Generic JobPosting schema - not appropriate for homepage */}
+        {/* ✅ JobSearchResultsPage Schema for jobs page */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "SearchResultsPage",
+              "name": "Financial Analyst Jobs in India",
+              "description": "Browse entry level financial analyst jobs and internships across India",
+              "url": "https://www.finlysta.com/jobs",
+              "isPartOf": {
+                "@type": "WebSite",
+                "name": "Finlysta",
+                "url": "https://www.finlysta.com"
+              }
+            })
+          }}
+        />
       </head>
       <body suppressHydrationWarning>
         <Providers>

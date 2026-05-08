@@ -1,34 +1,31 @@
 // app/layout.js
+import SchemaScript from './components/SchemaScript';
 
 export const metadata = {
-  title: "Finlysta – Verified Internships",
-  description: "Find real, verified internship opportunities.",
+  title: "Entry Level Financial Analyst Jobs & Internships | Finlysta",
+  description: "Find entry level financial analyst jobs and internships in India. Start your finance career with paid internships and fresher jobs. 100% free for students.",
 };
 
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <head>
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
-              "@context": "https://schema.org",
-              "@type": "Organization",
-              "name": "Finlysta",
-              "url": "https://tryFinlysta.in",
-              "logo": "https://www.tryFinlysta.in/Finlysta.png",
-              "sameAs": [
-                "https://www.instagram.com/Finlysta.in/",
-                "https://www.linkedin.com/company/join-Finlysta/",
-                "https://x.com/Finlysta83656"
-              ]
-            }),
-          }}
-        />
-        <link rel="icon" href="https://www.tryFinlysta.in/Finlysta.png" sizes="any" />
+        {/* Performance optimizations */}
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="dns-prefetch" href="https://www.googletagmanager.com" />
+        
+        {/* ✅ Favicon - using local files in app folder */}
+        <link rel="icon" href="/favicon.ico" sizes="any" />
+        <link rel="icon" type="image/png" sizes="96x96" href="/icon.png" />
+        <link rel="apple-touch-icon" href="/apple-icon.png" />
+        
+        {/* Optional: PWA manifest */}
+        <link rel="manifest" href="/site.webmanifest" />
       </head>
-      <body>{children}</body>
+      <body>
+        <SchemaScript />
+        {children}
+      </body>
     </html>
   );
 }
