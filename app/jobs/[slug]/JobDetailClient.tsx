@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { Calendar, MapPin, Building2, Briefcase, Award, CheckCircle, Zap, ExternalLink, GraduationCap, Target, Sparkles, Bookmark, Share2, TrendingUp, Heart, Clock, Users, Globe, ChevronDown, ChevronUp, AlertCircle, Eye } from "lucide-react";
+import { Calendar, MapPin, Building2, ChevronRight, Briefcase, Award, CheckCircle, Zap, ExternalLink, GraduationCap, Target, Sparkles, Bookmark, Share2, TrendingUp, Heart, Clock, Users, Globe, ChevronDown, ChevronUp, AlertCircle } from "lucide-react";
 
 const getTimeAgo = (date: string) => {
   if (!date) return "Recently";
@@ -33,31 +33,86 @@ const getCompanyInitials = (company: string) => {
   return (words[0][0] + words[1][0]).toUpperCase();
 };
 
+// Fixed: Proper bullet point formatting - smarter period detection
 const formatBulletPoints = (text: string) => {
   if (!text) return [];
-  // Split by periods followed by space or newline
-  const sentences = text.split(/\.\s+/);
-  return sentences
-    .filter(sentence => sentence.trim().length > 0)
-    .map(sentence => sentence.trim() + (sentence.endsWith('.') ? '' : '.'));
-};
-
-// Extract key bullet points from long text
-const extractKeyResponsibilities = (text: string) => {
-  if (!text) return [];
-  // Common responsibility patterns
-  const responsibilityPatterns = [
-    /(?:Assess|Review|Analyze|Prepare|Create|Develop|Maintain|Manage|Coordinate|Support|Assist|Lead|Execute|Implement|Configure|Generate|Verify|Perform|Process|Document|Track|Report|Communicate|Collaborate)[^.!]*[.!]/gi,
+  
+  // Special case: Don't split on periods that are part of abbreviations (B., M., etc.)
+  // First, protect abbreviations by replacing them with a placeholder
+  let protectedText = text;
+  
+  // Protect common degree abbreviations (B.B.A., B.Com, M.B.A., etc.)
+  const degreeAbbreviations = [
+    'B.B.A', 'BBA', 'B.Com', 'BCOM', 'B.Sc', 'BSc', 'B.A', 'BA',
+    'M.B.A', 'MBA', 'M.Com', 'MCOM', 'M.Sc', 'MSc', 'M.A', 'MA',
+    'Ph.D', 'PhD', 'B.F.M', 'BFM', 'B.M.S', 'BMS', 'B.B.I', 'BBI', 'B.A.F', 'BAF'
   ];
   
-  const matches = text.match(responsibilityPatterns[0]);
-  if (matches && matches.length > 0) {
-    return matches.slice(0, 8).map(m => m.trim());
+  degreeAbbreviations.forEach(abbr => {
+    const regex = new RegExp(`\\b${abbr}\\b`, 'gi');
+    protectedText = protectedText.replace(regex, abbr.replace(/\./g, '___DOT___'));
+  });
+  
+  // Also protect single letters with periods (like "B.", "M.", "C.")
+  protectedText = protectedText.replace(/\b([A-Z])\.\s/g, '$1___DOT___ ');
+  
+  // Now split by period followed by space or newline
+  const sentences = protectedText.split(/\.\s+/);
+  
+  // Restore the protected dots
+  const restoredSentences = sentences.map(sentence => {
+    let restored = sentence;
+    restored = restored.replace(/___DOT___/g, '.');
+    return restored.trim();
+  });
+  
+  return restoredSentences
+    .filter(sentence => sentence.length > 0)
+    .map(sentence => {
+      let cleaned = sentence.trim();
+      // Add period back if missing and not already ending with punctuation
+      if (!cleaned.endsWith('.') && !cleaned.endsWith('!') && !cleaned.endsWith('?') && cleaned.length > 5) {
+        cleaned = cleaned + '.';
+      }
+      // Capitalize first letter
+      return cleaned.charAt(0).toUpperCase() + cleaned.slice(1);
+    });
+};
+
+// Fixed: Extract key responsibilities properly
+const extractKeyResponsibilities = (text: string) => {
+  if (!text) return [];
+  
+  // First, try to split by numbered points (1., 2., etc.) or bullet points
+  const bulletMatch = text.match(/(?:•|\d+\.)\s*([^•\d]+?)(?=(?:•|\d+\.|$))/g);
+  if (bulletMatch) {
+    return bulletMatch.map(item => item.replace(/^[•\d\.\s]+/, '').trim()).filter(s => s.length > 10);
   }
   
-  // Fallback: split by periods
-  const sentences = text.split(/\.\s+/);
-  return sentences.filter(s => s.length > 20 && s.length < 150).slice(0, 8).map(s => s.trim() + '.');
+  // Then try to split by periods that start with capital letter
+  const sentences = text.split(/(?<=[.!?])\s+(?=[A-Z])/);
+  if (sentences.length > 1) {
+    return sentences.filter(s => s.trim().length > 20).map(s => s.trim());
+  }
+  
+  // Finally, split by period and space
+  const periodSplit = text.split(/\.\s+/);
+  return periodSplit
+    .filter(s => s.trim().length > 20)
+    .map(s => s.trim() + '.')
+    .slice(0, 8);
+};
+
+// Helper function to check if a skill is actually a degree term
+const isDegreeTerm = (skill: string): boolean => {
+  const degreeTerms = [
+    'bachelor', 'master', 'mba', 'b.com', 'bba', 'mms', 'cfa', 'chartered', 
+    'ca', 'acca', 'graduate', 'post graduate', 'baf', 'bfm', 'bms', 'bbi',
+    'bcom', 'bachelor\'s', 'bachelors', 'masters', 'phd', 'doctorate',
+    'ba', 'bs', 'bsc', 'ma', 'ms', 'msc', 'mcom', 'mba finance'
+  ];
+  const lowerSkill = skill.toLowerCase();
+  return degreeTerms.some(term => lowerSkill.includes(term));
 };
 
 const companyColors = [
@@ -73,10 +128,8 @@ export default function JobDetailClient({ opportunity, relatedJobs }: { opportun
   const [saved, setSaved] = useState(false);
   const [showShareSuccess, setShowShareSuccess] = useState(false);
   const [logoError, setLogoError] = useState(false);
-  const [showAllSkills, setShowAllSkills] = useState(false);
   const [showFullQualifications, setShowFullQualifications] = useState(false);
   const [showReportModal, setShowReportModal] = useState(false);
-  const [showAllSkillsModal, setShowAllSkillsModal] = useState(false);
 
   useEffect(() => {
     if (opportunity?.id) {
@@ -119,48 +172,44 @@ export default function JobDetailClient({ opportunity, relatedJobs }: { opportun
   const companyInitials = getCompanyInitials(opportunity.company);
   const companyColor = companyColors[(opportunity.company?.length || 0) % companyColors.length];
 
-  // Extract key responsibilities as bullet points
-  const responsibilitiesPoints = extractKeyResponsibilities(opportunity.responsibilities);
-  const qualificationsPoints = formatBulletPoints(opportunity.qualifications);
+  // Get cleaned responsibilities and qualifications
+  let responsibilitiesPoints = extractKeyResponsibilities(opportunity.responsibilities);
+  let qualificationsPoints = formatBulletPoints(opportunity.qualifications);
   const benefitsPoints = formatBulletPoints(opportunity.benefits);
 
-  // Separate important notes from qualifications
-  const importantNotes = qualificationsPoints.filter(point => 
+  // Split qualifications into Educational and Requirements
+  const educationalKeywords = ['bachelor', 'master', 'mba', 'degree', 'b.com', 'bba', 'mms', 'cfa', 'chartered', 'ca', 'acca', 'graduate', 'post graduate', 'baf', 'bfm', 'bms', 'bbi', 'phd', 'doctorate'];
+  const educationalQuals = qualificationsPoints.filter((point: string) => 
+    educationalKeywords.some(keyword => point.toLowerCase().includes(keyword))
+  );
+  const otherRequirements = qualificationsPoints.filter((point: string) => 
+    !educationalKeywords.some(keyword => point.toLowerCase().includes(keyword))
+  );
+
+  const importantNotes = otherRequirements.filter((point: string) => 
     point.toLowerCase().includes("notice") || 
     point.toLowerCase().includes("eligible") ||
     point.toLowerCase().includes("not apply") ||
-    point.toLowerCase().includes("not eligible") ||
     point.toLowerCase().includes("note:")
   );
-  const mainQualifications = qualificationsPoints.filter(point => 
+  const mainRequirements = otherRequirements.filter((point: string) => 
     !importantNotes.includes(point)
   );
 
-  // Clean main qualifications to be more readable
-  const cleanQualifications = mainQualifications.map(q => {
-    if (q.includes("years") && q.includes("experience")) return q;
-    if (q.toLowerCase().includes("communication")) return "Strong verbal and written communication skills in English";
-    if (q.toLowerCase().includes("attention")) return "Attention to detail and high degree of intellectual curiosity";
-    if (q.toLowerCase().includes("customer")) return "Customer service focus with drive to exceed expectations";
-    if (q.toLowerCase().includes("priority")) return "Ability to manage and prioritize multiple work requirements";
-    if (q.toLowerCase().includes("judgment")) return "Ability to exercise judgment within procedures and practices";
-    return q;
-  });
-
-  const uniqueSkills = [...new Set(opportunity.skills || [])];
+  // Type-safe skills filtering - EXCLUDING degree terms
+  const uniqueSkills: string[] = [...new Set(opportunity.skills || [])] as string[];
   
   const financeSkills = uniqueSkills.filter((s: string) => 
-    ['financial', 'analysis', 'statements', 'loan', 'valuation', 'reporting', 'budgeting', 'forecasting', 'accounting', 'audit', 'tax', 'reconciliation', 'finance'].some(keyword => s.toLowerCase().includes(keyword))
+    !isDegreeTerm(s) && ['financial', 'analysis', 'statements', 'loan', 'valuation', 'reporting', 'budgeting', 'forecasting', 'accounting', 'audit', 'tax', 'reconciliation', 'finance'].some(keyword => s.toLowerCase().includes(keyword))
   );
   const technicalSkills = uniqueSkills.filter((s: string) =>
-    ['excel', 'erp', 'database', 'sql', 'power bi', 'tableau', 'software', 'system', 'data', 'quickbooks', 'zoho', 'netsuite', 'tool'].some(keyword => s.toLowerCase().includes(keyword))
+    !isDegreeTerm(s) && ['excel', 'erp', 'database', 'sql', 'power bi', 'tableau', 'software', 'system', 'data', 'quickbooks', 'zoho', 'netsuite', 'tool'].some(keyword => s.toLowerCase().includes(keyword))
   );
   const softSkills = uniqueSkills.filter((s: string) =>
-    ['communication', 'attention', 'detail', 'time management', 'team', 'problem solving', 'judgment', 'curiosity', 'self management', 'dedication', 'responsive', 'customer support', 'interpersonal', 'organizational'].some(keyword => s.toLowerCase().includes(keyword))
+    !isDegreeTerm(s) && ['communication', 'attention', 'detail', 'time management', 'team', 'problem solving', 'judgment', 'curiosity', 'self management', 'dedication', 'responsive', 'customer support', 'interpersonal', 'organizational'].some(keyword => s.toLowerCase().includes(keyword))
   );
-  
   const otherSkills = uniqueSkills.filter((s: string) => 
-    !financeSkills.includes(s) && !technicalSkills.includes(s) && !softSkills.includes(s)
+    !isDegreeTerm(s) && !financeSkills.includes(s) && !technicalSkills.includes(s) && !softSkills.includes(s)
   );
 
   const getSalaryInsight = () => {
@@ -174,7 +223,6 @@ export default function JobDetailClient({ opportunity, relatedJobs }: { opportun
 
   const salaryInsight = getSalaryInsight();
 
-  // Clean salary display
   let cleanSalary = null;
   if (opportunity.salary) {
     let salary = opportunity.salary.replace(/[₹$]/g, '').trim();
@@ -187,7 +235,6 @@ export default function JobDetailClient({ opportunity, relatedJobs }: { opportun
     }
   }
 
-  // Clean overview text - fix grammar
   let overviewText = opportunity.overview || "";
   if (overviewText.includes("PAN India location flexibility")) {
     overviewText = "This role is open to candidates across multiple locations in India. " + overviewText.replace("PAN India location flexibility", "");
@@ -215,12 +262,10 @@ export default function JobDetailClient({ opportunity, relatedJobs }: { opportun
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center gap-2 text-sm text-gray-500">
             <Link href="/" className="hover:text-blue-600">Home</Link>
-            <span>/</span>
+            <ChevronRight size={14} className="text-gray-400" />
             <Link href="/jobs" className="hover:text-blue-600">Jobs</Link>
-            <span>/</span>
+            <ChevronRight size={14} className="text-gray-400" />
             <span className="text-gray-900">{opportunity.title}</span>
-            <span>/</span>
-            <span className="text-gray-600">{opportunity.company}</span>
           </div>
         </div>
       </div>
@@ -323,7 +368,7 @@ export default function JobDetailClient({ opportunity, relatedJobs }: { opportun
               </div>
             )}
 
-            {/* Role Overview - Fixed grammar */}
+            {/* Role Overview */}
             {overviewText && (
               <div className="bg-white rounded-xl border border-gray-100 p-5 shadow-sm">
                 <div className="flex items-center gap-2 mb-3">
@@ -334,7 +379,7 @@ export default function JobDetailClient({ opportunity, relatedJobs }: { opportun
               </div>
             )}
 
-            {/* Key Responsibilities - Clean bullet points */}
+            {/* Key Responsibilities */}
             {responsibilitiesPoints.length > 0 && (
               <div className="bg-white rounded-xl border border-gray-100 p-5 shadow-sm">
                 <div className="flex items-center gap-2 mb-3">
@@ -352,7 +397,7 @@ export default function JobDetailClient({ opportunity, relatedJobs }: { opportun
               </div>
             )}
 
-            {/* Skills - With chip UI and modal */}
+            {/* Skills - Cleaned, no degree terms */}
             {uniqueSkills.length > 0 && (
               <div className="bg-white rounded-xl border border-gray-100 p-5 shadow-sm">
                 <div className="flex items-center gap-2 mb-4">
@@ -364,7 +409,7 @@ export default function JobDetailClient({ opportunity, relatedJobs }: { opportun
                   <div className="mb-4">
                     <h3 className="text-sm font-semibold text-gray-700 mb-2">Finance & Accounting</h3>
                     <div className="flex flex-wrap gap-2">
-                      {financeSkills.slice(0, 8).map((skill, idx) => (
+                      {financeSkills.map((skill, idx) => (
                         <span key={idx} className="px-2.5 py-1 bg-blue-50 text-blue-700 rounded-full text-xs font-medium border border-blue-100">{skill}</span>
                       ))}
                     </div>
@@ -375,7 +420,7 @@ export default function JobDetailClient({ opportunity, relatedJobs }: { opportun
                   <div className="mb-4">
                     <h3 className="text-sm font-semibold text-gray-700 mb-2">Technical & Tools</h3>
                     <div className="flex flex-wrap gap-2">
-                      {technicalSkills.slice(0, 8).map((skill, idx) => (
+                      {technicalSkills.map((skill, idx) => (
                         <span key={idx} className="px-2.5 py-1 bg-gray-100 text-gray-700 rounded-full text-xs font-medium border border-gray-200">{skill}</span>
                       ))}
                     </div>
@@ -386,40 +431,63 @@ export default function JobDetailClient({ opportunity, relatedJobs }: { opportun
                   <div className="mb-4">
                     <h3 className="text-sm font-semibold text-gray-700 mb-2">Soft Skills</h3>
                     <div className="flex flex-wrap gap-2">
-                      {softSkills.slice(0, 8).map((skill, idx) => (
+                      {softSkills.map((skill, idx) => (
                         <span key={idx} className="px-2.5 py-1 bg-green-50 text-green-700 rounded-full text-xs font-medium border border-green-100">{skill}</span>
                       ))}
                     </div>
                   </div>
                 )}
 
-                {uniqueSkills.length > 8 && (
-                  <button onClick={() => setShowAllSkillsModal(true)} className="mt-3 px-3 py-1.5 bg-blue-50 text-blue-600 rounded-lg text-sm font-medium hover:bg-blue-100 transition">
-                    View all {uniqueSkills.length} skills →
-                  </button>
+                {otherSkills.length > 0 && (
+                  <div className="mb-4">
+                    <h3 className="text-sm font-semibold text-gray-700 mb-2">Other Skills</h3>
+                    <div className="flex flex-wrap gap-2">
+                      {otherSkills.map((skill, idx) => (
+                        <span key={idx} className="px-2.5 py-1 bg-gray-100 text-gray-700 rounded-full text-xs font-medium border border-gray-200">{skill}</span>
+                      ))}
+                    </div>
+                  </div>
                 )}
               </div>
             )}
 
-            {/* Qualifications & Requirements - Clean bullet points */}
-            {cleanQualifications.length > 0 && (
+            {/* Educational Qualifications */}
+            {educationalQuals.length > 0 && (
               <div className="bg-white rounded-xl border border-gray-100 p-5 shadow-sm">
                 <div className="flex items-center gap-2 mb-3">
                   <GraduationCap size={18} className="text-purple-600" />
-                  <h2 className="text-lg font-bold text-gray-900">Qualifications & Requirements</h2>
+                  <h2 className="text-lg font-bold text-gray-900">Educational Qualifications</h2>
                 </div>
                 <ul className="space-y-2">
-                  {(showFullQualifications ? cleanQualifications : cleanQualifications.slice(0, 6)).map((point, idx) => (
+                  {educationalQuals.map((point, idx) => (
                     <li key={idx} className="flex items-start gap-2">
                       <span className="text-purple-500 mt-0.5">•</span>
                       <span className="text-gray-600 text-sm leading-relaxed">{point}</span>
                     </li>
                   ))}
                 </ul>
-                {cleanQualifications.length > 6 && (
+              </div>
+            )}
+
+            {/* Requirements */}
+            {mainRequirements.length > 0 && (
+              <div className="bg-white rounded-xl border border-gray-100 p-5 shadow-sm">
+                <div className="flex items-center gap-2 mb-3">
+                  <CheckCircle size={18} className="text-blue-600" />
+                  <h2 className="text-lg font-bold text-gray-900">Requirements</h2>
+                </div>
+                <ul className="space-y-2">
+                  {(showFullQualifications ? mainRequirements : mainRequirements.slice(0, 6)).map((point, idx) => (
+                    <li key={idx} className="flex items-start gap-2">
+                      <span className="text-blue-500 mt-0.5">•</span>
+                      <span className="text-gray-600 text-sm leading-relaxed">{point}</span>
+                    </li>
+                  ))}
+                </ul>
+                {mainRequirements.length > 6 && (
                   <button onClick={() => setShowFullQualifications(!showFullQualifications)} className="mt-3 text-sm text-blue-600 hover:text-blue-700 flex items-center gap-1">
                     {showFullQualifications ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
-                    {showFullQualifications ? "Show less" : `View all ${cleanQualifications.length} requirements`}
+                    {showFullQualifications ? "Show less" : `View all ${mainRequirements.length} requirements`}
                   </button>
                 )}
               </div>
@@ -442,65 +510,6 @@ export default function JobDetailClient({ opportunity, relatedJobs }: { opportun
                 </ul>
               </div>
             )}
-
-            {/* Why This Role is Great for Freshers */}
-            <div className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl border border-green-100 p-5">
-              <div className="flex items-center gap-2 mb-3">
-                <Sparkles size={18} className="text-green-600" />
-                <h2 className="text-lg font-bold text-gray-900">Why This Role is Great for Freshers</h2>
-              </div>
-              <ul className="space-y-2">
-                <li className="flex items-center gap-2 text-sm text-gray-700"><CheckCircle size={14} className="text-green-500" /> Entry-level friendly with 0-5 years experience accepted</li>
-                <li className="flex items-center gap-2 text-sm text-gray-700"><Building2 size={14} className="text-green-500" /> Large established company with 900+ employees</li>
-                <li className="flex items-center gap-2 text-sm text-gray-700"><Target size={14} className="text-green-500" /> Strong analytical and financial systems exposure</li>
-                <li className="flex items-center gap-2 text-sm text-gray-700"><Award size={14} className="text-green-500" /> Build expertise in ERP systems and financial analysis</li>
-                <li className="flex items-center gap-2 text-sm text-gray-700"><Users size={14} className="text-green-500" /> Join a growing team with learning opportunities</li>
-              </ul>
-            </div>
-
-            {/* How to Prepare */}
-            <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl border border-blue-100 p-5">
-              <div className="flex items-center gap-2 mb-3">
-                <GraduationCap size={18} className="text-blue-600" />
-                <h2 className="text-lg font-bold text-gray-900">How to Prepare for This Role</h2>
-              </div>
-              <ul className="space-y-2">
-                <li className="flex items-center gap-2 text-sm text-gray-700"><CheckCircle size={14} className="text-blue-500" /> Build proficiency in Excel and financial statements</li>
-                <li className="flex items-center gap-2 text-sm text-gray-700"><CheckCircle size={14} className="text-blue-500" /> Practice attention to detail through case studies</li>
-                <li className="flex items-center gap-2 text-sm text-gray-700"><CheckCircle size={14} className="text-blue-500" /> Learn basics of ERP systems and database management</li>
-                <li className="flex items-center gap-2 text-sm text-gray-700"><CheckCircle size={14} className="text-blue-500" /> Highlight any experience with data analysis or verification</li>
-              </ul>
-              <div className="mt-3 pt-3 border-t border-blue-100">
-                <p className="text-xs text-gray-500">📚 Recommended: Check our <Link href="/roadmap" className="text-blue-600 hover:underline">Career Roadmap</Link> for financial analysts</p>
-              </div>
-            </div>
-
-            {/* Before You Apply */}
-            <div className="bg-white rounded-xl border border-gray-100 p-5 shadow-sm">
-              <div className="flex items-center gap-2 mb-3">
-                <Heart size={18} className="text-rose-600" />
-                <h2 className="text-lg font-bold text-gray-900">Before You Apply</h2>
-              </div>
-              <ul className="space-y-2">
-                <li className="flex items-center gap-2 text-sm text-gray-700"><CheckCircle size={14} className="text-green-500" /> Update your resume with relevant finance skills</li>
-                <li className="flex items-center gap-2 text-sm text-gray-700"><CheckCircle size={14} className="text-green-500" /> Highlight Excel, data analysis, and attention to detail</li>
-                <li className="flex items-center gap-2 text-sm text-gray-700"><CheckCircle size={14} className="text-green-500" /> Mention any analytical projects or internships</li>
-                <li className="flex items-center gap-2 text-sm text-gray-700"><CheckCircle size={14} className="text-green-500" /> Keep your communication professional and clear</li>
-              </ul>
-            </div>
-
-            {/* Application Difficulty & Trust */}
-            <div className="bg-white rounded-xl border border-gray-100 p-5 shadow-sm">
-              <h2 className="text-lg font-bold text-gray-900 mb-3">Application Difficulty</h2>
-              <div className="flex items-center gap-2 mb-4">
-                <span className="px-3 py-1 bg-green-100 text-green-700 text-sm font-medium rounded-full">🟢 Beginner Friendly</span>
-                <span className="text-sm text-gray-600">Strong communication and analytical skills required</span>
-              </div>
-              <div className="flex items-center gap-2 text-xs text-gray-500 pt-3 border-t border-gray-100">
-                <CheckCircle size={12} className="text-green-500" />
-                <span>Verified on {new Date(opportunity.updatedAt).toLocaleDateString('en-IN', { year: 'numeric', month: 'long', day: 'numeric' })}</span>
-              </div>
-            </div>
 
             {/* Benefits */}
             {benefitsPoints.length > 0 && !opportunity.benefits?.includes("not provided") && (
@@ -561,19 +570,6 @@ export default function JobDetailClient({ opportunity, relatedJobs }: { opportun
                 </div>
               </div>
 
-              {/* Company Snapshot */}
-              <div className="bg-white rounded-xl border border-gray-100 p-4 shadow-sm mt-4">
-                <h4 className="font-semibold text-gray-900 mb-2 flex items-center gap-2"><Building2 size={14} className="text-blue-500" />Company Snapshot</h4>
-                <div className="space-y-2 text-sm">
-                  <div className="flex justify-between"><span className="text-gray-500">Industry</span><span className="text-gray-700">Financial Services</span></div>
-                  <div className="flex justify-between"><span className="text-gray-500">Founded</span><span className="text-gray-700">2002</span></div>
-                  <div className="flex justify-between"><span className="text-gray-500">Size</span><span className="text-gray-700">900+ Employees</span></div>
-                  {opportunity.workMode && opportunity.workMode !== "Not specified" && (
-                    <div className="flex justify-between"><span className="text-gray-500">Work Mode</span><span className="text-gray-700 capitalize">{opportunity.workMode}</span></div>
-                  )}
-                </div>
-              </div>
-
               {/* Salary Insight */}
               {salaryInsight && (
                 <div className="bg-gradient-to-r from-green-50 to-teal-50 rounded-xl border border-green-100 p-4 shadow-sm mt-4">
@@ -593,41 +589,24 @@ export default function JobDetailClient({ opportunity, relatedJobs }: { opportun
               <h2 className="text-xl font-bold text-gray-900">Similar Entry-Level Finance Jobs</h2>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {relatedJobs.map((job) => {
-                let jobCleanSalary = null;
-                if (job.salary) {
-                  let salary = job.salary.replace(/[₹$]/g, '').trim();
-                  if (salary.includes('Competitive') || salary.includes('competitive')) {
-                    jobCleanSalary = "Competitive";
-                  } else {
-                    jobCleanSalary = salary;
-                  }
-                }
-                return (
-                  <Link key={job.id} href={`/jobs/${job.slug}`} className="group block bg-white rounded-lg border border-gray-100 p-4 hover:shadow-md hover:border-blue-200 transition">
-                    <div className="flex items-start gap-3">
-                      <div className="flex-shrink-0">
-                        {job.companyLogo ? <div className="w-10 h-10 bg-gray-50 rounded-lg flex items-center justify-center p-1.5"><img src={job.companyLogo} alt={job.company} className="max-w-full max-h-full object-contain" /></div>
-                        : <div className="w-10 h-10 bg-gradient-to-br from-gray-600 to-gray-800 rounded-lg flex items-center justify-center"><span className="text-white font-bold text-xs">{getCompanyInitials(job.company)}</span></div>}
-                      </div>
-                      <div className="flex-1">
-                        <h3 className="font-semibold text-gray-900 group-hover:text-blue-600 text-sm line-clamp-1">{job.title}</h3>
-                        <p className="text-xs text-gray-500">{job.company}</p>
-                        <div className="flex flex-wrap items-center gap-2 mt-1.5 text-xs">
-                          {jobCleanSalary && <span className="text-green-600 font-medium">{jobCleanSalary === "Competitive" ? "💰 Competitive" : `₹${jobCleanSalary.split('-')[0]}+`}</span>}
-                          {job.experience && <span className="text-gray-400">{job.experience}</span>}
-                          {job.workMode && job.workMode !== "Not specified" && (
-                            <span className="capitalize text-gray-400">{job.workMode}</span>
-                          )}
-                        </div>
-                        <div className="flex items-center gap-1 mt-1 text-xs text-gray-400">
-                          <MapPin size={10} />{job.location?.split(',')[0]}
-                        </div>
+              {relatedJobs.map((job) => (
+                <Link key={job.id} href={`/jobs/${job.slug}`} className="group block bg-white rounded-lg border border-gray-100 p-4 hover:shadow-md hover:border-blue-200 transition">
+                  <div className="flex items-start gap-3">
+                    <div className="flex-shrink-0">
+                      {job.companyLogo ? <div className="w-10 h-10 bg-gray-50 rounded-lg flex items-center justify-center p-1.5"><img src={job.companyLogo} alt={job.company} className="max-w-full max-h-full object-contain" /></div>
+                      : <div className="w-10 h-10 bg-gradient-to-br from-gray-600 to-gray-800 rounded-lg flex items-center justify-center"><span className="text-white font-bold text-xs">{getCompanyInitials(job.company)}</span></div>}
+                    </div>
+                    <div className="flex-1">
+                      <h3 className="font-semibold text-gray-900 group-hover:text-blue-600 text-sm line-clamp-1">{job.title}</h3>
+                      <p className="text-xs text-gray-500">{job.company}</p>
+                      <div className="flex items-center gap-2 mt-1 text-xs text-gray-400">
+                        <MapPin size={10} />{job.location?.split(',')[0]}
+                        {job.experience && <span className="text-gray-400">{job.experience}</span>}
                       </div>
                     </div>
-                  </Link>
-                );
-              })}
+                  </div>
+                </Link>
+              ))}
             </div>
           </div>
         )}
@@ -639,61 +618,6 @@ export default function JobDetailClient({ opportunity, relatedJobs }: { opportun
           <ExternalLink size={18} /> Apply for This Job →
         </a>
       </div>
-
-      {/* Skills Modal */}
-      {showAllSkillsModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-xl max-w-2xl w-full max-h-[80vh] overflow-y-auto p-6">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-xl font-bold text-gray-900">All Required Skills</h3>
-              <button onClick={() => setShowAllSkillsModal(false)} className="p-1 hover:bg-gray-100 rounded-lg">✕</button>
-            </div>
-            <div className="space-y-4">
-              {financeSkills.length > 0 && (
-                <div>
-                  <h4 className="font-semibold text-gray-700 mb-2">Finance & Accounting</h4>
-                  <div className="flex flex-wrap gap-2">
-                    {financeSkills.map((skill, idx) => (
-                      <span key={idx} className="px-2.5 py-1 bg-blue-50 text-blue-700 rounded-full text-xs font-medium border border-blue-100">{skill}</span>
-                    ))}
-                  </div>
-                </div>
-              )}
-              {technicalSkills.length > 0 && (
-                <div>
-                  <h4 className="font-semibold text-gray-700 mb-2">Technical & Tools</h4>
-                  <div className="flex flex-wrap gap-2">
-                    {technicalSkills.map((skill, idx) => (
-                      <span key={idx} className="px-2.5 py-1 bg-gray-100 text-gray-700 rounded-full text-xs font-medium border border-gray-200">{skill}</span>
-                    ))}
-                  </div>
-                </div>
-              )}
-              {softSkills.length > 0 && (
-                <div>
-                  <h4 className="font-semibold text-gray-700 mb-2">Soft Skills</h4>
-                  <div className="flex flex-wrap gap-2">
-                    {softSkills.map((skill, idx) => (
-                      <span key={idx} className="px-2.5 py-1 bg-green-50 text-green-700 rounded-full text-xs font-medium border border-green-100">{skill}</span>
-                    ))}
-                  </div>
-                </div>
-              )}
-              {otherSkills.length > 0 && (
-                <div>
-                  <h4 className="font-semibold text-gray-700 mb-2">Other Skills</h4>
-                  <div className="flex flex-wrap gap-2">
-                    {otherSkills.map((skill, idx) => (
-                      <span key={idx} className="px-2.5 py-1 bg-gray-100 text-gray-700 rounded-full text-xs font-medium border border-gray-200">{skill}</span>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
-            <button onClick={() => setShowAllSkillsModal(false)} className="mt-6 w-full py-2 bg-blue-600 text-white rounded-lg">Close</button>
-          </div>
-        </div>
-      )}
 
       {/* Footer */}
       <div className="bg-gray-100 mt-10 py-8">

@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Clock, ChevronRight, Search, Star, Zap, BookOpen, ArrowLeft, Home } from 'lucide-react';
+import { Clock, ChevronRight, Search, Star, Zap, BookOpen, ArrowLeft, Home, TrendingUp, Award, Users, Sparkles, Filter, X } from 'lucide-react';
 
 interface Topic {
   title: string;
@@ -28,7 +28,7 @@ const allTopics: Category[] = [
     category: 'Excel', 
     slug: 'excel', 
     icon: '📊',
-    iconBg: 'from-emerald-400 to-green-600',
+    iconBg: 'from-emerald-500 to-green-700',
     description: 'Master spreadsheets, formulas, and data analysis',
     topics: [
       { title: 'Pivot Tables', slug: 'pivot-tables', duration: '15 min', level: 'Intermediate', description: 'Summarize and analyze large datasets', popular: true },
@@ -45,7 +45,7 @@ const allTopics: Category[] = [
     category: 'SQL', 
     slug: 'sql', 
     icon: '🗄️',
-    iconBg: 'from-blue-400 to-cyan-600',
+    iconBg: 'from-blue-500 to-cyan-700',
     description: 'Query databases and manage data efficiently',
     topics: [
       { title: 'SQL Joins', slug: 'sql-joins', duration: '12 min', level: 'Intermediate', description: 'Combine data from multiple tables', popular: true },
@@ -59,7 +59,7 @@ const allTopics: Category[] = [
     category: 'Power BI', 
     slug: 'powerbi', 
     icon: '📈',
-    iconBg: 'from-orange-400 to-red-600',
+    iconBg: 'from-orange-500 to-red-700',
     description: 'Create stunning dashboards and visualizations',
     topics: [
       { title: 'Data Modeling', slug: 'data-modeling', duration: '15 min', level: 'Intermediate', description: 'Create relationships and schemas', popular: true },
@@ -72,7 +72,7 @@ const allTopics: Category[] = [
     category: 'Python', 
     slug: 'python', 
     icon: '🐍',
-    iconBg: 'from-violet-400 to-purple-600',
+    iconBg: 'from-violet-500 to-purple-700',
     description: 'Automate tasks and analyze data with code',
     topics: [
       { title: 'Python Basics', slug: 'python-basics', duration: '15 min', level: 'Beginner', description: 'Variables, loops, and functions', popular: true },
@@ -85,7 +85,7 @@ const allTopics: Category[] = [
     category: 'Finance', 
     slug: 'finance', 
     icon: '💰',
-    iconBg: 'from-teal-400 to-emerald-600',
+    iconBg: 'from-teal-500 to-emerald-700',
     description: 'Understand financial statements and analysis',
     topics: [
       { title: 'Profit & Loss', slug: 'profit-loss', duration: '10 min', level: 'Beginner', description: 'Understand revenue and expenses', popular: true },
@@ -100,10 +100,19 @@ const allTopics: Category[] = [
 
 const getLevelColor = (level: string) => {
   switch(level) {
-    case 'Beginner': return 'bg-emerald-100 text-emerald-700 border-emerald-300';
-    case 'Intermediate': return 'bg-amber-100 text-amber-700 border-amber-300';
-    case 'Advanced': return 'bg-rose-100 text-rose-700 border-rose-300';
-    default: return 'bg-gray-100 text-gray-600 border-gray-300';
+    case 'Beginner': return 'bg-emerald-100 text-emerald-700 border-emerald-200';
+    case 'Intermediate': return 'bg-amber-100 text-amber-700 border-amber-200';
+    case 'Advanced': return 'bg-rose-100 text-rose-700 border-rose-200';
+    default: return 'bg-gray-100 text-gray-600 border-gray-200';
+  }
+};
+
+const getLevelBadgeColor = (level: string) => {
+  switch(level) {
+    case 'Beginner': return 'bg-emerald-500';
+    case 'Intermediate': return 'bg-amber-500';
+    case 'Advanced': return 'bg-rose-500';
+    default: return 'bg-gray-500';
   }
 };
 
@@ -112,6 +121,7 @@ export default function LearnPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [selectedLevel, setSelectedLevel] = useState<string | null>(null);
+  const [showFilters, setShowFilters] = useState(false);
 
   const filteredTopics = allTopics
     .map(category => ({
@@ -130,42 +140,68 @@ export default function LearnPage() {
   const totalTopics = allTopics.reduce((sum, cat) => sum + cat.topics.length, 0);
   const populars = allTopics.flatMap(cat => cat.topics).filter(t => t.popular).length;
 
+  const clearFilters = () => {
+    setSelectedCategory(null);
+    setSelectedLevel(null);
+    setSearchQuery('');
+  };
+
+  const hasActiveFilters = selectedCategory !== null || selectedLevel !== null || searchQuery !== '';
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-50 via-white to-slate-50">
-      {/* Back Button - Top Left - Goes to Home */}
-      <div className="sticky top-0 z-10 bg-white/80 backdrop-blur-sm border-b border-slate-200">
+      {/* Header with Back Button */}
+      <div className="sticky top-0 z-20 bg-white/95 backdrop-blur-sm border-b border-slate-100 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
-          <Link
-            href="/"
-            className="inline-flex items-center gap-2 text-slate-600 hover:text-slate-900 transition-colors group"
-          >
-            <ArrowLeft size={18} className="group-hover:-translate-x-0.5 transition-transform" />
-            <span className="text-sm font-medium">Back to Home</span>
-          </Link>
+          <div className="flex items-center justify-between">
+            <Link
+              href="/"
+              className="inline-flex items-center gap-2 text-slate-600 hover:text-slate-900 transition-colors group"
+            >
+              <ArrowLeft size={18} className="group-hover:-translate-x-0.5 transition-transform" />
+              <span className="text-sm font-medium">Back to Home</span>
+            </Link>
+            <Link
+              href="/"
+              className="inline-flex items-center gap-1.5 text-xs text-slate-400 hover:text-slate-600 transition"
+            >
+              <Home size={14} />
+              <span>Home</span>
+            </Link>
+          </div>
         </div>
       </div>
 
       {/* Hero Section */}
-      <div className="relative pt-20 pb-16 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-4xl mx-auto text-center">
-          {/* Badge - New lessons every week */}
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-white border border-slate-200 rounded-full text-xs font-medium text-slate-600 mb-6 backdrop-blur-sm shadow-sm">
-            <Zap size={14} className="text-amber-500" />
-            <span>New lessons every week</span>
+      <div className="relative pt-16 pb-12 px-4 sm:px-6 lg:px-8 overflow-hidden">
+        {/* Background Gradient */}
+        <div className="absolute inset-0 bg-gradient-to-br from-blue-50/50 via-white to-emerald-50/30 -z-10"></div>
+        <div className="absolute top-20 right-10 w-72 h-72 bg-[#FFD700]/5 rounded-full blur-3xl"></div>
+        <div className="absolute bottom-10 left-10 w-80 h-80 bg-[#FFA500]/5 rounded-full blur-3xl"></div>
+        
+        <div className="max-w-4xl mx-auto text-center relative">
+          {/* Badge */}
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-white border border-slate-200 rounded-full text-xs font-medium text-slate-600 mb-6 shadow-sm">
+            <Sparkles size={14} className="text-[#FFD700]" />
+            <span>New lessons added weekly</span>
           </div>
 
           {/* Main Heading */}
-          <h1 className="text-5xl sm:text-6xl font-bold text-slate-900 mb-4 leading-tight">
-            Become a Financial Analyst
+          <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-slate-900 mb-4 leading-tight">
+            Master Skills for{' '}
+            <span className="bg-gradient-to-r from-[#FFD700] to-[#FFA500] bg-clip-text text-transparent">
+              Financial Analysis
+            </span>
           </h1>
 
           {/* Subheading */}
-          <p className="text-lg text-slate-600 mb-8 max-w-2xl mx-auto leading-relaxed">
-            Learn the exact skills companies expect — Excel, financial modeling, and analysis.
+          <p className="text-base md:text-lg text-slate-600 mb-8 max-w-2xl mx-auto leading-relaxed">
+            Learn the exact skills companies expect — from Excel basics to advanced financial modeling. 
+            Bite-sized lessons, real-world examples, and completely free.
           </p>
 
-          {/* Search Bar - Fixed position */}
-          <div className="max-w-2xl mx-auto mb-10">
+          {/* Search Bar */}
+          <div className="max-w-2xl mx-auto mb-8">
             <div className="relative">
               <div className="absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none">
                 <Search size={18} className="text-slate-400" />
@@ -175,109 +211,209 @@ export default function LearnPage() {
                 placeholder="Search topics, skills, or keywords..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                className="w-full pl-11 pr-24 py-3.5 border border-slate-200 rounded-xl outline-none focus:border-[#FFD700] focus:ring-2 focus:ring-[#FFD700]/20 transition-all shadow-sm"
               />
+              {searchQuery && (
+                <button
+                  onClick={() => setSearchQuery('')}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 p-1.5 hover:bg-slate-100 rounded-lg transition"
+                >
+                  <X size={16} className="text-slate-400" />
+                </button>
+              )}
             </div>
           </div>
 
-          {/* Quick Stats */}
-          <div className="flex flex-wrap justify-center gap-6">
-            <div className="flex items-center gap-2 bg-white/80 backdrop-blur rounded-xl px-4 py-2 border border-slate-200">
-              <BookOpen size={16} className="text-blue-500" />
-              <span className="font-semibold text-slate-900">{totalTopics}</span>
-              <span className="text-sm text-slate-500">Topics</span>
+          {/* Stats */}
+          <div className="flex flex-wrap justify-center gap-4">
+            <div className="flex items-center gap-2.5 bg-white rounded-xl px-5 py-2.5 border border-slate-100 shadow-sm">
+              <div className="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center">
+                <BookOpen size={16} className="text-blue-500" />
+              </div>
+              <div>
+                <div className="font-bold text-slate-900">{totalTopics}</div>
+                <div className="text-xs text-slate-500">Lessons</div>
+              </div>
             </div>
-            <div className="flex items-center gap-2 bg-white/80 backdrop-blur rounded-xl px-4 py-2 border border-slate-200">
-              <Star size={16} className="text-amber-500" />
-              <span className="font-semibold text-slate-900">{populars}</span>
-              <span className="text-sm text-slate-500">Popular</span>
+            <div className="flex items-center gap-2.5 bg-white rounded-xl px-5 py-2.5 border border-slate-100 shadow-sm">
+              <div className="w-8 h-8 rounded-lg bg-amber-50 flex items-center justify-center">
+                <Star size={16} className="text-amber-500" />
+              </div>
+              <div>
+                <div className="font-bold text-slate-900">{populars}</div>
+                <div className="text-xs text-slate-500">Popular</div>
+              </div>
+            </div>
+            <div className="flex items-center gap-2.5 bg-white rounded-xl px-5 py-2.5 border border-slate-100 shadow-sm">
+              <div className="w-8 h-8 rounded-lg bg-emerald-50 flex items-center justify-center">
+                <Users size={16} className="text-emerald-500" />
+              </div>
+              <div>
+                <div className="font-bold text-slate-900">5K+</div>
+                <div className="text-xs text-slate-500">Learners</div>
+              </div>
             </div>
           </div>
         </div>
       </div>
 
       {/* Main Content */}
-      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-20">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-20">
         {/* Filters Bar */}
-        <div className="mb-10">
-          <div className="bg-white/80 backdrop-blur border border-slate-200 rounded-2xl p-4 shadow-sm">
-            <div className="flex flex-col sm:flex-row gap-4">
-              {/* Category Filter */}
-              <div className="flex-1">
-                <label className="block text-xs font-semibold text-slate-600 mb-2">Category</label>
-                <div className="flex flex-wrap gap-2">
-                  <button
-                    onClick={() => setSelectedCategory(null)}
-                    className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
-                      selectedCategory === null
-                        ? 'bg-blue-600 text-white'
-                        : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
-                    }`}
-                  >
-                    All
-                  </button>
-                  {allTopics.map(cat => (
+        <div className="mb-8">
+          <div className="bg-white border border-slate-100 rounded-2xl shadow-sm overflow-hidden">
+            {/* Filter Header - Mobile Toggle */}
+            <button
+              onClick={() => setShowFilters(!showFilters)}
+              className="w-full flex items-center justify-between p-4 lg:hidden"
+            >
+              <div className="flex items-center gap-2">
+                <Filter size={16} className="text-slate-500" />
+                <span className="font-medium text-slate-700">Filters</span>
+                {hasActiveFilters && (
+                  <span className="w-2 h-2 bg-blue-500 rounded-full"></span>
+                )}
+              </div>
+              <ChevronRight
+                size={16}
+                className={`transform transition-transform text-slate-400 ${
+                  showFilters ? 'rotate-90' : ''
+                }`}
+              />
+            </button>
+
+            {/* Filter Content */}
+            <div className={`p-4 ${showFilters ? 'block' : 'hidden lg:block'}`}>
+              <div className="flex flex-col lg:flex-row gap-6">
+                {/* Category Filter */}
+                <div className="flex-1">
+                  <label className="block text-xs font-semibold text-slate-600 mb-2 uppercase tracking-wider">
+                    Category
+                  </label>
+                  <div className="flex flex-wrap gap-2">
                     <button
-                      key={cat.slug}
-                      onClick={() => setSelectedCategory(cat.slug)}
+                      onClick={() => setSelectedCategory(null)}
                       className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
-                        selectedCategory === cat.slug
-                          ? `bg-gradient-to-r ${cat.iconBg} text-white`
+                        selectedCategory === null
+                          ? 'bg-slate-800 text-white shadow-sm'
                           : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
                       }`}
                     >
-                      {cat.category}
+                      All
                     </button>
-                  ))}
+                    {allTopics.map(cat => (
+                      <button
+                        key={cat.slug}
+                        onClick={() => setSelectedCategory(cat.slug)}
+                        className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all flex items-center gap-1.5 ${
+                          selectedCategory === cat.slug
+                            ? `bg-gradient-to-r ${cat.iconBg} text-white shadow-sm`
+                            : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+                        }`}
+                      >
+                        <span>{cat.icon}</span>
+                        <span>{cat.category}</span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Level Filter */}
+                <div className="lg:w-48">
+                  <label className="block text-xs font-semibold text-slate-600 mb-2 uppercase tracking-wider">
+                    Level
+                  </label>
+                  <div className="flex flex-wrap gap-2">
+                    <button
+                      onClick={() => setSelectedLevel(null)}
+                      className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
+                        selectedLevel === null
+                          ? 'bg-slate-800 text-white shadow-sm'
+                          : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+                      }`}
+                    >
+                      All
+                    </button>
+                    {['Beginner', 'Intermediate', 'Advanced'].map(level => (
+                      <button
+                        key={level}
+                        onClick={() => setSelectedLevel(level)}
+                        className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all flex items-center gap-1.5 ${
+                          selectedLevel === level
+                            ? `${getLevelBadgeColor(level)} text-white shadow-sm`
+                            : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+                        }`}
+                      >
+                        <div className={`w-1.5 h-1.5 rounded-full ${selectedLevel === level ? 'bg-white' : getLevelBadgeColor(level)}`}></div>
+                        {level}
+                      </button>
+                    ))}
+                  </div>
                 </div>
               </div>
 
-              {/* Level Filter */}
-              <div className="flex-1">
-                <label className="block text-xs font-semibold text-slate-600 mb-2">Level</label>
-                <div className="flex flex-wrap gap-2">
+              {/* Active Filters & Clear */}
+              {hasActiveFilters && (
+                <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between flex-wrap gap-2">
+                  <div className="flex flex-wrap gap-2">
+                    {selectedCategory && (
+                      <span className="inline-flex items-center gap-1 px-2 py-1 bg-blue-50 text-blue-600 text-xs rounded-full">
+                        {allTopics.find(c => c.slug === selectedCategory)?.category}
+                        <button onClick={() => setSelectedCategory(null)} className="hover:text-blue-800">
+                          <X size={12} />
+                        </button>
+                      </span>
+                    )}
+                    {selectedLevel && (
+                      <span className="inline-flex items-center gap-1 px-2 py-1 bg-blue-50 text-blue-600 text-xs rounded-full">
+                        {selectedLevel}
+                        <button onClick={() => setSelectedLevel(null)} className="hover:text-blue-800">
+                          <X size={12} />
+                        </button>
+                      </span>
+                    )}
+                    {searchQuery && (
+                      <span className="inline-flex items-center gap-1 px-2 py-1 bg-blue-50 text-blue-600 text-xs rounded-full">
+                        "{searchQuery}"
+                        <button onClick={() => setSearchQuery('')} className="hover:text-blue-800">
+                          <X size={12} />
+                        </button>
+                      </span>
+                    )}
+                  </div>
                   <button
-                    onClick={() => setSelectedLevel(null)}
-                    className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
-                      selectedLevel === null
-                        ? 'bg-blue-600 text-white'
-                        : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
-                    }`}
+                    onClick={clearFilters}
+                    className="text-xs text-slate-500 hover:text-red-500 transition"
                   >
-                    All
+                    Clear all
                   </button>
-                  {['Beginner', 'Intermediate', 'Advanced'].map(level => (
-                    <button
-                      key={level}
-                      onClick={() => setSelectedLevel(level)}
-                      className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
-                        selectedLevel === level
-                          ? 'bg-blue-600 text-white'
-                          : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
-                      }`}
-                    >
-                      {level}
-                    </button>
-                  ))}
                 </div>
-              </div>
+              )}
             </div>
           </div>
         </div>
 
         {/* Results */}
         {filteredTopics.length === 0 ? (
-          <div className="text-center py-16">
-            <BookOpen size={48} className="mx-auto text-slate-300 mb-4" />
+          <div className="text-center py-16 bg-white rounded-2xl border border-slate-100">
+            <div className="w-20 h-20 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <Search size={32} className="text-slate-300" />
+            </div>
             <h3 className="text-xl font-semibold text-slate-900 mb-2">No topics found</h3>
-            <p className="text-slate-600">Try adjusting your filters or search terms</p>
+            <p className="text-slate-500 mb-4">Try adjusting your filters or search terms</p>
+            <button
+              onClick={clearFilters}
+              className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition"
+            >
+              Clear all filters
+            </button>
           </div>
         ) : (
           filteredTopics.map((category) => (
-            <div key={category.slug} className="mb-16 last:mb-0">
+            <div key={category.slug} className="mb-14 last:mb-0">
               {/* Category Header */}
               <div className="mb-6 flex items-center gap-3">
-                <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${category.iconBg} flex items-center justify-center text-xl shadow-md`}>
+                <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${category.iconBg} flex items-center justify-center text-xl shadow-md`}>
                   {category.icon}
                 </div>
                 <div>
@@ -287,33 +423,38 @@ export default function LearnPage() {
               </div>
 
               {/* Topics Grid */}
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
                 {category.topics.map((topic) => (
                   <Link
                     key={topic.slug}
                     href={`/learn/${category.slug}/${topic.slug}`}
-                    className="group block bg-white rounded-xl border border-slate-200 p-5 hover:shadow-lg hover:border-slate-300 transition-all hover:-translate-y-0.5"
+                    className="group block bg-white rounded-xl border border-slate-100 p-5 hover:shadow-lg hover:border-slate-200 transition-all hover:-translate-y-1 duration-300"
                   >
+                    {/* Header */}
                     <div className="flex items-start justify-between mb-3">
                       <div className="flex items-center gap-2">
-                        <span className="text-lg">{category.icon}</span>
+                        <span className="text-xl">{category.icon}</span>
                         {topic.popular && (
                           <span className="flex items-center gap-0.5 px-1.5 py-0.5 bg-amber-50 rounded-full text-[10px] font-medium text-amber-600">
                             <Star size={10} className="fill-amber-500" />
                             Popular
-          </span>
+                          </span>
                         )}
                       </div>
-                      <ChevronRight size={14} className="text-slate-300 group-hover:text-blue-500 group-hover:translate-x-0.5 transition" />
+                      <ChevronRight size={14} className="text-slate-300 group-hover:text-blue-500 group-hover:translate-x-0.5 transition-all duration-200" />
                     </div>
                     
-                    <h3 className="font-bold text-slate-900 mb-1 group-hover:text-blue-600 transition">
+                    {/* Title */}
+                    <h3 className="font-bold text-slate-900 mb-1.5 group-hover:text-blue-600 transition-colors line-clamp-1">
                       {topic.title}
                     </h3>
-                    <p className="text-xs text-slate-500 mb-3 line-clamp-2">
+                    
+                    {/* Description */}
+                    <p className="text-xs text-slate-500 mb-3 line-clamp-2 leading-relaxed">
                       {topic.description}
                     </p>
                     
+                    {/* Meta */}
                     <div className="flex items-center gap-2">
                       <span className={`text-[10px] font-medium px-2 py-0.5 rounded-full border ${getLevelColor(topic.level)}`}>
                         {topic.level}
@@ -330,12 +471,26 @@ export default function LearnPage() {
           ))
         )}
 
-        {/* Simple Footer Note */}
-        <div className="mt-16 pt-8 border-t border-slate-200 text-center">
-          <p className="text-sm text-slate-500">
-            All lessons are completely free. No credit card required.
-          </p>
-        </div>
+        {/* CTA Section */}
+        {filteredTopics.length > 0 && (
+          <div className="mt-16 pt-8 border-t border-slate-100 text-center">
+            <div className="bg-gradient-to-r from-slate-50 to-white rounded-2xl p-8 border border-slate-100">
+              <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-[#FFD700]/10 rounded-full text-xs font-medium text-[#0A2540] mb-4">
+                <Sparkles size={12} className="text-[#FFD700]" />
+                <span>100% Free</span>
+              </div>
+              <h3 className="text-xl font-bold text-slate-900 mb-2">Ready to start learning?</h3>
+              <p className="text-slate-500 mb-4">All lessons are completely free. No credit card required.</p>
+              <Link
+                href="/roadmap"
+                className="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-[#FFD700] to-[#FFA500] text-[#0A2540] font-semibold rounded-lg hover:shadow-md transition-all"
+              >
+                View Career Roadmap
+                <ArrowLeft size={14} className="rotate-180" />
+              </Link>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

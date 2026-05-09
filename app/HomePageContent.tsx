@@ -224,28 +224,33 @@ export default function HomePageContent() {
               </div>
 
               <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-8">
-                <button
-                  onClick={handleFindJobs}
-                  className="bg-gradient-to-r from-[#FFD700] to-[#FFA500] hover:from-[#e6c200] hover:to-[#e69500] text-[#0A2540] font-bold px-8 py-4 rounded-xl transition-all duration-300 flex items-center justify-center gap-2 text-base group min-w-[200px]"
-                >
-                  <Briefcase size={20} />
-                  <span>Find My First Job</span>
-                  <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
-                </button>
-                
-                <button
-                  onClick={handleBrowseInternships}
-                  className="px-8 py-4 rounded-xl transition-all duration-300 font-bold flex items-center justify-center gap-2 text-base min-w-[200px]"
-                  style={{
-                    background: "linear-gradient(135deg, #FFD700 0%, #FFA500 100%)",
-                    color: "#0A2540",
-                    boxShadow: "0 4px 15px rgba(0, 0, 0, 0.2)"
-                  }}
-                >
-                  <GraduationCap size={20} />
-                  <span>Explore Internships</span>
-                </button>
-              </div>
+              <button
+              onClick={handleFindJobs}
+              className="px-8 py-4 rounded-xl transition-all duration-300 font-bold flex items-center justify-center gap-2 text-base min-w-[200px]"
+              style={{
+              background: "linear-gradient(135deg, 0%,  5%)",
+              color: "#0A2540",
+              boxShadow: "0 4px 15px rgba(0, 0, 0, 0.2)"
+              }}
+               >
+      <Briefcase size={20} />
+      <span>Find My First Job</span>
+      <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
+      </button>
+  
+      <button
+      onClick={handleBrowseInternships}
+      className="px-8 py-4 rounded-xl transition-all duration-300 font-bold flex items-center justify-center gap-2 text-base min-w-[200px]"
+      style={{
+      background: "linear-gradient(135deg, #FFD700 0%, #FFA500 100%)",
+      color: "#0A2540",
+      boxShadow: "0 4px 15px rgba(0, 0, 0, 0.2)"
+      }}
+      >
+      <GraduationCap size={20} />
+      <span>Explore Internships</span>
+      </button>
+      </div>
 
               <div className="mt-8 pt-4 border-t border-gray-200">
                 <p className="text-sm text-slate-500 mb-3">🔥 Explore Roles:</p>

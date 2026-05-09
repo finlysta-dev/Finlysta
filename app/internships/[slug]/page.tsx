@@ -4,10 +4,10 @@ import { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import {
-  ArrowLeft, MapPin, Clock, Building2, Calendar,
+  MapPin, Clock, Building2, Calendar,
   CheckCircle, Bookmark, Share2, Zap,
   ExternalLink, Award, GraduationCap,
-  Briefcase, Target, Sparkles, Users, Heart, AlertCircle, ChevronDown, ChevronUp
+  Briefcase, Target, Sparkles, ChevronRight, TrendingUp, Heart, AlertCircle
 } from "lucide-react";
 
 interface Internship {
@@ -80,12 +80,42 @@ const getCompanyColor = (company: string) => {
   return colors[index];
 };
 
+// Fixed: Proper bullet point formatting - smarter period detection
 const formatBulletPoints = (text: string) => {
   if (!text) return [];
-  const sentences = text.split(/\.\s+/);
-  return sentences
-    .filter(sentence => sentence.trim().length > 0)
-    .map(sentence => sentence.trim() + (sentence.endsWith('.') ? '' : '.'));
+  
+  // Protect common degree abbreviations from being split
+  let protectedText = text;
+  const degreeAbbreviations = [
+    'B.B.A', 'BBA', 'B.Com', 'BCOM', 'B.Sc', 'BSc', 'B.A', 'BA',
+    'M.B.A', 'MBA', 'M.Com', 'MCOM', 'M.Sc', 'MSc', 'M.A', 'MA',
+    'Ph.D', 'PhD', 'B.F.M', 'BFM', 'B.M.S', 'BMS', 'B.B.I', 'BBI', 'B.A.F', 'BAF'
+  ];
+  
+  degreeAbbreviations.forEach(abbr => {
+    const regex = new RegExp(`\\b${abbr}\\b`, 'gi');
+    protectedText = protectedText.replace(regex, abbr.replace(/\./g, '___DOT___'));
+  });
+  
+  protectedText = protectedText.replace(/\b([A-Z])\.\s/g, '$1___DOT___ ');
+  
+  const sentences = protectedText.split(/\.\s+/);
+  
+  const restoredSentences = sentences.map(sentence => {
+    let restored = sentence;
+    restored = restored.replace(/___DOT___/g, '.');
+    return restored.trim();
+  });
+  
+  return restoredSentences
+    .filter(sentence => sentence.length > 0)
+    .map(sentence => {
+      let cleaned = sentence.trim();
+      if (!cleaned.endsWith('.') && !cleaned.endsWith('!') && !cleaned.endsWith('?') && cleaned.length > 5) {
+        cleaned = cleaned + '.';
+      }
+      return cleaned.charAt(0).toUpperCase() + cleaned.slice(1);
+    });
 };
 
 // Extract key responsibilities
@@ -104,6 +134,18 @@ const extractKeyResponsibilities = (text: string) => {
   return sentences.filter(s => s.length > 20 && s.length < 150).slice(0, 8).map(s => s.trim() + '.');
 };
 
+// Helper function to check if a skill is actually a degree term
+const isDegreeTerm = (skill: string): boolean => {
+  const degreeTerms = [
+    'bachelor', 'master', 'mba', 'b.com', 'bba', 'mms', 'cfa', 'chartered', 
+    'ca', 'acca', 'graduate', 'post graduate', 'baf', 'bfm', 'bms', 'bbi',
+    'bcom', 'bachelor\'s', 'bachelors', 'masters', 'phd', 'doctorate',
+    'ba', 'bs', 'bsc', 'ma', 'ms', 'msc', 'mcom', 'mba finance'
+  ];
+  const lowerSkill = skill.toLowerCase();
+  return degreeTerms.some(term => lowerSkill.includes(term));
+};
+
 export default function InternshipDetailPage() {
   const params = useParams();
   const router = useRouter();
@@ -114,10 +156,9 @@ export default function InternshipDetailPage() {
   const [error, setError] = useState<string | null>(null);
   const [saved, setSaved] = useState(false);
   const [logoError, setLogoError] = useState(false);
-  const [showAllSkills, setShowAllSkills] = useState(false);
   const [showFullQualifications, setShowFullQualifications] = useState(false);
   const [showReportModal, setShowReportModal] = useState(false);
-  const [showAllSkillsModal, setShowAllSkillsModal] = useState(false);
+  const [relatedInternships, setRelatedInternships] = useState<Internship[]>([]);
 
   useEffect(() => {
     if (!slug) return;
@@ -152,6 +193,24 @@ export default function InternshipDetailPage() {
       setSaved(savedItems.includes(internship.id));
     }
   }, [internship]);
+
+  // Fetch related internships
+  useEffect(() => {
+    if (internship?.id) {
+      const fetchRelatedInternships = async () => {
+        try {
+          const response = await fetch(`/api/opportunities/related?jobId=${internship.id}&type=internship`);
+          if (response.ok) {
+            const data = await response.json();
+            setRelatedInternships(data);
+          }
+        } catch (error) {
+          console.error("Error fetching related internships:", error);
+        }
+      };
+      fetchRelatedInternships();
+    }
+  }, [internship?.id]);
 
   const handleSave = () => {
     if (!internship) return;
@@ -225,7 +284,7 @@ export default function InternshipDetailPage() {
   const companyInitials = getCompanyInitials(internship.company);
   const companyColor = getCompanyColor(internship.company);
 
-  // Clean salary/stipend display
+  // Clean stipend display
   let cleanStipend = null;
   if (internship.stipend || internship.salary) {
     const stipendText = internship.stipend || internship.salary || "";
@@ -241,42 +300,46 @@ export default function InternshipDetailPage() {
 
   // Format bullet points
   const responsibilitiesPoints = extractKeyResponsibilities(internship.responsibilities || "");
-  const qualificationsPoints = formatBulletPoints(internship.qualifications || "");
+  let qualificationsPoints = formatBulletPoints(internship.qualifications || "");
   const benefitsPoints = formatBulletPoints(internship.benefits || "");
 
-  // Separate important notes from qualifications
-  const importantNotes = qualificationsPoints.filter(point => 
+  // Split qualifications into Educational and Requirements
+  const educationalKeywords = ['bachelor', 'master', 'mba', 'degree', 'b.com', 'bba', 'mms', 'cfa', 'chartered', 'ca', 'acca', 'graduate', 'post graduate', 'baf', 'bfm', 'bms', 'bbi', 'phd', 'doctorate'];
+  const educationalQuals = qualificationsPoints.filter((point: string) => 
+    educationalKeywords.some(keyword => point.toLowerCase().includes(keyword))
+  );
+  const otherRequirements = qualificationsPoints.filter((point: string) => 
+    !educationalKeywords.some(keyword => point.toLowerCase().includes(keyword))
+  );
+
+  const importantNotes = otherRequirements.filter((point: string) => 
     point.toLowerCase().includes("notice") || 
     point.toLowerCase().includes("eligible") ||
     point.toLowerCase().includes("not apply") ||
-    point.toLowerCase().includes("not eligible") ||
     point.toLowerCase().includes("note:")
   );
-  const mainQualifications = qualificationsPoints.filter(point => 
+  const mainRequirements = otherRequirements.filter((point: string) => 
     !importantNotes.includes(point)
   );
 
-  // Skills categorization
-  const uniqueSkills = [...new Set(internship.skills || [])];
+  // Skills categorization - EXCLUDING degree terms
+  const uniqueSkills: string[] = [...new Set(internship.skills || [])] as string[];
+  
   const financeSkills = uniqueSkills.filter((s: string) => 
-    ['financial', 'analysis', 'accounting', 'budgeting', 'forecasting', 'audit', 'tax', 'reconciliation'].some(keyword => s.toLowerCase().includes(keyword))
+    !isDegreeTerm(s) && ['financial', 'analysis', 'accounting', 'budgeting', 'forecasting', 'audit', 'tax', 'reconciliation'].some(keyword => s.toLowerCase().includes(keyword))
   );
   const technicalSkills = uniqueSkills.filter((s: string) =>
-    ['excel', 'sql', 'python', 'power bi', 'tableau', 'software', 'system', 'data', 'quickbooks', 'tally', 'erp'].some(keyword => s.toLowerCase().includes(keyword))
+    !isDegreeTerm(s) && ['excel', 'sql', 'python', 'power bi', 'tableau', 'software', 'system', 'data', 'quickbooks', 'tally', 'erp'].some(keyword => s.toLowerCase().includes(keyword))
   );
   const softSkills = uniqueSkills.filter((s: string) =>
-    ['communication', 'attention', 'detail', 'team', 'problem solving', 'organization', 'time management', 'leadership'].some(keyword => s.toLowerCase().includes(keyword))
+    !isDegreeTerm(s) && ['communication', 'attention', 'detail', 'team', 'problem solving', 'organization', 'time management', 'leadership'].some(keyword => s.toLowerCase().includes(keyword))
   );
   const otherSkills = uniqueSkills.filter((s: string) => 
-    !financeSkills.includes(s) && !technicalSkills.includes(s) && !softSkills.includes(s)
+    !isDegreeTerm(s) && !financeSkills.includes(s) && !technicalSkills.includes(s) && !softSkills.includes(s)
   );
 
-  const getStipendInsight = () => {
-    if (!internship.stipend && !internship.salary) return null;
-    return "Competitive stipend for entry-level finance internships in India. Great opportunity to gain hands-on experience.";
-  };
-
-  const stipendInsight = getStipendInsight();
+  // Clean overview text
+  let overviewText = internship.overview || "";
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -285,12 +348,10 @@ export default function InternshipDetailPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center gap-2 text-sm text-gray-500">
             <Link href="/" className="hover:text-emerald-600">Home</Link>
-            <span>/</span>
+            <ChevronRight size={14} className="text-gray-400" />
             <Link href="/internships" className="hover:text-emerald-600">Internships</Link>
-            <span>/</span>
+            <ChevronRight size={14} className="text-gray-400" />
             <span className="text-gray-900">{internship.title}</span>
-            <span>/</span>
-            <span className="text-gray-600">{internship.company}</span>
           </div>
         </div>
       </div>
@@ -349,7 +410,7 @@ export default function InternshipDetailPage() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Left Column */}
           <div className="lg:col-span-2 space-y-6">
-            {/* Job Highlights */}
+            {/* Internship Highlights */}
             <div className="bg-white rounded-xl border border-gray-100 p-5 shadow-sm">
               <h2 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
                 <Zap size={18} className="text-amber-500" />
@@ -392,13 +453,13 @@ export default function InternshipDetailPage() {
             )}
 
             {/* Role Overview */}
-            {internship.overview && (
+            {overviewText && (
               <div className="bg-white rounded-xl border border-gray-100 p-5 shadow-sm">
                 <div className="flex items-center gap-2 mb-3">
                   <Target size={18} className="text-indigo-600" />
                   <h2 className="text-lg font-bold text-gray-900">Role Overview</h2>
                 </div>
-                <p className="text-gray-600 text-sm leading-relaxed">{internship.overview}</p>
+                <p className="text-gray-600 text-sm leading-relaxed">{overviewText}</p>
               </div>
             )}
 
@@ -432,7 +493,7 @@ export default function InternshipDetailPage() {
                   <div className="mb-4">
                     <h3 className="text-sm font-semibold text-gray-700 mb-2">Finance & Accounting</h3>
                     <div className="flex flex-wrap gap-2">
-                      {financeSkills.slice(0, 8).map((skill, idx) => (
+                      {financeSkills.map((skill, idx) => (
                         <span key={idx} className="px-2.5 py-1 bg-blue-50 text-blue-700 rounded-full text-xs font-medium border border-blue-100">{skill}</span>
                       ))}
                     </div>
@@ -443,7 +504,7 @@ export default function InternshipDetailPage() {
                   <div className="mb-4">
                     <h3 className="text-sm font-semibold text-gray-700 mb-2">Technical & Tools</h3>
                     <div className="flex flex-wrap gap-2">
-                      {technicalSkills.slice(0, 8).map((skill, idx) => (
+                      {technicalSkills.map((skill, idx) => (
                         <span key={idx} className="px-2.5 py-1 bg-gray-100 text-gray-700 rounded-full text-xs font-medium border border-gray-200">{skill}</span>
                       ))}
                     </div>
@@ -454,40 +515,63 @@ export default function InternshipDetailPage() {
                   <div className="mb-4">
                     <h3 className="text-sm font-semibold text-gray-700 mb-2">Soft Skills</h3>
                     <div className="flex flex-wrap gap-2">
-                      {softSkills.slice(0, 8).map((skill, idx) => (
+                      {softSkills.map((skill, idx) => (
                         <span key={idx} className="px-2.5 py-1 bg-green-50 text-green-700 rounded-full text-xs font-medium border border-green-100">{skill}</span>
                       ))}
                     </div>
                   </div>
                 )}
 
-                {uniqueSkills.length > 8 && (
-                  <button onClick={() => setShowAllSkillsModal(true)} className="mt-3 px-3 py-1.5 bg-emerald-50 text-emerald-600 rounded-lg text-sm font-medium hover:bg-emerald-100 transition">
-                    View all {uniqueSkills.length} skills →
-                  </button>
+                {otherSkills.length > 0 && (
+                  <div className="mb-4">
+                    <h3 className="text-sm font-semibold text-gray-700 mb-2">Other Skills</h3>
+                    <div className="flex flex-wrap gap-2">
+                      {otherSkills.map((skill, idx) => (
+                        <span key={idx} className="px-2.5 py-1 bg-gray-100 text-gray-700 rounded-full text-xs font-medium border border-gray-200">{skill}</span>
+                      ))}
+                    </div>
+                  </div>
                 )}
               </div>
             )}
 
-            {/* Qualifications */}
-            {mainQualifications.length > 0 && (
+            {/* Educational Qualifications */}
+            {educationalQuals.length > 0 && (
               <div className="bg-white rounded-xl border border-gray-100 p-5 shadow-sm">
                 <div className="flex items-center gap-2 mb-3">
                   <GraduationCap size={18} className="text-purple-600" />
-                  <h2 className="text-lg font-bold text-gray-900">Qualifications & Requirements</h2>
+                  <h2 className="text-lg font-bold text-gray-900">Educational Qualifications</h2>
                 </div>
                 <ul className="space-y-2">
-                  {(showFullQualifications ? mainQualifications : mainQualifications.slice(0, 6)).map((point, idx) => (
+                  {educationalQuals.map((point, idx) => (
                     <li key={idx} className="flex items-start gap-2">
                       <span className="text-purple-500 mt-0.5">•</span>
                       <span className="text-gray-600 text-sm leading-relaxed">{point}</span>
                     </li>
                   ))}
                 </ul>
-                {mainQualifications.length > 6 && (
-                  <button onClick={() => setShowFullQualifications(!showFullQualifications)} className="mt-3 text-sm text-emerald-600 hover:text-emerald-700 flex items-center gap-1">
+              </div>
+            )}
+
+            {/* Requirements */}
+            {mainRequirements.length > 0 && (
+              <div className="bg-white rounded-xl border border-gray-100 p-5 shadow-sm">
+                <div className="flex items-center gap-2 mb-3">
+                  <CheckCircle size={18} className="text-blue-600" />
+                  <h2 className="text-lg font-bold text-gray-900">Requirements</h2>
+                </div>
+                <ul className="space-y-2">
+                  {(showFullQualifications ? mainRequirements : mainRequirements.slice(0, 6)).map((point, idx) => (
+                    <li key={idx} className="flex items-start gap-2">
+                      <span className="text-blue-500 mt-0.5">•</span>
+                      <span className="text-gray-600 text-sm leading-relaxed">{point}</span>
+                    </li>
+                  ))}
+                </ul>
+                {mainRequirements.length > 6 && (
+                  <button onClick={() => setShowFullQualifications(!showFullQualifications)} className="mt-3 text-sm text-blue-600 hover:text-blue-700 flex items-center gap-1">
                     {showFullQualifications ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
-                    {showFullQualifications ? "Show less" : `View all ${mainQualifications.length} requirements`}
+                    {showFullQualifications ? "Show less" : `View all ${mainRequirements.length} requirements`}
                   </button>
                 )}
               </div>
@@ -510,65 +594,6 @@ export default function InternshipDetailPage() {
                 </ul>
               </div>
             )}
-
-            {/* Why This Internship is Great for Freshers */}
-            <div className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl border border-green-100 p-5">
-              <div className="flex items-center gap-2 mb-3">
-                <Sparkles size={18} className="text-green-600" />
-                <h2 className="text-lg font-bold text-gray-900">Why This Internship is Great for Freshers</h2>
-              </div>
-              <ul className="space-y-2">
-                <li className="flex items-center gap-2 text-sm text-gray-700"><CheckCircle size={14} className="text-green-500" /> Build real-world finance experience before graduating</li>
-                <li className="flex items-center gap-2 text-sm text-gray-700"><Building2 size={14} className="text-green-500" /> Work with experienced finance professionals</li>
-                <li className="flex items-center gap-2 text-sm text-gray-700"><Target size={14} className="text-green-500" /> Learn industry-standard tools and processes</li>
-                <li className="flex items-center gap-2 text-sm text-gray-700"><Award size={14} className="text-green-500" /> Potential for full-time conversion based on performance</li>
-                <li className="flex items-center gap-2 text-sm text-gray-700"><Users size={14} className="text-green-500" /> Network with industry experts and build your professional circle</li>
-              </ul>
-            </div>
-
-            {/* How to Prepare */}
-            <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl border border-blue-100 p-5">
-              <div className="flex items-center gap-2 mb-3">
-                <GraduationCap size={18} className="text-blue-600" />
-                <h2 className="text-lg font-bold text-gray-900">How to Prepare for This Internship</h2>
-              </div>
-              <ul className="space-y-2">
-                <li className="flex items-center gap-2 text-sm text-gray-700"><CheckCircle size={14} className="text-blue-500" /> Build proficiency in Excel and financial fundamentals</li>
-                <li className="flex items-center gap-2 text-sm text-gray-700"><CheckCircle size={14} className="text-blue-500" /> Research the company and understand their business model</li>
-                <li className="flex items-center gap-2 text-sm text-gray-700"><CheckCircle size={14} className="text-blue-500" /> Prepare questions about the role and learning opportunities</li>
-                <li className="flex items-center gap-2 text-sm text-gray-700"><CheckCircle size={14} className="text-blue-500" /> Highlight any relevant coursework or projects on your resume</li>
-              </ul>
-              <div className="mt-3 pt-3 border-t border-blue-100">
-                <p className="text-xs text-gray-500">📚 Recommended: Check our <Link href="/roadmap" className="text-blue-600 hover:underline">Career Roadmap</Link> for financial analysts</p>
-              </div>
-            </div>
-
-            {/* Before You Apply */}
-            <div className="bg-white rounded-xl border border-gray-100 p-5 shadow-sm">
-              <div className="flex items-center gap-2 mb-3">
-                <Heart size={18} className="text-rose-600" />
-                <h2 className="text-lg font-bold text-gray-900">Before You Apply</h2>
-              </div>
-              <ul className="space-y-2">
-                <li className="flex items-center gap-2 text-sm text-gray-700"><CheckCircle size={14} className="text-green-500" /> Update your resume with relevant coursework and skills</li>
-                <li className="flex items-center gap-2 text-sm text-gray-700"><CheckCircle size={14} className="text-green-500" /> Highlight any previous internships or projects</li>
-                <li className="flex items-center gap-2 text-sm text-gray-700"><CheckCircle size={14} className="text-green-500" /> Prepare a cover letter explaining your interest in finance</li>
-                <li className="flex items-center gap-2 text-sm text-gray-700"><CheckCircle size={14} className="text-green-500" /> Review basic accounting and finance concepts</li>
-              </ul>
-            </div>
-
-            {/* Application Difficulty */}
-            <div className="bg-white rounded-xl border border-gray-100 p-5 shadow-sm">
-              <h2 className="text-lg font-bold text-gray-900 mb-3">Application Difficulty</h2>
-              <div className="flex items-center gap-2 mb-4">
-                <span className="px-3 py-1 bg-green-100 text-green-700 text-sm font-medium rounded-full">🟢 Beginner Friendly</span>
-                <span className="text-sm text-gray-600">Basic finance knowledge and eagerness to learn required</span>
-              </div>
-              <div className="flex items-center gap-2 text-xs text-gray-500 pt-3 border-t border-gray-100">
-                <CheckCircle size={12} className="text-green-500" />
-                <span>Verified on {new Date(internship.updatedAt || internship.postedAt).toLocaleDateString('en-IN', { year: 'numeric', month: 'long', day: 'numeric' })}</span>
-              </div>
-            </div>
 
             {/* Benefits */}
             {benefitsPoints.length > 0 && !internship.benefits?.includes("not provided") && (
@@ -631,27 +656,51 @@ export default function InternshipDetailPage() {
                   </div>
                 </div>
               </div>
-
-              {/* Company Snapshot */}
-              <div className="bg-white rounded-xl border border-gray-100 p-4 shadow-sm mt-4">
-                <h4 className="font-semibold text-gray-900 mb-2 flex items-center gap-2"><Building2 size={14} className="text-emerald-500" />Company Snapshot</h4>
-                <div className="space-y-2 text-sm">
-                  <div className="flex justify-between"><span className="text-gray-500">Type</span><span className="text-gray-700">Corporate</span></div>
-                  <div className="flex justify-between"><span className="text-gray-500">Internship Type</span><span className="text-gray-700 capitalize">{internship.workMode || "On-site"}</span></div>
-                  {internship.duration && <div className="flex justify-between"><span className="text-gray-500">Duration</span><span className="text-gray-700">{internship.duration}</span></div>}
-                </div>
-              </div>
-
-              {/* Stipend Insight */}
-              {stipendInsight && (
-                <div className="bg-gradient-to-r from-green-50 to-teal-50 rounded-xl border border-green-100 p-4 shadow-sm mt-4">
-                  <h4 className="font-semibold text-gray-900 mb-1">💡 Stipend Insight</h4>
-                  <p className="text-xs text-gray-600">{stipendInsight}</p>
-                </div>
-              )}
             </div>
           </div>
         </div>
+
+        {/* Similar Internships - No stipend/salary */}
+        {relatedInternships && relatedInternships.length > 0 && (
+          <div className="mt-10 pt-6 border-t border-gray-200">
+            <div className="flex items-center gap-2 mb-5">
+              <TrendingUp size={18} className="text-emerald-600" />
+              <h2 className="text-xl font-bold text-gray-900">Similar Entry-Level Finance Internships</h2>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {relatedInternships.map((intern) => (
+                <Link key={intern.id} href={`/internships/${intern.slug}`} className="group block bg-white rounded-lg border border-gray-100 p-4 hover:shadow-md hover:border-emerald-200 transition">
+                  <div className="flex items-start gap-3">
+                    <div className="flex-shrink-0">
+                      {intern.companyLogo ? (
+                        <div className="w-10 h-10 bg-gray-50 rounded-lg flex items-center justify-center p-1.5">
+                          <img src={intern.companyLogo} alt={intern.company} className="max-w-full max-h-full object-contain" />
+                        </div>
+                      ) : (
+                        <div className="w-10 h-10 bg-gradient-to-br from-gray-600 to-gray-800 rounded-lg flex items-center justify-center">
+                          <span className="text-white font-bold text-xs">{getCompanyInitials(intern.company)}</span>
+                        </div>
+                      )}
+                    </div>
+                    <div className="flex-1">
+                      <h3 className="font-semibold text-gray-900 group-hover:text-emerald-600 text-sm line-clamp-1">{intern.title}</h3>
+                      <p className="text-xs text-gray-500">{intern.company}</p>
+                      <div className="flex flex-wrap items-center gap-2 mt-1.5 text-xs">
+                        {intern.duration && <span className="text-gray-400">{intern.duration}</span>}
+                        {intern.workMode && intern.workMode !== "Not specified" && (
+                          <span className="capitalize text-gray-400">{intern.workMode}</span>
+                        )}
+                      </div>
+                      <div className="flex items-center gap-1 mt-1 text-xs text-gray-400">
+                        <MapPin size={10} />{intern.location?.split(',')[0]}
+                      </div>
+                    </div>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Mobile Sticky Apply Button */}
@@ -660,61 +709,6 @@ export default function InternshipDetailPage() {
           <ExternalLink size={18} /> Apply for This Internship →
         </button>
       </div>
-
-      {/* Skills Modal */}
-      {showAllSkillsModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-xl max-w-2xl w-full max-h-[80vh] overflow-y-auto p-6">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-xl font-bold text-gray-900">All Required Skills</h3>
-              <button onClick={() => setShowAllSkillsModal(false)} className="p-1 hover:bg-gray-100 rounded-lg">✕</button>
-            </div>
-            <div className="space-y-4">
-              {financeSkills.length > 0 && (
-                <div>
-                  <h4 className="font-semibold text-gray-700 mb-2">Finance & Accounting</h4>
-                  <div className="flex flex-wrap gap-2">
-                    {financeSkills.map((skill, idx) => (
-                      <span key={idx} className="px-2.5 py-1 bg-blue-50 text-blue-700 rounded-full text-xs font-medium border border-blue-100">{skill}</span>
-                    ))}
-                  </div>
-                </div>
-              )}
-              {technicalSkills.length > 0 && (
-                <div>
-                  <h4 className="font-semibold text-gray-700 mb-2">Technical & Tools</h4>
-                  <div className="flex flex-wrap gap-2">
-                    {technicalSkills.map((skill, idx) => (
-                      <span key={idx} className="px-2.5 py-1 bg-gray-100 text-gray-700 rounded-full text-xs font-medium border border-gray-200">{skill}</span>
-                    ))}
-                  </div>
-                </div>
-              )}
-              {softSkills.length > 0 && (
-                <div>
-                  <h4 className="font-semibold text-gray-700 mb-2">Soft Skills</h4>
-                  <div className="flex flex-wrap gap-2">
-                    {softSkills.map((skill, idx) => (
-                      <span key={idx} className="px-2.5 py-1 bg-green-50 text-green-700 rounded-full text-xs font-medium border border-green-100">{skill}</span>
-                    ))}
-                  </div>
-                </div>
-              )}
-              {otherSkills.length > 0 && (
-                <div>
-                  <h4 className="font-semibold text-gray-700 mb-2">Other Skills</h4>
-                  <div className="flex flex-wrap gap-2">
-                    {otherSkills.map((skill, idx) => (
-                      <span key={idx} className="px-2.5 py-1 bg-gray-100 text-gray-700 rounded-full text-xs font-medium border border-gray-200">{skill}</span>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
-            <button onClick={() => setShowAllSkillsModal(false)} className="mt-6 w-full py-2 bg-emerald-600 text-white rounded-lg">Close</button>
-          </div>
-        </div>
-      )}
 
       {/* Footer */}
       <div className="bg-gray-100 mt-10 py-8">
