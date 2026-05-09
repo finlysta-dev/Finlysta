@@ -7,7 +7,7 @@ import {
   MapPin, Clock, Building2, Calendar,
   CheckCircle, Bookmark, Share2, Zap,
   ExternalLink, Award, GraduationCap,
-  Briefcase, Target, Sparkles, ChevronRight, ChevronUp, TrendingUp, Heart, AlertCircle
+  Briefcase, Target, Sparkles, ChevronRight, ChevronUp,ChevronDown, TrendingUp, Heart, AlertCircle
 } from "lucide-react";
 
 interface Internship {
