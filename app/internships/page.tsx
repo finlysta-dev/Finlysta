@@ -7,6 +7,7 @@ import { Search, MapPin, ChevronRight, X, Loader2, Briefcase, Building2, Calenda
 
 interface Internship {
   id: string;
+  slug: string;  // ← ADD THIS
   title: string;
   company: string;
   location: string;
@@ -51,6 +52,7 @@ export default function InternshipsPage() {
       if (Array.isArray(data)) {
         const formattedInternships = data.map((internship: any) => ({
           id: internship.id,
+          slug: internship.slug,  // ← ADD THIS
           title: internship.title,
           company: internship.company,
           location: internship.location,
@@ -149,9 +151,7 @@ export default function InternshipsPage() {
 
   const getFirstResponsibility = (responsibilities: string, maxLength: number = 100) => {
     if (!responsibilities) return '';
-    // Remove HTML tags
     const cleanText = responsibilities.replace(/<[^>]*>/g, '');
-    // Get first sentence or first line
     const firstLine = cleanText.split('\n')[0];
     const firstSentence = firstLine.split('.')[0];
     if (firstSentence.length <= maxLength) return firstSentence;
@@ -304,7 +304,7 @@ export default function InternshipsPage() {
               return (
                 <Link
                   key={internship.id}
-                  href={`/opportunities/internships/${internship.id}`}
+                  href={`/internships/${internship.slug}`}  // ← FIXED: Slug-based URL
                   className="group block bg-white rounded-xl border border-gray-200 hover:shadow-lg hover:border-emerald-200 transition-all duration-300 hover:-translate-y-1 overflow-hidden"
                 >
                   <div className="p-5">
@@ -342,7 +342,7 @@ export default function InternshipsPage() {
                       </span>
                     </div>
 
-                    {/* Responsibility - MAIN CONTENT (removed description/overview) */}
+                    {/* Responsibility - MAIN CONTENT */}
                     {responsibility && (
                       <div className="mb-3">
                         <p className="text-sm text-gray-600 line-clamp-3 leading-relaxed">

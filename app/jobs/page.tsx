@@ -7,6 +7,7 @@ import { Search, MapPin, ChevronRight, X, Loader2, Briefcase, Building2, Externa
 
 interface Job {
   id: string;
+  slug: string;  // ← ADD THIS
   title: string;
   company: string;
   location: string;
@@ -58,6 +59,7 @@ export default function JobsPage() {
         
         const formattedJobs = allJobs.map((job: any) => ({
           id: job.id,
+          slug: job.slug,  // ← ADD THIS
           title: job.title,
           company: job.company || 'Company',
           location: job.location || 'India',
@@ -335,7 +337,7 @@ export default function JobsPage() {
               return (
                 <Link
                   key={job.id}
-                  href={`/opportunities/jobs/${job.id}`}
+                  href={`/jobs/${job.slug}`}  // ← FIXED: Slug-based URL
                   className="block bg-white border border-gray-200 rounded-lg p-5 hover:shadow-md hover:border-gray-300 transition-all group"
                 >
                   <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">

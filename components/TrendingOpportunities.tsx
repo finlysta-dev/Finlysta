@@ -279,11 +279,11 @@ const JobCard = ({ job, imageErrors, handleImageError }: {
           </div>
 
           <div className="flex-1 min-w-0">
-            <Link href={`/opportunities/jobs/${job.id}`}>
-              <h3 className="text-lg font-bold text-gray-900 hover:text-blue-600 hover:underline transition-colors line-clamp-1 mb-1 cursor-pointer">
-                {job.title}
-              </h3>
-            </Link>
+           <Link href={`/jobs/${job.slug}`}>
+          <h3 className="text-lg font-bold text-gray-900 hover:text-blue-600 hover:underline transition-colors line-clamp-1 mb-1 cursor-pointer">
+          {job.title}
+          </h3>
+          </Link>
             <div className="w-12 h-0.5 bg-blue-500 rounded-full mb-2"></div>
             <div className="flex items-center gap-2 flex-wrap">
               <Building2 size={14} className="text-gray-400" />
@@ -361,8 +361,8 @@ const JobCard = ({ job, imageErrors, handleImageError }: {
             </button>
           ) : (
             <Link
-              href={`/opportunities/jobs/${job.id}`}
-              onClick={() => trackOpportunityClick(job.id, 'job')}
+               href={`/jobs/${job.slug}`}
+                onClick={() => trackOpportunityClick(job.id, 'job')}
               className="text-sm font-medium text-blue-600 hover:text-blue-700 hover:underline transition-colors flex items-center gap-1"
             >
               <span>Apply Now</span>
@@ -413,10 +413,10 @@ const InternshipCard = ({ internship, imageErrors, handleImageError }: {
           </div>
 
           <div className="flex-1 min-w-0">
-            <Link href={`/opportunities/internships/${internship.id}`}>
-              <h3 className="text-lg font-bold text-gray-900 hover:text-emerald-600 hover:underline transition-colors line-clamp-1 mb-1 cursor-pointer">
-                {internship.title}
-              </h3>
+            <Link href={`/internships/${internship.slug}`}>
+            <h3 className="text-lg font-bold text-gray-900 hover:text-emerald-600 hover:underline transition-colors line-clamp-1 mb-1 cursor-pointer">
+            {internship.title}
+            </h3>
             </Link>
             <div className="w-12 h-0.5 bg-emerald-500 rounded-full mb-2"></div>
             <div className="flex items-center gap-2 flex-wrap">
@@ -493,8 +493,8 @@ const InternshipCard = ({ internship, imageErrors, handleImageError }: {
             </button>
           ) : (
             <Link
-              href={`/opportunities/internships/${internship.id}`}
-              onClick={() => trackOpportunityClick(internship.id, 'internship')}
+             href={`/internships/${internship.slug}`}
+               onClick={() => trackOpportunityClick(internship.id, 'internship')}
               className="text-sm font-medium text-emerald-600 hover:text-emerald-700 hover:underline transition-colors flex items-center gap-1"
             >
               <span>Apply Now</span>
