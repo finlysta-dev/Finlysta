@@ -16,23 +16,23 @@ interface Opportunity {
   slug: string;
   title: string;
   company: string;
-  companyLogo?: string;
-  aboutCompany?: string;
+  companyLogo?: string | null;  // ← Allow null
+  aboutCompany?: string | null;  // ← Allow null
   type: string;
   workMode: string;
   location: string;
-  experience?: string;
-  salary?: string;
+  experience?: string | null;
+  salary?: string | null;
   skills: string[];
-  overview?: string;
-  responsibilities?: string;
-  qualifications?: string;
-  benefits?: string;
+  overview?: string | null;
+  responsibilities?: string | null;
+  qualifications?: string | null;
+  benefits?: string | null;
   applyLink: string;
   isVerified: boolean;
   isActivelyHiring: boolean;
   postedAt: string;
-  deadline?: string;
+  deadline?: string | null;
 }
 
 export default function JobDetailClient({ initialOpportunity }: { initialOpportunity: Opportunity }) {

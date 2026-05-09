@@ -95,6 +95,22 @@ async function getOpportunity(slug: string) {
     },
   });
   
+  // Convert null to undefined for client component compatibility
+  if (opportunity) {
+    return {
+      ...opportunity,
+      companyLogo: opportunity.companyLogo ?? undefined,
+      aboutCompany: opportunity.aboutCompany ?? undefined,
+      experience: opportunity.experience ?? undefined,
+      salary: opportunity.salary ?? undefined,
+      overview: opportunity.overview ?? undefined,
+      responsibilities: opportunity.responsibilities ?? undefined,
+      qualifications: opportunity.qualifications ?? undefined,
+      benefits: opportunity.benefits ?? undefined,
+      deadline: opportunity.deadline ?? undefined,
+    };
+  }
+  
   return opportunity;
 }
 

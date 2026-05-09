@@ -280,10 +280,10 @@ export default function HomePageContent() {
                 <span className="text-xs font-semibold text-[#0A2540]">Career Path</span>
               </div>
               <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-[#0A2540] mb-3">
-                How to Become a Financial Analyst <span className="text-[#FFD700]">(Step-by-Step)</span>
+                How to Become a Financial Analyst <span className="text-[#FFD700]">(Step-by-Step Roadmap)</span>
               </h2>
               <p className="text-sm md:text-base text-slate-500 max-w-2xl mx-auto">
-                From learning basics to landing your first job — follow a clear roadmap.
+                From learning finance fundamentals to building real-world analytical skills and landing your first analyst role.
               </p>
             </div>
             
@@ -303,7 +303,7 @@ export default function HomePageContent() {
             
             <div className="text-center mt-6">
               <p className="text-sm text-slate-500">
-                🎯 From mastering fundamentals to getting hired — your complete career roadmap
+                🎯Follow a complete roadmap designed for aspiring financial analysts.
               </p>
             </div>
           </div>

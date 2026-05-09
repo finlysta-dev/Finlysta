@@ -4,9 +4,11 @@ import React, { useState } from "react";
 import {
   ChevronRight, TrendingUp, BarChart3, 
   Calculator, Database, PieChart, Target, Award,
-  GraduationCap, Briefcase, Sparkles
+  GraduationCap, Briefcase, Sparkles, BookOpen,
+  Code, FileSpreadsheet, Brain, Rocket, Users, Clock
 } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 import Header from "../components/Header";
 
 const FinancialAnalystRoadmap = () => {
@@ -20,16 +22,28 @@ const FinancialAnalystRoadmap = () => {
       bgColor: "bg-blue-50",
       borderColor: "border-blue-200",
       textColor: "text-blue-700",
-      skills: ["Linear Algebra", "Calculus", "Statistics", "Probability", "Financial Math"]
+      skills: ["Linear Algebra", "Calculus", "Statistics", "Probability", "Financial Math"],
+      resources: ["Khan Academy", "Coursera", "MIT OpenCourseware"]
     },
     { 
-      title: "Excel Mastery", 
+      title: "Financial Foundations", 
       icon: BarChart3,
       color: "#22c55e",
       bgColor: "bg-green-50",
       borderColor: "border-green-200",
       textColor: "text-green-700",
-      skills: ["Pivot Tables", "VLOOKUP/XLOOKUP", "Financial Functions", "Macros", "Power Query"]
+      skills: ["Accounting Basics", "Financial Statements", "Ratio Analysis", "Time Value of Money", "Risk Management"],
+      resources: ["Investopedia", "CFI", "Corporate Finance"]
+    },
+    { 
+      title: "Excel & Financial Analysis", 
+      icon: FileSpreadsheet,
+      color: "#22c55e",
+      bgColor: "bg-green-50",
+      borderColor: "border-green-200",
+      textColor: "text-green-700",
+      skills: ["Pivot Tables", "VLOOKUP/XLOOKUP", "Financial Functions", "Macros", "Power Query"],
+      resources: ["ExcelIsFun", "Coursera Excel", "LinkedIn Learning"]
     },
     { 
       title: "SQL", 
@@ -38,16 +52,18 @@ const FinancialAnalystRoadmap = () => {
       bgColor: "bg-indigo-50",
       borderColor: "border-indigo-200",
       textColor: "text-indigo-700",
-      skills: ["SELECT Queries", "JOINS", "Subqueries", "Window Functions", "Database Design"]
+      skills: ["SELECT Queries", "JOINS", "Subqueries", "Window Functions", "Database Design"],
+      resources: ["W3Schools", "Mode Analytics", "LeetCode"]
     },
     { 
       title: "Python", 
-      icon: ChevronRight,
+      icon: Code,
       color: "#a855f7",
       bgColor: "bg-purple-50",
       borderColor: "border-purple-200",
       textColor: "text-purple-700",
-      skills: ["Python Basics", "Pandas", "NumPy", "Matplotlib", "Financial Analysis"]
+      skills: ["Python Basics", "Pandas", "NumPy", "Matplotlib", "Financial Analysis"],
+      resources: ["DataCamp", "Python for Finance", "Real Python"]
     },
     { 
       title: "Data Visualization", 
@@ -56,7 +72,8 @@ const FinancialAnalystRoadmap = () => {
       bgColor: "bg-orange-50",
       borderColor: "border-orange-200",
       textColor: "text-orange-700",
-      skills: ["Tableau", "Power BI", "Matplotlib", "Seaborn", "Dashboard Design"]
+      skills: ["Tableau", "Power BI", "Matplotlib", "Seaborn", "Dashboard Design"],
+      resources: ["Power BI Docs", "Tableau Public", "DataViz Society"]
     },
     { 
       title: "Financial Modeling", 
@@ -65,7 +82,28 @@ const FinancialAnalystRoadmap = () => {
       bgColor: "bg-pink-50",
       borderColor: "border-pink-200",
       textColor: "text-pink-700",
-      skills: ["DCF Models", "LBO Models", "Merger Models", "Valuation", "Forecasting"]
+      skills: ["DCF Models", "LBO Models", "Merger Models", "Valuation", "Forecasting"],
+      resources: ["Wall Street Prep", "CFI", "Breaking Into Wall Street"]
+    },
+    { 
+      title: "Business & Industry Knowledge", 
+      icon: Brain,
+      color: "#06b6d4",
+      bgColor: "bg-cyan-50",
+      borderColor: "border-cyan-200",
+      textColor: "text-cyan-700",
+      skills: ["Industry Research", "Competitive Analysis", "Market Trends", "Regulations", "Business Strategy"],
+      resources: ["Bloomberg", "Reuters", "WSJ"]
+    },
+    { 
+      title: "Projects & Career Preparation", 
+      icon: Rocket,
+      color: "#8b5cf6",
+      bgColor: "bg-violet-50",
+      borderColor: "border-violet-200",
+      textColor: "text-violet-700",
+      skills: ["Portfolio Projects", "Resume Building", "LinkedIn Optimization", "GitHub Portfolio", "Case Studies"],
+      resources: ["Kaggle", "GitHub", "StrataScratch"]
     },
     { 
       title: "Get Hired", 
@@ -74,15 +112,40 @@ const FinancialAnalystRoadmap = () => {
       bgColor: "bg-red-50",
       borderColor: "border-red-200",
       textColor: "text-red-700",
-      skills: ["Resume Prep", "Interview Skills", "Case Studies", "Networking", "Offer Negotiation"]
+      skills: ["Resume Prep", "Interview Skills", "Case Studies", "Networking", "Offer Negotiation"],
+      resources: ["LinkedIn Jobs", "Finlysta", "Industry Events"]
     }
   ];
+
+  // Function to split title into 2 lines max without truncation
+  const formatTitle = (title: string) => {
+    const words = title.split(' ');
+    if (words.length <= 2) {
+      return { line1: title, line2: null };
+    }
+    // Split after 2nd word for "Excel & Financial Analysis" -> "Excel &" + "Financial Analysis"
+    if (title === "Excel & Financial Analysis") {
+      return { line1: "Excel &", line2: "Financial Analysis" };
+    }
+    // Split after 2nd word for "Business & Industry Knowledge" -> "Business &" + "Industry Knowledge"
+    if (title === "Business & Industry Knowledge") {
+      return { line1: "Business &", line2: "Industry Knowledge" };
+    }
+    // Split after 2nd word for "Projects & Career Preparation" -> "Projects &" + "Career Preparation"
+    if (title === "Projects & Career Preparation") {
+      return { line1: "Projects &", line2: "Career Preparation" };
+    }
+    // Generic split after 2nd word
+    const line1 = words.slice(0, 2).join(' ');
+    const line2 = words.slice(2).join(' ');
+    return { line1, line2 };
+  };
 
   return (
     <div className="min-h-screen bg-white">
       <Header />
       
-      <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16">
         {/* Back Button */}
         <Link href="/" className="inline-flex items-center gap-2 text-slate-500 hover:text-[#0A2540] transition-colors mb-6">
           <ChevronRight className="rotate-180 w-4 h-4" />
@@ -106,19 +169,40 @@ const FinancialAnalystRoadmap = () => {
             </p>
           </div>
 
-          {/* Desktop Timeline View - All icons visible in color */}
+          {/* Stats Overview */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12">
+            <div className="bg-white rounded-xl p-4 text-center border border-gray-100 shadow-sm">
+              <div className="text-2xl font-bold text-[#FFD700]">10</div>
+              <div className="text-xs text-gray-500">Learning Modules</div>
+            </div>
+            <div className="bg-white rounded-xl p-4 text-center border border-gray-100 shadow-sm">
+              <div className="text-2xl font-bold text-[#FFD700]">45+</div>
+              <div className="text-xs text-gray-500">Essential Skills</div>
+            </div>
+            <div className="bg-white rounded-xl p-4 text-center border border-gray-100 shadow-sm">
+              <div className="text-2xl font-bold text-[#FFD700]">8-12</div>
+              <div className="text-xs text-gray-500">Weeks to Complete</div>
+            </div>
+            <div className="bg-white rounded-xl p-4 text-center border border-gray-100 shadow-sm">
+              <div className="text-2xl font-bold text-[#FFD700]">100%</div>
+              <div className="text-xs text-gray-500">Job Ready</div>
+            </div>
+          </div>
+
+          {/* Desktop Timeline View */}
           <div className="hidden md:block relative mt-8">
             <div className="absolute left-0 right-0 top-12 h-0.5 bg-gray-200 z-0"></div>
             
-            <div className="relative z-10 flex justify-between">
+            <div className="relative z-10 flex justify-between gap-4">
               {roadmapSteps.map((step, idx) => {
                 const isActive = idx === activeStep;
+                const titleParts = formatTitle(step.title);
                 
                 return (
                   <div key={idx} className="flex flex-col items-center flex-1 cursor-pointer" onClick={() => setActiveStep(idx)}>
                     <div
                       className={`
-                        w-16 h-16 rounded-full flex items-center justify-center transition-all duration-300
+                        w-14 h-14 rounded-full flex items-center justify-center transition-all duration-300
                         ${isActive 
                           ? 'ring-4 ring-[#FFD700] shadow-xl scale-110' 
                           : 'shadow-sm hover:scale-105'
@@ -129,32 +213,46 @@ const FinancialAnalystRoadmap = () => {
                         border: `2px solid ${step.color}`,
                       }}
                     >
-                      <step.icon size={28} style={{ color: step.color }} />
+                      <step.icon size={24} style={{ color: step.color }} />
                     </div>
                     
-                    <div className="mt-3 text-center">
-                      <p className={`font-bold text-sm ${isActive ? 'text-[#0A2540]' : 'text-gray-600'}`}>
-                        {step.title}
-                      </p>
-                      <p className="text-xs text-gray-400 mt-1">---</p>
+                    <div className="mt-2 text-center min-h-[36px]">
+                      {titleParts.line2 ? (
+                        <>
+                          <p className={`font-bold text-[10.5px] leading-tight ${isActive ? 'text-[#0A2540]' : 'text-gray-600'}`}>
+                            {titleParts.line1}
+                          </p>
+                          <p className={`font-bold text-[10.5px] leading-tight ${isActive ? 'text-[#0A2540]' : 'text-gray-600'}`}>
+                            {titleParts.line2}
+                          </p>
+                        </>
+                      ) : (
+                        <p className={`font-bold text-[10.5px] leading-tight ${isActive ? 'text-[#0A2540]' : 'text-gray-600'}`}>
+                          {step.title}
+                        </p>
+                      )}
                     </div>
+                    
+                    {/* Gray line after each skill */}
+                    <div className="w-6 h-px bg-gray-300 mt-2"></div>
                   </div>
                 );
               })}
             </div>
           </div>
 
-          {/* Mobile View - All icons visible in color */}
+          {/* Mobile View */}
           <div className="md:hidden overflow-x-auto pb-4 mt-4">
             <div className="flex gap-4 min-w-max px-2">
               {roadmapSteps.map((step, idx) => {
                 const isActive = idx === activeStep;
+                const titleParts = formatTitle(step.title);
                 
                 return (
                   <div
                     key={idx}
                     className={`
-                      flex flex-col items-center p-4 rounded-xl transition-all duration-300 cursor-pointer min-w-[100px]
+                      flex flex-col items-center p-3 rounded-xl transition-all duration-300 cursor-pointer min-w-[90px]
                       ${isActive ? 'scale-105 shadow-lg' : 'hover:scale-102'}
                     `}
                     style={{
@@ -165,19 +263,29 @@ const FinancialAnalystRoadmap = () => {
                   >
                     <div
                       className={`
-                        w-12 h-12 rounded-full flex items-center justify-center mb-2
+                        w-10 h-10 rounded-full flex items-center justify-center mb-2
                       `}
                       style={{ backgroundColor: step.color + '20' }}
                     >
-                      <step.icon size={20} style={{ color: step.color }} />
+                      <step.icon size={18} style={{ color: step.color }} />
                     </div>
-                    <p className={`font-semibold text-sm ${isActive ? step.textColor : 'text-gray-600'}`}>
-                      {step.title}
-                    </p>
-                    <p className="text-xs text-gray-400 mt-1">---</p>
-                    {isActive && (
-                      <p className="text-xs text-gray-500 mt-2 text-center">Click to view skills</p>
-                    )}
+                    <div className="text-center">
+                      {titleParts.line2 ? (
+                        <>
+                          <p className={`font-semibold text-[10px] leading-tight ${isActive ? step.textColor : 'text-gray-600'}`}>
+                            {titleParts.line1}
+                          </p>
+                          <p className={`font-semibold text-[10px] leading-tight ${isActive ? step.textColor : 'text-gray-600'}`}>
+                            {titleParts.line2}
+                          </p>
+                        </>
+                      ) : (
+                        <p className={`font-semibold text-[10px] leading-tight ${isActive ? step.textColor : 'text-gray-600'}`}>
+                          {step.title}
+                        </p>
+                      )}
+                    </div>
+                    <div className="w-5 h-px bg-gray-300 mt-2"></div>
                   </div>
                 );
               })}
@@ -199,6 +307,24 @@ const FinancialAnalystRoadmap = () => {
                   className="px-3 py-1.5 bg-white rounded-full text-xs text-gray-600 border border-gray-200 shadow-sm hover:shadow-md transition-shadow"
                 >
                   {skill}
+                </span>
+              ))}
+            </div>
+          </div>
+
+          {/* Recommended Resources */}
+          <div className="mt-4 p-5 bg-emerald-50 rounded-xl">
+            <div className="flex items-center gap-2 mb-3">
+              <BookOpen size={16} className="text-emerald-600" />
+              <span className="text-sm font-semibold text-[#0A2540]">Recommended Resources</span>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {roadmapSteps[activeStep].resources.map((resource, idx) => (
+                <span
+                  key={idx}
+                  className="px-3 py-1.5 bg-white rounded-full text-xs text-emerald-700 border border-emerald-200 shadow-sm"
+                >
+                  📚 {resource}
                 </span>
               ))}
             </div>
