@@ -464,6 +464,22 @@ export default function HomePageContent() {
                 <li><Link href="/learn" className="hover:text-[#0A2540] transition-colors">Learning Hub</Link></li>
               </ul>
             </div>
+            {/* NEW BLOG SECTION */}
+            <div className="lg:col-span-2">
+              <h4 className="text-slate-900 font-bold text-sm mb-4">Blogs</h4>
+              <ul className="space-y-2.5 text-sm text-slate-500">
+                <li>
+                  <Link href="/blogs/how-to-become-financial-analyst-india-2026" className="hover:text-[#0A2540] transition-colors">
+                    How to Become a Financial Analyst in India (2026)
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/blogs/stop-cold-dms-finance-networking-playbook-2026" className="hover:text-[#0A2540] transition-colors">
+                    Ultimate Networking Playbook for Finance Freshers
+                  </Link>
+                  </li>
+              </ul>
+            </div>
             <div className="lg:col-span-2">
               <h4 className="text-slate-900 font-bold text-sm mb-4">Company</h4>
               <ul className="space-y-2.5 text-sm text-slate-500">
@@ -474,7 +490,7 @@ export default function HomePageContent() {
                 <li><Link href="/terms" className="hover:text-[#0A2540] transition-colors">Terms of Service</Link></li>
               </ul>
             </div>
-            <div className="lg:col-span-4">
+            <div className="lg:col-span-2">
               <h4 className="text-slate-900 font-bold text-sm mb-4">Get in Touch</h4>
               <a href="mailto:support@finlysta.com" className="flex items-center gap-2 text-sm text-slate-500 hover:text-[#0A2540] transition-colors">
                 <Mail size={13} /> support@finlysta.com

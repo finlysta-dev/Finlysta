@@ -166,19 +166,23 @@ export default function BlogPage({ params }: { params: { slug: string } }) {
     alert('Link copied to clipboard!');
   };
 
-  // Process content to handle external links for tracking
-  const processContent = (html: string) => {
+  // Process HTML content to handle external links for tracking
+  const processHtmlContent = (html: string) => {
     if (!html) return '';
     
     // Create a temporary div to parse HTML
     const tempDiv = document.createElement('div');
     tempDiv.innerHTML = html;
     
-    // Find all anchor tags and add click tracking
+    // Find all anchor tags and add click tracking attributes
     const links = tempDiv.querySelectorAll('a');
     links.forEach((link) => {
       const href = link.getAttribute('href');
       if (href && href.startsWith('http')) {
+        link.setAttribute('data-track-url', href);
+        link.setAttribute('data-track-text', link.textContent || 'link');
+        link.setAttribute('target', '_blank');
+        link.setAttribute('rel', 'noopener noreferrer');
         link.addEventListener('click', (e) => {
           e.preventDefault();
           trackBlogClick(href, link.textContent || 'link');
@@ -236,7 +240,7 @@ export default function BlogPage({ params }: { params: { slug: string } }) {
       'interview': 'Interview Prep',
       'skills': 'Skill Development',
       'career': 'Career Guide',
-      'Networking Guide': 'Networking Guide',
+      'Career Advice': 'Career Advice',
     };
     return categories[category] || category.replace('-', ' ');
   };
@@ -250,20 +254,25 @@ export default function BlogPage({ params }: { params: { slug: string } }) {
       'interview': 'bg-green-100 text-green-700',
       'skills': 'bg-pink-100 text-pink-700',
       'career': 'bg-amber-100 text-amber-700',
-      'Networking Guide': 'bg-teal-100 text-teal-700',
+      'Career Advice': 'bg-amber-100 text-amber-700',
     };
     return colors[category] || 'bg-gray-100 text-gray-700';
   };
 
   // Custom CSS for HTML content
   const htmlStyles = `
+    .blog-html-content {
+      font-size: 1.125rem;
+      line-height: 1.75;
+      color: #374151;
+    }
     .blog-html-content h1 {
-      font-size: 1.875rem;
+      font-size: 2rem;
       font-weight: 700;
       margin-top: 2rem;
       margin-bottom: 1rem;
       padding-bottom: 0.5rem;
-      border-bottom: 1px solid #e5e7eb;
+      border-bottom: 2px solid #e5e7eb;
       color: #111827;
     }
     .blog-html-content h2 {
@@ -283,21 +292,11 @@ export default function BlogPage({ params }: { params: { slug: string } }) {
       color: #111827;
     }
     .blog-html-content p {
-      color: #374151;
-      line-height: 1.625;
       margin-bottom: 1rem;
     }
-    .blog-html-content ul {
-      list-style-type: disc;
+    .blog-html-content ul, .blog-html-content ol {
       padding-left: 1.5rem;
       margin-bottom: 1rem;
-      color: #374151;
-    }
-    .blog-html-content ol {
-      list-style-type: decimal;
-      padding-left: 1.5rem;
-      margin-bottom: 1rem;
-      color: #374151;
     }
     .blog-html-content li {
       margin-bottom: 0.25rem;
@@ -319,7 +318,6 @@ export default function BlogPage({ params }: { params: { slug: string } }) {
       padding: 1rem;
       margin: 1rem 0;
       font-style: italic;
-      color: #374151;
     }
     .blog-html-content table {
       width: 100%;
@@ -341,24 +339,96 @@ export default function BlogPage({ params }: { params: { slug: string } }) {
       height: auto;
       border-radius: 0.5rem;
     }
-    .blog-html-content .key-takeaways {
-      background: #f0f9ff;
-      border-left: 4px solid #0066cc;
-      padding: 1.25rem;
-      margin: 1.25rem 0;
-      border-radius: 0.5rem;
+    .blog-html-content .summary-box {
+      background: #f0f7ff;
+      padding: 20px;
+      border-radius: 12px;
+      margin: 20px 0;
+      border: 1px solid #0056b3;
     }
-    .blog-html-content .pro-tip {
-      background: #fef3c7;
-      border-left: 4px solid #f59e0b;
-      padding: 1rem;
-      margin: 1rem 0;
-      border-radius: 0.5rem;
+    .blog-html-content .key-insight {
+      background: #e8f4f8;
+      padding: 20px;
+      border-radius: 12px;
+      text-align: center;
+      font-size: 1.1rem;
+      font-weight: bold;
+      margin: 30px 0;
     }
-    .blog-html-content input[type="checkbox"] {
-      margin-right: 0.5rem;
+    .blog-html-content .recruiter-card {
+      background: #fafafa;
+      padding: 20px;
+      border-radius: 12px;
+      margin: 15px 0;
+      border-left: 4px solid #0056b3;
+    }
+    .blog-html-content .template-card {
+      background: #f5f5f5;
+      padding: 20px;
+      border-radius: 12px;
+      margin: 20px 0;
+    }
+    .blog-html-content .code-block {
+      background: #1e1e1e;
+      color: #d4d4d4;
+      padding: 15px;
+      border-radius: 8px;
+      font-family: "Courier New", monospace;
+      margin: 10px 0;
+      overflow-x: auto;
+      font-size: 0.85rem;
+    }
+    .blog-html-content .cta-box {
+      background: linear-gradient(135deg, #0056b3, #0a2540);
+      color: white;
+      padding: 30px;
+      border-radius: 16px;
+      margin: 40px 0;
+      text-align: center;
+    }
+    .blog-html-content .faq-item {
+      background: #f8f9fa;
+      padding: 15px;
+      border-radius: 8px;
+      margin: 15px 0;
+    }
+    .blog-html-content .bad-message {
+      background: #fff2f0;
+      border-left: 4px solid #ff4d4f;
+      padding: 15px;
+      border-radius: 12px;
+      margin: 15px 0;
+    }
+    .blog-html-content .good-message {
+      background: #f6ffed;
+      border-left: 4px solid #52c41a;
+      padding: 15px;
+      border-radius: 12px;
+      margin: 15px 0;
+    }
+    .blog-html-content .example-box {
+      background: #e6f7ff;
+      padding: 20px;
+      border-radius: 12px;
+      margin: 20px 0;
+      border: 1px solid #91d5ff;
+    }
+    .blog-html-content .footer-note {
+      text-align: center;
+      padding: 30px;
+      background: #f8f9fa;
+      border-radius: 12px;
+      margin-top: 40px;
+    }
+    @media (max-width: 600px) {
+      .blog-html-content h1 { font-size: 1.6rem; }
+      .blog-html-content h2 { font-size: 1.3rem; }
+      .blog-html-content table { font-size: 0.75rem; }
+      .blog-html-content th, .blog-html-content td { padding: 6px; }
     }
   `;
+
+  const processedContent = processHtmlContent(resource.content || '');
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -444,10 +514,10 @@ export default function BlogPage({ params }: { params: { slug: string } }) {
               </p>
             </div>
 
-            {/* HTML Content - FIXED: Using dangerouslySetInnerHTML instead of ReactMarkdown */}
+            {/* HTML CONTENT - Using dangerouslySetInnerHTML for HTML content */}
             <div 
               className="blog-html-content"
-              dangerouslySetInnerHTML={{ __html: resource.content || '' }}
+              dangerouslySetInnerHTML={{ __html: processedContent }}
             />
           </div>
 
