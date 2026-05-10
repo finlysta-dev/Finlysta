@@ -88,8 +88,8 @@ const TryForFree = () => {
   return (
     <div className="bg-gradient-to-r from-[#0A2540] to-[#1a3a5c] py-16 md:py-20">
       <div className="max-w-4xl mx-auto px-4 text-center">
-        {/* FIXED: Changed text-blue to text-white */}
-        <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-black mb-4">
+        {/* Using light blue color for better visibility on dark background */}
+        <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-[#E0E7FF] mb-4">
           Skip the clutter.
         </h2>
         <p className="text-xl md:text-2xl text-gray-200 mb-10">
@@ -112,49 +112,6 @@ const TryForFree = () => {
         </div>
       </div>
     </div>
-  );
-};
-
-// SEO Schema Component
-const SEOSchema = () => {
-  return (
-    <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "WebSite",
-            "name": "Finlysta",
-            "url": "https://finlysta.com",
-            "description": "Find entry level financial analyst jobs and internships in India. Start your finance career with paid internships and fresher jobs.",
-            "potentialAction": {
-              "@type": "SearchAction",
-              "target": {
-                "@type": "EntryPoint",
-                "urlTemplate": "https://finlysta.com/internships?search={search_term}"
-              },
-              "query-input": "required name=search_term"
-            }
-          })
-        }}
-      />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "Organization",
-            "name": "Finlysta",
-            "url": "https://finlysta.com",
-            "logo": "https://finlysta.com/Finlysta.png",
-            "sameAs": [
-              "https://www.linkedin.com/company/finlysta"
-            ]
-          })
-        }}
-      />
-    </>
   );
 };
 
@@ -187,6 +144,8 @@ export default function HomePageContent() {
     return (
       <div className="bg-[#F8FAFC] min-h-screen flex items-center justify-center">
         <div className="text-center">
+          {/* Hidden H1 for SEO crawlers */}
+          <h1 className="sr-only">Entry Level Financial Analyst Jobs & Internships | Finlysta</h1>
           <div className="w-12 h-12 border-4 border-[#0A2540] border-t-[#FFD700] rounded-full animate-spin mx-auto mb-4"></div>
           <p className="text-[#0A2540] font-medium">Loading...</p>
         </div>
@@ -196,7 +155,6 @@ export default function HomePageContent() {
 
   return (
     <div className="bg-[#F8FAFC] min-h-screen font-sans">
-      <SEOSchema />
       <Header />
 
       <main>
@@ -223,34 +181,35 @@ export default function HomePageContent() {
                 </p>
               </div>
 
+              {/* Both buttons with correct styling */}
               <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-8">
-              <button
-              onClick={handleFindJobs}
-              className="px-8 py-4 rounded-xl transition-all duration-300 font-bold flex items-center justify-center gap-2 text-base min-w-[200px]"
-              style={{
-              background: "linear-gradient(135deg, 0%,  5%)",
-              color: "#0A2540",
-              boxShadow: "0 4px 15px rgba(0, 0, 0, 0.2)"
-              }}
-               >
-      <Briefcase size={20} />
-      <span>Find My First Job</span>
-      <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
-      </button>
-  
-      <button
-      onClick={handleBrowseInternships}
-      className="px-8 py-4 rounded-xl transition-all duration-300 font-bold flex items-center justify-center gap-2 text-base min-w-[200px]"
-      style={{
-      background: "linear-gradient(135deg, #FFD700 0%, #FFA500 100%)",
-      color: "#0A2540",
-      boxShadow: "0 4px 15px rgba(0, 0, 0, 0.2)"
-      }}
-      >
-      <GraduationCap size={20} />
-      <span>Explore Internships</span>
-      </button>
-      </div>
+                {/* Find My First Job - No background, just outline/border */}
+                <button
+                  onClick={handleFindJobs}
+                  className="px-8 py-4 rounded-xl transition-all duration-300 font-bold flex items-center justify-center gap-2 text-base min-w-[200px] cursor-pointer hover:scale-105 border-4 border-[#FFD700] bg-transparent hover:bg-[#FFD700]/10"
+                  style={{
+                    color: "#0A2540",
+                  }}
+                >
+                  <Briefcase size={20} />
+                  <span>Find My First Job</span>
+                  <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
+                </button>
+
+                {/* Explore Internships - With gradient background */}
+                <button
+                  onClick={handleBrowseInternships}
+                  className="px-8 py-4 rounded-xl transition-all duration-300 font-bold flex items-center justify-center gap-2 text-base min-w-[200px] cursor-pointer hover:scale-105"
+                  style={{
+                    background: "linear-gradient(135deg, #FFD700 0%, #FFA500 100%)",
+                    color: "#0A2540",
+                    boxShadow: "0 4px 15px rgba(0, 0, 0, 0.2)"
+                  }}
+                >
+                  <GraduationCap size={20} />
+                  <span>Explore Internships</span>
+                </button>
+              </div>
 
               <div className="mt-8 pt-4 border-t border-gray-200">
                 <p className="text-sm text-slate-500 mb-3">🔥 Explore Roles:</p>
@@ -261,7 +220,7 @@ export default function HomePageContent() {
                       onClick={() => {
                         router.push(`/jobs?search=${encodeURIComponent(role.name)}`);
                       }}
-                      className="px-3 py-1.5 bg-white border border-gray-200 rounded-full text-sm text-slate-600 hover:border-[#FFD700] hover:text-black transition-all duration-300 flex items-center gap-1 whitespace-nowrap"
+                      className="px-3 py-1.5 bg-white border border-gray-200 rounded-full text-sm text-slate-600 hover:border-[#FFD700] hover:text-black transition-all duration-300 flex items-center gap-1 whitespace-nowrap cursor-pointer"
                     >
                       <span className="text-base">{role.icon}</span>
                       <span>{role.name}</span>
@@ -301,7 +260,6 @@ export default function HomePageContent() {
                   height={600}
                   className="w-full h-auto object-contain rounded-lg"
                   priority
-                  unoptimized
                 />
               </div>
             </div>
@@ -413,7 +371,7 @@ export default function HomePageContent() {
         <TryForFree />
       </main>
 
-      {/* FOOTER */}
+      {/* FOOTER - UPDATED with Home link in Company column */}
       <footer className="bg-white border-t border-slate-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="pt-10 pb-6 grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-12 gap-8">
@@ -441,7 +399,6 @@ export default function HomePageContent() {
                   >
                     <Linkedin size={16} />
                   </a>
-                  {/* Added Twitter/X for better social presence */}
                   <a 
                     href="https://twitter.com/Finlysta" 
                     target="_blank" 
@@ -464,7 +421,6 @@ export default function HomePageContent() {
                 <li><Link href="/learn" className="hover:text-[#0A2540] transition-colors">Learning Hub</Link></li>
               </ul>
             </div>
-            {/* NEW BLOG SECTION */}
             <div className="lg:col-span-2">
               <h4 className="text-slate-900 font-bold text-sm mb-4">Blogs</h4>
               <ul className="space-y-2.5 text-sm text-slate-500">
@@ -477,12 +433,13 @@ export default function HomePageContent() {
                   <Link href="/blogs/stop-cold-dms-finance-networking-playbook-2026" className="hover:text-[#0A2540] transition-colors">
                     Ultimate Networking Playbook for Finance Freshers
                   </Link>
-                  </li>
+                </li>
               </ul>
             </div>
             <div className="lg:col-span-2">
               <h4 className="text-slate-900 font-bold text-sm mb-4">Company</h4>
               <ul className="space-y-2.5 text-sm text-slate-500">
+                <li><Link href="/" className="hover:text-[#0A2540] transition-colors">Home</Link></li>
                 <li><Link href="/about" className="hover:text-[#0A2540] transition-colors">About Us</Link></li>
                 <li><Link href="/mission" className="hover:text-[#0A2540] transition-colors">Our Mission</Link></li>
                 <li><Link href="/contact" className="hover:text-[#0A2540] transition-colors">Contact Us</Link></li>

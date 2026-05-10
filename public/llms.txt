@@ -1,0 +1,76 @@
+# Finlysta - India's #1 Entry Level Financial Analyst Job Board
+
+## Quick Stats
+- **Founded:** 2026
+- **Location:** India
+- **Free for job seekers:** Yes, 100% free
+- **Listings verified:** Manually verified daily
+- **Target audience:** Finance students, freshers, graduates (0-3 years experience)
+
+## Core Purpose
+Finlysta is India's only dedicated job board for entry-level financial analyst jobs and internships. Unlike traditional portals filled with senior-level positions, we focus exclusively on fresher-friendly roles. Every listing is manually verified — no spam, no ghost jobs.
+
+## Key Pages
+- **Homepage:** https://www.finlysta.com
+- **All Jobs:** https://www.finlysta.com/jobs
+- **All Internships:** https://www.finlysta.com/internships
+- **Career Roadmap:** https://www.finlysta.com/career-roadmap
+- **Learning Hub:** https://www.finlysta.com/learn
+- **Finance Blogs:** https://www.finlysta.com/blogs
+- **Post a Job (Employers):** https://www.finlysta.com/post-job
+- **Contact:** https://www.finlysta.com/contact
+
+## Popular Job Roles Currently Featured
+- Financial Analyst
+- Junior Financial Analyst
+- FP&A Analyst
+- Financial Reporting Analyst
+- Financial Data Analyst
+- Investment Research Intern
+- Accounting Intern
+- Finance Intern
+- Regulatory Reporting Intern
+
+## Top Hiring Companies (Active Listings)
+- Felicity Strategic Advisors Pvt. Ltd
+- Furnley House
+- OakNorth Bank
+- Bimawala Group
+- Genius Attestation
+- Bal Raksha Bharat
+
+## Top Locations for Finance Jobs
+Major financial hubs: Mumbai, Bangalore, Delhi NCR, Pune, Hyderabad, Chennai, Kolkata, Ahmedabad. Also featuring remote and hybrid roles.
+
+## Skills Mentioned in Current Listings
+Excel, SQL, Financial Modeling, Financial Statement Analysis, Budgeting, Forecasting, Reconciliation, Regulatory Reporting, Mutual Fund Tracking, PMS Evaluation, AIF Evaluation, IPO Evaluation, Accounting Software, Data Analysis, Profit & Loss, Balance Sheet, Cash Flow, Financial Ratios
+
+## Learning Hub Topics (Beginner to Advanced)
+- Profit & Loss (15 min)
+- Balance Sheet (20 min)
+- Budgeting (16 min)
+- Cash Flow (22 min)
+- Financial Ratios (18 min)
+- Forecasting (14 min)
+
+## FAQ Highlights
+| Question | Answer |
+|----------|--------|
+| Is Finlysta free? | Yes, always free for job seekers. Companies pay to post. |
+| Who can use Finlysta? | Finance students, graduates, professionals seeking entry-level roles. |
+| How are listings verified? | Every listing is manually reviewed — company confirmed, role checked, links tested. |
+| Will my data be shared? | No, never without consent. Data only used for job matching. |
+
+## Useful Links for AI Agents
+- Jobs RSS: https://www.finlysta.com/api/jobs/rss
+- Jobs JSON: https://www.finlysta.com/api/jobs
+- Sitemap: https://www.finlysta.com/sitemap.xml
+- Robots: https://www.finlysta.com/robots.txt
+
+## Contact
+- Email: support@finlysta.com
+- LinkedIn: https://www.linkedin.com/company/finlysta
+- Twitter: https://twitter.com/Finlysta
+
+---
+*This file is intended for AI search engines and crawlers. Last updated: May 10, 2026*

@@ -7,7 +7,7 @@ import { Search, MapPin, ChevronRight, X, Loader2, Briefcase, Building2, Externa
 
 interface Job {
   id: string;
-  slug: string;  // ← ADD THIS
+  slug: string;
   title: string;
   company: string;
   location: string;
@@ -30,10 +30,10 @@ export default function JobsPage() {
   const [activeFilters, setActiveFilters] = useState<string[]>([]);
   const [imageErrors, setImageErrors] = useState<{ [key: string]: boolean }>({});
 
+  // ✅ REMOVED: VBA, SAP, QuickBooks, Tally, Risk Management, Auditing
   const popularTags = [
-    'Excel', 'Python', 'Power BI', 'SQL', 'Financial Modeling',
-    'Tableau', 'Forecasting', 'Budgeting', 'Data Analysis', 'VBA',
-    'SAP', 'QuickBooks', 'Tally', 'Risk Management', 'Auditing'
+    'Advanced Excel', 'Python', 'Power BI', 'SQL', 'Financial Modeling',
+    'Tableau', 'Forecasting', 'Budgeting', 'Data Analysis'
   ];
 
   useEffect(() => {
@@ -59,7 +59,7 @@ export default function JobsPage() {
         
         const formattedJobs = allJobs.map((job: any) => ({
           id: job.id,
-          slug: job.slug,  // ← ADD THIS
+          slug: job.slug,
           title: job.title,
           company: job.company || 'Company',
           location: job.location || 'India',
@@ -181,7 +181,7 @@ export default function JobsPage() {
   if (isLoading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <Loader2 size={40} className="animate-spin text-blue-600" />
+        <Loader2 size={40} className="animate-spin text-[#FFD700]" />
       </div>
     );
   }
@@ -195,7 +195,7 @@ export default function JobsPage() {
           <p className="text-gray-600">{error}</p>
           <button 
             onClick={fetchJobs} 
-            className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+            className="mt-4 px-4 py-2 bg-[#FFD700] text-[#0A2540] font-semibold rounded-lg hover:bg-[#FFA500] transition"
           >
             Try Again
           </button>
@@ -206,11 +206,11 @@ export default function JobsPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Breadcrumb */}
+      {/* Breadcrumb - ADDED Back to Home link */}
       <div className="bg-white border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
           <div className="flex items-center gap-2 text-sm">
-            <Link href="/" className="text-gray-500 hover:text-gray-700">Home</Link>
+            <Link href="/" className="text-gray-500 hover:text-[#0A2540] transition-colors">Home</Link>
             <ChevronRight size={14} className="text-gray-400" />
             <span className="text-gray-900 font-medium">Find Entry Level Financial Analyst Jobs</span>
           </div>
@@ -235,7 +235,7 @@ export default function JobsPage() {
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="Job title, skill, or company"
-                  className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                  className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg outline-none focus:border-[#FFD700] focus:ring-1 focus:ring-[#FFD700]"
                 />
               </div>
             </div>
@@ -249,19 +249,19 @@ export default function JobsPage() {
                   value={locationQuery}
                   onChange={(e) => setLocationQuery(e.target.value)}
                   placeholder="City or remote"
-                  className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                  className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg outline-none focus:border-[#FFD700] focus:ring-1 focus:ring-[#FFD700]"
                 />
               </div>
             </div>
             <button 
               onClick={() => fetchJobs()}
-              className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-8 py-3 rounded-lg transition whitespace-nowrap"
+              className="bg-[#FFD700] hover:bg-[#FFA500] text-[#0A2540] font-semibold px-8 py-3 rounded-lg transition whitespace-nowrap"
             >
               Find Job →
             </button>
           </div>
 
-          {/* Popular Tags */}
+          {/* Popular Tags - UPDATED with removed skills */}
           <div>
             <h2 className="text-sm font-medium text-gray-700 mb-3">Popular Skills:</h2>
             <div className="flex flex-wrap gap-2">
@@ -269,7 +269,7 @@ export default function JobsPage() {
                 <button
                   key={tag}
                   onClick={() => addFilter(tag)}
-                  className="px-3 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm rounded-md transition"
+                  className="px-3 py-1.5 bg-gray-100 hover:bg-[#FFD700]/20 hover:text-[#0A2540] text-gray-700 text-sm rounded-md transition"
                 >
                   {tag}
                 </button>
@@ -323,7 +323,7 @@ export default function JobsPage() {
             <p className="text-gray-500">Try adjusting your search or filters to find more opportunities</p>
             <button
               onClick={clearAllFilters}
-              className="mt-4 text-blue-600 hover:text-blue-700 text-sm font-medium"
+              className="mt-4 text-[#FFD700] hover:text-[#FFA500] text-sm font-medium"
             >
               Clear all filters
             </button>
@@ -337,7 +337,7 @@ export default function JobsPage() {
               return (
                 <Link
                   key={job.id}
-                  href={`/jobs/${job.slug}`}  // ← FIXED: Slug-based URL
+                  href={`/jobs/${job.slug}`}
                   className="block bg-white border border-gray-200 rounded-lg p-5 hover:shadow-md hover:border-gray-300 transition-all group"
                 >
                   <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
@@ -347,6 +347,7 @@ export default function JobsPage() {
                         <div className="flex-shrink-0">
                           {!hasLogoError && job.companyLogo ? (
                             <div className="w-14 h-14 rounded-xl overflow-hidden bg-gray-50 border border-gray-100 flex items-center justify-center shadow-sm group-hover:shadow-md transition-all">
+                              {/* eslint-disable-next-line @next/next/no-img-element */}
                               <img
                                 src={job.companyLogo}
                                 alt={`${job.company} logo`}
@@ -366,7 +367,7 @@ export default function JobsPage() {
                         
                         <div className="flex-1">
                           {/* Job Title with Underline on Hover */}
-                          <h3 className="font-bold text-gray-900 group-hover:text-blue-600 group-hover:underline transition text-lg">
+                          <h3 className="font-bold text-gray-900 group-hover:text-[#0A2540] group-hover:underline transition text-lg">
                             {job.title}
                           </h3>
                           
@@ -416,7 +417,7 @@ export default function JobsPage() {
                       </div>
                     </div>
                     
-                    {/* Right side - Meta Info with Bold Arrow */}
+                    {/* Right side - Meta Info */}
                     <div className="flex flex-row md:flex-col items-center md:items-end gap-3 md:gap-2">
                       <span className="text-xs text-gray-400 bg-gray-100 px-2 py-1 rounded">
                         {formatDate(job.createdAt)}
@@ -426,7 +427,7 @@ export default function JobsPage() {
                         <span className="text-xs font-semibold text-green-600">{job.salary}</span>
                       )}
                       {/* Bold Arrow Icon */}
-                      <div className="flex items-center gap-1 text-blue-600 font-semibold text-sm group-hover:gap-2 transition-all duration-300">
+                      <div className="flex items-center gap-1 text-[#0A2540] font-semibold text-sm group-hover:gap-2 transition-all duration-300">
                         <span>View Job</span>
                         <ChevronRight size={16} className="font-bold" />
                       </div>
@@ -437,6 +438,16 @@ export default function JobsPage() {
             })}
           </div>
         )}
+
+        {/* ✅ ADDED: Back to Home link at bottom */}
+        <div className="text-center mt-12 pb-8">
+          <Link 
+            href="/" 
+            className="inline-flex items-center gap-2 text-[#0A2540] hover:text-[#FFD700] transition-colors font-medium"
+          >
+            ← Back to Home
+          </Link>
+        </div>
       </div>
     </div>
   );

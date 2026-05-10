@@ -123,14 +123,15 @@ export default function RootLayout({
         <meta name="referrer" content="strict-origin-when-cross-origin" />
         
         {/* Favicon Icons - All formats */}
-        <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
-        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
-        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
-        <link rel="icon" href="/favicon.ico" sizes="any" />
-        <link rel="icon" href="/icon.svg" type="image/svg+xml" />
-        <link rel="manifest" href="/site.webmanifest" />
+       {/* ✅ Favicon Icons - Make sure these files exist with new logo */}
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+<link rel="icon" href="/favicon.ico" sizes="any" />
+<link rel="icon" href="/icon.svg" type="image/svg+xml" />
+<link rel="manifest" href="/site.webmanifest" />
         
-        {/* ✅ Organization Schema - WITHOUT plaintext email */}
+        {/* ✅ Organization Schema - FIXED */}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
@@ -138,6 +139,7 @@ export default function RootLayout({
               "@context": "https://schema.org",
               "@type": "Organization",
               "name": "Finlysta",
+              "alternateName": "Finlysta Job Board",
               "url": "https://www.finlysta.com",
               "logo": "https://www.finlysta.com/Finlysta.png",
               "description": "Entry level financial analyst job board. Find paid internships and fresher jobs in financial analysis, corporate finance, and fintech.",
@@ -160,7 +162,7 @@ export default function RootLayout({
           }}
         />
         
-        {/* ✅ BreadcrumbList Schema */}
+        {/* ✅ BreadcrumbList Schema - FIXED with proper structure */}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
@@ -179,7 +181,7 @@ export default function RootLayout({
           }}
         />
         
-        {/* ✅ WebSite Schema */}
+        {/* ✅ WebSite Schema - FIXED for Sitelinks Search Box & Site Name */}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
@@ -187,15 +189,12 @@ export default function RootLayout({
               "@context": "https://schema.org",
               "@type": "WebSite",
               "name": "Finlysta",
+              "alternateName": "Finlysta Job Board for Entry Level Financial Analysts",
               "url": "https://www.finlysta.com",
-              "logo": "https://www.finlysta.com/Finlysta.png",
               "potentialAction": {
                 "@type": "SearchAction",
-                "target": {
-                  "@type": "EntryPoint",
-                  "urlTemplate": "https://www.finlysta.com/jobs?search={search_term}"
-                },
-                "query-input": "required name=search_term"
+                "target": "https://www.finlysta.com/jobs?search={search_term_string}",
+                "query-input": "required name=search_term_string"
               }
             })
           }}

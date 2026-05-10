@@ -7,7 +7,7 @@ import { Search, MapPin, ChevronRight, X, Loader2, Briefcase, Building2, Calenda
 
 interface Internship {
   id: string;
-  slug: string;  // ← ADD THIS
+  slug: string;
   title: string;
   company: string;
   location: string;
@@ -33,10 +33,11 @@ export default function InternshipsPage() {
   const [activeFilters, setActiveFilters] = useState<string[]>([]);
   const [imageErrors, setImageErrors] = useState<{ [key: string]: boolean }>({});
 
+  // ✅ UPDATED: Removed Tableau, VBA, SAP, QuickBooks, Tally, Risk Management, Auditing, Communication, Teamwork
+  // ✅ RENAMED: Excel → Advanced Excel
   const popularTags = [
-    'Excel', 'Python', 'Power BI', 'SQL', 'Financial Modeling',
-    'Tableau', 'Data Analysis', 'VBA', 'SAP', 'QuickBooks',
-    'Tally', 'Risk Management', 'Auditing', 'Communication', 'Teamwork'
+    'Advanced Excel', 'Python', 'Power BI', 'SQL', 'Financial Modeling',
+    'Data Analysis'
   ];
 
   useEffect(() => {
@@ -52,7 +53,7 @@ export default function InternshipsPage() {
       if (Array.isArray(data)) {
         const formattedInternships = data.map((internship: any) => ({
           id: internship.id,
-          slug: internship.slug,  // ← ADD THIS
+          slug: internship.slug,
           title: internship.title,
           company: internship.company,
           location: internship.location,
@@ -188,7 +189,7 @@ export default function InternshipsPage() {
       <div className="bg-white border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
           <div className="flex items-center gap-2 text-sm">
-            <Link href="/" className="text-gray-500 hover:text-gray-700">Home</Link>
+            <Link href="/" className="text-gray-500 hover:text-[#0A2540] transition-colors">Home</Link>
             <ChevronRight size={14} className="text-gray-400" />
             <span className="text-gray-900 font-medium">Find Entry Level Financial Analyst Internships</span>
           </div>
@@ -238,6 +239,7 @@ export default function InternshipsPage() {
             </button>
           </div>
 
+          {/* Popular Tags - UPDATED */}
           <div>
             <h3 className="text-sm font-medium text-gray-700 mb-3">Popular Skills:</h3>
             <div className="flex flex-wrap gap-2">
@@ -245,7 +247,7 @@ export default function InternshipsPage() {
                 <button
                   key={tag}
                   onClick={() => addFilter(tag)}
-                  className="px-3 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm rounded-md transition"
+                  className="px-3 py-1.5 bg-gray-100 hover:bg-emerald-100 hover:text-emerald-700 text-gray-700 text-sm rounded-md transition"
                 >
                   {tag}
                 </button>
@@ -304,7 +306,7 @@ export default function InternshipsPage() {
               return (
                 <Link
                   key={internship.id}
-                  href={`/internships/${internship.slug}`}  // ← FIXED: Slug-based URL
+                  href={`/internships/${internship.slug}`}
                   className="group block bg-white rounded-xl border border-gray-200 hover:shadow-lg hover:border-emerald-200 transition-all duration-300 hover:-translate-y-1 overflow-hidden"
                 >
                   <div className="p-5">
@@ -314,6 +316,7 @@ export default function InternshipsPage() {
                       <div className="flex-shrink-0">
                         {!hasLogoError && internship.companyLogo ? (
                           <div className="w-12 h-12 rounded-xl overflow-hidden bg-gray-50 border border-gray-100 flex items-center justify-center shadow-sm">
+                            {/* eslint-disable-next-line @next/next/no-img-element */}
                             <img
                               src={internship.companyLogo}
                               alt={`${internship.company} logo`}
@@ -416,6 +419,16 @@ export default function InternshipsPage() {
             })}
           </div>
         )}
+
+        {/* ✅ ADDED: Back to Home link at bottom */}
+        <div className="text-center mt-12 pb-8">
+          <Link 
+            href="/" 
+            className="inline-flex items-center gap-2 text-[#0A2540] hover:text-emerald-600 transition-colors font-medium"
+          >
+            ← Back to Home
+          </Link>
+        </div>
       </div>
     </div>
   );

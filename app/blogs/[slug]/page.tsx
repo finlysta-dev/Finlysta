@@ -170,35 +170,38 @@ export default function BlogPage({ params }: { params: { slug: string } }) {
   const processHtmlContent = (html: string) => {
     if (!html) return '';
     
-    // Create a temporary div to parse HTML
-    const tempDiv = document.createElement('div');
-    tempDiv.innerHTML = html;
-    
-    // Find all anchor tags and add click tracking attributes
-    const links = tempDiv.querySelectorAll('a');
-    links.forEach((link) => {
-      const href = link.getAttribute('href');
-      if (href && href.startsWith('http')) {
-        link.setAttribute('data-track-url', href);
-        link.setAttribute('data-track-text', link.textContent || 'link');
-        link.setAttribute('target', '_blank');
-        link.setAttribute('rel', 'noopener noreferrer');
-        link.addEventListener('click', (e) => {
-          e.preventDefault();
-          trackBlogClick(href, link.textContent || 'link');
-          window.open(href, '_blank');
-        });
-      }
-    });
-    
-    return tempDiv.innerHTML;
+    // Create a temporary div to parse HTML (only runs on client)
+    if (typeof document !== 'undefined') {
+      const tempDiv = document.createElement('div');
+      tempDiv.innerHTML = html;
+      
+      // Find all anchor tags and add click tracking attributes
+      const links = tempDiv.querySelectorAll('a');
+      links.forEach((link) => {
+        const href = link.getAttribute('href');
+        if (href && href.startsWith('http')) {
+          link.setAttribute('data-track-url', href);
+          link.setAttribute('data-track-text', link.textContent || 'link');
+          link.setAttribute('target', '_blank');
+          link.setAttribute('rel', 'noopener noreferrer');
+          link.addEventListener('click', (e) => {
+            e.preventDefault();
+            trackBlogClick(href, link.textContent || 'link');
+            window.open(href, '_blank');
+          });
+        }
+      });
+      
+      return tempDiv.innerHTML;
+    }
+    return html;
   };
 
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
-          <div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <div className="w-12 h-12 border-4 border-[#FFD700] border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
           <p className="text-gray-600">Loading blog post...</p>
         </div>
       </div>
@@ -216,7 +219,7 @@ export default function BlogPage({ params }: { params: { slug: string } }) {
           </p>
           <Link
             href="/blogs"
-            className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+            className="inline-flex items-center gap-2 px-4 py-2 bg-[#FFD700] text-[#0A2540] font-semibold rounded-lg hover:bg-[#FFA500] transition"
           >
             <ArrowLeft size={16} />
             Browse All Blogs
@@ -440,7 +443,7 @@ export default function BlogPage({ params }: { params: { slug: string } }) {
         <div className="max-w-4xl mx-auto px-4 sm:px-6 py-4">
           <Link 
             href="/blogs" 
-            className="inline-flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors group"
+            className="inline-flex items-center gap-2 text-gray-600 hover:text-[#0A2540] transition-colors group"
           >
             <ArrowLeft size={18} className="group-hover:-translate-x-0.5 transition-transform" />
             <span className="text-sm font-medium">Back to Blogs</span>
@@ -455,6 +458,7 @@ export default function BlogPage({ params }: { params: { slug: string } }) {
           {/* Cover Image */}
           {directImageUrl && !imageError && (
             <div className="relative w-full bg-gray-100">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={directImageUrl}
                 alt={resource.title}
@@ -466,7 +470,7 @@ export default function BlogPage({ params }: { params: { slug: string } }) {
 
           {/* Fallback when no image or image fails */}
           {(!directImageUrl || imageError) && (
-            <div className="relative w-full h-64 md:h-96 overflow-hidden bg-gradient-to-r from-blue-500 to-indigo-600 flex items-center justify-center">
+            <div className="relative w-full h-64 md:h-96 overflow-hidden bg-gradient-to-r from-[#0A2540] to-[#1a3a5c] flex items-center justify-center">
               <div className="text-center text-white px-4">
                 <Bookmark size={48} className="mx-auto mb-2 opacity-50" />
                 <p className="text-lg font-medium line-clamp-2">{resource.title}</p>
@@ -508,7 +512,7 @@ export default function BlogPage({ params }: { params: { slug: string } }) {
             </div>
 
             {/* Excerpt */}
-            <div className="bg-blue-50 rounded-lg p-5 mb-8 border-l-4 border-blue-500">
+            <div className="bg-blue-50 rounded-lg p-5 mb-8 border-l-4 border-[#FFD700]">
               <p className="text-gray-700 text-base leading-relaxed">
                 {resource.excerpt}
               </p>
@@ -533,12 +537,12 @@ export default function BlogPage({ params }: { params: { slug: string } }) {
                   onClick={handleSave}
                   className="flex items-center gap-1.5 px-4 py-2 bg-white border border-gray-200 rounded-lg text-gray-600 hover:bg-gray-50 transition text-sm"
                 >
-                  <Bookmark size={14} className={saved ? 'fill-blue-600 text-blue-600' : ''} />
+                  <Bookmark size={14} className={saved ? 'fill-[#FFD700] text-[#FFD700]' : ''} />
                   {saved ? 'Saved' : 'Save'}
                 </button>
                 <button 
                   onClick={handleShare}
-                  className="flex items-center gap-1.5 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition text-sm"
+                  className="flex items-center gap-1.5 px-4 py-2 bg-[#FFD700] text-[#0A2540] font-semibold rounded-lg hover:bg-[#FFA500] transition text-sm"
                 >
                   <Share2 size={14} />
                   Share
@@ -548,12 +552,23 @@ export default function BlogPage({ params }: { params: { slug: string } }) {
           </div>
         </article>
 
+        {/* Browse all blogs link */}
         <div className="mt-8 text-center">
           <Link 
             href="/blogs"
-            className="inline-flex items-center gap-2 text-blue-600 hover:text-blue-700 font-medium transition-colors"
+            className="inline-flex items-center gap-2 text-[#0A2540] hover:text-[#FFD700] font-medium transition-colors"
           >
             ← Browse all blog posts
+          </Link>
+        </div>
+
+        {/* ✅ ADDED: Return to Home link */}
+        <div className="mt-8 pt-6 border-t border-gray-200 text-center">
+          <Link 
+            href="/" 
+            className="inline-flex items-center gap-2 text-[#0A2540] hover:text-[#FFD700] font-medium transition-colors"
+          >
+            ← Return to Finlysta Home
           </Link>
         </div>
       </div>
