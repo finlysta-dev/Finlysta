@@ -58,25 +58,14 @@
       "permanent": true
     },
     {
-      "source": "(.*)",
+      "source": "/:path*",
       "has": [
         {
           "type": "host",
           "value": "finlysta.com"
         }
       ],
-      "destination": "https://www.finlysta.com/$1",
-      "permanent": true
-    },
-    {
-      "source": "(.*)",
-      "has": [
-        {
-          "type": "host",
-          "value": "http://finlysta.com"
-        }
-      ],
-      "destination": "https://www.finlysta.com/$1",
+      "destination": "https://www.finlysta.com/:path*",
       "permanent": true
     }
   ]

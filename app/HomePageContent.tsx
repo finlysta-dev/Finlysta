@@ -140,18 +140,20 @@ export default function HomePageContent() {
     router.push(`/internships`);
   };
 
-  if (!isMounted) {
-    return (
-      <div className="bg-[#F8FAFC] min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          {/* Hidden H1 for SEO crawlers */}
-          <h1 className="sr-only">Entry Level Financial Analyst Jobs & Internships | Finlysta</h1>
-          <div className="w-12 h-12 border-4 border-[#0A2540] border-t-[#FFD700] rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-[#0A2540] font-medium">Loading...</p>
+ if (!isMounted) {
+  return (
+    <div className="bg-[#F8FAFC] min-h-screen flex items-center justify-center">
+      <div className="text-center">
+        {/* Use div with role="status" for accessibility without creating duplicate H1 */}
+        <div role="status" className="sr-only">
+          Loading Finlysta - Entry Level Financial Analyst Jobs and Internships
         </div>
+        <div className="w-12 h-12 border-4 border-[#0A2540] border-t-[#FFD700] rounded-full animate-spin mx-auto mb-4"></div>
+        <p className="text-[#0A2540] font-medium">Loading...</p>
       </div>
-    );
-  }
+    </div>
+  );
+}
 
   return (
     <div className="bg-[#F8FAFC] min-h-screen font-sans">

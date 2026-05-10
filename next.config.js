@@ -5,6 +5,9 @@ const nextConfig = {
   },
   reactStrictMode: true,
   
+  // ✅ ADD THIS - Prevents duplicate URLs with/without trailing slash
+  trailingSlash: false,
+  
   // Add headers to prevent caching for API routes
   async headers() {
     return [
