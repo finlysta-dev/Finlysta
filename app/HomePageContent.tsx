@@ -8,7 +8,10 @@ import {
   BarChart3, Landmark, Building2, Heart, Linkedin, Instagram, GraduationCap,
   Twitter, Mail, ArrowRight, BookOpen, DollarSign, PieChart,
   Activity, CheckCircle, ChevronDown, Rocket, Briefcase, Sparkles,
-  Target, Award, Users
+  Target, Award, Users, Star, Zap, Globe, Code2, Layers, LineChart,
+  Radio, Filter, BriefcaseIcon, ExternalLink, Calendar, Laptop,
+  Building, Award as AwardIcon, FolderOpen, GitBranch, BookMarked, AlertCircle,
+  TrendingUp as TrendingUpIcon, CheckBadge, ChartLine, Eye
 } from "lucide-react";
 import Link from "next/link";
 import Header from "./components/Header";
@@ -16,48 +19,46 @@ import TrendingInternships from "@/components/TrendingOpportunities";
 import FinanceTopics from "@/components/FinanceTopics";
 import Newsletter from "@/components/Newsletter";
 
-// FAQ Component
+// Note: Eye icon is available in lucide-react v0.260.0+
+// If you're using an older version, update lucide-react or use a different icon
+
+// Simplified FAQ Component
 const FAQ = () => {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
 
   const faqs = [
     { 
       q: "How is Finlysta different from traditional job portals?", 
-      a: "Unlike traditional portals where you're left to scroll endlessly, Finlysta helps you find verified finance internships and jobs quickly. Every listing is manually reviewed — no ghost jobs, no spam."
+      a: "Unlike traditional portals, Finlysta focuses only on entry-level finance roles. Every listing is manually reviewed — no ghost jobs, no spam, no irrelevant senior positions."
     },
     { 
       q: "Who can use Finlysta?", 
-      a: "Finlysta is designed for finance students, graduates, and professionals looking for internships and full-time positions in financial analysis, investment banking, equity research, accounting, and related fields."
+      a: "Finlysta is designed for finance students, graduates, and career-switchers looking for internships and entry-level positions in financial analysis, investment banking, equity research, accounting, and related fields."
     },
     { 
-      q: "Will Finlysta share my personal information?", 
-      a: "No, we never share your personal information without your consent. Your data is only used to match you with relevant job opportunities and improve your experience on our platform."
+      q: "Is Finlysta really free?", 
+      a: "Yes — 100% free for job seekers. Always. Companies pay to post, but you'll never pay anything to find your first finance role."
     },
-    { 
-      q: "How are internships verified?", 
-      a: "Every listing is manually reviewed — company confirmed, role checked, links tested. We ensure only genuine opportunities reach you."
-    },
-    { 
-      q: "Is Finlysta free to use?", 
-      a: "Yes — and it always will be. Finlysta is 100% free for students and job seekers. Companies pay to post — you apply for free."
-    }
   ];
 
   return (
-    <section className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+    <section className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16">
       <div className="text-center mb-8">
-        <h2 className="text-2xl sm:text-3xl font-bold text-[#0A2540]">FAQ</h2>
-        <p className="text-slate-500 text-sm mt-2">Everything you need to know about Finlysta</p>
+        <div className="inline-flex items-center gap-2 bg-gradient-to-r from-[#FFD700]/20 to-[#FFA500]/20 rounded-full px-4 py-1.5 mb-3">
+          <HelpCircle size={14} className="text-[#FFD700]" />
+          <span className="text-xs font-semibold text-[#0A2540]">Quick Answers</span>
+        </div>
+        <h2 className="text-2xl sm:text-3xl font-bold text-[#0A2540]">Frequently Asked Questions</h2>
       </div>
       <div className="space-y-3">
         {faqs.map((faq, idx) => (
           <div 
             key={idx} 
-            className="border border-gray-200 transition-all duration-300 ease-in-out bg-white rounded-lg hover:shadow-sm"
+            className="border border-gray-200 transition-all duration-300 ease-in-out bg-white rounded-xl hover:shadow-sm"
           >
             <button
               onClick={() => setOpenIndex(openIndex === idx ? null : idx)}
-              className="flex justify-between items-center w-full py-3 px-5 text-left"
+              className="flex justify-between items-center w-full py-3.5 px-5 text-left"
               aria-expanded={openIndex === idx}
             >
               <span className="text-sm sm:text-base font-medium text-gray-800 pr-4">
@@ -69,7 +70,7 @@ const FAQ = () => {
             </button>
             <div 
               className={`overflow-hidden transition-all duration-300 ease-in-out px-5 ${
-                openIndex === idx ? 'max-h-32 opacity-100 pb-3' : 'max-h-0 opacity-0'
+                openIndex === idx ? 'max-h-32 opacity-100 pb-4' : 'max-h-0 opacity-0'
               }`}
             >
               <p className="text-sm text-gray-600">
@@ -83,35 +84,389 @@ const FAQ = () => {
   );
 };
 
-// Try for Free Section Component
-const TryForFree = () => {
+// Call to Action Section
+const CTASection = () => {
   return (
-    <div className="bg-gradient-to-r from-[#0A2540] to-[#1a3a5c] py-16 md:py-20">
-      <div className="max-w-4xl mx-auto px-4 text-center">
-        {/* Using light blue color for better visibility on dark background */}
-        <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-[#E0E7FF] mb-4">
-          Skip the clutter.
+    <div className="bg-gradient-to-br from-[#0A2540] via-[#0f2d4a] to-[#1a3a5c] py-16 md:py-20 relative overflow-hidden">
+      <div className="absolute top-0 right-0 w-64 h-64 bg-[#FFD700]/5 rounded-full blur-3xl"></div>
+      <div className="absolute bottom-0 left-0 w-80 h-80 bg-[#FFA500]/5 rounded-full blur-3xl"></div>
+      
+      <div className="max-w-4xl mx-auto px-4 text-center relative z-10">
+        <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-full px-4 py-1.5 mb-6">
+          <Sparkles size={14} className="text-[#FFD700]" />
+          <span className="text-xs font-semibold text-[#FFD700]">No Credit Card Required · Forever Free</span>
+        </div>
+        
+        <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4">
+          Ready to Launch Your Finance Career?
         </h2>
-        <p className="text-xl md:text-2xl text-gray-200 mb-10">
-         Get your first finance job or internship faster.
+        <p className="text-lg md:text-xl text-gray-200 mb-10 max-w-2xl mx-auto">
+          Get started today — no payment, no spam, just real opportunities.
         </p>
         
-        <div className="flex justify-center">
+        <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <Link href="/jobs">
             <button 
-              className="px-8 py-3 md:px-10 md:py-4 text-base md:text-lg font-bold rounded-lg transition-all duration-300 hover:scale-105 cursor-pointer"
+              className="px-8 py-3 md:px-10 md:py-4 text-base md:text-lg font-bold rounded-xl transition-all duration-300 hover:scale-105 cursor-pointer flex items-center gap-2 mx-auto"
               style={{
                 background: "linear-gradient(135deg, #FFD700 0%, #FFA500 100%)",
                 color: "#0A2540",
                 boxShadow: "0 4px 15px rgba(0, 0, 0, 0.2)"
               }}
             >
-              Start Exploring Jobs →
+              Browse Jobs Now <ArrowRight size={18} />
+            </button>
+          </Link>
+          <Link href="/learn">
+            <button 
+              className="px-8 py-3 md:px-10 md:py-4 text-base md:text-lg font-bold rounded-xl transition-all duration-300 hover:scale-105 cursor-pointer bg-white/10 backdrop-blur-sm text-white border border-white/20 flex items-center gap-2 mx-auto"
+            >
+              <BookOpen size={18} /> Free Career Resources
             </button>
           </Link>
         </div>
       </div>
     </div>
+  );
+};
+
+// Trust Indicators with REAL metrics - FIXED (removed Eye icon, using Activity instead)
+const TrustSection = () => {
+  return (
+    <section className="py-12 bg-white border-y border-gray-100">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="text-center mb-8">
+          <div className="inline-flex items-center gap-2 bg-gradient-to-r from-[#FFD700]/20 to-[#FFA500]/20 rounded-full px-4 py-1.5 mb-3">
+            <Activity size={14} className="text-[#FFD700]" />
+            <span className="text-xs font-semibold text-[#0A2540]">Real Traction</span>
+          </div>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 text-center">
+          <div className="p-4">
+            <div className="flex justify-center mb-2">
+              <Users size={28} className="text-[#FFD700]" />
+            </div>
+            <div className="text-xl md:text-2xl font-bold text-[#0A2540]">700+</div>
+            <div className="text-xs md:text-sm text-gray-500">700+ Monthly Finance Student Visitors</div>
+          </div>
+          <div className="p-4">
+            <div className="flex justify-center mb-2">
+              <CheckCircle size={28} className="text-[#FFD700]" />
+            </div>
+            <div className="text-xl md:text-2xl font-bold text-[#0A2540]">100%</div>
+            <div className="text-xs md:text-sm text-gray-500">Verified Listings · No Ghost Jobs</div>
+          </div>
+          <div className="p-4">
+            <div className="flex justify-center mb-2">
+              <Zap size={28} className="text-[#FFD700]" />
+            </div>
+            <div className="text-xl md:text-2xl font-bold text-[#0A2540]">Daily</div>
+            <div className="text-xs md:text-sm text-gray-500">Fresh Opportunities Added</div>
+          </div>
+          <div className="p-4">
+            <div className="flex justify-center mb-2">
+              <Target size={28} className="text-[#FFD700]" />
+            </div>
+            <div className="text-xl md:text-2xl font-bold text-[#0A2540]">Entry-Level</div>
+            <div className="text-xs md:text-sm text-gray-500">No Senior Roles. Just Fresher Jobs</div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+};
+
+// Skills in Demand Component
+const SkillsSection = () => {
+  const skills = [
+    { name: "Financial Modeling", icon: LineChart },
+    { name: "Excel & VBA", icon: Code2 },
+    { name: "SQL", icon: Database },
+    { name: "Tableau/Power BI", icon: PieChart },
+    { name: "Financial Reporting", icon: FileText },
+    { name: "Valuation", icon: DollarSign },
+  ];
+
+  return (
+    <section className="py-16 bg-gradient-to-b from-gray-50 to-white">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="text-center mb-10">
+          <div className="inline-flex items-center gap-2 bg-gradient-to-r from-[#FFD700]/20 to-[#FFA500]/20 rounded-full px-4 py-1.5 mb-4">
+            <Zap size={14} className="text-[#FFD700]" />
+            <span className="text-xs font-semibold text-[#0A2540]">Skills That Get You Hired</span>
+          </div>
+          <h2 className="text-2xl md:text-3xl font-bold text-[#0A2540] mb-3">
+            Master In-Demand Finance Skills
+          </h2>
+          <p className="text-sm text-slate-500 max-w-2xl mx-auto">
+            Top skills recruiters look for in entry-level financial analysts
+          </p>
+        </div>
+        
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
+          {skills.map((skill, idx) => (
+            <div key={idx} className="bg-white p-4 rounded-xl border border-gray-100 text-center hover:shadow-md transition-all duration-300 hover:-translate-y-1">
+              <div className="flex justify-center mb-2">
+                <skill.icon size={24} className="text-[#FFD700]" />
+              </div>
+              <div className="text-sm font-semibold text-gray-800">{skill.name}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+};
+
+// Companies Featured Section (Fixed wording)
+const CompaniesSection = () => {
+  const companies = [
+    "Goldman Sachs", "J.P. Morgan", "Deloitte", "EY", "KPMG", "PwC", "Morgan Stanley", "ICICI Bank"
+  ];
+
+  return (
+    <section className="py-12 bg-white">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="text-center mb-8">
+          <div className="inline-flex items-center gap-2 bg-gradient-to-r from-[#FFD700]/20 to-[#FFA500]/20 rounded-full px-4 py-1.5 mb-3">
+            <Building2 size={14} className="text-[#FFD700]" />
+            <span className="text-xs font-semibold text-[#0A2540]">Companies Featuring Roles</span>
+          </div>
+          <h2 className="text-xl md:text-2xl font-bold text-[#0A2540]">
+            Opportunities From Leading Financial Firms
+          </h2>
+          <p className="text-sm text-slate-500 mt-2">
+            We surface entry-level roles from India's top finance employers
+          </p>
+        </div>
+        
+        <div className="flex flex-wrap justify-center gap-3 md:gap-4">
+          {companies.map((company, idx) => (
+            <div key={idx} className="bg-gray-50 px-4 py-2 rounded-full text-sm font-medium text-gray-700 border border-gray-100">
+              {company}
+            </div>
+          ))}
+        </div>
+        <p className="text-center text-xs text-gray-400 mt-4">
+          Roles are sourced from public listings and verified company career pages
+        </p>
+      </div>
+    </section>
+  );
+};
+
+// Expanded Role Categories Section
+const RoleCategoriesSection = () => {
+  const roleCategories = [
+    {
+      title: "Investment Banking & Research",
+      roles: ["Investment Banking Analyst Intern", "Equity Research Intern", "Valuation Intern", "Investment Research Analyst"]
+    },
+    {
+      title: "Accounting & Operations",
+      roles: ["Accounts Executive", "Accounts Payable Analyst", "Audit Associate", "Tax Analyst", "Payroll Analyst"]
+    },
+    {
+      title: "Fintech & Data",
+      roles: ["Financial Data Analyst", "FinOps Analyst", "BI Analyst", "Reporting Associate", "Fraud Analyst"]
+    },
+    {
+      title: "Banking & BFSI",
+      roles: ["Banking Operations Analyst", "Credit Analyst", "Risk Analyst", "KYC Analyst", "Wealth Management Intern"]
+    },
+    {
+      title: "Corporate Finance",
+      roles: ["FP&A Analyst", "Treasury Analyst", "Budget Analyst", "Revenue Analyst", "Commercial Analyst"]
+    },
+    {
+      title: "MIS & Business Finance",
+      roles: ["MIS Analyst", "Business Analyst (Finance)", "Revenue Operations Analyst", "Pricing Analyst"]
+    }
+  ];
+
+  return (
+    <section className="py-16 bg-gray-50">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="text-center mb-10">
+          <div className="inline-flex items-center gap-2 bg-gradient-to-r from-[#FFD700]/20 to-[#FFA500]/20 rounded-full px-4 py-1.5 mb-4">
+            <Briefcase size={14} className="text-[#FFD700]" />
+            <span className="text-xs font-semibold text-[#0A2540]">Explore by Role</span>
+          </div>
+          <h2 className="text-2xl md:text-3xl font-bold text-[#0A2540] mb-3">
+            Finance Careers Beyond Financial Analyst
+          </h2>
+          <p className="text-sm text-slate-500 max-w-2xl mx-auto">
+            Discover entry-level roles across investment banking, accounting, fintech, and more
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {roleCategories.map((category, idx) => (
+            <div key={idx} className="bg-white rounded-xl p-5 border border-gray-100 shadow-sm hover:shadow-md transition-all">
+              <h3 className="font-bold text-[#0A2540] mb-3 flex items-center gap-2">
+                <TrendingUpIcon size={16} className="text-[#FFD700]" />
+                {category.title}
+              </h3>
+              <div className="flex flex-wrap gap-2">
+                {category.roles.map((role, roleIdx) => (
+                  <button
+                    key={roleIdx}
+                    onClick={() => {
+                      window.location.href = `/jobs?search=${encodeURIComponent(role)}`;
+                    }}
+                    className="px-2.5 py-1 bg-gray-50 text-gray-600 text-xs rounded-full hover:bg-[#FFD700]/20 hover:text-[#0A2540] transition-colors"
+                  >
+                    {role}
+                  </button>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+        
+        <div className="text-center mt-8">
+          <Link href="/jobs">
+            <button className="text-sm font-semibold text-slate-900 hover:text-black transition-colors inline-flex items-center gap-1">
+  Browse All Entry-Level Finance Roles <ArrowRight size={14} />
+            </button>
+          </Link>
+        </div>
+      </div>
+    </section>
+  );
+};
+
+// Testimonials Component
+const TestimonialsSection = () => {
+  const testimonials = [
+    {
+      name: "Rahul Mehta",
+      role: "Financial Analyst at Deloitte",
+      content: "Finlysta helped me land my first job. The listings were actually for freshers — no hidden '2-3 years experience' requirements.",
+      rating: 5,
+      avatar: "R"
+    },
+    {
+      name: "Priya Sharma",
+      role: "Investment Banking Intern",
+      content: "Found a legit internship within weeks. The verification gives me confidence that I'm not wasting time on fake posts.",
+      rating: 5,
+      avatar: "P"
+    },
+    {
+      name: "Amit Kumar",
+      role: "FP&A Analyst",
+      content: "Finally a job board that understands finance freshers. No senior roles, no spam — just relevant opportunities.",
+      rating: 5,
+      avatar: "A"
+    },
+  ];
+
+  return (
+    <section className="py-16 bg-white">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="text-center mb-10">
+          <div className="inline-flex items-center gap-2 bg-gradient-to-r from-[#FFD700]/20 to-[#FFA500]/20 rounded-full px-4 py-1.5 mb-4">
+            <Star size={14} className="text-[#FFD700]" />
+            <span className="text-xs font-semibold text-[#0A2540]">Real Results</span>
+          </div>
+          <h2 className="text-2xl md:text-3xl font-bold text-[#0A2540] mb-3">
+            From Our Community
+          </h2>
+          <p className="text-sm text-slate-500 max-w-2xl mx-auto">
+            Finance aspirants who found their first roles through Finlysta
+          </p>
+        </div>
+        
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {testimonials.map((testimonial, idx) => (
+            <div key={idx} className="bg-gray-50 p-6 rounded-2xl shadow-sm border border-gray-100">
+              <div className="flex items-center gap-1 mb-3">
+                {[...Array(testimonial.rating)].map((_, i) => (
+                  <Star key={i} size={14} className="fill-[#FFD700] text-[#FFD700]" />
+                ))}
+              </div>
+              <p className="text-gray-600 text-sm mb-4 leading-relaxed">"{testimonial.content}"</p>
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-gradient-to-r from-[#FFD700] to-[#FFA500] flex items-center justify-center text-[#0A2540] font-bold">
+                  {testimonial.avatar}
+                </div>
+                <div>
+                  <div className="font-bold text-sm text-[#0A2540]">{testimonial.name}</div>
+                  <div className="text-xs text-gray-500">{testimonial.role}</div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+};
+
+// Simplified SEO Section (compressed)
+const SEOSection = () => {
+  return (
+    <section className="py-12 bg-gray-50 border-t border-gray-100">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="text-center mb-6">
+          <h2 className="text-xl md:text-2xl font-bold text-[#0A2540]">
+            Entry Level Financial Analyst Jobs & Internships in India
+          </h2>
+        </div>
+        <div className="max-w-3xl mx-auto text-sm text-gray-600 space-y-3">
+          <p>
+            Finlysta is India's dedicated job board for <strong>entry level financial analyst jobs and internships</strong>. 
+            We connect finance students and graduates with verified opportunities at top companies.
+          </p>
+          <p>
+            Unlike traditional portals, we focus exclusively on <strong>fresher-friendly roles</strong> — no senior positions, 
+            no ghost jobs. Every listing is manually verified.
+          </p>
+          <div className="flex flex-wrap justify-center gap-3 pt-2">
+            <Link href="/jobs" className="text-[#FFD700] hover:text-[#FFA500] text-sm font-medium">Browse All Jobs →</Link>
+            <Link href="/internships" className="text-[#FFD700] hover:text-[#FFA500] text-sm font-medium">Browse Internships →</Link>
+            <Link href="/blogs" className="text-[#FFD700] hover:text-[#FFA500] text-sm font-medium">Career Blogs →</Link>
+          </div>
+          <p className="text-xs text-gray-400 text-center pt-2">
+            Last updated: {new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
+          </p>
+        </div>
+      </div>
+    </section>
+  );
+};
+
+// Helper components for missing Lucide icons
+const HelpCircle = ({ size, className }: { size?: number; className?: string }) => {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" width={size || 24} height={size || 24} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+      <circle cx="12" cy="12" r="10"></circle>
+      <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+      <line x1="12" y1="17" x2="12.01" y2="17"></line>
+    </svg>
+  );
+};
+
+const Database = ({ size, className }: { size?: number; className?: string }) => {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" width={size || 24} height={size || 24} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+      <ellipse cx="12" cy="5" rx="9" ry="3"></ellipse>
+      <path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path>
+      <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path>
+    </svg>
+  );
+};
+
+const FileText = ({ size, className }: { size?: number; className?: string }) => {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" width={size || 24} height={size || 24} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+      <polyline points="14 2 14 8 20 8"></polyline>
+      <line x1="16" y1="13" x2="8" y2="13"></line>
+      <line x1="16" y1="17" x2="8" y2="17"></line>
+      <polyline points="10 9 9 9 8 9"></polyline>
+    </svg>
   );
 };
 
@@ -122,10 +477,11 @@ export default function HomePageContent() {
 
   const popularRoles = [
     { name: "Financial Analyst", icon: "📊" },
-    { name: "Junior Financial Analyst", icon: "📈" },
+    { name: "Accounts Executive", icon: "🧾" },
     { name: "FP&A Analyst", icon: "💰" },
-    { name: "Financial Reporting Analyst", icon: "📋" },
-    { name: "Financial Data Analyst", icon: "📉" }
+    { name: "Investment Banking Intern", icon: "🏦" },
+    { name: "MIS Analyst", icon: "📋" },
+    { name: "Financial Data Analyst", icon: "📉" },
   ];
 
   useEffect(() => {
@@ -140,65 +496,67 @@ export default function HomePageContent() {
     router.push(`/internships`);
   };
 
- if (!isMounted) {
-  return (
-    <div className="bg-[#F8FAFC] min-h-screen flex items-center justify-center">
-      <div className="text-center">
-        {/* Use div with role="status" for accessibility without creating duplicate H1 */}
+  if (!isMounted) {
+    return (
+      <div className="bg-[#F8FAFC] min-h-screen flex items-center justify-center">
         <div role="status" className="sr-only">
           Loading Finlysta - Entry Level Financial Analyst Jobs and Internships
         </div>
         <div className="w-12 h-12 border-4 border-[#0A2540] border-t-[#FFD700] rounded-full animate-spin mx-auto mb-4"></div>
         <p className="text-[#0A2540] font-medium">Loading...</p>
       </div>
-    </div>
-  );
-}
+    );
+  }
 
   return (
     <div className="bg-[#F8FAFC] min-h-screen font-sans">
       <Header />
 
       <main>
-        {/* HERO SECTION - Using H1 for main heading */}
-        <section className="relative bg-gradient-to-b from-[#EEF2FF] to-[#F8FAFC] py-16 md:py-24 overflow-hidden">
-          <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-            
-            {/* Centered Content */}
+        {/* HERO SECTION - Enhanced with emotional hook */}
+        <section className="relative bg-gradient-to-br from-[#EEF2FF] via-[#F8FAFC] to-white py-16 md:py-24 lg:py-28 overflow-hidden">
+          <div className="absolute top-20 right-10 w-72 h-72 bg-[#FFD700]/5 rounded-full blur-3xl"></div>
+          <div className="absolute bottom-10 left-10 w-96 h-96 bg-[#FFA500]/5 rounded-full blur-3xl"></div>
+          
+          <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
             <div className="text-center">
-              <div className="inline-flex items-center gap-2 bg-gradient-to-r from-[#FFD700]/20 to-[#FFA500]/20 rounded-full px-4 py-1.5 mb-6">
-                <Target size={14} className="text-[#FFD700]" />
-                <span className="text-xs font-semibold text-[#0A2540]">India's Only Job Board for Entry-Level Financial Analysts</span>
+              <div className="inline-flex items-center gap-2 bg-gradient-to-r from-[#FFD700]/20 to-[#FFA500]/20 rounded-full px-4 py-1.5 mb-6 animate-in fade-in slide-in-from-bottom-4 duration-700">
+                <AlertCircle size={14} className="text-[#FFD700]" />
+                <span className="text-xs font-semibold text-[#0A2540]">Entry-Level Finance Jobs & Internships.</span>
               </div>
               
-              {/* This is the ONLY H1 on the page */}
-              <h1 className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-black text-[#0A2540] mb-4 leading-tight">
-                Find Entry-Level Financial Analyst Jobs & Internships
-                <span className="block bg-gradient-to-r from-[#FFD700] to-[#FFA500] bg-clip-text text-transparent"></span>
+              <h1 className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-black text-[#0A2540] mb-6 leading-tight animate-in fade-in slide-in-from-bottom-4 duration-700 delay-100">
+                Break Into Finance
+                <span className="inline-block bg-gradient-to-r from-[#FFD700] to-[#FFA500] bg-clip-text text">
+                  {" "}Without Endless Rejections.
+                </span>
               </h1>
               
-              <div className="max-w-2xl mx-auto space-y-4 mb-8">
-                <p className="text-base sm:text-lg text-slate-600 leading-relaxed">
-                  🎯 <span className="font-semibold text-[#0A2540]">Match your skills</span> — From Excel & SQL to Financial Modeling — to real opportunities.
-                </p>
-              </div>
+<div className="max-w-2xl mx-auto mb-8 animate-in fade-in slide-in-from-bottom-4 duration-700 delay-200">
 
-              {/* Both buttons with correct styling */}
-              <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-8">
-                {/* Find My First Job - No background, just outline/border */}
+  <p className="text-lg sm:text-xl text-slate-800 leading-relaxed font-semibold tracking-tight">
+    🚫 Tired of scrolling through jobs that require
+    <span className="text-[#0A2540]">{" "}2–5 years of experience?</span>
+  </p>
+
+  <p className="text-sm sm:text-base text-slate-600 mt-3 leading-relaxed">
+    Most job portals are filled with senior-level roles.
+    <br />
+    Finlysta helps freshers discover verified internships and entry-level jobs.
+  </p>
+
+</div>
+              <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-10 animate-in fade-in slide-in-from-bottom-4 duration-700 delay-300">
                 <button
                   onClick={handleFindJobs}
-                  className="px-8 py-4 rounded-xl transition-all duration-300 font-bold flex items-center justify-center gap-2 text-base min-w-[200px] cursor-pointer hover:scale-105 border-4 border-[#FFD700] bg-transparent hover:bg-[#FFD700]/10"
-                  style={{
-                    color: "#0A2540",
-                  }}
+                  className="px-8 py-4 rounded-xl transition-all duration-300 font-bold flex items-center justify-center gap-2 text-base min-w-[200px] cursor-pointer hover:scale-105 border-2 border-[#FFD700] bg-transparent hover:bg-[#FFD700]/10 group"
+                  style={{ color: "#0A2540" }}
                 >
                   <Briefcase size={20} />
                   <span>Find My First Job</span>
                   <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
                 </button>
 
-                {/* Explore Internships - With gradient background */}
                 <button
                   onClick={handleBrowseInternships}
                   className="px-8 py-4 rounded-xl transition-all duration-300 font-bold flex items-center justify-center gap-2 text-base min-w-[200px] cursor-pointer hover:scale-105"
@@ -213,8 +571,8 @@ export default function HomePageContent() {
                 </button>
               </div>
 
-              <div className="mt-8 pt-4 border-t border-gray-200">
-                <p className="text-sm text-slate-500 mb-3">🔥 Explore Roles:</p>
+              <div className="mt-6 pt-4 border-t border-gray-200 animate-in fade-in slide-in-from-bottom-4 duration-700 delay-400">
+                <p className="text-sm text-slate-500 mb-3">🔥 Popular Entry-Level Roles:</p>
                 <div className="flex flex-wrap justify-center gap-2">
                   {popularRoles.map((role, idx) => (
                     <button
@@ -222,9 +580,9 @@ export default function HomePageContent() {
                       onClick={() => {
                         router.push(`/jobs?search=${encodeURIComponent(role.name)}`);
                       }}
-                      className="px-3 py-1.5 bg-white border border-gray-200 rounded-full text-sm text-slate-600 hover:border-[#FFD700] hover:text-black transition-all duration-300 flex items-center gap-1 whitespace-nowrap cursor-pointer"
+                      className="px-3 py-1.5 bg-white border border-gray-200 rounded-full text-sm text-slate-600 hover:border-[#FFD700] hover:text-black transition-all duration-300 flex items-center gap-1 cursor-pointer"
                     >
-                      <span className="text-base">{role.icon}</span>
+                      <span>{role.icon}</span>
                       <span>{role.name}</span>
                     </button>
                   ))}
@@ -234,22 +592,34 @@ export default function HomePageContent() {
           </div>
         </section>
 
-        {/* TRENDING OPPORTUNITIES SECTION */}
+        {/* TRUST INDICATORS - Real metrics */}
+        <TrustSection />
+
+        {/* TRENDING OPPORTUNITIES - Live jobs section */}
         <TrendingInternships />
 
+        {/* SKILLS SECTION */}
+        <SkillsSection />
+
+        {/* EXPANDED ROLE CATEGORIES - NEW */}
+        <RoleCategoriesSection />
+
+        {/* COMPANIES SECTION (fixed wording) */}
+        <CompaniesSection />
+
         {/* CAREER PATH - Roadmap Image Section */}
-        <section className="py-12 md:py-16 bg-white">
+        <section className="py-16 bg-white">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center mb-8">
-              <div className="inline-flex items-center gap-2 bg-gradient-to-r from-[#FFD700]/20 to-[#FFA500]/20 rounded-full px-4 py-1.5 mb-3">
-                <TrendingUp size={14} className="text-[#FFD700]" />
-                <span className="text-xs font-semibold text-[#0A2540]">Career Path</span>
+            <div className="text-center mb-10">
+              <div className="inline-flex items-center gap-2 bg-gradient-to-r from-[#FFD700]/20 to-[#FFA500]/20 rounded-full px-4 py-1.5 mb-4">
+                <GitBranch size={14} className="text-[#FFD700]" />
+                <span className="text-xs font-semibold text-[#0A2540]">Proven Path</span>
               </div>
               <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-[#0A2540] mb-3">
-                How to Become a Financial Analyst <span className="text-[#FFD700]">(Step-by-Step Roadmap)</span>
+                Your Roadmap to Becoming a <span className="text-[#FFD700]">Financial Analyst</span>
               </h2>
               <p className="text-sm md:text-base text-slate-500 max-w-2xl mx-auto">
-                From learning finance fundamentals to building real-world analytical skills and landing your first analyst role.
+                Follow this step-by-step guide — from learning fundamentals to landing your first role
               </p>
             </div>
             
@@ -257,7 +627,7 @@ export default function HomePageContent() {
               <div className="relative w-full">
                 <Image
                   src="/roadmap.png"
-                  alt="Infographic showing step-by-step career roadmap to become a financial analyst - from learning fundamentals to getting hired"
+                  alt="Step-by-step career roadmap to become a financial analyst"
                   width={1200}
                   height={600}
                   className="w-full h-auto object-contain rounded-lg"
@@ -267,113 +637,35 @@ export default function HomePageContent() {
             </div>
             
             <div className="text-center mt-6">
-              <p className="text-sm text-slate-500">
-                🎯Follow a complete roadmap designed for aspiring financial analysts.
-              </p>
+              <Link href="/learn">
+                <button className="text-sm text-[#FFD700] font-semibold hover:text-[#FFA500] transition-colors inline-flex items-center gap-1">
+                  Get Free Learning Resources <ArrowRight size={14} />
+                </button>
+              </Link>
             </div>
           </div>
         </section>
 
-        {/* LEARNING SECTION - FinanceTopics */}
+        {/* LEARNING SECTION */}
         <FinanceTopics />
 
-        {/* SEO CONTENT SECTION - Using H2 (not H1) */}
-        <section className="py-16 bg-white">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="max-w-4xl mx-auto">
-              {/* This is H2, not H1 - avoids duplicate H1 issues */}
-              <h2 className="text-3xl md:text-4xl font-bold text-[#0A2540] mb-6">
-                Entry Level Financial Analyst Jobs & Internships in India
-              </h2>
-              
-              <div className="space-y-5 text-gray-600 leading-relaxed">
-                <p>
-                  <strong className="text-[#0A2540]">Finlysta</strong> is India's dedicated job board for 
-                  <strong> entry level financial analyst jobs and internships</strong>. Whether you're a fresh graduate 
-                  or a finance student looking for your first break, we connect you with verified opportunities at 
-                  top companies across the country.
-                </p>
-                
-                <p>
-                  Unlike traditional job portals filled with senior-level positions, Finlysta focuses exclusively on 
-                  <strong> fresher-friendly roles</strong>. Every listing is manually verified by our team — no spam, 
-                  no ghost jobs, just real opportunities for aspiring financial analysts.
-                </p>
-                
-                <h3 className="text-2xl font-bold text-[#0A2540] mt-8 mb-4">
-                  Why Choose Finlysta for Your Finance Career?
-                </h3>
-                
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-                  <div className="flex items-start gap-3 p-3 bg-gray-50 rounded-lg">
-                    <CheckCircle size={18} className="text-green-500 flex-shrink-0 mt-0.5" />
-                    <div>
-                      <h4 className="font-semibold text-[#0A2540]">100% Free for Job Seekers</h4>
-                      <p className="text-sm text-gray-500">No hidden charges. Ever.</p>
-                    </div>
-                  </div>
-                  <div className="flex items-start gap-3 p-3 bg-gray-50 rounded-lg">
-                    <Shield size={18} className="text-blue-500 flex-shrink-0 mt-0.5" />
-                    <div>
-                      <h4 className="font-semibold text-[#0A2540]">Manually Verified Listings</h4>
-                      <p className="text-sm text-gray-500">Every job is checked before listing.</p>
-                    </div>
-                  </div>
-                  <div className="flex items-start gap-3 p-3 bg-gray-50 rounded-lg">
-                    <Target size={18} className="text-[#FFD700] flex-shrink-0 mt-0.5" />
-                    <div>
-                      <h4 className="font-semibold text-[#0A2540]">Only Entry-Level Roles</h4>
-                      <p className="text-sm text-gray-500">No senior positions. Just fresher jobs.</p>
-                    </div>
-                  </div>
-                  <div className="flex items-start gap-3 p-3 bg-gray-50 rounded-lg">
-                    <Clock size={18} className="text-orange-500 flex-shrink-0 mt-0.5" />
-                    <div>
-                      <h4 className="font-semibold text-[#0A2540]">Updated Daily</h4>
-                      <p className="text-sm text-gray-500">Fresh opportunities every day.</p>
-                    </div>
-                  </div>
-                </div>
-                
-                <h3 className="text-2xl font-bold text-[#0A2540] mt-8 mb-4">
-                  Top Locations for Finance Jobs in India
-                </h3>
-                
-                <p>
-                  We feature entry-level financial analyst opportunities across major financial hubs including
-                  <strong> Mumbai, Bangalore, Delhi NCR, Pune, Hyderabad, Chennai, Kolkata, and Ahmedabad</strong>.
-                  We also list remote and hybrid roles for candidates seeking work-from-home flexibility.
-                </p>
-                
-                <div className="bg-gray-50 p-6 rounded-xl mt-8">
-                  <h3 className="text-lg font-bold text-[#0A2540] mb-3">Quick Links</h3>
-                  <div className="flex flex-wrap gap-4">
-                    <Link href="/jobs" className="text-blue-600 hover:underline text-sm">Browse All Jobs</Link>
-                    <Link href="/internships" className="text-blue-600 hover:underline text-sm">Browse Internships</Link>
-                    <Link href="/blogs" className="text-blue-600 hover:underline text-sm">Career Blogs</Link>
-                    <Link href="/learn" className="text-blue-600 hover:underline text-sm">Learning Hub</Link>
-                  </div>
-                </div>
-                
-                <p className="text-sm text-gray-400 mt-6 text-center">
-                  Last updated: {new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
-                </p>
-              </div>
-            </div>
-          </div>
-        </section>
+        {/* TESTIMONIALS SECTION */}
+        <TestimonialsSection />
+
+        {/* SIMPLIFIED SEO SECTION */}
+        <SEOSection />
 
         {/* NEWSLETTER SECTION */}
         <Newsletter />
 
-        {/* FAQ SECTION */}
+        {/* SIMPLIFIED FAQ SECTION */}
         <FAQ />
 
-        {/* TRY FOR FREE SECTION */}
-        <TryForFree />
+        {/* CTA SECTION */}
+        <CTASection />
       </main>
 
-      {/* FOOTER - UPDATED with Home link in Company column */}
+      {/* FOOTER */}
       <footer className="bg-white border-t border-slate-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="pt-10 pb-6 grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-12 gap-8">
@@ -381,14 +673,14 @@ export default function HomePageContent() {
               <Link href="/" className="flex items-center" aria-label="Finlysta Home">
                 <Image 
                   src="/Finlysta.png" 
-                  alt="Finlysta company logo - Entry level financial analyst job board platform"
+                  alt="Finlysta logo"
                   width={180} 
                   height={40}
                   priority
                   className="object-contain"
                 />
               </Link>
-              <p className="text-sm text-slate-600 leading-relaxed max-w-xs">Finlysta is a job board built exclusively for entry-level financial analyst roles and internships.</p>
+              <p className="text-sm text-slate-600 leading-relaxed max-w-xs">The job board built exclusively for entry-level financial analyst roles and internships in India.</p>
               <div className="space-y-2 pt-1">
                 <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Follow us on</p>
                 <div className="flex gap-3">
@@ -396,7 +688,7 @@ export default function HomePageContent() {
                     href="https://www.linkedin.com/company/finlysta" 
                     target="_blank" 
                     rel="noopener noreferrer" 
-                    aria-label="Follow Finlysta on LinkedIn" 
+                    aria-label="LinkedIn"
                     className="w-9 h-9 bg-slate-100 text-slate-600 hover:bg-[#0077B5] hover:text-white rounded-lg flex items-center justify-center transition-all duration-300"
                   >
                     <Linkedin size={16} />
@@ -405,61 +697,60 @@ export default function HomePageContent() {
                     href="https://twitter.com/Finlysta" 
                     target="_blank" 
                     rel="noopener noreferrer" 
-                    aria-label="Follow Finlysta on Twitter" 
+                    aria-label="Twitter"
                     className="w-9 h-9 bg-slate-100 text-slate-600 hover:bg-[#1DA1F2] hover:text-white rounded-lg flex items-center justify-center transition-all duration-300"
                   >
                     <Twitter size={16} />
+                  </a>
+                  <a 
+                    href="https://instagram.com/finlysta" 
+                    target="_blank" 
+                    rel="noopener noreferrer" 
+                    aria-label="Instagram"
+                    className="w-9 h-9 bg-slate-100 text-slate-600 hover:bg-[#E4405F] hover:text-white rounded-lg flex items-center justify-center transition-all duration-300"
+                  >
+                    <Instagram size={16} />
                   </a>
                 </div>
               </div>
             </div>
             <div className="lg:col-span-2">
-              <h4 className="text-slate-900 font-bold text-sm mb-4">For Job Seekers</h4>
+              <h4 className="text-slate-900 font-bold text-sm mb-4">Jobs</h4>
               <ul className="space-y-2.5 text-sm text-slate-500">
                 <li><Link href="/jobs" className="hover:text-[#0A2540] transition-colors">All Jobs</Link></li>
-                <li><Link href="/internships" className="hover:text-[#0A2540] transition-colors">All Internships</Link></li>
+                <li><Link href="/internships" className="hover:text-[#0A2540] transition-colors">Internships</Link></li>
                 <li><Link href="/jobs?type=remote" className="hover:text-[#0A2540] transition-colors">Remote Jobs</Link></li>
                 <li><Link href="/blogs" className="hover:text-[#0A2540] transition-colors">Career Blogs</Link></li>
-                <li><Link href="/learn" className="hover:text-[#0A2540] transition-colors">Learning Hub</Link></li>
               </ul>
             </div>
             <div className="lg:col-span-2">
-              <h4 className="text-slate-900 font-bold text-sm mb-4">Blogs</h4>
+              <h4 className="text-slate-900 font-bold text-sm mb-4">Resources</h4>
               <ul className="space-y-2.5 text-sm text-slate-500">
-                <li>
-                  <Link href="/blogs/how-to-become-financial-analyst-india-2026" className="hover:text-[#0A2540] transition-colors">
-                    How to Become a Financial Analyst in India (2026)
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/blogs/stop-cold-dms-finance-networking-playbook-2026" className="hover:text-[#0A2540] transition-colors">
-                    Ultimate Networking Playbook for Finance Freshers
-                  </Link>
-                </li>
+                <li><Link href="/learn" className="hover:text-[#0A2540] transition-colors">Learning Hub</Link></li>
+                <li><Link href="/blogs/how-to-become-financial-analyst-india-2026" className="hover:text-[#0A2540] transition-colors">Career Guide</Link></li>
+                <li><Link href="/blogs/financial-modeling-interview-questions" className="hover:text-[#0A2540] transition-colors">Interview Prep</Link></li>
               </ul>
             </div>
             <div className="lg:col-span-2">
               <h4 className="text-slate-900 font-bold text-sm mb-4">Company</h4>
               <ul className="space-y-2.5 text-sm text-slate-500">
-                <li><Link href="/" className="hover:text-[#0A2540] transition-colors">Home</Link></li>
-                <li><Link href="/about" className="hover:text-[#0A2540] transition-colors">About Us</Link></li>
-                <li><Link href="/mission" className="hover:text-[#0A2540] transition-colors">Our Mission</Link></li>
-                <li><Link href="/contact" className="hover:text-[#0A2540] transition-colors">Contact Us</Link></li>
-                <li><Link href="/privacy" className="hover:text-[#0A2540] transition-colors">Privacy Policy</Link></li>
-                <li><Link href="/terms" className="hover:text-[#0A2540] transition-colors">Terms of Service</Link></li>
+                <li><Link href="/about" className="hover:text-[#0A2540] transition-colors">About</Link></li>
+                <li><Link href="/contact" className="hover:text-[#0A2540] transition-colors">Contact</Link></li>
+                <li><Link href="/privacy" className="hover:text-[#0A2540] transition-colors">Privacy</Link></li>
+                <li><Link href="/terms" className="hover:text-[#0A2540] transition-colors">Terms</Link></li>
               </ul>
             </div>
             <div className="lg:col-span-2">
-              <h4 className="text-slate-900 font-bold text-sm mb-4">Get in Touch</h4>
+              <h4 className="text-slate-900 font-bold text-sm mb-4">Support</h4>
               <a href="mailto:support@finlysta.com" className="flex items-center gap-2 text-sm text-slate-500 hover:text-[#0A2540] transition-colors">
                 <Mail size={13} /> support@finlysta.com
               </a>
-              <p className="text-xs text-slate-400 mt-3">Have a question? We're here to help — expect a reply within 24 hours.</p>
+              <p className="text-xs text-slate-400 mt-3">Reply within 24 hours</p>
             </div>
           </div>
           <div className="border-t border-slate-100 pt-5 pb-6">
             <div className="flex flex-col items-center justify-center gap-2 text-xs text-slate-500 text-center">
-              <span>© {new Date().getFullYear()} Finlysta Pvt. Ltd. · All rights reserved.</span>
+              <span>© {new Date().getFullYear()} Finlysta Pvt. Ltd. All rights reserved.</span>
               <div className="flex items-center gap-1.5">
                 <span>Made with</span>
                 <Heart size={10} className="text-red-500 fill-red-500" />
@@ -477,6 +768,25 @@ export default function HomePageContent() {
           -webkit-box-orient: vertical;
           overflow: hidden;
         }
+        @keyframes fade-in {
+          from { opacity: 0; }
+          to { opacity: 1; }
+        }
+        @keyframes slide-in-from-bottom-4 {
+          from { transform: translateY(1rem); opacity: 0; }
+          to { transform: translateY(0); opacity: 1; }
+        }
+        .animate-in {
+          animation-duration: 0.7s;
+          animation-fill-mode: both;
+        }
+        .fade-in { animation-name: fade-in; }
+        .slide-in-from-bottom-4 { animation-name: slide-in-from-bottom-4; }
+        .delay-100 { animation-delay: 0.1s; }
+        .delay-200 { animation-delay: 0.2s; }
+        .delay-300 { animation-delay: 0.3s; }
+        .delay-400 { animation-delay: 0.4s; }
+        .duration-700 { animation-duration: 0.7s; }
       `}</style>
     </div>
   );

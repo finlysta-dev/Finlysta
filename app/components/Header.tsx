@@ -72,7 +72,7 @@ export default function Header() {
           </nav>
 
           {/* Post a Job Button - Desktop */}
-          <div className="hidden md:flex items-center justify-end w-[180px]">
+          {/* <div className="hidden md:flex items-center justify-end w-[180px]">
             <Link 
               href="/post-job" 
               className="inline-flex items-center gap-2 px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-semibold rounded-full transition-all duration-200 shadow-md hover:shadow-lg hover:scale-105"
@@ -82,7 +82,7 @@ export default function Header() {
               </svg>
               Post a Job Free
             </Link>
-          </div>
+          </div> */}
 
           {/* Mobile Menu Button */}
           <button
