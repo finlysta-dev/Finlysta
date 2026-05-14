@@ -5,7 +5,8 @@ import Link from "next/link";
 import {
   MapPin, Clock, Building2,
   ChevronRight, Calendar, Briefcase, CheckCircle, ChevronLeft,
-  Award, Zap, Bookmark
+  Award, Zap, Bookmark, TrendingUp, BarChart3, LineChart, DollarSign,
+  Shield, Target, Activity
 } from "lucide-react";
 
 // Types
@@ -159,15 +160,19 @@ const trackApplyClick = async (id: string, type: string, applyLink: string) => {
   }
 };
 
-// Popular Roles Component - Horizontally Scrollable
+// Popular Roles Component - Horizontally Scrollable with icons
 const PopularRolesSection = () => {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   
   const popularRoles = [
-    "Financial Analyst", "Investment Banking", "Equity Research", 
-    "FP&A Analyst", "Credit Analyst", "Risk Analyst", 
-    "MIS Analyst", "Financial Data Analyst", "Accounts Executive",
-    "Tax Analyst", "Audit Associate", "Wealth Management"
+    { name: "Financial Analyst", icon: TrendingUp, search: "Financial Analyst" },
+    { name: "Investment Banking", icon: BarChart3, search: "Investment Banking" },
+    { name: "Equity Research", icon: LineChart, search: "Equity Research" },
+    { name: "FP&A Analyst", icon: DollarSign, search: "FP&A Analyst" },
+    { name: "Credit Analyst", icon: Shield, search: "Credit Analyst" },
+    { name: "Risk Analyst", icon: Target, search: "Risk Analyst" },
+    { name: "Article Trainee", icon: Award, search: "Article Trainee" },
+    { name: "Article Assistant", icon: Activity, search: "Article Assistant" }
   ];
 
   const scroll = (direction: 'left' | 'right') => {
@@ -182,8 +187,8 @@ const PopularRolesSection = () => {
 
   return (
     <div className="mb-6">
-      <div className="flex items-center justify-between mb-2">
-        <p className="text-xs text-[#A1A1A1] font-medium">🔥 Popular Entry-Level Roles:</p>
+      <div className="flex items-center justify-between mb-3">
+        <p className="text-sm text-[#A1A1A1] font-medium">🔥 Popular Entry-Level Roles:</p>
         <div className="flex gap-1">
           <button
             onClick={() => scroll('left')}
@@ -211,11 +216,12 @@ const PopularRolesSection = () => {
           <button
             key={idx}
             onClick={() => {
-              window.location.href = `/jobs?search=${encodeURIComponent(role)}`;
+              window.location.href = `/jobs?search=${encodeURIComponent(role.search)}`;
             }}
-            className="px-3 py-1.5 bg-white border border-[#ECECEC] rounded-full text-xs text-[#555] hover:border-[#FFD700] hover:bg-[#FFD700]/5 hover:text-[#0A2540] transition-all duration-300 flex-shrink-0 cursor-pointer"
+            className="px-3 py-1.5 bg-white border border-[#ECECEC] rounded-full text-sm text-[#555] hover:border-[#FFD700] hover:bg-[#FFD700]/5 hover:text-[#0A2540] transition-all duration-300 flex-shrink-0 cursor-pointer flex items-center gap-1.5"
           >
-            {role}
+            <role.icon size={14} className="text-[#FFD700]" />
+            <span>{role.name}</span>
           </button>
         ))}
       </div>
@@ -229,7 +235,7 @@ const PopularRolesSection = () => {
   );
 };
 
-// Premium Job Card Component - Smaller, compact size
+// Premium Job Card Component - Square logo layout
 const JobCard = ({ job, imageErrors, handleImageError }: { 
   job: Opportunity; 
   imageErrors: { [key: string]: boolean }; 
@@ -245,20 +251,20 @@ const JobCard = ({ job, imageErrors, handleImageError }: {
   return (
     <div className="rounded-2xl border border-[#ECECEC] bg-white p-4 transition-all duration-300 hover:-translate-y-1 hover:shadow-md">
       
-      {/* Top row: Logo + Company + Save button */}
+      {/* Top row: Logo + Company + Save button - Square logo, no circle */}
       <div className="flex items-start justify-between">
-        <div className="flex items-center gap-2.5">
-          <div className="w-10 h-10 rounded-full border border-[#ECECEC] bg-white flex items-center justify-center overflow-hidden flex-shrink-0">
+        <div className="flex items-center gap-3">
+          <div className="w-14 h-14 rounded-lg border border-[#ECECEC] bg-gray-50 flex items-center justify-center overflow-hidden flex-shrink-0">
             {!hasLogoError && job.companyLogo ? (
               <img
                 src={job.companyLogo}
                 alt={job.company}
-                className="w-6 h-6 object-contain"
+                className="w-10 h-10 object-contain"
                 loading="lazy"
                 onError={() => handleImageError(job.id)}
               />
             ) : (
-              <span className="text-sm font-semibold text-[#111]">
+              <span className="text-lg font-semibold text-[#111]">
                 {job.company.charAt(0)}
               </span>
             )}
@@ -343,7 +349,7 @@ const JobCard = ({ job, imageErrors, handleImageError }: {
   );
 };
 
-// Premium Internship Card Component - Smaller size
+// Premium Internship Card Component - Square logo layout
 const InternshipCard = ({ internship, imageErrors, handleImageError }: { 
   internship: Opportunity; 
   imageErrors: { [key: string]: boolean }; 
@@ -358,20 +364,20 @@ const InternshipCard = ({ internship, imageErrors, handleImageError }: {
   return (
     <div className="rounded-2xl border border-[#ECECEC] bg-white p-4 transition-all duration-300 hover:-translate-y-1 hover:shadow-md">
       
-      {/* Top row: Logo + Company + Save button */}
+      {/* Top row: Logo + Company + Save button - Square logo, no circle */}
       <div className="flex items-start justify-between">
-        <div className="flex items-center gap-2.5">
-          <div className="w-10 h-10 rounded-full border border-[#ECECEC] bg-white flex items-center justify-center overflow-hidden flex-shrink-0">
+        <div className="flex items-center gap-3">
+          <div className="w-14 h-14 rounded-lg border border-[#ECECEC] bg-gray-50 flex items-center justify-center overflow-hidden flex-shrink-0">
             {!hasLogoError && internship.companyLogo ? (
               <img
                 src={internship.companyLogo}
                 alt={internship.company}
-                className="w-6 h-6 object-contain"
+                className="w-10 h-10 object-contain"
                 loading="lazy"
                 onError={() => handleImageError(internship.id)}
               />
             ) : (
-              <span className="text-sm font-semibold text-[#111]">
+              <span className="text-lg font-semibold text-[#111]">
                 {internship.company.charAt(0)}
               </span>
             )}
@@ -520,18 +526,24 @@ export default function TrendingOpportunities() {
     setVisibleCount(prev => prev + 6);
   };
 
+  // Reset visible count when filter changes
+  const handleFilterChange = (filter: "all" | "jobs" | "internships") => {
+    setActiveFilter(filter);
+    setVisibleCount(6);
+  };
+
   if (isLoading) {
     return (
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 bg-white">
         <div className="text-center mb-4">
-          <h2 className="text-xl sm:text-2xl font-bold text-[#111]">✨ Curated for Freshers</h2>
+          <h2 className="text-xl sm:text-2xl font-bold text-[#111]">✨ Curated roles for Freshers</h2>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
           {[1, 2, 3, 4, 5, 6].map((i) => (
             <div key={i} className="rounded-2xl border border-[#ECECEC] bg-white p-4 animate-pulse">
               <div className="flex items-start justify-between">
-                <div className="flex items-center gap-2.5">
-                  <div className="w-10 h-10 rounded-full bg-gray-200"></div>
+                <div className="flex items-center gap-3">
+                  <div className="w-14 h-14 rounded-lg bg-gray-200"></div>
                   <div>
                     <div className="h-3 bg-gray-200 rounded w-20"></div>
                     <div className="h-2 bg-gray-200 rounded w-12 mt-1"></div>
@@ -573,6 +585,10 @@ export default function TrendingOpportunities() {
 
   if (allOpportunities.length === 0) return null;
 
+  // Get counts for each filter
+  const jobsCount = allOpportunities.filter(opp => opp.type === "job").length;
+  const internshipsCount = allOpportunities.filter(opp => opp.type === "internship").length;
+
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 bg-white">
       <div className="text-center mb-4">
@@ -580,45 +596,125 @@ export default function TrendingOpportunities() {
         <p className="text-xs text-[#A1A1A1] mt-1">Hand-picked entry-level finance opportunities</p>
       </div>
       
-      {/* Popular Roles - Horizontally Scrollable */}
+      {/* Popular Roles - Horizontally Scrollable with icons */}
       <PopularRolesSection />
       
-      {/* Filter Tabs */}
-      <div className="flex flex-wrap justify-center gap-2 mb-6">
-        <button
-          onClick={() => {
-            setActiveFilter("all");
-            setVisibleCount(6);
-          }}
-          className={`px-4 py-1.5 rounded-full text-xs font-medium transition-all duration-300 ${
-            activeFilter === "all" ? "bg-[#111] text-white" : "bg-[#F1F1F1] text-[#555] hover:bg-[#E5E5E5]"
+      {/* Filter Tabs - Improved layout with counts */}
+<div className="w-full flex justify-center mb-6 overflow-x-auto">
+  <div className="flex items-center gap-3 bg-[#F7F7F7] p-1.5 rounded-2xl border border-[#EAEAEA]">
+
+    {/* All Opportunities */}
+    <button
+      onClick={() => handleFilterChange("all")}
+      className={`min-w-[200px] px-5 py-3 rounded-xl transition-all duration-200 border ${
+        activeFilter === "all"
+          ? "bg-black border-black shadow-sm"
+          : "bg-white border-[#E5E5E5] hover:bg-[#FAFAFA]"
+      }`}
+    >
+      <div className="flex items-center justify-center gap-2">
+        
+        <span
+          className={`text-sm font-semibold ${
+            activeFilter === "all"
+              ? "text-white"
+              : "text-black"
           }`}
         >
           All Opportunities
-        </button>
-        <button
-          onClick={() => {
-            setActiveFilter("jobs");
-            setVisibleCount(6);
-          }}
-          className={`px-4 py-1.5 rounded-full text-xs font-medium transition-all duration-300 ${
-            activeFilter === "jobs" ? "bg-[#111] text-white" : "bg-[#F1F1F1] text-[#555] hover:bg-[#E5E5E5]"
+        </span>
+
+        <span
+          className={`text-xs px-2 py-0.5 rounded-full font-medium ${
+            activeFilter === "all"
+              ? "bg-white/20 text-white"
+              : "bg-[#F1F1F1] text-black"
+          }`}
+        >
+          {allOpportunities.length}
+        </span>
+
+      </div>
+    </button>
+
+    {/* Full Time Jobs */}
+    <button
+      onClick={() => handleFilterChange("jobs")}
+      className={`min-w-[200px] px-5 py-3 rounded-xl transition-all duration-200 border ${
+        activeFilter === "jobs"
+          ? "bg-black border-black shadow-sm"
+          : "bg-white border-[#E5E5E5] hover:bg-[#FAFAFA]"
+      }`}
+    >
+      <div className="flex items-center justify-center gap-2">
+        
+        <span
+          className={`text-sm font-semibold ${
+            activeFilter === "jobs"
+              ? "text-white"
+              : "text-black"
           }`}
         >
           Full-Time Jobs
-        </button>
-        <button
-          onClick={() => {
-            setActiveFilter("internships");
-            setVisibleCount(6);
-          }}
-          className={`px-4 py-1.5 rounded-full text-xs font-medium transition-all duration-300 ${
-            activeFilter === "internships" ? "bg-[#111] text-white" : "bg-[#F1F1F1] text-[#555] hover:bg-[#E5E5E5]"
+        </span>
+
+        <span
+          className={`text-xs px-2 py-0.5 rounded-full font-medium ${
+            activeFilter === "jobs"
+              ? "bg-white/20 text-white"
+              : "bg-[#F1F1F1] text-black"
+          }`}
+        >
+          {jobsCount}
+        </span>
+
+      </div>
+    </button>
+
+    {/* Internships */}
+    <button
+      onClick={() => handleFilterChange("internships")}
+      className={`min-w-[200px] px-5 py-3 rounded-xl transition-all duration-200 border ${
+        activeFilter === "internships"
+          ? "bg-black border-black shadow-sm"
+          : "bg-white border-[#E5E5E5] hover:bg-[#FAFAFA]"
+      }`}
+    >
+      <div className="flex items-center justify-center gap-2">
+        
+        <span
+          className={`text-sm font-semibold ${
+            activeFilter === "internships"
+              ? "text-white"
+              : "text-black"
           }`}
         >
           Internships
-        </button>
+        </span>
+
+        <span
+          className={`text-xs px-2 py-0.5 rounded-full font-medium ${
+            activeFilter === "internships"
+              ? "bg-white/20 text-white"
+              : "bg-[#F1F1F1] text-black"
+          }`}
+        >
+          {internshipsCount}
+        </span>
+
       </div>
+    </button>
+
+  </div>
+</div>
+      {/* Empty State Message when no opportunities in selected filter */}
+      {filteredOpportunities.length === 0 && (
+        <div className="text-center py-12 bg-gray-50 rounded-2xl">
+          <Briefcase size={48} className="mx-auto text-gray-300 mb-3" />
+          <p className="text-gray-500 text-sm">No {activeFilter === "jobs" ? "full-time jobs" : activeFilter === "internships" ? "internships" : "opportunities"} available right now.</p>
+          <p className="text-gray-400 text-xs mt-1">Check back soon for new opportunities!</p>
+        </div>
+      )}
 
       {/* Cards Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
@@ -632,11 +728,11 @@ export default function TrendingOpportunities() {
       </div>
 
       {/* View More Button */}
-      {hasMore && (
+      {hasMore && filteredOpportunities.length > 0 && (
         <div className="text-center mt-8">
           <button
             onClick={handleViewMore}
-            className="inline-flex items-center gap-1.5 px-5 py-2.5 bg-white border border-[#ECECEC] text-[#111] font-medium rounded-xl hover:bg-[#F7F7F7] transition-all duration-300 text-sm"
+            className="inline-flex items-center gap-1.5 px-5 py-2.5 bg-white border border-[#ECECEC] text-[#111] font-medium rounded-xl hover:bg-[#F7F7F7] transition-all duration-300 text-sm cursor-pointer"
           >
             Load more opportunities
             <ChevronRight size={14} />

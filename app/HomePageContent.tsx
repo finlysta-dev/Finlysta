@@ -11,16 +11,13 @@ import {
   Target, Award, Users, Star, Zap, Globe, Code2, Layers, LineChart,
   Radio, Filter, BriefcaseIcon, ExternalLink, Calendar, Laptop,
   Building, Award as AwardIcon, FolderOpen, GitBranch, BookMarked, AlertCircle,
-  TrendingUp as TrendingUpIcon, CheckBadge, ChartLine, Eye
+  TrendingUp as TrendingUpIcon, CheckBadge, ChartLine
 } from "lucide-react";
 import Link from "next/link";
 import Header from "./components/Header";
 import TrendingInternships from "@/components/TrendingOpportunities";
 import FinanceTopics from "@/components/FinanceTopics";
 import Newsletter from "@/components/Newsletter";
-
-// Note: Eye icon is available in lucide-react v0.260.0+
-// If you're using an older version, update lucide-react or use a different icon
 
 // Simplified FAQ Component
 const FAQ = () => {
@@ -130,51 +127,7 @@ const CTASection = () => {
   );
 };
 
-// Trust Indicators with REAL metrics - FIXED (removed Eye icon, using Activity instead)
-const TrustSection = () => {
-  return (
-    <section className="py-12 bg-white border-y border-gray-100">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-8">
-          <div className="inline-flex items-center gap-2 bg-gradient-to-r from-[#FFD700]/20 to-[#FFA500]/20 rounded-full px-4 py-1.5 mb-3">
-            <Activity size={14} className="text-[#FFD700]" />
-            <span className="text-xs font-semibold text-[#0A2540]">Real Traction</span>
-          </div>
-        </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 text-center">
-          <div className="p-4">
-            <div className="flex justify-center mb-2">
-              <Users size={28} className="text-[#FFD700]" />
-            </div>
-            <div className="text-xl md:text-2xl font-bold text-[#0A2540]">700+</div>
-            <div className="text-xs md:text-sm text-gray-500">700+ Monthly Finance Student Visitors</div>
-          </div>
-          <div className="p-4">
-            <div className="flex justify-center mb-2">
-              <CheckCircle size={28} className="text-[#FFD700]" />
-            </div>
-            <div className="text-xl md:text-2xl font-bold text-[#0A2540]">100%</div>
-            <div className="text-xs md:text-sm text-gray-500">Verified Listings · No Ghost Jobs</div>
-          </div>
-          <div className="p-4">
-            <div className="flex justify-center mb-2">
-              <Zap size={28} className="text-[#FFD700]" />
-            </div>
-            <div className="text-xl md:text-2xl font-bold text-[#0A2540]">Daily</div>
-            <div className="text-xs md:text-sm text-gray-500">Fresh Opportunities Added</div>
-          </div>
-          <div className="p-4">
-            <div className="flex justify-center mb-2">
-              <Target size={28} className="text-[#FFD700]" />
-            </div>
-            <div className="text-xl md:text-2xl font-bold text-[#0A2540]">Entry-Level</div>
-            <div className="text-xs md:text-sm text-gray-500">No Senior Roles. Just Fresher Jobs</div>
-          </div>
-        </div>
-      </div>
-    </section>
-  );
-};
+// Trust Indicators with REAL metrics
 
 // Skills in Demand Component
 const SkillsSection = () => {
@@ -218,7 +171,7 @@ const SkillsSection = () => {
   );
 };
 
-// Companies Featured Section (Fixed wording)
+// Companies Featured Section - Increased logo size
 const CompaniesSection = () => {
   const companies = [
     "Goldman Sachs", "J.P. Morgan", "Deloitte", "EY", "KPMG", "PwC", "Morgan Stanley", "ICICI Bank"
@@ -240,9 +193,9 @@ const CompaniesSection = () => {
           </p>
         </div>
         
-        <div className="flex flex-wrap justify-center gap-3 md:gap-4">
+        <div className="flex flex-wrap justify-center gap-4 md:gap-6">
           {companies.map((company, idx) => (
-            <div key={idx} className="bg-gray-50 px-4 py-2 rounded-full text-sm font-medium text-gray-700 border border-gray-100">
+            <div key={idx} className="bg-gray-50 px-5 py-3 rounded-full text-base font-semibold text-gray-700 border border-gray-100 shadow-sm">
               {company}
             </div>
           ))}
@@ -255,7 +208,7 @@ const CompaniesSection = () => {
   );
 };
 
-// Expanded Role Categories Section
+// Expanded Role Categories Section - With sparkle emoji and "Curated roles for Freshers"
 const RoleCategoriesSection = () => {
   const roleCategories = [
     {
@@ -290,7 +243,7 @@ const RoleCategoriesSection = () => {
         <div className="text-center mb-10">
           <div className="inline-flex items-center gap-2 bg-gradient-to-r from-[#FFD700]/20 to-[#FFA500]/20 rounded-full px-4 py-1.5 mb-4">
             <Briefcase size={14} className="text-[#FFD700]" />
-            <span className="text-xs font-semibold text-[#0A2540]">Explore by Role</span>
+            <span className="text-xs font-semibold text-[#0A2540]">✨ Curated roles for Freshers</span>
           </div>
           <h2 className="text-2xl md:text-3xl font-bold text-[#0A2540] mb-3">
             Finance Careers Beyond Financial Analyst
@@ -327,7 +280,7 @@ const RoleCategoriesSection = () => {
         <div className="text-center mt-8">
           <Link href="/jobs">
             <button className="text-sm font-semibold text-slate-900 hover:text-black transition-colors inline-flex items-center gap-1">
-  Browse All Entry-Level Finance Roles <ArrowRight size={14} />
+              Browse All Entry-Level Finance Roles <ArrowRight size={14} />
             </button>
           </Link>
         </div>
@@ -404,7 +357,7 @@ const TestimonialsSection = () => {
   );
 };
 
-// Simplified SEO Section (compressed)
+// Simplified SEO Section
 const SEOSection = () => {
   return (
     <section className="py-12 bg-gray-50 border-t border-gray-100">
@@ -472,21 +425,7 @@ const FileText = ({ size, className }: { size?: number; className?: string }) =>
 
 // Main Page Content Component
 export default function HomePageContent() {
-  const [isMounted, setIsMounted] = useState(false);
   const router = useRouter();
-
-  const popularRoles = [
-    { name: "Financial Analyst", icon: "📊" },
-    { name: "Accounts Executive", icon: "🧾" },
-    { name: "FP&A Analyst", icon: "💰" },
-    { name: "Investment Banking Intern", icon: "🏦" },
-    { name: "MIS Analyst", icon: "📋" },
-    { name: "Financial Data Analyst", icon: "📉" },
-  ];
-
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
 
   const handleFindJobs = () => {
     router.push(`/jobs`);
@@ -495,18 +434,6 @@ export default function HomePageContent() {
   const handleBrowseInternships = () => {
     router.push(`/internships`);
   };
-
-  if (!isMounted) {
-    return (
-      <div className="bg-[#F8FAFC] min-h-screen flex items-center justify-center">
-        <div role="status" className="sr-only">
-          Loading Finlysta - Entry Level Financial Analyst Jobs and Internships
-        </div>
-        <div className="w-12 h-12 border-4 border-[#0A2540] border-t-[#FFD700] rounded-full animate-spin mx-auto mb-4"></div>
-        <p className="text-[#0A2540] font-medium">Loading...</p>
-      </div>
-    );
-  }
 
   return (
     <div className="bg-[#F8FAFC] min-h-screen font-sans">
@@ -526,26 +453,24 @@ export default function HomePageContent() {
               </div>
               
               <h1 className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-black text-[#0A2540] mb-6 leading-tight animate-in fade-in slide-in-from-bottom-4 duration-700 delay-100">
-                Break Into Finance
+              Find Your Dream Job & Internships
                 <span className="inline-block bg-gradient-to-r from-[#FFD700] to-[#FFA500] bg-clip-text text">
-                  {" "}Without Endless Rejections.
+                  {" "}With Your Interest And Skills
                 </span>
               </h1>
               
-<div className="max-w-2xl mx-auto mb-8 animate-in fade-in slide-in-from-bottom-4 duration-700 delay-200">
-
-  <p className="text-lg sm:text-xl text-slate-800 leading-relaxed font-semibold tracking-tight">
-    🚫 Tired of scrolling through jobs that require
-    <span className="text-[#0A2540]">{" "}2–5 years of experience?</span>
-  </p>
-
-  <p className="text-sm sm:text-base text-slate-600 mt-3 leading-relaxed">
-    Most job portals are filled with senior-level roles.
-    <br />
-    Finlysta helps freshers discover verified internships and entry-level jobs.
-  </p>
-
-</div>
+              <div className="max-w-2xl mx-auto mb-8 animate-in fade-in slide-in-from-bottom-4 duration-700 delay-200">
+                <p className="text-lg sm:text-xl text-slate-800 leading-relaxed font-semibold tracking-tight">
+                  🚫 Tired of scrolling through jobs that require
+                  <span className="text-[#0A2540]">{" "}2–5 years of experience?</span>
+                </p>
+                <p className="text-sm sm:text-base text-slate-600 mt-3 leading-relaxed">
+                  Most job portals are filled with senior-level roles.
+                  <br />
+                  Finlysta helps freshers discover verified internships and entry-level jobs.
+                </p>
+              </div>
+              
               <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-10 animate-in fade-in slide-in-from-bottom-4 duration-700 delay-300">
                 <button
                   onClick={handleFindJobs}
@@ -570,30 +495,12 @@ export default function HomePageContent() {
                   <span>Explore Internships</span>
                 </button>
               </div>
-
-              <div className="mt-6 pt-4 border-t border-gray-200 animate-in fade-in slide-in-from-bottom-4 duration-700 delay-400">
-                <p className="text-sm text-slate-500 mb-3">🔥 Popular Entry-Level Roles:</p>
-                <div className="flex flex-wrap justify-center gap-2">
-                  {popularRoles.map((role, idx) => (
-                    <button
-                      key={idx}
-                      onClick={() => {
-                        router.push(`/jobs?search=${encodeURIComponent(role.name)}`);
-                      }}
-                      className="px-3 py-1.5 bg-white border border-gray-200 rounded-full text-sm text-slate-600 hover:border-[#FFD700] hover:text-black transition-all duration-300 flex items-center gap-1 cursor-pointer"
-                    >
-                      <span>{role.icon}</span>
-                      <span>{role.name}</span>
-                    </button>
-                  ))}
-                </div>
-              </div>
             </div>
           </div>
         </section>
 
         {/* TRUST INDICATORS - Real metrics */}
-        <TrustSection />
+        {/* <TrustSection /> */}
 
         {/* TRENDING OPPORTUNITIES - Live jobs section */}
         <TrendingInternships />
@@ -601,10 +508,10 @@ export default function HomePageContent() {
         {/* SKILLS SECTION */}
         <SkillsSection />
 
-        {/* EXPANDED ROLE CATEGORIES - NEW */}
+        {/* EXPANDED ROLE CATEGORIES */}
         <RoleCategoriesSection />
 
-        {/* COMPANIES SECTION (fixed wording) */}
+        {/* COMPANIES SECTION */}
         <CompaniesSection />
 
         {/* CAREER PATH - Roadmap Image Section */}
