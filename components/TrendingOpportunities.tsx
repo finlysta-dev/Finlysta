@@ -63,14 +63,14 @@ const shortenTitle = (title: string): string => {
 };
 
 const formatStipend = (stipendAmount: string | null | undefined) => {
-  if (!stipendAmount || stipendAmount === "Not Disclosed" || stipendAmount === "Not disclosed" || stipendAmount === "") {
+  if (!stipendAmount || stipendAmount === "Not Disclosed" || stipendAmount === "Not disclosed" || stipendAmount === "" || stipendAmount === "null") {
     return null;
   }
   
   let originalValue = stipendAmount.toString();
   
   if (originalValue.toLowerCase().includes('unpaid')) {
-    return 'Unpaid';
+    return null; // Don't show unpaid
   }
   
   let hasMonthSuffix = false;
@@ -84,7 +84,7 @@ const formatStipend = (stipendAmount: string | null | undefined) => {
   if (rangeMatch) {
     const min = parseInt(rangeMatch[1]);
     const max = parseInt(rangeMatch[2]);
-    if (!isNaN(min) && !isNaN(max)) {
+    if (!isNaN(min) && !isNaN(max) && min > 0 && max > 0) {
       let formattedStipend = '';
       if (min >= 1000 && max >= 1000) {
         formattedStipend = `₹${min/1000}k-${max/1000}k`;
@@ -119,7 +119,7 @@ const formatStipend = (stipendAmount: string | null | undefined) => {
     return 'Paid';
   }
   
-  return cleanAmount.length > 15 ? cleanAmount.substring(0, 15) : cleanAmount;
+  return null;
 };
 
 const formatPostedDate = (date: string) => {
@@ -158,6 +158,31 @@ const trackApplyClick = async (id: string, type: string, applyLink: string) => {
     console.error('Failed to track apply click:', error);
     window.open(applyLink, '_blank');
   }
+};
+
+// Save to localStorage functions
+const getSavedJobs = (): string[] => {
+  if (typeof window === 'undefined') return [];
+  const saved = localStorage.getItem('savedOpportunities');
+  return saved ? JSON.parse(saved) : [];
+};
+
+const saveJob = (id: string) => {
+  const saved = getSavedJobs();
+  if (!saved.includes(id)) {
+    saved.push(id);
+    localStorage.setItem('savedOpportunities', JSON.stringify(saved));
+  }
+};
+
+const unsaveJob = (id: string) => {
+  const saved = getSavedJobs();
+  const filtered = saved.filter(savedId => savedId !== id);
+  localStorage.setItem('savedOpportunities', JSON.stringify(filtered));
+};
+
+const isJobSaved = (id: string): boolean => {
+  return getSavedJobs().includes(id);
 };
 
 // Popular Roles Component - Horizontally Scrollable with icons
@@ -235,11 +260,12 @@ const PopularRolesSection = () => {
   );
 };
 
-// Premium Job Card Component - Square logo layout
-const JobCard = ({ job, imageErrors, handleImageError }: { 
+// Premium Job Card Component - Square logo layout with working save
+const JobCard = ({ job, imageErrors, handleImageError, onSaveToggle }: { 
   job: Opportunity; 
   imageErrors: { [key: string]: boolean }; 
   handleImageError: (id: string) => void;
+  onSaveToggle: () => void;
 }) => {
   const hasLogoError = imageErrors[job.id];
   const shortTitle = shortenTitle(job.title);
@@ -247,7 +273,25 @@ const JobCard = ({ job, imageErrors, handleImageError }: {
   const stipend = formatStipend(job.stipendAmount || job.salary);
   const jobType = job.type === "job" ? "Full-Time" : "Internship";
   const isRemote = job.workMode === "Remote";
-  
+  const [isSaved, setIsSaved] = useState(false);
+
+  useEffect(() => {
+    setIsSaved(isJobSaved(job.id));
+  }, [job.id]);
+
+  const handleSaveClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (isSaved) {
+      unsaveJob(job.id);
+      setIsSaved(false);
+    } else {
+      saveJob(job.id);
+      setIsSaved(true);
+    }
+    onSaveToggle();
+  };
+
   return (
     <div className="rounded-2xl border border-[#ECECEC] bg-white p-4 transition-all duration-300 hover:-translate-y-1 hover:shadow-md">
       
@@ -284,9 +328,16 @@ const JobCard = ({ job, imageErrors, handleImageError }: {
           </div>
         </div>
         
-        <button className="text-[11px] text-[#777] border border-[#ECECEC] bg-white rounded-lg px-2.5 py-1 hover:bg-[#F7F7F7] transition-colors flex items-center gap-0.5">
-          <Bookmark size={10} />
-          Save
+        <button
+          onClick={handleSaveClick}
+          className={`text-[11px] border rounded-lg px-2.5 py-1 transition-colors flex items-center gap-0.5 ${
+            isSaved 
+              ? "bg-[#FFD700] border-[#FFD700] text-black" 
+              : "text-[#777] border-[#ECECEC] bg-white hover:bg-[#F7F7F7]"
+          }`}
+        >
+          <Bookmark size={10} fill={isSaved ? "currentColor" : "none"} />
+          {isSaved ? "Saved" : "Save"}
         </button>
       </div>
 
@@ -317,15 +368,23 @@ const JobCard = ({ job, imageErrors, handleImageError }: {
         )}
       </div>
 
-      {/* Bottom section */}
+      {/* Bottom section - Only show salary if it exists */}
       <div className="border-t border-[#ECECEC] mt-5 pt-4 flex items-end justify-between">
         <div>
-          <p className="text-xl font-semibold text-[#111]">
-            {stipend || (job.salary ? formatStipend(job.salary) : "Competitive")}
-          </p>
-          <p className="text-xs text-[#A1A1A1] mt-0.5">
-            {getLocationDisplay(job.location, job.workMode)}
-          </p>
+          {stipend ? (
+            <>
+              <p className="text-xl font-semibold text-[#111]">
+                {stipend}
+              </p>
+              <p className="text-xs text-[#A1A1A1] mt-0.5">
+                {getLocationDisplay(job.location, job.workMode)}
+              </p>
+            </>
+          ) : (
+            <p className="text-xs text-[#A1A1A1] mt-0.5">
+              {getLocationDisplay(job.location, job.workMode)}
+            </p>
+          )}
         </div>
         
         {job.applyLink ? (
@@ -349,18 +408,37 @@ const JobCard = ({ job, imageErrors, handleImageError }: {
   );
 };
 
-// Premium Internship Card Component - Square logo layout
-const InternshipCard = ({ internship, imageErrors, handleImageError }: { 
+// Premium Internship Card Component - Square logo layout with working save
+const InternshipCard = ({ internship, imageErrors, handleImageError, onSaveToggle }: { 
   internship: Opportunity; 
   imageErrors: { [key: string]: boolean }; 
   handleImageError: (id: string) => void;
+  onSaveToggle: () => void;
 }) => {
   const stipend = formatStipend(internship.stipendAmount || internship.salary);
   const hasLogoError = imageErrors[internship.id];
   const shortTitle = shortenTitle(internship.title);
   const postedText = formatPostedDate(internship.createdAt);
   const isRemote = internship.workMode === "Remote";
-  
+  const [isSaved, setIsSaved] = useState(false);
+
+  useEffect(() => {
+    setIsSaved(isJobSaved(internship.id));
+  }, [internship.id]);
+
+  const handleSaveClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (isSaved) {
+      unsaveJob(internship.id);
+      setIsSaved(false);
+    } else {
+      saveJob(internship.id);
+      setIsSaved(true);
+    }
+    onSaveToggle();
+  };
+
   return (
     <div className="rounded-2xl border border-[#ECECEC] bg-white p-4 transition-all duration-300 hover:-translate-y-1 hover:shadow-md">
       
@@ -397,9 +475,16 @@ const InternshipCard = ({ internship, imageErrors, handleImageError }: {
           </div>
         </div>
         
-        <button className="text-[11px] text-[#777] border border-[#ECECEC] bg-white rounded-lg px-2.5 py-1 hover:bg-[#F7F7F7] transition-colors flex items-center gap-0.5">
-          <Bookmark size={10} />
-          Save
+        <button
+          onClick={handleSaveClick}
+          className={`text-[11px] border rounded-lg px-2.5 py-1 transition-colors flex items-center gap-0.5 ${
+            isSaved 
+              ? "bg-[#FFD700] border-[#FFD700] text-black" 
+              : "text-[#777] border-[#ECECEC] bg-white hover:bg-[#F7F7F7]"
+          }`}
+        >
+          <Bookmark size={10} fill={isSaved ? "currentColor" : "none"} />
+          {isSaved ? "Saved" : "Save"}
         </button>
       </div>
 
@@ -430,15 +515,23 @@ const InternshipCard = ({ internship, imageErrors, handleImageError }: {
         )}
       </div>
 
-      {/* Bottom section */}
+      {/* Bottom section - Only show stipend if it exists */}
       <div className="border-t border-[#ECECEC] mt-5 pt-4 flex items-end justify-between">
         <div>
-          <p className="text-xl font-semibold text-[#111]">
-            {stipend || "Unpaid"}
-          </p>
-          <p className="text-xs text-[#A1A1A1] mt-0.5">
-            {getLocationDisplay(internship.location, internship.workMode)}
-          </p>
+          {stipend ? (
+            <>
+              <p className="text-xl font-semibold text-[#111]">
+                {stipend}
+              </p>
+              <p className="text-xs text-[#A1A1A1] mt-0.5">
+                {getLocationDisplay(internship.location, internship.workMode)}
+              </p>
+            </>
+          ) : (
+            <p className="text-xs text-[#A1A1A1] mt-0.5">
+              {getLocationDisplay(internship.location, internship.workMode)}
+            </p>
+          )}
         </div>
         
         {internship.applyLink ? (
@@ -470,6 +563,7 @@ export default function TrendingOpportunities() {
   const [error, setError] = useState<string | null>(null);
   const [activeFilter, setActiveFilter] = useState<"all" | "jobs" | "internships">("all");
   const [imageErrors, setImageErrors] = useState<{ [key: string]: boolean }>({});
+  const [saveToggle, setSaveToggle] = useState(false);
 
   useEffect(() => {
     fetchData();
@@ -506,6 +600,10 @@ export default function TrendingOpportunities() {
 
   const handleImageError = (id: string) => {
     setImageErrors(prev => ({ ...prev, [id]: true }));
+  };
+
+  const handleSaveToggle = () => {
+    setSaveToggle(prev => !prev);
   };
 
   const getFilteredData = () => {
@@ -600,113 +698,64 @@ export default function TrendingOpportunities() {
       <PopularRolesSection />
       
       {/* Filter Tabs - Improved layout with counts */}
-<div className="w-full flex justify-center mb-6 overflow-x-auto">
-  <div className="flex items-center gap-3 bg-[#F7F7F7] p-1.5 rounded-2xl border border-[#EAEAEA]">
+      <div className="w-full flex justify-center mb-6 overflow-x-auto">
+        <div className="flex items-center gap-3 bg-[#F7F7F7] p-1.5 rounded-2xl border border-[#EAEAEA]">
+          <button
+            onClick={() => handleFilterChange("all")}
+            className={`min-w-[200px] px-5 py-3 rounded-xl transition-all duration-200 border ${
+              activeFilter === "all"
+                ? "bg-black border-black shadow-sm"
+                : "bg-white border-[#E5E5E5] hover:bg-[#FAFAFA]"
+            }`}
+          >
+            <div className="flex items-center justify-center gap-2">
+              <span className={`text-sm font-semibold ${activeFilter === "all" ? "text-white" : "text-black"}`}>
+                All Opportunities
+              </span>
+              <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${activeFilter === "all" ? "bg-white/20 text-white" : "bg-[#F1F1F1] text-black"}`}>
+                {allOpportunities.length}
+              </span>
+            </div>
+          </button>
 
-    {/* All Opportunities */}
-    <button
-      onClick={() => handleFilterChange("all")}
-      className={`min-w-[200px] px-5 py-3 rounded-xl transition-all duration-200 border ${
-        activeFilter === "all"
-          ? "bg-black border-black shadow-sm"
-          : "bg-white border-[#E5E5E5] hover:bg-[#FAFAFA]"
-      }`}
-    >
-      <div className="flex items-center justify-center gap-2">
-        
-        <span
-          className={`text-sm font-semibold ${
-            activeFilter === "all"
-              ? "text-white"
-              : "text-black"
-          }`}
-        >
-          All Opportunities
-        </span>
+          <button
+            onClick={() => handleFilterChange("jobs")}
+            className={`min-w-[200px] px-5 py-3 rounded-xl transition-all duration-200 border ${
+              activeFilter === "jobs"
+                ? "bg-black border-black shadow-sm"
+                : "bg-white border-[#E5E5E5] hover:bg-[#FAFAFA]"
+            }`}
+          >
+            <div className="flex items-center justify-center gap-2">
+              <span className={`text-sm font-semibold ${activeFilter === "jobs" ? "text-white" : "text-black"}`}>
+                Full-Time Jobs
+              </span>
+              <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${activeFilter === "jobs" ? "bg-white/20 text-white" : "bg-[#F1F1F1] text-black"}`}>
+                {jobsCount}
+              </span>
+            </div>
+          </button>
 
-        <span
-          className={`text-xs px-2 py-0.5 rounded-full font-medium ${
-            activeFilter === "all"
-              ? "bg-white/20 text-white"
-              : "bg-[#F1F1F1] text-black"
-          }`}
-        >
-          {allOpportunities.length}
-        </span>
-
+          <button
+            onClick={() => handleFilterChange("internships")}
+            className={`min-w-[200px] px-5 py-3 rounded-xl transition-all duration-200 border ${
+              activeFilter === "internships"
+                ? "bg-black border-black shadow-sm"
+                : "bg-white border-[#E5E5E5] hover:bg-[#FAFAFA]"
+            }`}
+          >
+            <div className="flex items-center justify-center gap-2">
+              <span className={`text-sm font-semibold ${activeFilter === "internships" ? "text-white" : "text-black"}`}>
+                Internships
+              </span>
+              <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${activeFilter === "internships" ? "bg-white/20 text-white" : "bg-[#F1F1F1] text-black"}`}>
+                {internshipsCount}
+              </span>
+            </div>
+          </button>
+        </div>
       </div>
-    </button>
-
-    {/* Full Time Jobs */}
-    <button
-      onClick={() => handleFilterChange("jobs")}
-      className={`min-w-[200px] px-5 py-3 rounded-xl transition-all duration-200 border ${
-        activeFilter === "jobs"
-          ? "bg-black border-black shadow-sm"
-          : "bg-white border-[#E5E5E5] hover:bg-[#FAFAFA]"
-      }`}
-    >
-      <div className="flex items-center justify-center gap-2">
-        
-        <span
-          className={`text-sm font-semibold ${
-            activeFilter === "jobs"
-              ? "text-white"
-              : "text-black"
-          }`}
-        >
-          Full-Time Jobs
-        </span>
-
-        <span
-          className={`text-xs px-2 py-0.5 rounded-full font-medium ${
-            activeFilter === "jobs"
-              ? "bg-white/20 text-white"
-              : "bg-[#F1F1F1] text-black"
-          }`}
-        >
-          {jobsCount}
-        </span>
-
-      </div>
-    </button>
-
-    {/* Internships */}
-    <button
-      onClick={() => handleFilterChange("internships")}
-      className={`min-w-[200px] px-5 py-3 rounded-xl transition-all duration-200 border ${
-        activeFilter === "internships"
-          ? "bg-black border-black shadow-sm"
-          : "bg-white border-[#E5E5E5] hover:bg-[#FAFAFA]"
-      }`}
-    >
-      <div className="flex items-center justify-center gap-2">
-        
-        <span
-          className={`text-sm font-semibold ${
-            activeFilter === "internships"
-              ? "text-white"
-              : "text-black"
-          }`}
-        >
-          Internships
-        </span>
-
-        <span
-          className={`text-xs px-2 py-0.5 rounded-full font-medium ${
-            activeFilter === "internships"
-              ? "bg-white/20 text-white"
-              : "bg-[#F1F1F1] text-black"
-          }`}
-        >
-          {internshipsCount}
-        </span>
-
-      </div>
-    </button>
-
-  </div>
-</div>
+      
       {/* Empty State Message when no opportunities in selected filter */}
       {filteredOpportunities.length === 0 && (
         <div className="text-center py-12 bg-gray-50 rounded-2xl">
@@ -720,9 +769,9 @@ export default function TrendingOpportunities() {
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
         {displayedOpportunities.map((opportunity) => (
           opportunity.type === "job" ? (
-            <JobCard key={opportunity.id} job={opportunity} imageErrors={imageErrors} handleImageError={handleImageError} />
+            <JobCard key={opportunity.id} job={opportunity} imageErrors={imageErrors} handleImageError={handleImageError} onSaveToggle={handleSaveToggle} />
           ) : (
-            <InternshipCard key={opportunity.id} internship={opportunity} imageErrors={imageErrors} handleImageError={handleImageError} />
+            <InternshipCard key={opportunity.id} internship={opportunity} imageErrors={imageErrors} handleImageError={handleImageError} onSaveToggle={handleSaveToggle} />
           )
         ))}
       </div>
