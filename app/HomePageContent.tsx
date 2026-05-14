@@ -11,7 +11,7 @@ import {
   Target, Award, Users, Star, Zap, Globe, Code2, Layers, LineChart,
   Radio, Filter, BriefcaseIcon, ExternalLink, Calendar, Laptop,
   Building, Award as AwardIcon, FolderOpen, GitBranch, BookMarked, AlertCircle,
-  TrendingUp as TrendingUpIcon, CheckBadge, ChartLine
+  TrendingUp as TrendingUpIcon, BadgeCheck, ChartLine
 } from "lucide-react";
 import Link from "next/link";
 import Header from "./components/Header";
