@@ -271,7 +271,7 @@ const JobCard = ({ job, imageErrors, handleImageError, onSaveToggle }: {
   const shortTitle = shortenTitle(job.title);
   const postedText = formatPostedDate(job.createdAt);
   const stipend = formatStipend(job.stipendAmount || job.salary);
-  const jobType = job.type === "job" ? "Full-Time" : "Internship";
+  const jobType = job.type === "job" ? "Job" : "Internship";
   const isRemote = job.workMode === "Remote";
   const [isSaved, setIsSaved] = useState(false);
 
