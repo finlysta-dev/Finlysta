@@ -62,10 +62,10 @@
       "has": [
         {
           "type": "host",
-          "value": "finlysta.com"
+          "value": "www.finlysta.com"
         }
       ],
-      "destination": "https://www.finlysta.com/:path*",
+      "destination": "https://finlysta.com/:path*",
       "permanent": true
     }
   ]
