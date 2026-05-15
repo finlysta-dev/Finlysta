@@ -1,7 +1,8 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import {
   MapPin, Clock, Building2,
   ChevronRight, Calendar, Briefcase, CheckCircle, ChevronLeft,
@@ -70,7 +71,7 @@ const formatStipend = (stipendAmount: string | null | undefined) => {
   let originalValue = stipendAmount.toString();
   
   if (originalValue.toLowerCase().includes('unpaid')) {
-    return null; // Don't show unpaid
+    return null;
   }
   
   let hasMonthSuffix = false;
@@ -153,14 +154,18 @@ const trackApplyClick = async (id: string, type: string, applyLink: string) => {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ opportunityId: id, type })
     });
-    window.open(applyLink, '_blank');
+    if (typeof window !== 'undefined') {
+      window.open(applyLink, '_blank');
+    }
   } catch (error) {
     console.error('Failed to track apply click:', error);
-    window.open(applyLink, '_blank');
+    if (typeof window !== 'undefined') {
+      window.open(applyLink, '_blank');
+    }
   }
 };
 
-// Save to localStorage functions
+// Save to localStorage functions (safe)
 const getSavedJobs = (): string[] => {
   if (typeof window === 'undefined') return [];
   const saved = localStorage.getItem('savedOpportunities');
@@ -168,6 +173,7 @@ const getSavedJobs = (): string[] => {
 };
 
 const saveJob = (id: string) => {
+  if (typeof window === 'undefined') return;
   const saved = getSavedJobs();
   if (!saved.includes(id)) {
     saved.push(id);
@@ -176,17 +182,20 @@ const saveJob = (id: string) => {
 };
 
 const unsaveJob = (id: string) => {
+  if (typeof window === 'undefined') return;
   const saved = getSavedJobs();
   const filtered = saved.filter(savedId => savedId !== id);
   localStorage.setItem('savedOpportunities', JSON.stringify(filtered));
 };
 
 const isJobSaved = (id: string): boolean => {
+  if (typeof window === 'undefined') return false;
   return getSavedJobs().includes(id);
 };
 
 // Popular Roles Component - Horizontally Scrollable with icons
 const PopularRolesSection = () => {
+  const router = useRouter();
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   
   const popularRoles = [
@@ -241,7 +250,7 @@ const PopularRolesSection = () => {
           <button
             key={idx}
             onClick={() => {
-              window.location.href = `/jobs?search=${encodeURIComponent(role.search)}`;
+              router.push(`/jobs?search=${encodeURIComponent(role.search)}`);
             }}
             className="px-3 py-1.5 bg-white border border-[#ECECEC] rounded-full text-sm text-[#555] hover:border-[#FFD700] hover:bg-[#FFD700]/5 hover:text-[#0A2540] transition-all duration-300 flex-shrink-0 cursor-pointer flex items-center gap-1.5"
           >
@@ -260,7 +269,7 @@ const PopularRolesSection = () => {
   );
 };
 
-// Premium Job Card Component - Square logo layout with working save
+// Premium Job Card Component
 const JobCard = ({ job, imageErrors, handleImageError, onSaveToggle }: { 
   job: Opportunity; 
   imageErrors: { [key: string]: boolean }; 
@@ -294,8 +303,6 @@ const JobCard = ({ job, imageErrors, handleImageError, onSaveToggle }: {
 
   return (
     <div className="rounded-2xl border border-[#ECECEC] bg-white p-4 transition-all duration-300 hover:-translate-y-1 hover:shadow-md">
-      
-      {/* Top row: Logo + Company + Save button - Square logo, no circle */}
       <div className="flex items-start justify-between">
         <div className="flex items-center gap-3">
           <div className="w-14 h-14 rounded-lg border border-[#ECECEC] bg-gray-50 flex items-center justify-center overflow-hidden flex-shrink-0">
@@ -341,12 +348,10 @@ const JobCard = ({ job, imageErrors, handleImageError, onSaveToggle }: {
         </button>
       </div>
 
-      {/* Title */}
       <h3 className="mt-4 text-xl leading-tight font-semibold tracking-[-0.02em] text-[#111111] line-clamp-2">
         {shortTitle}
       </h3>
 
-      {/* Tags */}
       <div className="flex flex-wrap gap-1.5 mt-3">
         <span className="text-[10px] font-medium text-[#555] bg-[#F1F1F1] rounded-md px-2.5 py-1">
           {jobType}
@@ -368,7 +373,6 @@ const JobCard = ({ job, imageErrors, handleImageError, onSaveToggle }: {
         )}
       </div>
 
-      {/* Bottom section - Only show salary if it exists */}
       <div className="border-t border-[#ECECEC] mt-5 pt-4 flex items-end justify-between">
         <div>
           {stipend ? (
@@ -408,7 +412,7 @@ const JobCard = ({ job, imageErrors, handleImageError, onSaveToggle }: {
   );
 };
 
-// Premium Internship Card Component - Square logo layout with working save
+// Premium Internship Card Component
 const InternshipCard = ({ internship, imageErrors, handleImageError, onSaveToggle }: { 
   internship: Opportunity; 
   imageErrors: { [key: string]: boolean }; 
@@ -441,8 +445,6 @@ const InternshipCard = ({ internship, imageErrors, handleImageError, onSaveToggl
 
   return (
     <div className="rounded-2xl border border-[#ECECEC] bg-white p-4 transition-all duration-300 hover:-translate-y-1 hover:shadow-md">
-      
-      {/* Top row: Logo + Company + Save button - Square logo, no circle */}
       <div className="flex items-start justify-between">
         <div className="flex items-center gap-3">
           <div className="w-14 h-14 rounded-lg border border-[#ECECEC] bg-gray-50 flex items-center justify-center overflow-hidden flex-shrink-0">
@@ -488,12 +490,10 @@ const InternshipCard = ({ internship, imageErrors, handleImageError, onSaveToggl
         </button>
       </div>
 
-      {/* Title */}
       <h3 className="mt-4 text-xl leading-tight font-semibold tracking-[-0.02em] text-[#111111] line-clamp-2">
         {shortTitle}
       </h3>
 
-      {/* Tags */}
       <div className="flex flex-wrap gap-1.5 mt-3">
         <span className="text-[10px] font-medium text-[#555] bg-[#F1F1F1] rounded-md px-2.5 py-1">
           Internship
@@ -515,7 +515,6 @@ const InternshipCard = ({ internship, imageErrors, handleImageError, onSaveToggl
         )}
       </div>
 
-      {/* Bottom section - Only show stipend if it exists */}
       <div className="border-t border-[#ECECEC] mt-5 pt-4 flex items-end justify-between">
         <div>
           {stipend ? (
@@ -557,6 +556,8 @@ const InternshipCard = ({ internship, imageErrors, handleImageError, onSaveToggl
 
 // Main Component
 export default function TrendingOpportunities() {
+  const router = useRouter();
+  const [isMounted, setIsMounted] = useState(false);
   const [allOpportunities, setAllOpportunities] = useState<Opportunity[]>([]);
   const [visibleCount, setVisibleCount] = useState(6);
   const [isLoading, setIsLoading] = useState(true);
@@ -565,11 +566,12 @@ export default function TrendingOpportunities() {
   const [imageErrors, setImageErrors] = useState<{ [key: string]: boolean }>({});
   const [saveToggle, setSaveToggle] = useState(false);
 
+  // Mark component as mounted on client
   useEffect(() => {
-    fetchData();
+    setIsMounted(true);
   }, []);
 
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     setIsLoading(true);
     setError(null);
     try {
@@ -596,7 +598,13 @@ export default function TrendingOpportunities() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    if (isMounted) {
+      fetchData();
+    }
+  }, [isMounted, fetchData]);
 
   const handleImageError = (id: string) => {
     setImageErrors(prev => ({ ...prev, [id]: true }));
@@ -624,11 +632,49 @@ export default function TrendingOpportunities() {
     setVisibleCount(prev => prev + 6);
   };
 
-  // Reset visible count when filter changes
   const handleFilterChange = (filter: "all" | "jobs" | "internships") => {
     setActiveFilter(filter);
     setVisibleCount(6);
   };
+
+  // Don't render until mounted (prevents hydration errors)
+  if (!isMounted) {
+    return (
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 bg-white">
+        <div className="text-center mb-4">
+          <h2 className="text-xl sm:text-2xl font-bold text-[#111]">✨ Curated roles for Freshers</h2>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
+          {[1, 2, 3, 4, 5, 6].map((i) => (
+            <div key={i} className="rounded-2xl border border-[#ECECEC] bg-white p-4 animate-pulse">
+              <div className="flex items-start justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="w-14 h-14 rounded-lg bg-gray-200"></div>
+                  <div>
+                    <div className="h-3 bg-gray-200 rounded w-20"></div>
+                    <div className="h-2 bg-gray-200 rounded w-12 mt-1"></div>
+                  </div>
+                </div>
+                <div className="w-12 h-6 bg-gray-200 rounded-lg"></div>
+              </div>
+              <div className="h-5 bg-gray-200 rounded w-3/4 mt-4"></div>
+              <div className="flex gap-1.5 mt-3">
+                <div className="h-5 bg-gray-200 rounded-md w-16"></div>
+                <div className="h-5 bg-gray-200 rounded-md w-12"></div>
+              </div>
+              <div className="mt-5 pt-4 flex items-end justify-between">
+                <div>
+                  <div className="h-5 bg-gray-200 rounded w-20"></div>
+                  <div className="h-3 bg-gray-200 rounded w-16 mt-1"></div>
+                </div>
+                <div className="h-8 bg-gray-200 rounded-lg w-20"></div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
 
   if (isLoading) {
     return (
@@ -683,7 +729,6 @@ export default function TrendingOpportunities() {
 
   if (allOpportunities.length === 0) return null;
 
-  // Get counts for each filter
   const jobsCount = allOpportunities.filter(opp => opp.type === "job").length;
   const internshipsCount = allOpportunities.filter(opp => opp.type === "internship").length;
 
@@ -694,10 +739,8 @@ export default function TrendingOpportunities() {
         <p className="text-xs text-[#A1A1A1] mt-1">Hand-picked entry-level finance opportunities</p>
       </div>
       
-      {/* Popular Roles - Horizontally Scrollable with icons */}
       <PopularRolesSection />
       
-      {/* Filter Tabs - Improved layout with counts */}
       <div className="w-full flex justify-center mb-6 overflow-x-auto">
         <div className="flex items-center gap-3 bg-[#F7F7F7] p-1.5 rounded-2xl border border-[#EAEAEA]">
           <button
@@ -756,7 +799,6 @@ export default function TrendingOpportunities() {
         </div>
       </div>
       
-      {/* Empty State Message when no opportunities in selected filter */}
       {filteredOpportunities.length === 0 && (
         <div className="text-center py-12 bg-gray-50 rounded-2xl">
           <Briefcase size={48} className="mx-auto text-gray-300 mb-3" />
@@ -765,7 +807,6 @@ export default function TrendingOpportunities() {
         </div>
       )}
 
-      {/* Cards Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
         {displayedOpportunities.map((opportunity) => (
           opportunity.type === "job" ? (
@@ -776,7 +817,6 @@ export default function TrendingOpportunities() {
         ))}
       </div>
 
-      {/* View More Button */}
       {hasMore && filteredOpportunities.length > 0 && (
         <div className="text-center mt-8">
           <button
