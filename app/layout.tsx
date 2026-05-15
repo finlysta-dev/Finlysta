@@ -19,7 +19,7 @@ export const viewport = {
 };
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://www.finlysta.com'),
+  metadataBase: new URL('https://finlysta.com'),
   title: {
     default: 'Entry Level Financial Analyst Jobs & Internships | Finlysta',
     template: '%s | Finlysta'
@@ -39,7 +39,7 @@ export const metadata: Metadata = {
     },
   },
   alternates: {
-    canonical: 'https://www.finlysta.com',
+    canonical: 'https://finlysta.com',
   },
   openGraph: {
     title: 'Entry Level Financial Analyst Jobs & Internships | Finlysta',
