@@ -44,13 +44,13 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'Entry Level Financial Analyst Jobs & Internships | Finlysta',
     description: 'Find entry level financial analyst jobs and internships in India. Start your finance career with paid internships and fresher jobs. 100% free for students.',
-    url: 'https://www.finlysta.com',
+    url: 'https://finlysta.com',  // ✅ Changed: removed www
     siteName: 'Finlysta',
     locale: 'en_IN',
     type: 'website',
     images: [
       {
-        url: 'https://www.finlysta.com/og-image.png',
+        url: 'https://finlysta.com/og-image.png',  // ✅ Changed: removed www
         width: 1200,
         height: 630,
         alt: 'Finlysta - Entry Level Financial Analyst Jobs & Internships',
@@ -61,7 +61,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'Entry Level Financial Analyst Jobs & Internships | Finlysta',
     description: 'Find entry level financial analyst jobs and internships in India. Start your finance career. 100% free.',
-    images: ['https://www.finlysta.com/og-image.png'],
+    images: ['https://finlysta.com/og-image.png'],  // ✅ Changed: removed www
     creator: '@Finlysta',
     site: '@Finlysta',
   },
@@ -123,15 +123,14 @@ export default function RootLayout({
         <meta name="referrer" content="strict-origin-when-cross-origin" />
         
         {/* Favicon Icons - All formats */}
-       {/* ✅ Favicon Icons - Make sure these files exist with new logo */}
-<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
-<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
-<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
-<link rel="icon" href="/favicon.ico" sizes="any" />
-<link rel="icon" href="/icon.svg" type="image/svg+xml" />
-<link rel="manifest" href="/site.webmanifest" />
+        <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+        <link rel="icon" href="/favicon.ico" sizes="any" />
+        <link rel="icon" href="/icon.svg" type="image/svg+xml" />
+        <link rel="manifest" href="/site.webmanifest" />
         
-        {/* ✅ Organization Schema - FIXED */}
+        {/* ✅ Organization Schema - FIXED (removed www) */}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
@@ -140,8 +139,8 @@ export default function RootLayout({
               "@type": "Organization",
               "name": "Finlysta",
               "alternateName": "Finlysta Job Board",
-              "url": "https://www.finlysta.com",
-              "logo": "https://www.finlysta.com/Finlysta.png",
+              "url": "https://finlysta.com",  // ✅ Changed: removed www
+              "logo": "https://finlysta.com/Finlysta.png",  // ✅ Changed: removed www
               "description": "Entry level financial analyst job board. Find paid internships and fresher jobs in financial analysis, corporate finance, and fintech.",
               "foundingDate": "2024",
               "foundingLocation": "India",
@@ -156,13 +155,13 @@ export default function RootLayout({
                 "contactType": "customer support",
                 "availableLanguage": ["English", "Hindi"],
                 "responseTime": "PT24H",
-                "url": "https://www.finlysta.com/contact"
+                "url": "https://finlysta.com/contact"  // ✅ Changed: removed www
               }
             })
           }}
         />
         
-        {/* ✅ BreadcrumbList Schema - FIXED with proper structure */}
+        {/* ✅ BreadcrumbList Schema - FIXED (removed www) */}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
@@ -174,14 +173,14 @@ export default function RootLayout({
                   "@type": "ListItem",
                   "position": 1,
                   "name": "Home",
-                  "item": "https://www.finlysta.com"
+                  "item": "https://finlysta.com"  // ✅ Changed: removed www
                 }
               ]
             })
           }}
         />
         
-        {/* ✅ WebSite Schema - FIXED for Sitelinks Search Box & Site Name */}
+        {/* ✅ WebSite Schema - FIXED (removed www) */}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
@@ -190,17 +189,17 @@ export default function RootLayout({
               "@type": "WebSite",
               "name": "Finlysta",
               "alternateName": "Finlysta Job Board for Entry Level Financial Analysts",
-              "url": "https://www.finlysta.com",
+              "url": "https://finlysta.com",  // ✅ Changed: removed www
               "potentialAction": {
                 "@type": "SearchAction",
-                "target": "https://www.finlysta.com/jobs?search={search_term_string}",
+                "target": "https://finlysta.com/jobs?search={search_term_string}",  // ✅ Changed: removed www
                 "query-input": "required name=search_term_string"
               }
             })
           }}
         />
         
-        {/* ✅ JobSearchResultsPage Schema for jobs page */}
+        {/* ✅ JobSearchResultsPage Schema - FIXED (removed www) */}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
@@ -209,11 +208,11 @@ export default function RootLayout({
               "@type": "SearchResultsPage",
               "name": "Financial Analyst Jobs in India",
               "description": "Browse entry level financial analyst jobs and internships across India",
-              "url": "https://www.finlysta.com/jobs",
+              "url": "https://finlysta.com/jobs",  // ✅ Changed: removed www
               "isPartOf": {
                 "@type": "WebSite",
                 "name": "Finlysta",
-                "url": "https://www.finlysta.com"
+                "url": "https://finlysta.com"  // ✅ Changed: removed www
               }
             })
           }}
