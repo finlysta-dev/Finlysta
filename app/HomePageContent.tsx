@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import {
-  Search, MapPin, ChevronRight, TrendingUp, Shield, Clock,
+  Search, MapPin, ChevronRight, TrendingUp, Shield, Clock, Calculator, MessageCircle,
   BarChart3, Landmark, Building2, Heart, Linkedin, Instagram, GraduationCap,
   Twitter, Mail, ArrowRight, BookOpen, DollarSign, PieChart,
   Activity, CheckCircle, ChevronDown, Rocket, Briefcase, Sparkles,
@@ -127,19 +127,17 @@ const CTASection = () => {
   );
 };
 
-// Trust Indicators with REAL metrics
-
 // Skills in Demand Component
 const SkillsSection = () => {
   const skills = [
-    { name: "Financial Modeling", icon: LineChart },
-    { name: "Excel & VBA", icon: Code2 },
-    { name: "SQL", icon: Database },
-    { name: "Tableau/Power BI", icon: PieChart },
-    { name: "Financial Reporting", icon: FileText },
-    { name: "Valuation", icon: DollarSign },
+    { name: "Advanced Excel", icon: LineChart, description: "Pivot Tables, VLOOKUP, Excel Functions" },
+    { name: "Financial Statements", icon: FileText, description: "Balance Sheet, P&L, Cash Flow" },
+    { name: "Accounting Fundamentals", icon: Calculator, description: "Journal Entries, Debit & Credit"},
+    { name: "Financial Reporting", icon: BarChart3, description: "Financial Reports, GAAP, IFRS"},
+    { name: "Financial Analysis", icon: TrendingUpIcon, description: "Ratio Analysis, Variance Analysis"},
+    { name: "Business Communication", icon: MessageCircle, description: "Presentations, Client Communication"},
   ];
-
+  
   return (
     <section className="py-16 bg-gradient-to-b from-gray-50 to-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -149,20 +147,30 @@ const SkillsSection = () => {
             <span className="text-xs font-semibold text-[#0A2540]">Skills That Get You Hired</span>
           </div>
           <h2 className="text-2xl md:text-3xl font-bold text-[#0A2540] mb-3">
-            Master In-Demand Finance Skills
+            Master In-Demand <span className="text-[#FFD700]">Finance Skills</span>
           </h2>
           <p className="text-sm text-slate-500 max-w-2xl mx-auto">
-            Top skills recruiters look for in entry-level financial analysts
+            Top skills recruiters look for in entry-level finance roles
           </p>
         </div>
         
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-5">
           {skills.map((skill, idx) => (
-            <div key={idx} className="bg-white p-4 rounded-xl border border-gray-100 text-center hover:shadow-md transition-all duration-300 hover:-translate-y-1">
-              <div className="flex justify-center mb-2">
-                <skill.icon size={24} className="text-[#FFD700]" />
+            <div 
+              key={idx} 
+              className="group bg-white rounded-xl p-5 border border-gray-100 shadow-sm hover:shadow-lg transition-all duration-300 hover:-translate-y-1 cursor-pointer"
+            >
+              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#FFD700]/10 to-[#FFA500]/10 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
+                <skill.icon size={22} className="text-[#FFD700]" />
               </div>
-              <div className="text-sm font-semibold text-gray-800">{skill.name}</div>
+              <h3 className="text-base font-bold text-[#0A2540] mb-1 group-hover:text-[#FFD700] transition-colors">
+                {skill.name}
+              </h3>
+              {skill.description && (
+                <p className="text-xs text-slate-500">
+                  {skill.description}
+                </p>
+              )}
             </div>
           ))}
         </div>
@@ -171,219 +179,114 @@ const SkillsSection = () => {
   );
 };
 
-// Companies Featured Section - Increased logo size
-const CompaniesSection = () => {
-  const companies = [
-    "Goldman Sachs", "J.P. Morgan", "Deloitte", "EY", "KPMG", "PwC", "Morgan Stanley", "ICICI Bank"
-  ];
-
-  return (
-    <section className="py-12 bg-white">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-8">
-          <div className="inline-flex items-center gap-2 bg-gradient-to-r from-[#FFD700]/20 to-[#FFA500]/20 rounded-full px-4 py-1.5 mb-3">
-            <Building2 size={14} className="text-[#FFD700]" />
-            <span className="text-xs font-semibold text-[#0A2540]">Companies Featuring Roles</span>
-          </div>
-          <h2 className="text-xl md:text-2xl font-bold text-[#0A2540]">
-            Opportunities From Leading Financial Firms
-          </h2>
-          <p className="text-sm text-slate-500 mt-2">
-            We surface entry-level roles from India's top finance employers
-          </p>
-        </div>
-        
-        <div className="flex flex-wrap justify-center gap-4 md:gap-6">
-          {companies.map((company, idx) => (
-            <div key={idx} className="bg-gray-50 px-5 py-3 rounded-full text-base font-semibold text-gray-700 border border-gray-100 shadow-sm">
-              {company}
-            </div>
-          ))}
-        </div>
-        <p className="text-center text-xs text-gray-400 mt-4">
-          Roles are sourced from public listings and verified company career pages
-        </p>
-      </div>
-    </section>
-  );
-};
-
-// Expanded Role Categories Section - With sparkle emoji and "Curated roles for Freshers"
+// Role Categories Section - 3 Modern Categories
 const RoleCategoriesSection = () => {
   const roleCategories = [
     {
-      title: "Investment Banking & Research",
-      roles: ["Investment Banking Analyst Intern", "Equity Research Intern", "Valuation Intern", "Investment Research Analyst"]
+      title: "Finance & Analysis",
+      icon: TrendingUpIcon,
+      bgColor: "bg-[#dbeaf5]",
+      tagBgColor: "bg-[#c8e2f4]",
+      description: "Most popular modern finance careers",
+      roles: ["Financial Analyst", "FP&A Analyst", "MIS Analyst", "Business Finance Analyst", "Revenue Analyst"]
     },
     {
-      title: "Accounting & Operations",
-      roles: ["Accounts Executive", "Accounts Payable Analyst", "Audit Associate", "Tax Analyst", "Payroll Analyst"]
+      title: "Accounting, Audit & Tax",
+      icon: Calculator,
+      bgColor: "bg-[#f8dfcf]",
+      tagBgColor: "bg-[#f5cdb4]",
+      description: "Huge fresher demand in India",
+      roles: ["Article Trainee", "Audit Associate", "Tax Analyst", "Accounts Executive", "Accounts Payable Analyst", "Finance Executive"]
     },
     {
-      title: "Fintech & Data",
-      roles: ["Financial Data Analyst", "FinOps Analyst", "BI Analyst", "Reporting Associate", "Fraud Analyst"]
-    },
-    {
-      title: "Banking & BFSI",
-      roles: ["Banking Operations Analyst", "Credit Analyst", "Risk Analyst", "KYC Analyst", "Wealth Management Intern"]
-    },
-    {
-      title: "Corporate Finance",
-      roles: ["FP&A Analyst", "Treasury Analyst", "Budget Analyst", "Revenue Analyst", "Commercial Analyst"]
-    },
-    {
-      title: "MIS & Business Finance",
-      roles: ["MIS Analyst", "Business Analyst (Finance)", "Revenue Operations Analyst", "Pricing Analyst"]
+      title: "Banking, Investment & Risk",
+      icon: Landmark,
+      bgColor: "bg-[#d5f2ea]",
+      tagBgColor: "bg-[#afe7d8]",
+      description: "High aspirational careers",
+      roles: ["Investment Banking Analyst", "Equity Research Analyst", "Credit Analyst", "Risk Analyst", "KYC Analyst"]
     }
   ];
 
   return (
     <section className="py-16 bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-10">
+        <div className="text-center mb-12">
           <div className="inline-flex items-center gap-2 bg-gradient-to-r from-[#FFD700]/20 to-[#FFA500]/20 rounded-full px-4 py-1.5 mb-4">
             <Briefcase size={14} className="text-[#FFD700]" />
             <span className="text-xs font-semibold text-[#0A2540]">✨ Curated roles for Freshers</span>
           </div>
           <h2 className="text-2xl md:text-3xl font-bold text-[#0A2540] mb-3">
-            Finance Careers Beyond Financial Analyst
+            Finance Careers Beyond <span className="text-[#FFD700]">Financial Analyst</span>
           </h2>
           <p className="text-sm text-slate-500 max-w-2xl mx-auto">
-            Discover entry-level roles across investment banking, accounting, fintech, and more
+            Discover entry-level roles across financial analysis, accounting, banking, and more
           </p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {roleCategories.map((category, idx) => (
-            <div key={idx} className="bg-white rounded-xl p-5 border border-gray-100 shadow-sm hover:shadow-md transition-all">
-              <h3 className="font-bold text-[#0A2540] mb-3 flex items-center gap-2">
-                <TrendingUpIcon size={16} className="text-[#FFD700]" />
-                {category.title}
-              </h3>
-              <div className="flex flex-wrap gap-2">
-                {category.roles.map((role, roleIdx) => (
-                  <button
-                    key={roleIdx}
-                    onClick={() => {
-                      window.location.href = `/jobs?search=${encodeURIComponent(role)}`;
-                    }}
-                    className="px-2.5 py-1 bg-gray-50 text-gray-600 text-xs rounded-full hover:bg-[#FFD700]/20 hover:text-[#0A2540] transition-colors"
-                  >
-                    {role}
-                  </button>
-                ))}
+            <div 
+              key={idx} 
+              className="bg-white rounded-[28px] p-3 shadow-sm border border-white/50 hover:shadow-lg transition-all duration-300"
+            >
+              {/* Colored Content Area */}
+              <div className={`${category.bgColor} rounded-[22px] p-6 min-h-[240px]`}>
+                {/* Header with Icon */}
+                <div className="flex items-start justify-between mb-3">
+                  <div className="w-10 h-10 rounded-xl bg-white/50 flex items-center justify-center">
+                    <category.icon size={22} className="text-[#0A2540]" />
+                  </div>
+                </div>
+                
+                <h2 className="text-xl font-bold text-black leading-tight mb-2">
+                  {category.title}
+                </h2>
+
+                <p className="text-sm text-black/70 leading-snug mb-4">
+                  {category.description}
+                </p>
+
+                {/* Role Tags */}
+                <div className="flex flex-wrap gap-2">
+                  {category.roles.map((role, roleIdx) => (
+                    <button
+                      key={roleIdx}
+                      onClick={() => {
+                        window.location.href = `/jobs?search=${encodeURIComponent(role)}`;
+                      }}
+                      className={`px-3 py-1.5 rounded-full ${category.tagBgColor} text-xs font-medium text-black/80 hover:scale-105 transition-transform duration-200`}
+                    >
+                      {role}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Bottom Explore Section */}
+              <div className="flex items-center justify-between px-5 py-4">
+                <p className="text-base font-semibold text-black">Explore {category.title.split(' ')[0]} Roles</p>
+                <button 
+                  onClick={() => {
+                    window.location.href = `/jobs?search=${encodeURIComponent(category.title.split(' &')[0])}`;
+                  }}
+                  className="w-10 h-10 rounded-xl bg-[#f3f3f3] flex items-center justify-center text-xl hover:bg-[#FFD700] hover:text-black transition-all duration-200"
+                >
+                  →
+                </button>
               </div>
             </div>
           ))}
         </div>
         
-        <div className="text-center mt-8">
+        {/* View All Button */}
+        <div className="text-center mt-10">
           <Link href="/jobs">
-            <button className="text-sm font-semibold text-slate-900 hover:text-black transition-colors inline-flex items-center gap-1">
-              Browse All Entry-Level Finance Roles <ArrowRight size={14} />
+            <button className="inline-flex items-center gap-2 px-6 py-3 bg-white border-2 border-[#FFD700] text-[#0A2540] font-semibold rounded-xl hover:bg-[#FFD700] hover:border-[#FFD700] transition-all duration-300 text-sm">
+              Browse All Entry-Level Finance Roles
+              <ArrowRight size={14} />
             </button>
           </Link>
-        </div>
-      </div>
-    </section>
-  );
-};
-
-// Testimonials Component
-const TestimonialsSection = () => {
-  const testimonials = [
-    {
-      name: "Rahul Mehta",
-      role: "Financial Analyst at Deloitte",
-      content: "Finlysta helped me land my first job. The listings were actually for freshers — no hidden '2-3 years experience' requirements.",
-      rating: 5,
-      avatar: "R"
-    },
-    {
-      name: "Priya Sharma",
-      role: "Investment Banking Intern",
-      content: "Found a legit internship within weeks. The verification gives me confidence that I'm not wasting time on fake posts.",
-      rating: 5,
-      avatar: "P"
-    },
-    {
-      name: "Amit Kumar",
-      role: "FP&A Analyst",
-      content: "Finally a job board that understands finance freshers. No senior roles, no spam — just relevant opportunities.",
-      rating: 5,
-      avatar: "A"
-    },
-  ];
-
-  return (
-    <section className="py-16 bg-white">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-10">
-          <div className="inline-flex items-center gap-2 bg-gradient-to-r from-[#FFD700]/20 to-[#FFA500]/20 rounded-full px-4 py-1.5 mb-4">
-            <Star size={14} className="text-[#FFD700]" />
-            <span className="text-xs font-semibold text-[#0A2540]">Real Results</span>
-          </div>
-          <h2 className="text-2xl md:text-3xl font-bold text-[#0A2540] mb-3">
-            From Our Community
-          </h2>
-          <p className="text-sm text-slate-500 max-w-2xl mx-auto">
-            Finance aspirants who found their first roles through Finlysta
-          </p>
-        </div>
-        
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {testimonials.map((testimonial, idx) => (
-            <div key={idx} className="bg-gray-50 p-6 rounded-2xl shadow-sm border border-gray-100">
-              <div className="flex items-center gap-1 mb-3">
-                {[...Array(testimonial.rating)].map((_, i) => (
-                  <Star key={i} size={14} className="fill-[#FFD700] text-[#FFD700]" />
-                ))}
-              </div>
-              <p className="text-gray-600 text-sm mb-4 leading-relaxed">"{testimonial.content}"</p>
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-gradient-to-r from-[#FFD700] to-[#FFA500] flex items-center justify-center text-[#0A2540] font-bold">
-                  {testimonial.avatar}
-                </div>
-                <div>
-                  <div className="font-bold text-sm text-[#0A2540]">{testimonial.name}</div>
-                  <div className="text-xs text-gray-500">{testimonial.role}</div>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-};
-
-// Simplified SEO Section
-const SEOSection = () => {
-  return (
-    <section className="py-12 bg-gray-50 border-t border-gray-100">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-6">
-          <h2 className="text-xl md:text-2xl font-bold text-[#0A2540]">
-            Entry Level Financial Analyst Jobs & Internships in India
-          </h2>
-        </div>
-        <div className="max-w-3xl mx-auto text-sm text-gray-600 space-y-3">
-          <p>
-            Finlysta is India's dedicated job board for <strong>entry level financial analyst jobs and internships</strong>. 
-            We connect finance students and graduates with verified opportunities at top companies.
-          </p>
-          <p>
-            Unlike traditional portals, we focus exclusively on <strong>fresher-friendly roles</strong> — no senior positions, 
-            no ghost jobs. Every listing is manually verified.
-          </p>
-          <div className="flex flex-wrap justify-center gap-3 pt-2">
-            <Link href="/jobs" className="text-[#FFD700] hover:text-[#FFA500] text-sm font-medium">Browse All Jobs →</Link>
-            <Link href="/internships" className="text-[#FFD700] hover:text-[#FFA500] text-sm font-medium">Browse Internships →</Link>
-            <Link href="/blogs" className="text-[#FFD700] hover:text-[#FFA500] text-sm font-medium">Career Blogs →</Link>
-          </div>
-          <p className="text-xs text-gray-400 text-center pt-2">
-            Last updated: {new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
-          </p>
         </div>
       </div>
     </section>
@@ -441,7 +344,7 @@ export default function HomePageContent() {
 
       <main>
         {/* HERO SECTION - Enhanced with emotional hook */}
-        <section className="relative bg-gradient-to-br from-[#EEF2FF] via-[#F8FAFC] to-white py-16 md:py-24 lg:py-28 overflow-hidden">
+        <section className="relative bg-gradient-to-br from-[#EEF2FF] via-[#F8FAFC] to-white py-16 md:py-20 lg:py-24 overflow-hidden">
           <div className="absolute top-20 right-10 w-72 h-72 bg-[#FFD700]/5 rounded-full blur-3xl"></div>
           <div className="absolute bottom-10 left-10 w-96 h-96 bg-[#FFA500]/5 rounded-full blur-3xl"></div>
           
@@ -452,26 +355,25 @@ export default function HomePageContent() {
                 <span className="text-xs font-semibold text-[#0A2540]">Entry-Level Finance Jobs & Internships.</span>
               </div>
               
-              <h1 className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-black text-[#0A2540] mb-6 leading-tight animate-in fade-in slide-in-from-bottom-4 duration-700 delay-100">
-              Find Your Dream Job & Internships
+              <h1 className="text-4xl sm:text-5xl md:text-5xl xl:text-7xl font-black text-[#0A2540] mb-6 leading-tight animate-in fade-in slide-in-from-bottom-4 duration-700 delay-100">
+              Find Your Dream Finance Job & Internship
                 <span className="inline-block bg-gradient-to-r from-[#FFD700] to-[#FFA500] bg-clip-text text">
-                  {" "}With Your Interest And Skills
+                  {" "}That Match Your Skills & Interests
                 </span>
               </h1>
               
-              <div className="max-w-2xl mx-auto mb-8 animate-in fade-in slide-in-from-bottom-4 duration-700 delay-200">
+              <div className="max-w-2xl mx-auto mb-6 animate-in fade-in slide-in-from-bottom-4 duration-700 delay-200">
                 <p className="text-lg sm:text-xl text-slate-800 leading-relaxed font-semibold tracking-tight">
-                  🚫 Tired of scrolling through jobs that require
-                  <span className="text-[#0A2540]">{" "}2–5 years of experience?</span>
+                  🚫 Tired of entry-level jobs asking for 2–5 years of experience?
                 </p>
                 <p className="text-sm sm:text-base text-slate-600 mt-3 leading-relaxed">
-                  Most job portals are filled with senior-level roles.
+                  Most job portals are built for experienced professionals.
                   <br />
-                  Finlysta helps freshers discover verified internships and entry-level jobs.
+                  Finlysta helps finance freshers discover verified internships and entry-level jobs.
                 </p>
               </div>
               
-              <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-10 animate-in fade-in slide-in-from-bottom-4 duration-700 delay-300">
+              <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-0 animate-in fade-in slide-in-from-bottom-4 duration-700 delay-300">
                 <button
                   onClick={handleFindJobs}
                   className="px-8 py-4 rounded-xl transition-all duration-300 font-bold flex items-center justify-center gap-2 text-base min-w-[200px] cursor-pointer hover:scale-105 border-2 border-[#FFD700] bg-transparent hover:bg-[#FFD700]/10 group"
@@ -499,20 +401,14 @@ export default function HomePageContent() {
           </div>
         </section>
 
-        {/* TRUST INDICATORS - Real metrics */}
-        {/* <TrustSection /> */}
-
         {/* TRENDING OPPORTUNITIES - Live jobs section */}
         <TrendingInternships />
 
         {/* SKILLS SECTION */}
         <SkillsSection />
 
-        {/* EXPANDED ROLE CATEGORIES */}
+        {/* ROLE CATEGORIES SECTION - 3 Modern Cards */}
         <RoleCategoriesSection />
-
-        {/* COMPANIES SECTION */}
-        <CompaniesSection />
 
         {/* CAREER PATH - Roadmap Image Section */}
         <section className="py-16 bg-white">
@@ -545,7 +441,7 @@ export default function HomePageContent() {
             
             <div className="text-center mt-6">
               <Link href="/learn">
-                <button className="text-sm text-[#FFD700] font-semibold hover:text-[#FFA500] transition-colors inline-flex items-center gap-1">
+                  <button className="text-sm text-black font-semibold hover:text-gray-700 transition-colors inline-flex items-center gap-1">
                   Get Free Learning Resources <ArrowRight size={14} />
                 </button>
               </Link>
@@ -556,16 +452,10 @@ export default function HomePageContent() {
         {/* LEARNING SECTION */}
         <FinanceTopics />
 
-        {/* TESTIMONIALS SECTION */}
-        <TestimonialsSection />
-
-        {/* SIMPLIFIED SEO SECTION */}
-        <SEOSection />
-
         {/* NEWSLETTER SECTION */}
         <Newsletter />
 
-        {/* SIMPLIFIED FAQ SECTION */}
+        {/* FAQ SECTION */}
         <FAQ />
 
         {/* CTA SECTION */}

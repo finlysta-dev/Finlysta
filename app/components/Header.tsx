@@ -35,9 +35,9 @@ export default function Header() {
     { href: "/", label: "Home" },
     { href: "/jobs", label: "Jobs" },
     { href: "/internships", label: "Internships" },
-    { href: "/roadmap", label: "Career Roadmap" },
+    { href: "/roadmap", label: "Careers" },
     { href: "/learn", label: "Learning Hub" },
-    { href: "/blogs", label: "Finance Blogs" },
+    { href: "/blogs", label: "Blogs" },
   ];
 
   return (

@@ -7,7 +7,9 @@ import {
   MapPin, Clock, Building2,
   ChevronRight, Calendar, Briefcase, CheckCircle, ChevronLeft,
   Award, Zap, Bookmark, TrendingUp, BarChart3, LineChart, DollarSign,
-  Shield, Target, Activity
+  Shield, Target, Activity, BriefcaseIcon, GraduationCap, Star,
+  Eye, ExternalLink, CreditCard, Users, Globe, Wifi, Sparkles,
+  Rocket, BadgeCheck, Trophy, Flame, Timer, Hash, IndianRupee
 } from "lucide-react";
 
 // Types
@@ -63,7 +65,8 @@ const shortenTitle = (title: string): string => {
   return shortTitle || title;
 };
 
-const formatStipend = (stipendAmount: string | null | undefined) => {
+// IMPROVED: Format stipend/salary with proper Indian currency formatting
+const formatStipend = (stipendAmount: string | null | undefined, type?: string) => {
   if (!stipendAmount || stipendAmount === "Not Disclosed" || stipendAmount === "Not disclosed" || stipendAmount === "" || stipendAmount === "null") {
     return null;
   }
@@ -74,65 +77,139 @@ const formatStipend = (stipendAmount: string | null | undefined) => {
     return null;
   }
   
+  // Determine period suffix based on type
+  const isJob = type === "job";
+  
+  // Check if already has month/year suffix
   let hasMonthSuffix = false;
-  if (originalValue.toLowerCase().includes('/month') || originalValue.toLowerCase().includes('per month')) {
+  let hasYearSuffix = false;
+  if (originalValue.toLowerCase().includes('/month') || originalValue.toLowerCase().includes('per month') || originalValue.toLowerCase().includes('/mo')) {
     hasMonthSuffix = true;
   }
+  if (originalValue.toLowerCase().includes('/year') || originalValue.toLowerCase().includes('per year') || originalValue.toLowerCase().includes('/yr') || originalValue.toLowerCase().includes('/annum')) {
+    hasYearSuffix = true;
+  }
   
-  let cleanAmount = originalValue.replace(/₹/g, '').replace(/\/month/g, '').replace(/per month/g, '').trim();
+  // Clean the amount string
+  let cleanAmount = originalValue
+    .replace(/₹/g, '')
+    .replace(/\/month/g, '')
+    .replace(/per month/g, '')
+    .replace(/\/mo/g, '')
+    .replace(/\/year/g, '')
+    .replace(/per year/g, '')
+    .replace(/\/yr/g, '')
+    .replace(/\/annum/g, '')
+    .replace(/,/g, '')
+    .trim();
   
-  const rangeMatch = cleanAmount.match(/(\d+)\s*[-–]\s*(\d+)/);
+  // Handle Lakh/Crore format like "5 Lakh" or "5 LPA"
+  const lakhMatch = cleanAmount.match(/(\d+(?:\.\d+)?)\s*[Ll]akh/i);
+  const croreMatch = cleanAmount.match(/(\d+(?:\.\d+)?)\s*[Cc]rore/i);
+  const lpaMatch = cleanAmount.match(/(\d+(?:\.\d+)?)\s*[Ll][Pp][Aa]/i);
+  
+  if (lakhMatch) {
+    const amount = parseFloat(lakhMatch[1]) * 100000;
+    if (!isNaN(amount) && amount > 0) {
+      if (isJob || hasYearSuffix || lpaMatch) {
+        return `₹${(amount/100000).toFixed(1)}L/yr`;
+      }
+      return `₹${(amount/100000).toFixed(1)}L/mo`;
+    }
+  }
+  
+  if (croreMatch) {
+    const amount = parseFloat(croreMatch[1]) * 10000000;
+    if (!isNaN(amount) && amount > 0) {
+      if (isJob || hasYearSuffix) {
+        return `₹${(amount/10000000).toFixed(1)}Cr/yr`;
+      }
+      return `₹${(amount/10000000).toFixed(1)}Cr/mo`;
+    }
+  }
+  
+  // Handle range like "50000 - 70000" or "5,00,000 - 7,00,000"
+  const rangeMatch = cleanAmount.match(/(\d+(?:\.\d+)?)\s*[-–]\s*(\d+(?:\.\d+)?)/);
   if (rangeMatch) {
-    const min = parseInt(rangeMatch[1]);
-    const max = parseInt(rangeMatch[2]);
+    let min = parseFloat(rangeMatch[1]);
+    let max = parseFloat(rangeMatch[2]);
+    
     if (!isNaN(min) && !isNaN(max) && min > 0 && max > 0) {
       let formattedStipend = '';
-      if (min >= 1000 && max >= 1000) {
-        formattedStipend = `₹${min/1000}k-${max/1000}k`;
+      
+      if (min >= 10000000) { // Crore
+        formattedStipend = `₹${(min/10000000).toFixed(1)}Cr-${(max/10000000).toFixed(1)}Cr`;
+      } else if (min >= 100000) { // Lakh
+        formattedStipend = `₹${(min/100000).toFixed(1)}L-${(max/100000).toFixed(1)}L`;
+      } else if (min >= 1000) {
+        formattedStipend = `₹${(min/1000).toFixed(0)}k-${(max/1000).toFixed(0)}k`;
       } else {
         formattedStipend = `₹${min.toLocaleString()}-${max.toLocaleString()}`;
       }
-      if (hasMonthSuffix) {
+      
+      // Add period suffix
+      if (hasYearSuffix || (isJob && !hasMonthSuffix)) {
+        formattedStipend += '/yr';
+      } else if (hasMonthSuffix) {
         formattedStipend += '/mo';
       }
+      
       return formattedStipend;
     }
   }
   
-  const singleMatch = cleanAmount.match(/(\d+)/);
+  // Handle single amount like "50000" or "5,00,000"
+  const singleMatch = cleanAmount.match(/(\d+(?:\.\d+)?)/);
   if (singleMatch) {
-    const amount = parseInt(singleMatch[1]);
+    const amount = parseFloat(singleMatch[1]);
     if (!isNaN(amount) && amount > 0) {
       let formattedStipend = '';
-      if (amount >= 1000) {
-        formattedStipend = `₹${amount/1000}k`;
+      
+      if (amount >= 10000000) {
+        formattedStipend = `₹${(amount/10000000).toFixed(1)}Cr`;
+      } else if (amount >= 100000) {
+        formattedStipend = `₹${(amount/100000).toFixed(1)}L`;
+      } else if (amount >= 1000) {
+        formattedStipend = `₹${(amount/1000).toFixed(0)}k`;
       } else {
         formattedStipend = `₹${amount.toLocaleString()}`;
       }
-      if (hasMonthSuffix) {
+      
+      // Add period suffix
+      if (hasYearSuffix || (isJob && !hasMonthSuffix)) {
+        formattedStipend += '/yr';
+      } else if (hasMonthSuffix) {
         formattedStipend += '/mo';
       }
+      
       return formattedStipend;
     }
   }
   
+  // Handle "Paid" case
   if (cleanAmount.toLowerCase().includes('paid')) {
     return 'Paid';
   }
   
-  return null;
+  // Return original if nothing matches
+  return originalValue.length > 20 ? originalValue.substring(0, 20) + '...' : originalValue;
 };
 
+// Format posted date with week/month formatting
 const formatPostedDate = (date: string) => {
   if (!date) return "Recently";
   const postedDate = new Date(date);
   const now = new Date();
   const diffDays = Math.floor((now.getTime() - postedDate.getTime()) / (1000 * 60 * 60 * 24));
+  
   if (diffDays === 0) return "Today";
   if (diffDays === 1) return "Yesterday";
   if (diffDays < 7) return `${diffDays}d ago`;
-  if (diffDays < 30) return `${Math.floor(diffDays / 7)}w ago`;
-  return `${Math.floor(diffDays / 30)}mo ago`;
+  if (diffDays === 7) return "1 week ago";
+  if (diffDays < 30) return `${Math.floor(diffDays / 7)} weeks ago`;
+  if (diffDays === 30) return "1 month ago";
+  if (diffDays < 365) return `${Math.floor(diffDays / 30)} months ago`;
+  return `${Math.floor(diffDays / 365)} year ago`;
 };
 
 const trackOpportunityClick = async (id: string, type: string) => {
@@ -193,20 +270,19 @@ const isJobSaved = (id: string): boolean => {
   return getSavedJobs().includes(id);
 };
 
-// Popular Roles Component - Horizontally Scrollable with icons
+// Popular Roles Component - Clickable with icons
 const PopularRolesSection = () => {
   const router = useRouter();
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   
   const popularRoles = [
-    { name: "Financial Analyst", icon: TrendingUp, search: "Financial Analyst" },
-    { name: "Investment Banking", icon: BarChart3, search: "Investment Banking" },
-    { name: "Equity Research", icon: LineChart, search: "Equity Research" },
-    { name: "FP&A Analyst", icon: DollarSign, search: "FP&A Analyst" },
-    { name: "Credit Analyst", icon: Shield, search: "Credit Analyst" },
-    { name: "Risk Analyst", icon: Target, search: "Risk Analyst" },
-    { name: "Article Trainee", icon: Award, search: "Article Trainee" },
-    { name: "Article Assistant", icon: Activity, search: "Article Assistant" }
+    { name: "Financial Analyst", icon: TrendingUp, search: "Financial Analyst", color: "#FF6B6B" },
+    { name: "Investment Banking", icon: BarChart3, search: "Investment Banking", color: "#4ECDC4" },
+    { name: "FP&A Analyst", icon: IndianRupee, search: "FP&A Analyst", color: "#96CEB4" },
+    { name: "Credit Analyst", icon: Shield, search: "Credit Analyst", color: "#FFEAA7" },
+    { name: "Risk Analyst", icon: Target, search: "Risk Analyst", color: "#DDA0DD" },
+    { name: "Article Trainee", icon: Award, search: "Article Trainee", color: "#98D8C8" },
+    { name: "Article Assistant", icon: Activity, search: "Article Assistant", color: "#F7DC6F" }
   ];
 
   const scroll = (direction: 'left' | 'right') => {
@@ -252,10 +328,14 @@ const PopularRolesSection = () => {
             onClick={() => {
               router.push(`/jobs?search=${encodeURIComponent(role.search)}`);
             }}
-            className="px-3 py-1.5 bg-white border border-[#ECECEC] rounded-full text-sm text-[#555] hover:border-[#FFD700] hover:bg-[#FFD700]/5 hover:text-[#0A2540] transition-all duration-300 flex-shrink-0 cursor-pointer flex items-center gap-1.5"
+            className="group px-3 py-1.5 bg-white border border-[#ECECEC] rounded-full text-sm font-medium text-[#555] hover:shadow-md transition-all duration-300 flex-shrink-0 cursor-pointer flex items-center gap-1.5 hover:scale-105"
+            style={{
+              borderLeftColor: role.color,
+              borderLeftWidth: '2px'
+            }}
           >
-            <role.icon size={14} className="text-[#FFD700]" />
-            <span>{role.name}</span>
+            <role.icon size={14} className="text-[#FFD700] group-hover:scale-110 transition-transform" />
+            <span className="group-hover:text-[#0A2540]">{role.name}</span>
           </button>
         ))}
       </div>
@@ -269,19 +349,18 @@ const PopularRolesSection = () => {
   );
 };
 
-// Premium Job Card Component
+// Job Card Component - Professional Design
 const JobCard = ({ job, imageErrors, handleImageError, onSaveToggle }: { 
   job: Opportunity; 
   imageErrors: { [key: string]: boolean }; 
   handleImageError: (id: string) => void;
   onSaveToggle: () => void;
 }) => {
+  const router = useRouter();
   const hasLogoError = imageErrors[job.id];
   const shortTitle = shortenTitle(job.title);
   const postedText = formatPostedDate(job.createdAt);
-  const stipend = formatStipend(job.stipendAmount || job.salary);
-  const jobType = job.type === "job" ? "Job" : "Internship";
-  const isRemote = job.workMode === "Remote";
+  const salary = formatStipend(job.stipendAmount || job.salary, 'job');
   const [isSaved, setIsSaved] = useState(false);
 
   useEffect(() => {
@@ -301,110 +380,179 @@ const JobCard = ({ job, imageErrors, handleImageError, onSaveToggle }: {
     onSaveToggle();
   };
 
+  const handleCardClick = (e: React.MouseEvent) => {
+    const target = e.target as HTMLElement;
+    if (!target.closest('button') && !target.closest('a')) {
+      router.push(`/jobs/${job.slug}`);
+    }
+  };
+
+  const experienceText = job.experience === "Fresher" || !job.experience ? "Fresher" : `${job.experience} Years`;
+  const isPaid = salary !== null && salary !== "Paid";
+
   return (
-    <div className="rounded-2xl border border-[#ECECEC] bg-white p-4 transition-all duration-300 hover:-translate-y-1 hover:shadow-md">
+    <div 
+      onClick={handleCardClick}
+      className="group rounded-xl border border-[#ECECEC] bg-white p-4 transition-all duration-300 hover:-translate-y-1 hover:shadow-md cursor-pointer"
+    >
+      {/* Actively Hiring Badge - Top (Smaller text) */}
+      {job.isActivelyHiring && (
+        <div className="mb-3">
+          <span className="inline-flex items-center gap-1 text-[9px] font-medium text-green-700 bg-green-50 rounded-full px-2 py-0.5">
+            <Zap size={8} className="text-green-600" />
+            Actively Hiring
+          </span>
+        </div>
+      )}
+
+      {/* Top Row: Logo + Company + Verified Badge + Save Button */}
       <div className="flex items-start justify-between">
         <div className="flex items-center gap-3">
-          <div className="w-14 h-14 rounded-lg border border-[#ECECEC] bg-gray-50 flex items-center justify-center overflow-hidden flex-shrink-0">
+          {/* Logo - Larger Square Box */}
+          <div className="w-14 h-14 rounded-xl bg-gray-50 border border-[#ECECEC] flex items-center justify-center overflow-hidden flex-shrink-0">
             {!hasLogoError && job.companyLogo ? (
               <img
                 src={job.companyLogo}
                 alt={job.company}
-                className="w-10 h-10 object-contain"
+                className="w-9 h-9 object-contain"
                 loading="lazy"
                 onError={() => handleImageError(job.id)}
               />
             ) : (
-              <span className="text-lg font-semibold text-[#111]">
+              <span className="text-xl font-bold text-[#111]">
                 {job.company.charAt(0)}
               </span>
             )}
           </div>
+          
+          {/* Company + Badges */}
           <div>
-            <div className="flex items-center gap-1">
-              <p className="text-sm font-semibold text-[#111111]">
+            <div className="flex items-center gap-1.5 flex-wrap">
+              <p className="text-sm font-semibold text-[#555]">
                 {job.company}
               </p>
               {job.isVerified && (
-                <CheckCircle size={10} className="text-green-500" />
+                <BadgeCheck size={15} className="text-blue-500" />
+              )}
+              {job.isTrending && (
+                <span className="flex items-center gap-0.5 text-[9px] font-medium text-orange-600 bg-orange-50 px-1.5 py-0.5 rounded-full">
+                  <Flame size={9} /> Trending
+                </span>
               )}
             </div>
-            <p className="text-[11px] text-[#A1A1A1] mt-0.5">
-              {postedText}
-            </p>
+            {/* Clock and Posted Date - Fixed alignment */}
+            <div className="flex items-center gap-1 mt-0.5">
+              <Clock size={11} className="text-[#A1A1A1] -mt-px" />
+              <p className="text-[10px] text-[#A1A1A1] font-medium leading-none">
+                {postedText}
+              </p>
+            </div>
           </div>
         </div>
         
+        {/* Save Button */}
         <button
           onClick={handleSaveClick}
-          className={`text-[11px] border rounded-lg px-2.5 py-1 transition-colors flex items-center gap-0.5 ${
+          className={`p-1.5 rounded-lg transition-all duration-200 ${
             isSaved 
-              ? "bg-[#FFD700] border-[#FFD700] text-black" 
-              : "text-[#777] border-[#ECECEC] bg-white hover:bg-[#F7F7F7]"
+              ? "bg-[#FFD700] text-black" 
+              : "bg-gray-50 text-[#777] hover:bg-gray-100"
           }`}
         >
-          <Bookmark size={10} fill={isSaved ? "currentColor" : "none"} />
-          {isSaved ? "Saved" : "Save"}
+          <Bookmark size={15} fill={isSaved ? "currentColor" : "none"} />
         </button>
       </div>
 
-      <h3 className="mt-4 text-xl leading-tight font-semibold tracking-[-0.02em] text-[#111111] line-clamp-2">
-        {shortTitle}
-      </h3>
+      {/* Role Title - Bold & Prominent */}
+      <Link href={`/jobs/${job.slug}`}>
+        <h3 className="mt-3 text-base font-bold text-[#111] leading-tight hover:text-[#FFD700] transition-colors line-clamp-2">
+          {shortTitle}
+        </h3>
+      </Link>
 
+      {/* Key Details - 2 columns - Increased text size */}
+      <div className="grid grid-cols-2 gap-2 mt-3">
+        <div className="flex items-center gap-1.5">
+          {job.workMode === "Remote" ? (
+            <Wifi size={15} className="text-[#FFD700]" />
+          ) : job.workMode === "Hybrid" ? (
+            <Globe size={15} className="text-[#FFD700]" />
+          ) : (
+            <MapPin size={15} className="text-[#FFD700]" />
+          )}
+          <span className="text-xs text-[#555] truncate">{getLocationDisplay(job.location, job.workMode)}</span>
+        </div>
+
+        <div className="flex items-center gap-1.5">
+          <BriefcaseIcon size={15} className="text-[#FFD700]" />
+          <span className="text-xs text-[#555]">{experienceText}</span>
+        </div>
+
+        {isPaid && salary && (
+          <div className="flex items-center gap-1.5">
+            <IndianRupee size={15} className="text-[#FFD700]" />
+            <span className="text-xs font-semibold text-[#111]">{salary}</span>
+          </div>
+        )}
+
+        {!isPaid && salary === "Paid" && (
+          <div className="flex items-center gap-1.5">
+            <IndianRupee size={15} className="text-[#FFD700]" />
+            <span className="text-xs font-semibold text-green-600">Paid</span>
+          </div>
+        )}
+
+        <div className="flex items-center gap-1.5">
+          <Briefcase size={15} className="text-[#FFD700]" />
+          <span className="text-xs text-[#555]">Full Time</span>
+        </div>
+      </div>
+
+      {/* Skills Tags - Max 4 */}
+      {job.skills && job.skills.length > 0 && (
+        <div className="flex flex-wrap gap-1.5 mt-3">
+          {job.skills.slice(0, 4).map((skill, idx) => (
+            <span key={idx} className="text-[10px] font-medium text-[#555] bg-gray-100 rounded-full px-2 py-0.5">
+              {skill}
+            </span>
+          ))}
+          {job.skills.length > 4 && (
+            <span className="text-[10px] font-medium text-[#555] bg-gray-100 rounded-full px-2 py-0.5">
+              +{job.skills.length - 4}
+            </span>
+          )}
+        </div>
+      )}
+
+      {/* Badge Row */}
       <div className="flex flex-wrap gap-1.5 mt-3">
-        <span className="text-[10px] font-medium text-[#555] bg-[#F1F1F1] rounded-md px-2.5 py-1">
-          {jobType}
-        </span>
-        {isRemote && (
-          <span className="text-[10px] font-medium text-[#555] bg-[#F1F1F1] rounded-md px-2.5 py-1">
+        {job.workMode === "Remote" && (
+          <span className="inline-flex items-center gap-1 text-[10px] font-medium text-purple-700 bg-purple-50 rounded-full px-1.5 py-0.5">
+            <Wifi size={10} className="text-purple-600" />
             Remote
-          </span>
-        )}
-        {job.duration && (
-          <span className="text-[10px] font-medium text-[#555] bg-[#F1F1F1] rounded-md px-2.5 py-1">
-            {job.duration}
-          </span>
-        )}
-        {job.isActivelyHiring && (
-          <span className="text-[10px] font-medium text-orange-600 bg-orange-50 rounded-md px-2.5 py-1">
-            Actively Hiring
           </span>
         )}
       </div>
 
-      <div className="border-t border-[#ECECEC] mt-5 pt-4 flex items-end justify-between">
-        <div>
-          {stipend ? (
-            <>
-              <p className="text-xl font-semibold text-[#111]">
-                {stipend}
-              </p>
-              <p className="text-xs text-[#A1A1A1] mt-0.5">
-                {getLocationDisplay(job.location, job.workMode)}
-              </p>
-            </>
-          ) : (
-            <p className="text-xs text-[#A1A1A1] mt-0.5">
-              {getLocationDisplay(job.location, job.workMode)}
-            </p>
-          )}
-        </div>
-        
+      {/* Apply Button */}
+      <div className="mt-4 pt-3 border-t border-[#ECECEC]">
         {job.applyLink ? (
           <button
-            onClick={() => trackApplyClick(job.id, 'job', job.applyLink!)}
-            className="bg-black text-white text-xs font-medium rounded-lg px-4 py-2 hover:bg-[#222] transition-colors"
+            onClick={(e) => {
+              e.stopPropagation();
+              trackApplyClick(job.id, 'job', job.applyLink!);
+            }}
+            className="w-full bg-gradient-to-r from-[#FFD700] to-[#FFA500] text-black text-xs font-bold rounded-lg px-4 py-2.5 hover:shadow-md transition-all duration-200 hover:scale-[1.01] flex items-center justify-center gap-2"
           >
-            Apply now
+            Apply Now <ExternalLink size={13} />
           </button>
         ) : (
           <Link
             href={`/jobs/${job.slug}`}
             onClick={() => trackOpportunityClick(job.id, 'job')}
-            className="bg-black text-white text-xs font-medium rounded-lg px-4 py-2 hover:bg-[#222] transition-colors inline-block"
+            className="w-full bg-gradient-to-r from-[#FFD700] to-[#FFA500] text-black text-xs font-bold rounded-lg px-4 py-2.5 hover:shadow-md transition-all duration-200 hover:scale-[1.01] flex items-center justify-center gap-2"
           >
-            Apply now
+            View Details <ArrowRight size={13} />
           </Link>
         )}
       </div>
@@ -412,18 +560,18 @@ const JobCard = ({ job, imageErrors, handleImageError, onSaveToggle }: {
   );
 };
 
-// Premium Internship Card Component
+// Internship Card Component - Same Box Style
 const InternshipCard = ({ internship, imageErrors, handleImageError, onSaveToggle }: { 
   internship: Opportunity; 
   imageErrors: { [key: string]: boolean }; 
   handleImageError: (id: string) => void;
   onSaveToggle: () => void;
 }) => {
-  const stipend = formatStipend(internship.stipendAmount || internship.salary);
+  const router = useRouter();
+  const stipend = formatStipend(internship.stipendAmount || internship.salary, 'internship');
   const hasLogoError = imageErrors[internship.id];
   const shortTitle = shortenTitle(internship.title);
   const postedText = formatPostedDate(internship.createdAt);
-  const isRemote = internship.workMode === "Remote";
   const [isSaved, setIsSaved] = useState(false);
 
   useEffect(() => {
@@ -443,110 +591,181 @@ const InternshipCard = ({ internship, imageErrors, handleImageError, onSaveToggl
     onSaveToggle();
   };
 
+  const handleCardClick = (e: React.MouseEvent) => {
+    const target = e.target as HTMLElement;
+    if (!target.closest('button') && !target.closest('a')) {
+      router.push(`/internships/${internship.slug}`);
+    }
+  };
+
+  const showStipend = stipend !== null;
+  const isPaid = showStipend && stipend === "Paid";
+
   return (
-    <div className="rounded-2xl border border-[#ECECEC] bg-white p-4 transition-all duration-300 hover:-translate-y-1 hover:shadow-md">
+    <div 
+      onClick={handleCardClick}
+      className="group rounded-xl border border-[#ECECEC] bg-white p-4 transition-all duration-300 hover:-translate-y-1 hover:shadow-md cursor-pointer"
+    >
+      {/* Actively Hiring Badge - Top (Smaller text) */}
+      {internship.isActivelyHiring && (
+        <div className="mb-3">
+          <span className="inline-flex items-center gap-1 text-[9px] font-medium text-green-700 bg-green-50 rounded-full px-2 py-0.5">
+            <Zap size={8} className="text-green-600" />
+            Actively Hiring
+          </span>
+        </div>
+      )}
+
+      {/* Top Row: Logo + Company + Verified Badge + Save Button */}
       <div className="flex items-start justify-between">
         <div className="flex items-center gap-3">
-          <div className="w-14 h-14 rounded-lg border border-[#ECECEC] bg-gray-50 flex items-center justify-center overflow-hidden flex-shrink-0">
+          {/* Logo - Larger Square Box */}
+          <div className="w-14 h-14 rounded-xl bg-gray-50 border border-[#ECECEC] flex items-center justify-center overflow-hidden flex-shrink-0">
             {!hasLogoError && internship.companyLogo ? (
               <img
                 src={internship.companyLogo}
                 alt={internship.company}
-                className="w-10 h-10 object-contain"
+                className="w-9 h-9 object-contain"
                 loading="lazy"
                 onError={() => handleImageError(internship.id)}
               />
             ) : (
-              <span className="text-lg font-semibold text-[#111]">
+              <span className="text-xl font-bold text-[#111]">
                 {internship.company.charAt(0)}
               </span>
             )}
           </div>
+          
+          {/* Company + Badges */}
           <div>
-            <div className="flex items-center gap-1">
-              <p className="text-sm font-semibold text-[#111111]">
+            <div className="flex items-center gap-1.5 flex-wrap">
+              <p className="text-sm font-semibold text-[#555]">
                 {internship.company}
               </p>
               {internship.isVerified && (
-                <CheckCircle size={10} className="text-green-500" />
+                <BadgeCheck size={15} className="text-blue-500" />
+              )}
+              {internship.isTrending && (
+                <span className="flex items-center gap-0.5 text-[9px] font-medium text-orange-600 bg-orange-50 px-1.5 py-0.5 rounded-full">
+                  <Flame size={9} /> Trending
+                </span>
               )}
             </div>
-            <p className="text-[11px] text-[#A1A1A1] mt-0.5">
-              {postedText}
-            </p>
+            {/* Clock and Posted Date - Fixed alignment */}
+            <div className="flex items-center gap-1 mt-0.5">
+              <Clock size={11} className="text-[#A1A1A1] -mt-px" />
+              <p className="text-[10px] text-[#A1A1A1] font-medium leading-none">
+                {postedText}
+              </p>
+            </div>
           </div>
         </div>
         
+        {/* Save Button */}
         <button
           onClick={handleSaveClick}
-          className={`text-[11px] border rounded-lg px-2.5 py-1 transition-colors flex items-center gap-0.5 ${
+          className={`p-1.5 rounded-lg transition-all duration-200 ${
             isSaved 
-              ? "bg-[#FFD700] border-[#FFD700] text-black" 
-              : "text-[#777] border-[#ECECEC] bg-white hover:bg-[#F7F7F7]"
+              ? "bg-[#FFD700] text-black" 
+              : "bg-gray-50 text-[#777] hover:bg-gray-100"
           }`}
         >
-          <Bookmark size={10} fill={isSaved ? "currentColor" : "none"} />
-          {isSaved ? "Saved" : "Save"}
+          <Bookmark size={15} fill={isSaved ? "currentColor" : "none"} />
         </button>
       </div>
 
-      <h3 className="mt-4 text-xl leading-tight font-semibold tracking-[-0.02em] text-[#111111] line-clamp-2">
-        {shortTitle}
-      </h3>
+      {/* Role Title - Bold & Prominent */}
+      <Link href={`/internships/${internship.slug}`}>
+        <h3 className="mt-3 text-base font-bold text-[#111] leading-tight hover:text-[#FFD700] transition-colors line-clamp-2">
+          {shortTitle}
+        </h3>
+      </Link>
 
-      <div className="flex flex-wrap gap-1.5 mt-3">
-        <span className="text-[10px] font-medium text-[#555] bg-[#F1F1F1] rounded-md px-2.5 py-1">
-          Internship
-        </span>
-        {isRemote && (
-          <span className="text-[10px] font-medium text-[#555] bg-[#F1F1F1] rounded-md px-2.5 py-1">
-            Remote
-          </span>
-        )}
+      {/* Key Details - 2 columns - Increased text size */}
+      <div className="grid grid-cols-2 gap-2 mt-3">
+        <div className="flex items-center gap-1.5">
+          {internship.workMode === "Remote" ? (
+            <Wifi size={15} className="text-[#FFD700]" />
+          ) : internship.workMode === "Hybrid" ? (
+            <Globe size={15} className="text-[#FFD700]" />
+          ) : (
+            <MapPin size={15} className="text-[#FFD700]" />
+          )}
+          <span className="text-xs text-[#555] truncate">{getLocationDisplay(internship.location, internship.workMode)}</span>
+        </div>
+
         {internship.duration && (
-          <span className="text-[10px] font-medium text-[#555] bg-[#F1F1F1] rounded-md px-2.5 py-1">
-            {internship.duration}
-          </span>
+          <div className="flex items-center gap-1.5">
+            <Calendar size={15} className="text-[#FFD700]" />
+            <span className="text-xs text-[#555]">{internship.duration}</span>
+          </div>
         )}
-        {internship.isActivelyHiring && (
-          <span className="text-[10px] font-medium text-orange-600 bg-orange-50 rounded-md px-2.5 py-1">
-            Actively Hiring
+
+        {showStipend && !isPaid && (
+          <div className="flex items-center gap-1.5">
+            <IndianRupee size={15} className="text-[#FFD700]" />
+            <span className="text-xs font-semibold text-[#111]">{stipend}</span>
+          </div>
+        )}
+
+        {isPaid && (
+          <div className="flex items-center gap-1.5">
+            <IndianRupee size={15} className="text-[#FFD700]" />
+            <span className="text-xs font-semibold text-green-600">Paid</span>
+          </div>
+        )}
+
+        <div className="flex items-center gap-1.5">
+          <GraduationCap size={15} className="text-[#FFD700]" />
+          <span className="text-xs text-[#555]">Internship</span>
+        </div>
+      </div>
+
+      {/* Skills Tags - Max 4 */}
+      {internship.skills && internship.skills.length > 0 && (
+        <div className="flex flex-wrap gap-1.5 mt-3">
+          {internship.skills.slice(0, 4).map((skill, idx) => (
+            <span key={idx} className="text-[10px] font-medium text-[#555] bg-gray-100 rounded-full px-2 py-0.5">
+              {skill}
+            </span>
+          ))}
+          {internship.skills.length > 4 && (
+            <span className="text-[10px] font-medium text-[#555] bg-gray-100 rounded-full px-2 py-0.5">
+              +{internship.skills.length - 4}
+            </span>
+          )}
+        </div>
+      )}
+
+      {/* Badge Row */}
+      <div className="flex flex-wrap gap-1.5 mt-3">
+        {internship.workMode === "Remote" && (
+          <span className="inline-flex items-center gap-1 text-[10px] font-medium text-purple-700 bg-purple-50 rounded-full px-1.5 py-0.5">
+            <Wifi size={10} className="text-purple-600" />
+            Remote
           </span>
         )}
       </div>
 
-      <div className="border-t border-[#ECECEC] mt-5 pt-4 flex items-end justify-between">
-        <div>
-          {stipend ? (
-            <>
-              <p className="text-xl font-semibold text-[#111]">
-                {stipend}
-              </p>
-              <p className="text-xs text-[#A1A1A1] mt-0.5">
-                {getLocationDisplay(internship.location, internship.workMode)}
-              </p>
-            </>
-          ) : (
-            <p className="text-xs text-[#A1A1A1] mt-0.5">
-              {getLocationDisplay(internship.location, internship.workMode)}
-            </p>
-          )}
-        </div>
-        
+      {/* Apply Button - Same Color as Jobs */}
+      <div className="mt-4 pt-3 border-t border-[#ECECEC]">
         {internship.applyLink ? (
           <button
-            onClick={() => trackApplyClick(internship.id, 'internship', internship.applyLink!)}
-            className="bg-black text-white text-xs font-medium rounded-lg px-4 py-2 hover:bg-[#222] transition-colors"
+            onClick={(e) => {
+              e.stopPropagation();
+              trackApplyClick(internship.id, 'internship', internship.applyLink!);
+            }}
+            className="w-full bg-gradient-to-r from-[#FFD700] to-[#FFA500] text-black text-xs font-bold rounded-lg px-4 py-2.5 hover:shadow-md transition-all duration-200 hover:scale-[1.01] flex items-center justify-center gap-2"
           >
-            Apply now
+            Apply Now <ExternalLink size={13} />
           </button>
         ) : (
           <Link
             href={`/internships/${internship.slug}`}
             onClick={() => trackOpportunityClick(internship.id, 'internship')}
-            className="bg-black text-white text-xs font-medium rounded-lg px-4 py-2 hover:bg-[#222] transition-colors inline-block"
+            className="w-full bg-gradient-to-r from-[#FFD700] to-[#FFA500] text-black text-xs font-bold rounded-lg px-4 py-2.5 hover:shadow-md transition-all duration-200 hover:scale-[1.01] flex items-center justify-center gap-2"
           >
-            Apply now
+            View Details <ArrowRight size={13} />
           </Link>
         )}
       </div>
@@ -566,7 +785,6 @@ export default function TrendingOpportunities() {
   const [imageErrors, setImageErrors] = useState<{ [key: string]: boolean }>({});
   const [saveToggle, setSaveToggle] = useState(false);
 
-  // Mark component as mounted on client
   useEffect(() => {
     setIsMounted(true);
   }, []);
@@ -637,16 +855,15 @@ export default function TrendingOpportunities() {
     setVisibleCount(6);
   };
 
-  // Don't render until mounted (prevents hydration errors)
   if (!isMounted) {
     return (
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 bg-white">
         <div className="text-center mb-4">
-          <h2 className="text-xl sm:text-2xl font-bold text-[#111]">✨ Curated roles for Freshers</h2>
+          <h2 className="text-lg sm:text-xl font-bold text-[#111]">✨ Curated roles for Freshers</h2>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
           {[1, 2, 3, 4, 5, 6].map((i) => (
-            <div key={i} className="rounded-2xl border border-[#ECECEC] bg-white p-4 animate-pulse">
+            <div key={i} className="rounded-xl border border-[#ECECEC] bg-white p-4 animate-pulse">
               <div className="flex items-start justify-between">
                 <div className="flex items-center gap-3">
                   <div className="w-14 h-14 rounded-lg bg-gray-200"></div>
@@ -655,19 +872,15 @@ export default function TrendingOpportunities() {
                     <div className="h-2 bg-gray-200 rounded w-12 mt-1"></div>
                   </div>
                 </div>
-                <div className="w-12 h-6 bg-gray-200 rounded-lg"></div>
+                <div className="w-8 h-8 bg-gray-200 rounded-lg"></div>
               </div>
-              <div className="h-5 bg-gray-200 rounded w-3/4 mt-4"></div>
-              <div className="flex gap-1.5 mt-3">
-                <div className="h-5 bg-gray-200 rounded-md w-16"></div>
-                <div className="h-5 bg-gray-200 rounded-md w-12"></div>
+              <div className="h-4 bg-gray-200 rounded w-3/4 mt-3"></div>
+              <div className="grid grid-cols-2 gap-2 mt-3">
+                <div className="h-3 bg-gray-200 rounded w-16"></div>
+                <div className="h-3 bg-gray-200 rounded w-16"></div>
               </div>
-              <div className="mt-5 pt-4 flex items-end justify-between">
-                <div>
-                  <div className="h-5 bg-gray-200 rounded w-20"></div>
-                  <div className="h-3 bg-gray-200 rounded w-16 mt-1"></div>
-                </div>
-                <div className="h-8 bg-gray-200 rounded-lg w-20"></div>
+              <div className="mt-4 pt-3">
+                <div className="h-8 bg-gray-200 rounded-lg w-full"></div>
               </div>
             </div>
           ))}
@@ -680,11 +893,11 @@ export default function TrendingOpportunities() {
     return (
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 bg-white">
         <div className="text-center mb-4">
-          <h2 className="text-xl sm:text-2xl font-bold text-[#111]">✨ Curated roles for Freshers</h2>
+          <h2 className="text-lg sm:text-xl font-bold text-[#111]">✨ Curated roles for Freshers</h2>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
           {[1, 2, 3, 4, 5, 6].map((i) => (
-            <div key={i} className="rounded-2xl border border-[#ECECEC] bg-white p-4 animate-pulse">
+            <div key={i} className="rounded-xl border border-[#ECECEC] bg-white p-4 animate-pulse">
               <div className="flex items-start justify-between">
                 <div className="flex items-center gap-3">
                   <div className="w-14 h-14 rounded-lg bg-gray-200"></div>
@@ -693,19 +906,15 @@ export default function TrendingOpportunities() {
                     <div className="h-2 bg-gray-200 rounded w-12 mt-1"></div>
                   </div>
                 </div>
-                <div className="w-12 h-6 bg-gray-200 rounded-lg"></div>
+                <div className="w-8 h-8 bg-gray-200 rounded-lg"></div>
               </div>
-              <div className="h-5 bg-gray-200 rounded w-3/4 mt-4"></div>
-              <div className="flex gap-1.5 mt-3">
-                <div className="h-5 bg-gray-200 rounded-md w-16"></div>
-                <div className="h-5 bg-gray-200 rounded-md w-12"></div>
+              <div className="h-4 bg-gray-200 rounded w-3/4 mt-3"></div>
+              <div className="grid grid-cols-2 gap-2 mt-3">
+                <div className="h-3 bg-gray-200 rounded w-16"></div>
+                <div className="h-3 bg-gray-200 rounded w-16"></div>
               </div>
-              <div className="mt-5 pt-4 flex items-end justify-between">
-                <div>
-                  <div className="h-5 bg-gray-200 rounded w-20"></div>
-                  <div className="h-3 bg-gray-200 rounded w-16 mt-1"></div>
-                </div>
-                <div className="h-8 bg-gray-200 rounded-lg w-20"></div>
+              <div className="mt-4 pt-3">
+                <div className="h-8 bg-gray-200 rounded-lg w-full"></div>
               </div>
             </div>
           ))}
@@ -736,26 +945,26 @@ export default function TrendingOpportunities() {
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 bg-white">
       <div className="text-center mb-4">
         <h2 className="text-xl sm:text-2xl font-bold text-[#111]">✨ Curated for Freshers</h2>
-        <p className="text-xs text-[#A1A1A1] mt-1">Hand-picked entry-level finance opportunities</p>
+        <p className="text-xs text-[#A1A1A1] mt-1">Hand-picked entry-level finance opportunities just for you</p>
       </div>
       
       <PopularRolesSection />
       
       <div className="w-full flex justify-center mb-6 overflow-x-auto">
-        <div className="flex items-center gap-3 bg-[#F7F7F7] p-1.5 rounded-2xl border border-[#EAEAEA]">
+        <div className="flex items-center gap-2 bg-[#F7F7F7] p-1 rounded-xl border border-[#EAEAEA]">
           <button
             onClick={() => handleFilterChange("all")}
-            className={`min-w-[200px] px-5 py-3 rounded-xl transition-all duration-200 border ${
+            className={`min-w-[160px] px-4 py-2 rounded-lg transition-all duration-200 border ${
               activeFilter === "all"
                 ? "bg-black border-black shadow-sm"
                 : "bg-white border-[#E5E5E5] hover:bg-[#FAFAFA]"
             }`}
           >
             <div className="flex items-center justify-center gap-2">
-              <span className={`text-sm font-semibold ${activeFilter === "all" ? "text-white" : "text-black"}`}>
+              <span className={`text-xs font-semibold ${activeFilter === "all" ? "text-white" : "text-black"}`}>
                 All Opportunities
               </span>
-              <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${activeFilter === "all" ? "bg-white/20 text-white" : "bg-[#F1F1F1] text-black"}`}>
+              <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-medium ${activeFilter === "all" ? "bg-white/20 text-white" : "bg-[#F1F1F1] text-black"}`}>
                 {allOpportunities.length}
               </span>
             </div>
@@ -763,17 +972,17 @@ export default function TrendingOpportunities() {
 
           <button
             onClick={() => handleFilterChange("jobs")}
-            className={`min-w-[200px] px-5 py-3 rounded-xl transition-all duration-200 border ${
+            className={`min-w-[160px] px-4 py-2 rounded-lg transition-all duration-200 border ${
               activeFilter === "jobs"
                 ? "bg-black border-black shadow-sm"
                 : "bg-white border-[#E5E5E5] hover:bg-[#FAFAFA]"
             }`}
           >
             <div className="flex items-center justify-center gap-2">
-              <span className={`text-sm font-semibold ${activeFilter === "jobs" ? "text-white" : "text-black"}`}>
+              <span className={`text-xs font-semibold ${activeFilter === "jobs" ? "text-white" : "text-black"}`}>
                 Full-Time Jobs
               </span>
-              <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${activeFilter === "jobs" ? "bg-white/20 text-white" : "bg-[#F1F1F1] text-black"}`}>
+              <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-medium ${activeFilter === "jobs" ? "bg-white/20 text-white" : "bg-[#F1F1F1] text-black"}`}>
                 {jobsCount}
               </span>
             </div>
@@ -781,17 +990,17 @@ export default function TrendingOpportunities() {
 
           <button
             onClick={() => handleFilterChange("internships")}
-            className={`min-w-[200px] px-5 py-3 rounded-xl transition-all duration-200 border ${
+            className={`min-w-[160px] px-4 py-2 rounded-lg transition-all duration-200 border ${
               activeFilter === "internships"
                 ? "bg-black border-black shadow-sm"
                 : "bg-white border-[#E5E5E5] hover:bg-[#FAFAFA]"
             }`}
           >
             <div className="flex items-center justify-center gap-2">
-              <span className={`text-sm font-semibold ${activeFilter === "internships" ? "text-white" : "text-black"}`}>
+              <span className={`text-xs font-semibold ${activeFilter === "internships" ? "text-white" : "text-black"}`}>
                 Internships
               </span>
-              <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${activeFilter === "internships" ? "bg-white/20 text-white" : "bg-[#F1F1F1] text-black"}`}>
+              <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-medium ${activeFilter === "internships" ? "bg-white/20 text-white" : "bg-[#F1F1F1] text-black"}`}>
                 {internshipsCount}
               </span>
             </div>
@@ -807,7 +1016,7 @@ export default function TrendingOpportunities() {
         </div>
       )}
 
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
         {displayedOpportunities.map((opportunity) => (
           opportunity.type === "job" ? (
             <JobCard key={opportunity.id} job={opportunity} imageErrors={imageErrors} handleImageError={handleImageError} onSaveToggle={handleSaveToggle} />
@@ -818,13 +1027,13 @@ export default function TrendingOpportunities() {
       </div>
 
       {hasMore && filteredOpportunities.length > 0 && (
-        <div className="text-center mt-8">
+        <div className="text-center mt-6">
           <button
             onClick={handleViewMore}
-            className="inline-flex items-center gap-1.5 px-5 py-2.5 bg-white border border-[#ECECEC] text-[#111] font-medium rounded-xl hover:bg-[#F7F7F7] transition-all duration-300 text-sm cursor-pointer"
+            className="inline-flex items-center gap-2 px-5 py-2.5 bg-white border border-[#ECECEC] text-[#111] font-medium rounded-lg hover:border-[#FFD700] hover:bg-[#FFD700]/5 transition-all duration-300 text-xs cursor-pointer"
           >
             Load more opportunities
-            <ChevronRight size={14} />
+            <ChevronRight size={12} />
           </button>
         </div>
       )}
