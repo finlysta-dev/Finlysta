@@ -11,7 +11,7 @@ import {
   Target, Award, Users, Star, Zap, Globe, Code2, Layers, LineChart,
   Radio, Filter, BriefcaseIcon, ExternalLink, Calendar, Laptop,
   Building, Award as AwardIcon, FolderOpen, GitBranch, BookMarked, AlertCircle,
-  TrendingUp as TrendingUpIcon, BadgeCheck, ChartLine
+  TrendingUp as TrendingUpIcon, BadgeCheck, ChartLine, Plus, Minus
 } from "lucide-react";
 import Link from "next/link";
 import Header from "./components/Header";
@@ -23,14 +23,26 @@ import Newsletter from "@/components/Newsletter";
 const FAQ = () => {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
 
-  const faqs = [
+   const faqs = [
     { 
       q: "How is Finlysta different from traditional job portals?", 
       a: "Unlike traditional portals, Finlysta focuses only on entry-level finance roles. Every listing is manually reviewed — no ghost jobs, no spam, no irrelevant senior positions."
     },
     { 
+      q: "Are the jobs on Finlysta verified?", 
+      a: "Yes. Every job and internship listed on Finlysta is manually reviewed to help students avoid fake listings, spam, and irrelevant senior-level roles."
+    },
+    { 
+      q: "What kind of finance jobs are available on Finlysta?", 
+      a: "Finlysta features entry-level finance roles including Financial Analyst, FP&A, Investment Banking, Equity Research, Audit, Tax, MIS, Accounting, and Article Trainee opportunities."
+    },
+    { 
       q: "Who can use Finlysta?", 
       a: "Finlysta is designed for finance students, graduates, and career-switchers looking for internships and entry-level positions in financial analysis, investment banking, equity research, accounting, and related fields."
+    },
+    { 
+      q: "Can freshers apply for jobs on Finlysta?", 
+      a: "Absolutely. Finlysta is built specifically for students, graduates, and first-time job seekers looking for fresher-friendly finance opportunities."
     },
     { 
       q: "Is Finlysta really free?", 
@@ -39,86 +51,149 @@ const FAQ = () => {
   ];
 
   return (
-    <section className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16">
-      <div className="text-center mb-8">
-        <div className="inline-flex items-center gap-2 bg-gradient-to-r from-[#FFD700]/20 to-[#FFA500]/20 rounded-full px-4 py-1.5 mb-3">
-          <HelpCircle size={14} className="text-[#FFD700]" />
-          <span className="text-xs font-semibold text-[#0A2540]">Quick Answers</span>
-        </div>
-        <h2 className="text-2xl sm:text-3xl font-bold text-[#0A2540]">Frequently Asked Questions</h2>
-      </div>
-      <div className="space-y-3">
-        {faqs.map((faq, idx) => (
-          <div 
-            key={idx} 
-            className="border border-gray-200 transition-all duration-300 ease-in-out bg-white rounded-xl hover:shadow-sm"
-          >
-            <button
-              onClick={() => setOpenIndex(openIndex === idx ? null : idx)}
-              className="flex justify-between items-center w-full py-3.5 px-5 text-left"
-              aria-expanded={openIndex === idx}
-            >
-              <span className="text-sm sm:text-base font-medium text-gray-800 pr-4">
-                {faq.q}
-              </span>
-              <span className={`transform transition-transform duration-300 ease-in-out flex-shrink-0 ${openIndex === idx ? 'rotate-180' : ''}`}>
-                <ChevronDown size={18} className="text-gray-500" />
-              </span>
-            </button>
-            <div 
-              className={`overflow-hidden transition-all duration-300 ease-in-out px-5 ${
-                openIndex === idx ? 'max-h-32 opacity-100 pb-4' : 'max-h-0 opacity-0'
-              }`}
-            >
-              <p className="text-sm text-gray-600">
-                {faq.a}
-              </p>
-            </div>
+    <section className="bg-[#F8FAFC] py-16 md:py-20">
+      <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+        
+        {/* Header */}
+        <div className="text-center mb-10">
+          <div className="inline-flex items-center gap-2 bg-gradient-to-r from-[#FFD700]/20 to-[#FFD700]/10 rounded-full px-4 py-1.5 mb-4">
+            <HelpCircle size={14} className="text-[#FFD700]" />
+            <span className="text-xs font-semibold text-[#0A2540]">Frequently Asked Questions</span>
           </div>
-        ))}
+          <h2 className="text-2xl sm:text-3xl font-bold text-[#0A2540] mb-3">
+            Everything You Need to Know About <span className="text-[#FFD700]">Finlysta</span>
+          </h2>
+          <p className="text-sm text-[#64748B] max-w-2xl mx-auto">
+            Find answers to common questions about finance jobs, internships, and how Finlysta works
+          </p>
+        </div>
+
+        {/* FAQ Accordion */}
+        <div className="space-y-4">
+          {faqs.map((faq, idx) => {
+            const isOpen = openIndex === idx;
+            
+            return (
+              <div 
+                key={idx} 
+                className={`bg-white border rounded-2xl transition-all duration-300 ${
+                  isOpen 
+                    ? 'border-[#FFD700]/40 shadow-md' 
+                    : 'border-gray-100 hover:border-[#FFD700]/30 hover:shadow-sm'
+                }`}
+              >
+                <button
+                  onClick={() => setOpenIndex(isOpen ? null : idx)}
+                  className="flex justify-between items-center w-full py-4 px-6 text-left"
+                  aria-expanded={isOpen}
+                >
+                  <span className="text-sm sm:text-base font-semibold text-[#0A2540] pr-4">
+                    {faq.q}
+                  </span>
+                  <span className={`flex-shrink-0 w-6 h-6 rounded-full bg-[#F8FAFC] flex items-center justify-center transition-all duration-300 ${
+                    isOpen ? 'bg-[#FFD700]/10' : ''
+                  }`}>
+                    {isOpen ? (
+                      <Minus size={14} className="text-[#FFD700]" />
+                    ) : (
+                      <Plus size={14} className="text-[#0A2540]" />
+                    )}
+                  </span>
+                </button>
+                
+                <div 
+                  className={`overflow-hidden transition-all duration-300 ease-in-out px-6 ${
+                    isOpen ? 'max-h-40 opacity-100 pb-5' : 'max-h-0 opacity-0'
+                  }`}
+                >
+                  <p className="text-sm text-[#64748B] leading-relaxed">
+                    {faq.a}
+                  </p>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Bottom CTA */}
+        <div className="text-center mt-10 pt-4">
+          <p className="text-sm text-[#64748B] mb-3">
+            Still have questions?
+          </p>
+          <a 
+            href="mailto:support@finlysta.com" 
+            className="inline-flex items-center gap-2 text-sm font-medium text-[#FFD700] hover:text-[#FFA500] transition-colors"
+          >
+            Contact our support team
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+            </svg>
+          </a>
+        </div>
+
       </div>
     </section>
   );
 };
 
 // Call to Action Section
+// Call to Action Section - Improved Version with Better Text Visibility
 const CTASection = () => {
   return (
-    <div className="bg-gradient-to-br from-[#0A2540] via-[#0f2d4a] to-[#1a3a5c] py-16 md:py-20 relative overflow-hidden">
-      <div className="absolute top-0 right-0 w-64 h-64 bg-[#FFD700]/5 rounded-full blur-3xl"></div>
-      <div className="absolute bottom-0 left-0 w-80 h-80 bg-[#FFA500]/5 rounded-full blur-3xl"></div>
+    <div className="relative overflow-hidden bg-gradient-to-b from-[#0A2540] to-[#133B5C] py-20 md:py-24">
+      {/* Background Blur Elements */}
+      <div className="absolute top-0 right-0 w-96 h-96 bg-[#FFD700]/10 rounded-full blur-3xl"></div>
+      <div className="absolute bottom-0 left-0 w-96 h-96 bg-[#FFA500]/10 rounded-full blur-3xl"></div>
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full max-w-4xl mx-auto bg-[#FFD700]/[0.03] rounded-full blur-3xl"></div>
       
-      <div className="max-w-4xl mx-auto px-4 text-center relative z-10">
-        <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-full px-4 py-1.5 mb-6">
-          <Sparkles size={14} className="text-[#FFD700]" />
-          <span className="text-xs font-semibold text-[#FFD700]">No Credit Card Required · Forever Free</span>
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
+        
+        {/* Badge - Improved with text */}
+        <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full px-4 py-1.5 mb-6">
+          <Sparkles size={13} className="text-[#FFD700]" />
+          <span className="text-xs font-semibold text-black">
+            Built for Finance Freshers
+          </span>
         </div>
         
-        <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4">
-          Ready to Launch Your Finance Career?
+        {/* Heading - More confident */}
+        <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-black mb-4 leading-tight">
+          Start Your Finance Career <br className="hidden sm:block" />
+          <span className="bg-gradient-to-r from-[#FFD700] to-[#FFA500] bg-clip-text text">
+            with Confidence
+          </span>
         </h2>
-        <p className="text-lg md:text-xl text-gray-200 mb-10 max-w-2xl mx-auto">
-          Get started today — no payment, no spam, just real opportunities.
+        
+        {/* Subheading - More specific & benefit-driven */}
+        <p className="text-base md:text-lg text-white/80 mb-10 max-w-2xl mx-auto leading-relaxed">
+          Verified finance jobs, internships, and learning resources 
+          <br className="hidden sm:block" />
+          designed for students and freshers.
         </p>
         
+        {/* Buttons - Better hierarchy */}
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <Link href="/jobs">
             <button 
-              className="px-8 py-3 md:px-10 md:py-4 text-base md:text-lg font-bold rounded-xl transition-all duration-300 hover:scale-105 cursor-pointer flex items-center gap-2 mx-auto"
+              className="group px-8 py-3.5 md:px-10 md:py-4 text-sm md:text-base font-bold rounded-xl transition-all duration-300 hover:scale-105 cursor-pointer flex items-center justify-center gap-2 min-w-[200px]"
               style={{
                 background: "linear-gradient(135deg, #FFD700 0%, #FFA500 100%)",
                 color: "#0A2540",
-                boxShadow: "0 4px 15px rgba(0, 0, 0, 0.2)"
+                boxShadow: "0 8px 20px -6px rgba(255, 215, 0, 0.3)"
               }}
             >
-              Browse Jobs Now <ArrowRight size={18} />
+              <Briefcase size={18} />
+              <span>Browse Jobs</span>
+              <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
             </button>
           </Link>
+          
           <Link href="/learn">
             <button 
-              className="px-8 py-3 md:px-10 md:py-4 text-base md:text-lg font-bold rounded-xl transition-all duration-300 hover:scale-105 cursor-pointer bg-white/10 backdrop-blur-sm text-white border border-white/20 flex items-center gap-2 mx-auto"
+              className="px-8 py-3.5 md:px-10 md:py-4 text-sm md:text-base font-semibold rounded-xl transition-all duration-300 hover:scale-105 cursor-pointer flex items-center justify-center gap-2 bg-white/10 backdrop-blur-sm text-black border border-white/20 hover:bg-white-20 min-w-[200px]"
             >
-              <BookOpen size={18} /> Free Career Resources
+              <BookOpen size={18} />
+              <span>Start Learning</span>
             </button>
           </Link>
         </div>
@@ -453,7 +528,6 @@ export default function HomePageContent() {
         <FinanceTopics />
 
         {/* NEWSLETTER SECTION */}
-        <Newsletter />
 
         {/* FAQ SECTION */}
         <FAQ />
@@ -477,7 +551,7 @@ export default function HomePageContent() {
                   className="object-contain"
                 />
               </Link>
-              <p className="text-sm text-slate-600 leading-relaxed max-w-xs">The job board built exclusively for entry-level financial analyst roles and internships in India.</p>
+              <p className="text-sm text-slate-600 leading-relaxed max-w-xs">The job board built exclusively for entry-level financial roles and internships in India.</p>
               <div className="space-y-2 pt-1">
                 <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Follow us on</p>
                 <div className="flex gap-3">
