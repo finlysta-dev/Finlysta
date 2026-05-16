@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
   MapPin, Clock, Building2,
-  ChevronRight, Calendar, Briefcase, CheckCircle, ChevronLeft,
+  ChevronRight, Calendar, Briefcase, CheckCircle, ChevronLeft, ArrowRight,
   Award, Zap, Bookmark, TrendingUp, BarChart3, LineChart, DollarSign,
   Shield, Target, Activity, BriefcaseIcon, GraduationCap, Star,
   Eye, ExternalLink, CreditCard, Users, Globe, Wifi, Sparkles,
