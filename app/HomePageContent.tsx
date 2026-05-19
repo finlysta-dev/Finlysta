@@ -19,6 +19,304 @@ import TrendingInternships from "@/components/TrendingOpportunities";
 import FinanceTopics from "@/components/FinanceTopics";
 import Newsletter from "@/components/Newsletter";
 
+// Helper components for missing Lucide icons
+const HelpCircle = ({ size, className }: { size?: number; className?: string }) => {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" width={size || 24} height={size || 24} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+      <circle cx="12" cy="12" r="10"></circle>
+      <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+      <line x1="12" y1="17" x2="12.01" y2="17"></line>
+    </svg>
+  );
+};
+
+const FileText = ({ size, className }: { size?: number; className?: string }) => {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" width={size || 24} height={size || 24} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+      <polyline points="14 2 14 8 20 8"></polyline>
+      <line x1="16" y1="13" x2="8" y2="13"></line>
+      <line x1="16" y1="17" x2="8" y2="17"></line>
+      <polyline points="10 9 9 9 8 9"></polyline>
+    </svg>
+  );
+};
+
+// BLOG PREVIEW SECTION - Dynamic version that fetches from your API
+const BlogPreviewSection = () => {
+  const router = useRouter();
+  const [blogs, setBlogs] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [imageErrors, setImageErrors] = useState<Record<string, boolean>>({});
+
+  // Custom display titles for homepage (shorter, cleaner)
+  const getDisplayTitle = (fullTitle: string, category: string) => {
+    if (fullTitle.includes("Cold DMs")) {
+      return "Stop Sending Cold DMs That Get Ignored";
+    }
+    if (fullTitle.includes("Financial Analyst")) {
+      return "How to Become a Financial Analyst in India";
+    }
+    if (fullTitle.includes("Financial Modeling")) {
+      return "Top Financial Modeling Interview Questions";
+    }
+    if (fullTitle.includes("Investment Banking")) {
+      return "Investment Banking vs Equity Research";
+    }
+    return fullTitle.split(":")[0].split(" - ")[0].substring(0, 60);
+  };
+
+  // Custom subtitles for homepage
+  const getDisplaySubtitle = (fullTitle: string) => {
+    if (fullTitle.includes("Cold DMs")) {
+      return "The ultimate networking playbook for finance freshers in 2026.";
+    }
+    if (fullTitle.includes("Financial Analyst")) {
+      return "A step-by-step roadmap for freshers to land their first finance role.";
+    }
+    if (fullTitle.includes("Financial Modeling")) {
+      return "Master your finance interviews with these essential questions and expert answers.";
+    }
+    if (fullTitle.includes("Investment Banking")) {
+      return "Compare salary, work-life balance, and growth prospects in IB vs ER roles.";
+    }
+    return "";
+  };
+
+  // Get read time based on title
+  const getReadTime = (title: string) => {
+    if (title.includes("Financial Modeling")) return "12 min read";
+    if (title.includes("Investment Banking")) return "10 min read";
+    if (title.includes("Cold DMs")) return "8 min read";
+    return "8 min read";
+  };
+
+  useEffect(() => {
+    fetchBlogs();
+  }, []);
+
+  const fetchBlogs = async () => {
+    try {
+      setLoading(true);
+      const res = await fetch("/api/career-resources");
+      const data = await res.json();
+      
+      let blogsData = [];
+      if (Array.isArray(data)) {
+        blogsData = data;
+      } else if (data.resources && Array.isArray(data.resources)) {
+        blogsData = data.resources;
+      } else if (data.data && Array.isArray(data.data)) {
+        blogsData = data.data;
+      } else {
+        blogsData = [];
+      }
+      
+      // Filter only text/blog type resources and take first 2
+      const textBlogs = blogsData.filter((item: any) => item.type === 'text');
+      setBlogs(textBlogs.slice(0, 2));
+    } catch (err) {
+      console.error("Error fetching blogs:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleReadMore = (slug: string) => {
+    router.push(`/blogs/${slug}`);
+  };
+
+  const handleExploreAllBlogs = () => {
+    router.push(`/blogs`);
+  };
+
+  // Function to get Google Drive direct image URL
+  const getGoogleDriveImageUrl = (url: string | null) => {
+    if (!url) return null;
+    
+    const driveMatch = url.match(/\/d\/([^\/]+)/);
+    if (driveMatch) {
+      const fileId = driveMatch[1];
+      return `https://drive.google.com/uc?export=view&id=${fileId}`;
+    }
+    
+    if (url.includes('uc?export=view') || url.includes('usercontent')) {
+      return url;
+    }
+    
+    return url;
+  };
+
+  const handleImageError = (blogId: string) => {
+    setImageErrors(prev => ({ ...prev, [blogId]: true }));
+  };
+
+  const getCategoryLabel = (category: string) => {
+    const categories: Record<string, string> = {
+      'resume-tips': 'Resume Tips',
+      'jobs': 'Job Search',
+      'roadmap': 'Career Roadmaps',
+      'profile-tips': 'Profile Tips',
+      'interview': 'Interview Prep',
+      'skills': 'Skill Development',
+      'career': 'Career Guide',
+      'Career Advice': 'Career Advice',
+      'networking': 'Networking',
+    };
+    return categories[category] || category.replace('-', ' ');
+  };
+
+  const formatDate = (date: string) => {
+    return new Date(date).toLocaleDateString('en-US', {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric'
+    });
+  };
+
+  if (loading) {
+    return (
+      <section className="py-16 md:py-20 bg-[#F8FAFC]">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <div className="inline-flex items-center gap-2 bg-gradient-to-r from-[#FFD700]/20 to-[#FFA500]/20 rounded-full px-4 py-1.5 mb-4">
+              <BookOpen size={14} className="text-[#FFD700]" />
+              <span className="text-xs font-semibold text-[#0A2540]">📘 Fresh Insights</span>
+            </div>
+            <h2 className="text-3xl md:text-4xl lg:text-5xl font-black tracking-tight text-[#0A2540] mb-4">
+              Insights, stories, and tools for <br />
+              <span className="bg-gradient-to-r from-[#FFD700] to-[#FFA500] bg-clip-text text-transparent">
+                building your finance career
+              </span>
+            </h2>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 max-w-4xl mx-auto">
+            {[1, 2].map((i) => (
+              <div key={i} className="bg-white rounded-[32px] overflow-hidden shadow-sm border border-gray-100 animate-pulse">
+                <div className="h-[220px] bg-gray-200"></div>
+                <div className="p-6 space-y-3">
+                  <div className="h-4 bg-gray-200 rounded w-32"></div>
+                  <div className="h-6 bg-gray-200 rounded w-3/4"></div>
+                  <div className="h-4 bg-gray-200 rounded w-full"></div>
+                  <div className="h-4 bg-gray-200 rounded w-2/3"></div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  if (blogs.length === 0) {
+    return null;
+  }
+
+  return (
+    <section className="py-16 md:py-20 bg-[#F8FAFC]">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        
+        {/* Section Header */}
+        <div className="text-center mb-12">
+          <div className="inline-flex items-center gap-2 bg-gradient-to-r from-[#FFD700]/20 to-[#FFA500]/20 rounded-full px-4 py-1.5 mb-4">
+            <BookOpen size={14} className="text-[#FFD700]" />
+            <span className="text-xs font-semibold text-[#0A2540]">📘 Fresh Insights</span>
+          </div>
+          <h2 className="text-3xl md:text-4xl lg:text-5xl font-black tracking-tight text-[#0A2540] mb-4">
+            Insights, stories, and tools for <br />
+            <span className="bg-gradient-to-r from-[#FFD700] to-[#FFA500] bg-clip-text text-transparent">
+              building your finance career
+            </span>
+          </h2>
+          <p className="text-sm md:text-base text-slate-600 max-w-2xl mx-auto">
+            Expert career advice, interview tips, and practical finance guides for students and freshers.
+          </p>
+        </div>
+
+        {/* Blog Cards Grid - 2 cards only for cleaner design */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 max-w-5xl mx-auto">
+          {blogs.map((blog) => {
+            const coverImageUrl = blog.coverImage ? getGoogleDriveImageUrl(blog.coverImage) : null;
+            const hasImageError = imageErrors[blog.id];
+            const categoryLabel = getCategoryLabel(blog.category);
+            const displayTitle = getDisplayTitle(blog.title, blog.category);
+            const displaySubtitle = getDisplaySubtitle(blog.title);
+            const readTime = getReadTime(blog.title);
+            
+            return (
+              <div 
+                key={blog.id}
+                onClick={() => handleReadMore(blog.slug)}
+                className="group bg-white rounded-[32px] overflow-hidden shadow-[0_8px_30px_rgba(0,0,0,0.06)] border border-gray-100 hover:shadow-[0_20px_40px_rgba(0,0,0,0.1)] transition-all duration-300 hover:-translate-y-1 cursor-pointer"
+              >
+                {/* Blog Image */}
+                <div className="relative overflow-hidden bg-gradient-to-br from-[#0A2540] to-[#1a3a5c]">
+                  {coverImageUrl && !hasImageError ? (
+                    <img
+                      src={coverImageUrl}
+                      alt={displayTitle}
+                      className="w-full h-[240px] md:h-[260px] object-cover group-hover:scale-105 transition-transform duration-500"
+                      onError={() => handleImageError(blog.id)}
+                    />
+                  ) : (
+                    <div className="w-full h-[240px] md:h-[260px] flex flex-col items-center justify-center bg-gradient-to-br from-[#0A2540] to-[#1a3a5c]">
+                      <BookOpen size={64} className="text-white/20 mb-3" />
+                      <span className="text-white/40 text-sm">Finance Guide</span>
+                    </div>
+                  )}
+                </div>
+
+                {/* Blog Content */}
+                <div className="p-6 md:p-7">
+                  {/* Meta info - Single line with category, read time, and date */}
+                  <div className="flex items-center gap-2 text-xs text-slate-500 mb-3">
+                    <span className="font-medium text-[#D4A017]">{categoryLabel}</span>
+                    <span>•</span>
+                    <span>{readTime}</span>
+                    <span>•</span>
+                    <span>{formatDate(blog.createdAt)}</span>
+                  </div>
+
+                  {/* Title - Full line, responsive text size, no scroll */}
+                  <h3 className="text-base sm:text-lg md:text-xl font-bold text-[#0A2540] leading-tight mb-3 group-hover:text-[#D4A017] transition-colors">
+                    {displayTitle}
+                  </h3>
+
+                  {/* Subtitle - Clean description */}
+                  {displaySubtitle && (
+                    <p className="text-sm text-slate-600 leading-relaxed mb-5">
+                      {displaySubtitle}
+                    </p>
+                  )}
+
+                  {/* Read More Link - Improved hover effect */}
+                  <div className="flex items-center pt-3 border-t border-gray-100 mt-2">
+                    <span className="text-sm font-semibold text-[#0A2540] group-hover:text-[#D4A017] transition-all duration-300 flex items-center gap-1 group-hover:gap-2">
+                      Read full article
+                      <ArrowRight size={14} className="transition-transform group-hover:translate-x-1" />
+                    </span>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Explore All Blogs Button */}
+        <div className="text-center mt-12">
+          <button
+            onClick={handleExploreAllBlogs}
+            className="inline-flex items-center gap-2 px-8 py-3.5 bg-white border-2 border-[#FFD700] text-[#0A2540] font-semibold rounded-xl hover:bg-[#FFD700] hover:border-[#FFD700] transition-all duration-300 text-sm hover:shadow-md"
+          >
+            Explore All Blogs
+            <ArrowRight size={14} />
+          </button>
+        </div>
+      </div>
+    </section>
+  );
+};
+
 // Simplified FAQ Component
 const FAQ = () => {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
@@ -137,7 +435,6 @@ const FAQ = () => {
 };
 
 // Call to Action Section
-// Call to Action Section - Improved Version with Better Text Visibility
 const CTASection = () => {
   return (
     <div className="relative overflow-hidden bg-gradient-to-b from-[#0A2540] to-[#133B5C] py-20 md:py-24">
@@ -148,7 +445,7 @@ const CTASection = () => {
       
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
         
-        {/* Badge - Improved with text */}
+        {/* Badge */}
         <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full px-4 py-1.5 mb-6">
           <Sparkles size={13} className="text-[#FFD700]" />
           <span className="text-xs font-semibold text-black">
@@ -156,22 +453,22 @@ const CTASection = () => {
           </span>
         </div>
         
-        {/* Heading - More confident */}
+        {/* Heading */}
         <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-black mb-4 leading-tight">
           Start Your Finance Career <br className="hidden sm:block" />
-          <span className="bg-gradient-to-r from-[#FFD700] to-[#FFA500] bg-clip-text text">
+          <span className="bg-gradient-to-r from-[#FFD700] to-[#FFA500] bg-clip-text text-transparent">
             with Confidence
           </span>
         </h2>
         
-        {/* Subheading - More specific & benefit-driven */}
+        {/* Subheading */}
         <p className="text-base md:text-lg text-white/80 mb-10 max-w-2xl mx-auto leading-relaxed">
           Verified finance jobs, internships, and learning resources 
           <br className="hidden sm:block" />
           designed for students and freshers.
         </p>
         
-        {/* Buttons - Better hierarchy */}
+        {/* Buttons */}
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <Link href="/jobs">
             <button 
@@ -254,7 +551,7 @@ const SkillsSection = () => {
   );
 };
 
-// Role Categories Section - 3 Modern Categories
+// Role Categories Section
 const RoleCategoriesSection = () => {
   const roleCategories = [
     {
@@ -368,39 +665,6 @@ const RoleCategoriesSection = () => {
   );
 };
 
-// Helper components for missing Lucide icons
-const HelpCircle = ({ size, className }: { size?: number; className?: string }) => {
-  return (
-    <svg xmlns="http://www.w3.org/2000/svg" width={size || 24} height={size || 24} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
-      <circle cx="12" cy="12" r="10"></circle>
-      <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
-      <line x1="12" y1="17" x2="12.01" y2="17"></line>
-    </svg>
-  );
-};
-
-const Database = ({ size, className }: { size?: number; className?: string }) => {
-  return (
-    <svg xmlns="http://www.w3.org/2000/svg" width={size || 24} height={size || 24} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
-      <ellipse cx="12" cy="5" rx="9" ry="3"></ellipse>
-      <path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path>
-      <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path>
-    </svg>
-  );
-};
-
-const FileText = ({ size, className }: { size?: number; className?: string }) => {
-  return (
-    <svg xmlns="http://www.w3.org/2000/svg" width={size || 24} height={size || 24} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
-      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-      <polyline points="14 2 14 8 20 8"></polyline>
-      <line x1="16" y1="13" x2="8" y2="13"></line>
-      <line x1="16" y1="17" x2="8" y2="17"></line>
-      <polyline points="10 9 9 9 8 9"></polyline>
-    </svg>
-  );
-};
-
 // Main Page Content Component
 export default function HomePageContent() {
   const router = useRouter();
@@ -418,7 +682,7 @@ export default function HomePageContent() {
       <Header />
 
       <main>
-        {/* HERO SECTION - Enhanced with emotional hook */}
+        {/* HERO SECTION */}
         <section className="relative bg-gradient-to-br from-[#EEF2FF] via-[#F8FAFC] to-white py-16 md:py-20 lg:py-24 overflow-hidden">
           <div className="absolute top-20 right-10 w-72 h-72 bg-[#FFD700]/5 rounded-full blur-3xl"></div>
           <div className="absolute bottom-10 left-10 w-96 h-96 bg-[#FFA500]/5 rounded-full blur-3xl"></div>
@@ -432,7 +696,7 @@ export default function HomePageContent() {
               
               <h1 className="text-4xl sm:text-5xl md:text-5xl xl:text-7xl font-black text-[#0A2540] mb-6 leading-tight animate-in fade-in slide-in-from-bottom-4 duration-700 delay-100">
               Find Your Dream Finance Job & Internship
-                <span className="inline-block bg-gradient-to-r from-[#FFD700] to-[#FFA500] bg-clip-text text">
+                <span className="inline-block bg-gradient-to-r from-[#FFD700] to-[#FFA500] bg-clip-text text-transparent">
                   {" "}That Match Your Skills & Interests
                 </span>
               </h1>
@@ -476,13 +740,13 @@ export default function HomePageContent() {
           </div>
         </section>
 
-        {/* TRENDING OPPORTUNITIES - Live jobs section */}
+        {/* TRENDING OPPORTUNITIES */}
         <TrendingInternships />
 
         {/* SKILLS SECTION */}
         <SkillsSection />
 
-        {/* ROLE CATEGORIES SECTION - 3 Modern Cards */}
+        {/* ROLE CATEGORIES SECTION */}
         <RoleCategoriesSection />
 
         {/* CAREER PATH - Roadmap Image Section */}
@@ -527,7 +791,8 @@ export default function HomePageContent() {
         {/* LEARNING SECTION */}
         <FinanceTopics />
 
-        {/* NEWSLETTER SECTION */}
+        {/* BLOG PREVIEW SECTION */}
+        <BlogPreviewSection />
 
         {/* FAQ SECTION */}
         <FAQ />
