@@ -2,34 +2,10 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 
 export default function Header() {
-  const [mounted, setMounted] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  if (!mounted) {
-    return (
-      <header className="bg-white sticky top-0 z-50 border-b border-slate-200 shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-          <Link href="/" className="flex items-center shrink-0" aria-label="Finlysta Home">
-            <Image 
-              src="/Finlysta.png" 
-              alt="Finlysta Logo" 
-              width={200} 
-              height={45}
-              priority
-            />
-          </Link>
-          <div className="w-28 h-8 bg-slate-200 rounded-full animate-pulse"></div>
-        </div>
-      </header>
-    );
-  }
 
   const navLinks = [
     { href: "/", label: "Home" },
@@ -40,6 +16,9 @@ export default function Header() {
     { href: "/interview-prep", label: "Interview Prep" },
     { href: "/blogs", label: "Blogs" },
   ];
+
+  // Pages that are heavy and don't need prefetching
+  const noPrefetch = ["/blogs", "/learn"];
 
   return (
     <>
@@ -68,6 +47,7 @@ export default function Header() {
               <Link 
                 key={link.href}
                 href={link.href}
+                prefetch={!noPrefetch.includes(link.href)}
                 className="text-sm font-semibold text-slate-700 hover:text-emerald-600 transition-colors duration-200"
               >
                 {link.label}
@@ -78,11 +58,13 @@ export default function Header() {
           {/* Empty div for spacing balance on desktop */}
           <div className="hidden md:block w-[180px]"></div>
 
-          {/* Mobile Menu Button */}
+          {/* Mobile Menu Button - Improved accessibility */}
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             className="md:hidden p-2 rounded-lg text-slate-700 hover:bg-slate-100 transition-colors"
-            aria-label="Toggle mobile menu"
+            aria-label={mobileMenuOpen ? "Close mobile menu" : "Open mobile menu"}
+            aria-expanded={mobileMenuOpen}
+            aria-controls="mobile-nav"
           >
             <svg 
               xmlns="http://www.w3.org/2000/svg" 
@@ -97,23 +79,26 @@ export default function Header() {
           </button>
         </div>
 
-        {/* Mobile Navigation - Dropdown Menu */}
-        {mobileMenuOpen && (
-          <div className="md:hidden border-t border-slate-100 bg-white shadow-lg animate-in fade-in slide-in-from-top-2">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 space-y-2">
-              {navLinks.map((link) => (
-                <Link 
-                  key={link.href}
-                  href={link.href}
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="block text-base font-semibold text-slate-700 hover:text-emerald-600 hover:bg-emerald-50 px-4 py-3 rounded-lg transition-colors"
-                >
-                  {link.label}
-                </Link>
-              ))}
-            </div>
+        {/* Mobile Navigation - Dropdown Menu - Always in DOM for accessibility */}
+        <div
+          id="mobile-nav"
+          className={`md:hidden border-t border-slate-100 bg-white shadow-lg transition-all duration-200 ${
+            mobileMenuOpen ? "block animate-in fade-in slide-in-from-top-2" : "hidden"
+          }`}
+        >
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 space-y-2">
+            {navLinks.map((link) => (
+              <Link 
+                key={link.href}
+                href={link.href}
+                onClick={() => setMobileMenuOpen(false)}
+                className="block text-base font-semibold text-slate-700 hover:text-emerald-600 hover:bg-emerald-50 px-4 py-3 rounded-lg transition-colors"
+              >
+                {link.label}
+              </Link>
+            ))}
           </div>
-        )}
+        </div>
       </header>
     </>
   );

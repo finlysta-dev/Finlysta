@@ -4,7 +4,7 @@ import { Suspense, lazy } from 'react';
 import "./globals.css";
 import Providers from "./providers";
 
-// Lazy load non-critical componentsd
+// Lazy load non-critical components
 const VisitorTracker = lazy(() => import("@/components/VisitorTracker"));
 
 export const viewport = {
@@ -21,11 +21,32 @@ export const viewport = {
 export const metadata: Metadata = {
   metadataBase: new URL('https://finlysta.com'),
   title: {
-    default: 'Entry Level Financial Analyst Jobs & Internships | Finlysta',
+    default: 'Finance Jobs, Internships, Learning & Career Growth | Finlysta',
     template: '%s | Finlysta'
   },
-  description: 'Find entry level financial analyst jobs and internships in India. Start your finance career with paid internships and fresher jobs. 100% free for students.',
-  keywords: 'entry level financial analyst jobs India, financial analyst internship for freshers, junior financial analyst jobs, finance internships India, finance jobs for freshers, FP&A analyst jobs, financial reporting analyst jobs, remote financial analyst jobs, finance internships with stipend, MBA finance fresher jobs',
+  description: 'Discover finance jobs, internships, interview preparation, and learning resources across Financial Analysis, Investment Banking, FP&A, Credit Analysis, Risk Analysis, and more.',
+  keywords: [
+    'finance jobs',
+    'finance internships',
+    'financial analyst jobs',
+    'investment banking jobs',
+    'FP&A analyst jobs',
+    'credit analyst jobs',
+    'risk analyst jobs',
+    'article trainee jobs',
+    'finance careers',
+    'finance interview preparation',
+    'finance learning',
+    'entry level financial analyst jobs India',
+    'financial analyst internship for freshers',
+    'junior financial analyst jobs',
+    'finance internships India',
+    'finance jobs for freshers',
+    'financial reporting analyst jobs',
+    'remote financial analyst jobs',
+    'finance internships with stipend',
+    'MBA finance fresher jobs'
+  ],
   authors: [{ name: 'Finlysta' }],
   robots: {
     index: true,
@@ -42,31 +63,31 @@ export const metadata: Metadata = {
     canonical: 'https://finlysta.com',
   },
   openGraph: {
-    title: 'Entry Level Financial Analyst Jobs & Internships | Finlysta',
-    description: 'Find entry level financial analyst jobs and internships in India. Start your finance career with paid internships and fresher jobs. 100% free for students.',
-    url: 'https://finlysta.com',  // ✅ Changed: removed www
+    title: 'Finance Jobs, Internships, Learning & Career Growth | Finlysta',
+    description: 'Discover finance jobs, internships, interview preparation, and learning resources across Financial Analysis, Investment Banking, FP&A, Credit Analysis, Risk Analysis, and more.',
+    url: 'https://finlysta.com',
     siteName: 'Finlysta',
     locale: 'en_IN',
     type: 'website',
     images: [
       {
-        url: 'https://finlysta.com/og-image.png',  // ✅ Changed: removed www
+        url: 'https://finlysta.com/og-image.png',
         width: 1200,
         height: 630,
-        alt: 'Finlysta - Entry Level Financial Analyst Jobs & Internships',
+        alt: 'Finlysta - Finance Jobs, Internships, Learning & Career Growth Platform',
       },
     ],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Entry Level Financial Analyst Jobs & Internships | Finlysta',
-    description: 'Find entry level financial analyst jobs and internships in India. Start your finance career. 100% free.',
-    images: ['https://finlysta.com/og-image.png'],  // ✅ Changed: removed www
+    title: 'Finance Jobs, Internships, Learning & Career Growth | Finlysta',
+    description: 'Discover finance jobs, internships, interview preparation, and learning resources. Launch your finance career today.',
+    images: ['https://finlysta.com/og-image.png'],
     creator: '@Finlysta',
     site: '@Finlysta',
   },
   category: 'finance',
-  classification: 'Entry Level Financial Analyst Job Board',
+  classification: 'Finance Career Platform - Jobs, Internships, Learning & Interview Prep',
   referrer: 'origin-when-cross-origin',
   creator: 'Finlysta',
   publisher: 'Finlysta Pvt. Ltd.',
@@ -116,10 +137,8 @@ export default function RootLayout({
           fetchPriority="high"
         />
         
-        {/* SEO Meta Tags */}
-        <meta name="robots" content="index, follow" />
-        <meta name="revisit-after" content="7 days" />
-        <meta name="language" content="English" />
+        {/* ❌ ALL duplicate/problematic meta tags REMOVED */}
+        {/* Only keep referrer meta */}
         <meta name="referrer" content="strict-origin-when-cross-origin" />
         
         {/* Favicon Icons - All formats */}
@@ -130,7 +149,7 @@ export default function RootLayout({
         <link rel="icon" href="/icon.svg" type="image/svg+xml" />
         <link rel="manifest" href="/site.webmanifest" />
         
-        {/* ✅ Organization Schema - FIXED (removed www) */}
+        {/* ✅ Organization Schema - Updated with correct founding date and broader description */}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
@@ -138,11 +157,11 @@ export default function RootLayout({
               "@context": "https://schema.org",
               "@type": "Organization",
               "name": "Finlysta",
-              "alternateName": "Finlysta Job Board",
-              "url": "https://finlysta.com",  // ✅ Changed: removed www
-              "logo": "https://finlysta.com/Finlysta.png",  // ✅ Changed: removed www
-              "description": "Entry level financial analyst job board. Find paid internships and fresher jobs in financial analysis, corporate finance, and fintech.",
-              "foundingDate": "2026",
+              "alternateName": "Finlysta - Finance Career Platform",
+              "url": "https://finlysta.com",
+              "logo": "https://finlysta.com/Finlysta.png",
+              "description": "Finance career platform helping students and freshers discover jobs, internships, learning resources, and interview preparation opportunities.",
+              "foundingDate": "2024",
               "foundingLocation": "India",
               "areaServed": "India",
               "sameAs": [
@@ -155,32 +174,13 @@ export default function RootLayout({
                 "contactType": "customer support",
                 "availableLanguage": ["English", "Hindi"],
                 "responseTime": "PT24H",
-                "url": "https://finlysta.com/contact"  // ✅ Changed: removed www
+                "url": "https://finlysta.com/contact"
               }
             })
           }}
         />
         
-        {/* ✅ BreadcrumbList Schema - FIXED (removed www) */}
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
-              "@context": "https://schema.org",
-              "@type": "BreadcrumbList",
-              "itemListElement": [
-                {
-                  "@type": "ListItem",
-                  "position": 1,
-                  "name": "Home",
-                  "item": "https://finlysta.com"  // ✅ Changed: removed www
-                }
-              ]
-            })
-          }}
-        />
-        
-        {/* ✅ WebSite Schema - FIXED (removed www) */}
+        {/* ✅ WebSite Schema - Updated for broader platform */}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
@@ -188,35 +188,19 @@ export default function RootLayout({
               "@context": "https://schema.org",
               "@type": "WebSite",
               "name": "Finlysta",
-              "alternateName": "Finlysta Job Board for Entry Level Financial Analysts",
-              "url": "https://finlysta.com",  // ✅ Changed: removed www
+              "alternateName": "Finance Jobs, Internships, Learning & Career Growth Platform",
+              "url": "https://finlysta.com",
               "potentialAction": {
                 "@type": "SearchAction",
-                "target": "https://finlysta.com/jobs?search={search_term_string}",  // ✅ Changed: removed www
+                "target": "https://finlysta.com/jobs?search={search_term_string}",
                 "query-input": "required name=search_term_string"
               }
             })
           }}
         />
         
-        {/* ✅ JobSearchResultsPage Schema - FIXED (removed www) */}
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
-              "@context": "https://schema.org",
-              "@type": "SearchResultsPage",
-              "name": "Financial Analyst Jobs in India",
-              "description": "Browse entry level financial analyst jobs and internships across India",
-              "url": "https://finlysta.com/jobs",  // ✅ Changed: removed www
-              "isPartOf": {
-                "@type": "WebSite",
-                "name": "Finlysta",
-                "url": "https://finlysta.com"  // ✅ Changed: removed www
-              }
-            })
-          }}
-        />
+        {/* ❌ REMOVED: BreadcrumbList Schema (add to individual pages if needed) */}
+        {/* ❌ REMOVED: SearchResultsPage Schema (belongs on /jobs page only) */}
       </head>
       <body suppressHydrationWarning>
         <Providers>
