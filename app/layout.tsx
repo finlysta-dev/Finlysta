@@ -4,7 +4,7 @@ import { Suspense, lazy } from 'react';
 import "./globals.css";
 import Providers from "./providers";
 
-// Lazy load non-critical components
+// Lazy load non-critical componentsd
 const VisitorTracker = lazy(() => import("@/components/VisitorTracker"));
 
 export const viewport = {
@@ -142,7 +142,7 @@ export default function RootLayout({
               "url": "https://finlysta.com",  // ✅ Changed: removed www
               "logo": "https://finlysta.com/Finlysta.png",  // ✅ Changed: removed www
               "description": "Entry level financial analyst job board. Find paid internships and fresher jobs in financial analysis, corporate finance, and fintech.",
-              "foundingDate": "2024",
+              "foundingDate": "2026",
               "foundingLocation": "India",
               "areaServed": "India",
               "sameAs": [
