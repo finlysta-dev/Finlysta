@@ -274,7 +274,7 @@ export default function ProfitLossStatementPage() {
           <ChevronRight className="w-3 h-3" />
           <a href="/learn" className={styles.breadcrumbLink}>Learn</a>
           <ChevronRight className="w-3 h-3" />
-          <a href="/learn/financial-statements" className={styles.breadcrumbLink}>Financial Statements</a>
+          <a href="/learn/finance-fundamentals" className={styles.breadcrumbLink}>finance-fundamentals</a>
           <ChevronRight className="w-3 h-3" />
           <span className="text-[#111827] font-medium">Profit & Loss Statement</span>
         </div>

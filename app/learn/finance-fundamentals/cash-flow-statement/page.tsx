@@ -309,7 +309,7 @@ export default function CashFlowStatementPage() {
                 <Tag icon={BookOpen}>Cash Management</Tag>
               </div>
               
-              <h1 className="text-4xl md:text-6xl font-black text-white leading-[1.1] max-w-[700px] mb-5 relative z-10 tracking-[-0.02em]">
+              <h1 className="text-4xl md:text-6xl font-black text-black leading-[1.1] max-w-[700px] mb-5 relative z-10 tracking-[-0.02em]">
                 Cash Flow Statement Explained for Beginners
               </h1>
               
@@ -322,28 +322,28 @@ export default function CashFlowStatementPage() {
                 <div className="bg-white/10 backdrop-blur-sm rounded-2xl px-5 py-3 border border-white/20">
                   <div className="flex items-center gap-2">
                     <CheckCircle className="w-5 h-5 text-[#10B981]" />
-                    <p className="text-lg font-bold text-white">6</p>
+                    <p className="text-lg font-bold text-black">6</p>
                   </div>
                   <p className="text-xs text-[#94A3B8]">Key Concepts</p>
                 </div>
                 <div className="bg-white/10 backdrop-blur-sm rounded-2xl px-5 py-3 border border-white/20">
                   <div className="flex items-center gap-2">
                     <Calculator className="w-5 h-5 text-[#10B981]" />
-                    <p className="text-lg font-bold text-white">5</p>
+                    <p className="text-lg font-bold text-black">5</p>
                   </div>
                   <p className="text-xs text-[#94A3B8]">Formulas</p>
                 </div>
                 <div className="bg-white/10 backdrop-blur-sm rounded-2xl px-5 py-3 border border-white/20">
                   <div className="flex items-center gap-2">
                     <HelpCircle className="w-5 h-5 text-[#FF8A00]" />
-                    <p className="text-lg font-bold text-white">6</p>
+                    <p className="text-lg font-bold text-black">6</p>
                   </div>
                   <p className="text-xs text-[#94A3B8]">FAQs</p>
                 </div>
                 <div className="bg-white/10 backdrop-blur-sm rounded-2xl px-5 py-3 border border-white/20">
                   <div className="flex items-center gap-2">
                     <Briefcase className="w-5 h-5 text-[#10B981]" />
-                    <p className="text-lg font-bold text-white">3</p>
+                    <p className="text-lg font-bold text-black">3</p>
                   </div>
                   <p className="text-xs text-[#94A3B8]">Interview Qs</p>
                 </div>
@@ -637,7 +637,7 @@ export default function CashFlowStatementPage() {
             </div>
             
             <details className="group">
-              <summary className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#111827] text-white rounded-xl font-semibold cursor-pointer hover:bg-[#1f2937] transition-colors">
+              <summary className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#111827] text-black rounded-xl font-semibold cursor-pointer hover:bg-[#1f2937] transition-colors">
                 <Eye className="w-4 h-4" />
                 Show Answer
               </summary>
@@ -693,7 +693,7 @@ export default function CashFlowStatementPage() {
 
         {/* ===== 17. NEXT LESSON CTA ===== */}
         <div className="mb-10 flex justify-between items-center flex-wrap gap-4">
-          <a href="/learn/financial-analysis/ratios" className="inline-flex items-center gap-3 px-6 py-3 bg-[#111827] text-white rounded-xl font-semibold hover:bg-[#1f2937] transition-colors group">
+          <a href="/learn/financial-analysis/ratios" className="inline-flex items-center gap-3 px-6 py-3 bg-[#111827] text-black rounded-xl font-semibold hover:bg-[#1f2937] transition-colors group">
             Continue to Financial Ratios
             <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
           </a>

@@ -185,7 +185,7 @@ const BlogPreviewSection = () => {
             </div>
             <h2 className="text-3xl md:text-4xl lg:text-5xl font-black tracking-tight text-[#0A2540] mb-4">
               Insights, stories, and tools for <br />
-              <span className="bg-gradient-to-r from-[#FFD700] to-[#FFA500] bg-clip-text text-transparent">
+              <span className="bg-gradient-to-r from-[#FFD700] to-[#FFA500] bg-clip-text">
                 building your finance career
               </span>
             </h2>
@@ -456,7 +456,7 @@ const CTASection = () => {
         {/* Heading */}
         <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-black mb-4 leading-tight">
           Start Your Finance Career <br className="hidden sm:block" />
-          <span className="bg-gradient-to-r from-[#FFD700] to-[#FFA500] bg-clip-text text-transparent">
+          <span className="bg-gradient-to-r from-[#FFD700] to-[#FFA500] bg-clip-text text">
             with Confidence
           </span>
         </h2>
@@ -696,7 +696,7 @@ export default function HomePageContent() {
               
               <h1 className="text-4xl sm:text-5xl md:text-5xl xl:text-7xl font-black text-[#0A2540] mb-6 leading-tight animate-in fade-in slide-in-from-bottom-4 duration-700 delay-100">
               Find Your Dream Finance Job & Internship
-                <span className="inline-block bg-gradient-to-r from-[#FFD700] to-[#FFA500] bg-clip-text text-transparent">
+                <span className="inline-block bg-gradient-to-r from-[#FFD700] to-[#FFA500] bg-clip-text text">
                   {" "}That Match Your Skills & Interests
                 </span>
               </h1>

@@ -37,6 +37,7 @@ export default function Header() {
     { href: "/internships", label: "Internships" },
     { href: "/roadmap", label: "Careers" },
     { href: "/learn", label: "Learning Hub" },
+    { href: "/interview-prep", label: "Interview Prep" },
     { href: "/blogs", label: "Blogs" },
   ];
 
@@ -49,7 +50,7 @@ export default function Header() {
             <Link href="/" className="flex items-center" aria-label="Finlysta Home">
               <Image 
                 src="/Finlysta.png" 
-                alt="Finlysta Logo - Entry Level Financial Analyst Jobs"
+                alt="Finlysta Logo" 
                 width={180} 
                 height={40}
                 priority
@@ -59,7 +60,10 @@ export default function Header() {
           </div>
 
           {/* Navigation - Desktop */}
-          <nav className="hidden md:flex items-center justify-center gap-6 lg:gap-8 flex-1">
+          <nav
+            aria-label="Primary Navigation"
+            className="hidden md:flex items-center justify-center gap-6 lg:gap-8 flex-1"
+          >
             {navLinks.map((link) => (
               <Link 
                 key={link.href}
@@ -71,18 +75,8 @@ export default function Header() {
             ))}
           </nav>
 
-          {/* Post a Job Button - Desktop */}
-          {/* <div className="hidden md:flex items-center justify-end w-[180px]">
-            <Link 
-              href="/post-job" 
-              className="inline-flex items-center gap-2 px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-semibold rounded-full transition-all duration-200 shadow-md hover:shadow-lg hover:scale-105"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
-              </svg>
-              Post a Job Free
-            </Link>
-          </div> */}
+          {/* Empty div for spacing balance on desktop */}
+          <div className="hidden md:block w-[180px]"></div>
 
           {/* Mobile Menu Button */}
           <button
@@ -117,18 +111,6 @@ export default function Header() {
                   {link.label}
                 </Link>
               ))}
-              <div className="pt-2">
-                <Link 
-                  href="/post-job"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="flex items-center justify-center gap-2 px-6 py-3 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-semibold rounded-full transition-all duration-200 shadow-md w-full"
-                >
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
-                  </svg>
-                  Post a Job Free
-                </Link>
-              </div>
             </div>
           </div>
         )}
