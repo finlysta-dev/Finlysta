@@ -73,6 +73,7 @@ import {
   RefreshCw,
   Headphones,
   Play,
+  Copy,
   Pause,
   SkipForward,
   SkipBack
@@ -181,7 +182,7 @@ export default function AdvancedExcelPage() {
     }
   ];
 
-  // Add more questions (9-15)
+  // Add more questions (9-15)90
   for (let i = 9; i <= 15; i++) {
     interviewQuestions.push({
       id: i,
