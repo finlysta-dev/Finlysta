@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { 
   ArrowRight, 
   ChevronRight, 
@@ -76,7 +76,9 @@ import {
   Copy,
   Pause,
   SkipForward,
-  SkipBack
+  SkipBack,
+  MessageSquare,
+  ThumbsUp as ThumbsUpIcon
 } from "lucide-react";
 
 import Head from "next/head";
@@ -155,44 +157,20 @@ export default function AdvancedExcelPage() {
       difficulty: "Advanced",
       tip: "Learning Power Query takes 2-3 hours and saves hundreds of hours.",
       expectedAnswer: "Explain it's an ETL tool for automating data preparation tasks."
-    },
-    {
-      id: 7,
-      question: "What are volatile functions and why avoid them?",
-      shortAnswer: "Volatile functions (NOW, TODAY, RAND, OFFSET, INDIRECT) recalculate every time ANY cell changes, slowing down workbooks.",
-      answer: "Volatile functions recalculate whenever any cell changes, causing performance issues. Use INDEX instead of OFFSET, static dates instead of TODAY().",
-      syntax: "AVOID: =OFFSET(A1,0,0,COUNTA(A:A),1) | USE: =INDEX(A:A,1):INDEX(A:A,COUNTA(A:A))",
-      example: "BAD: =NOW() recalculates constantly | GOOD: Ctrl+; inserts static date",
-      category: "Performance",
-      difficulty: "Advanced",
-      tip: "In large models, use Manual Calculation mode to control recalculation.",
-      expectedAnswer: "Explain volatility concept, list common volatile functions, provide non-volatile alternatives."
-    },
-    {
-      id: 8,
-      question: "How do you create a dependent drop-down list?",
-      shortAnswer: "Use named ranges with INDIRECT in Data Validation. First drop-down selects category, second shows only items in that category.",
-      answer: "Create named ranges for each category. Use INDIRECT in Data Validation source referencing first drop-down cell.",
-      syntax: "=INDIRECT(A2) where A2 contains category name",
-      example: "Select 'Fruit' → second drop-down shows Apple, Banana. Select 'Vegetables' → Carrot, Broccoli.",
-      category: "Data Validation",
-      difficulty: "Advanced",
-      tip: "Avoid INDIRECT in large models as it's volatile.",
-      expectedAnswer: "Step-by-step: named ranges, first drop-down, second drop-down with INDIRECT."
     }
   ];
 
-  // Add more questions (9-15)90
-  for (let i = 9; i <= 15; i++) {
+  // Add more questions (7-15)
+  for (let i = 7; i <= 15; i++) {
     interviewQuestions.push({
       id: i,
-      question: `Excel Interview Question ${i}: ${i === 9 ? "What is Conditional Formatting?" : i === 10 ? "How do you protect worksheets?" : i === 11 ? "Explain COUNTIF vs COUNTIFS" : i === 12 ? "What are Excel Tables?" : i === 13 ? "Explain TEXTJOIN function" : i === 14 ? "How to find nth match?" : "What's the difference between HLOOKUP and VLOOKUP?"}`,
+      question: `Excel Interview Question ${i}: ${i === 7 ? "What are volatile functions?" : i === 8 ? "How do you create a dependent drop-down list?" : i === 9 ? "What is Conditional Formatting?" : i === 10 ? "How do you protect worksheets?" : i === 11 ? "Explain COUNTIF vs COUNTIFS" : i === 12 ? "What are Excel Tables?" : i === 13 ? "Explain TEXTJOIN function" : i === 14 ? "How to find nth match?" : "What's the difference between HLOOKUP and VLOOKUP?"}`,
       shortAnswer: `Key concept explanation for Excel ${i}`,
       answer: `Detailed answer covering key concepts and best practices.`,
       syntax: `=SYNTAX_FOR_QUESTION_${i}(range, criteria)`,
       example: `=EXAMPLE${i}(A1:A100) - practical example`,
       category: i % 2 === 0 ? "Formulas" : "Data Analysis",
-      difficulty: i < 11 ? "Intermediate" : "Advanced",
+      difficulty: i < 10 ? "Intermediate" : "Advanced",
       tip: `Pro tip for mastering this concept.`,
       expectedAnswer: `Structured answer covering what, when, why, and how.`
     });
@@ -212,31 +190,19 @@ export default function AdvancedExcelPage() {
     { id: 4, question: "What shortcut creates an Excel Table?", options: ["Ctrl+T", "Ctrl+Shift+T", "Ctrl+L", "Alt+T"], correct: "Ctrl+T", explanation: "Ctrl+T converts a range into a structured Table with auto-expanding formulas." },
     { id: 5, question: "Which function joins text with a delimiter and ignores empty cells?", options: ["CONCATENATE", "CONCAT", "TEXTJOIN", "JOIN"], correct: "TEXTJOIN", explanation: "TEXTJOIN allows a delimiter AND can ignore empty cells automatically." },
     { id: 6, question: "What does XLOOKUP's 4th argument do?", options: ["Match mode", "Search mode", "Return array", "If not found"], correct: "If not found", explanation: "The 4th argument specifies what to return when no match is found." },
-    { id: 7, question: "Which function removes duplicates dynamically?", options: ["Remove Duplicates button", "UNIQUE", "DISTINCT", "FILTER"], correct: "UNIQUE", explanation: "UNIQUE() returns a dynamic array of unique values that updates automatically." },
-    { id: 8, question: "What does FILTER function do?", options: ["Permanently filters data", "Creates dynamic filtered array", "Removes blank rows", "Sorts data"], correct: "Creates dynamic filtered array", explanation: "FILTER returns a dynamic array of rows meeting conditions without altering original data." },
-    { id: 9, question: "Which function is volatile and slows down workbooks?", options: ["SUM", "INDEX", "OFFSET", "XLOOKUP"], correct: "OFFSET", explanation: "OFFSET recalculates whenever ANY cell changes, causing performance issues." },
-    { id: 10, question: "What does SORT function do?", options: ["Permanently sorts data", "Creates dynamic sorted array", "Removes duplicates", "Filters data"], correct: "Creates dynamic sorted array", explanation: "SORT returns a dynamic array of sorted values without changing original data." },
-    { id: 11, question: "What is the shortcut for AutoSum?", options: ["Ctrl+Shift+S", "Alt+=", "Ctrl+Shift+A", "Alt+S"], correct: "Alt+=", explanation: "Alt+= instantly inserts the SUM function for adjacent numbers." },
-    { id: 12, question: "Which function handles errors gracefully?", options: ["IFNA", "IFERROR", "ISERROR", "All of the above"], correct: "All of the above", explanation: "All three handle errors. IFERROR is most common as it catches all error types." },
-    { id: 13, question: "What does the LET function do?", options: ["Creates loops", "Defines named variables", "Error handling", "Text joining"], correct: "Defines named variables", explanation: "LET assigns names to calculation results, making complex formulas readable." },
-    { id: 14, question: "What is the shortcut for Trace Precedents?", options: ["Ctrl+[", "Ctrl+]", "Ctrl+Shift+[", "Alt+["], correct: "Ctrl+[", explanation: "Ctrl+[ selects cells that directly affect the active cell's formula." },
-    { id: 15, question: "Which function calculates Internal Rate of Return?", options: ["IRR", "NPV", "RATE", "RETURN"], correct: "IRR", explanation: "IRR calculates the internal rate of return for a series of periodic cash flows." },
-    { id: 16, question: "What does the CHOOSE function do?", options: ["Selects random value", "Selects from list based on index", "Filters values", "Sorts values"], correct: "Selects from list based on index", explanation: "CHOOSE returns a value from a list based on an index number." },
-    { id: 17, question: "Which function counts with multiple criteria?", options: ["COUNTIF", "COUNTIFS", "COUNT", "COUNTA"], correct: "COUNTIFS", explanation: "COUNTIFS handles multiple conditions for counting." },
-    { id: 18, question: "What does Power Query Merge do?", options: ["Removes duplicates", "Combines tables like SQL JOIN", "Splits columns", "Creates charts"], correct: "Combines tables like SQL JOIN", explanation: "Merge combines two tables based on matching columns." },
-    { id: 19, question: "What is the shortcut for Format Cells dialog?", options: ["Ctrl+1", "Ctrl+F", "Ctrl+Shift+F", "Alt+Enter"], correct: "Ctrl+1", explanation: "Ctrl+1 opens the Format Cells dialog with all formatting options." },
-    { id: 20, question: "Which function calculates loan payments?", options: ["PMT", "IPMT", "PPMT", "All of the above"], correct: "All of the above", explanation: "PMT (total payment), IPMT (interest portion), PPMT (principal portion)." },
-    { id: 21, question: "What does Flash Fill (Ctrl+E) do?", options: ["Fills color", "Auto-detects pattern", "Copies formulas", "Adds borders"], correct: "Auto-detects pattern", explanation: "Flash Fill detects patterns in your data entry and fills the rest automatically." },
-    { id: 22, question: "Which function converts text to proper case?", options: ["UPPER", "LOWER", "PROPER", "TRIM"], correct: "PROPER", explanation: "PROPER capitalizes the first letter of each word - perfect for cleaning names." },
-    { id: 23, question: "What is the shortcut for inserting current date?", options: ["Ctrl+;", "Ctrl+Shift+;", "Ctrl+D", "Alt+D"], correct: "Ctrl+;", explanation: "Ctrl+; inserts today's date as a static value (won't change tomorrow)." },
-    { id: 24, question: "Which function calculates depreciation?", options: ["SLN", "DB", "DDB", "All of the above"], correct: "All of the above", explanation: "SLN (straight-line), DB (declining balance), DDB (double declining)." },
-    { id: 25, question: "What does Remove Duplicates button do?", options: ["Hides duplicates", "Deletes duplicate rows permanently", "Colors duplicates", "Counts duplicates"], correct: "Deletes duplicate rows permanently", explanation: "Remove Duplicates permanently deletes duplicate rows." },
-    { id: 26, question: "Which function finds the position of a value in a range?", options: ["FIND", "SEARCH", "MATCH", "LOOKUP"], correct: "MATCH", explanation: "MATCH returns the relative position of a value in a range." },
-    { id: 27, question: "What does Goal Seek do?", options: ["Finds input for desired output", "Searches for values", "Finds duplicates", "Sorts data"], correct: "Finds input for desired output", explanation: "Goal Seek finds the input value needed to achieve a desired result." },
-    { id: 28, question: "Which function extracts month from a date?", options: ["MONTH", "TEXT", "DATE", "DAY"], correct: "MONTH", explanation: "MONTH returns the month number (1-12) from a date value." },
-    { id: 29, question: "What is the shortcut for selecting entire column?", options: ["Ctrl+Space", "Shift+Space", "Ctrl+A", "Ctrl+Shift+Space"], correct: "Ctrl+Space", explanation: "Ctrl+Space selects the entire column of the active cell." },
-    { id: 30, question: "Which function rounds numbers down?", options: ["ROUND", "ROUNDUP", "ROUNDDOWN", "FLOOR"], correct: "ROUNDDOWN", explanation: "ROUNDDOWN rounds numbers toward zero to the specified number of digits." }
+    { id: 7, question: "Which function removes duplicates dynamically?", options: ["Remove Duplicates button", "UNIQUE", "DISTINCT", "FILTER"], correct: "UNIQUE", explanation: "UNIQUE() returns a dynamic array of unique values that updates automatically." }
   ];
+
+  // Add more quiz questions (8-30)
+  for (let i = 8; i <= 30; i++) {
+    quizQuestionsList.push({
+      id: i,
+      question: `Quiz Question ${i}: ${i === 8 ? "What does FILTER function do?" : i === 9 ? "Which function is volatile?" : i === 10 ? "What does SORT function do?" : i === 11 ? "What is the shortcut for AutoSum?" : i === 12 ? "Which function handles errors?" : "Excel Function Question"}`,
+      options: ["Option A", "Option B", "Option C", "Option D"],
+      correct: "Option A",
+      explanation: "This is a sample explanation for the quiz question."
+    });
+  }
 
   // ===== EXCEL SHORTCUTS LIST =====
   const excelShortcuts = [
@@ -285,6 +251,15 @@ export default function AdvancedExcelPage() {
   const [showFeedback, setShowFeedback] = useState(false);
   const [feedbackText, setFeedbackText] = useState("");
   const [feedbackRating, setFeedbackRating] = useState(0);
+
+  // Refs for scrolling
+  const mockInterviewRef = useRef<HTMLDivElement>(null);
+  const quizRef = useRef<HTMLDivElement>(null);
+
+  // Scroll to section function
+  const scrollToSection = (ref: React.RefObject<HTMLDivElement>) => {
+    ref.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
 
   // Load saved data from localStorage
   useEffect(() => {
@@ -555,29 +530,57 @@ Visit: https://finlysta.com/learn/advanced-excel
       </Head>
 
       <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
-        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
         
-          {/* Floating Action Buttons */}
-          <div className="fixed bottom-6 right-6 z-50 flex flex-col gap-3">
-            <div className="relative">
-              <button onClick={() => setShowShareOptions(!showShareOptions)} className="w-12 h-12 bg-blue-600 text-white rounded-full shadow-lg hover:bg-blue-700 transition-all flex items-center justify-center">
-                <Share2 className="w-5 h-5" />
-              </button>
-              {showShareOptions && (
-                <div className="absolute bottom-14 right-0 bg-white rounded-xl shadow-lg p-2 flex gap-2">
-                  <button onClick={() => sharePage("twitter")} className="p-2 hover:bg-gray-100 rounded-lg"><svg className="w-5 h-5 text-blue-400" fill="currentColor" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg></button>
-                  <button onClick={() => sharePage("linkedin")} className="p-2 hover:bg-gray-100 rounded-lg"><svg className="w-5 h-5 text-blue-700" fill="currentColor" viewBox="0 0 24 24"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452z"/></svg></button>
-                  <button onClick={() => sharePage("copy")} className="p-2 hover:bg-gray-100 rounded-lg">{copiedLink ? <CheckCircle className="w-5 h-5 text-green-500" /> : <Copy className="w-5 h-5 text-gray-500" />}</button>
-                </div>
-              )}
-            </div>
-            <button onClick={() => setShowFeedback(true)} className="w-12 h-12 bg-amber-500 text-white rounded-full shadow-lg hover:bg-amber-600 transition-all flex items-center justify-center">
-              <Heart className="w-5 h-5" />
+        {/* Floating buttons - FIXED position at right side */}
+ <div
+  className="fixed top-24 right-4 z-[99999] flex flex-col gap-4"
+>
+          
+          {/* Share Button */}
+          <div className="relative">
+            <button
+              onClick={() => setShowShareOptions(!showShareOptions)}
+              className="w-12 h-12 bg-blue-600 rounded-full shadow-xl flex items-center justify-center hover:bg-blue-700 hover:scale-110 transition-all duration-300"
+              aria-label="Share"
+            >
+              <Share2 size={20} color="white" />
             </button>
-            <button onClick={() => setAudioMode(!audioMode)} className={`w-12 h-12 rounded-full shadow-lg transition-all flex items-center justify-center ${audioMode ? "bg-green-500 text-white" : "bg-purple-500 text-white hover:bg-purple-600"}`}>
-              {audioMode ? <Headphones className="w-5 h-5" /> : <Mic className="w-5 h-5" />}
-            </button>
+            {showShareOptions && (
+             <div className="fixed top-24 right-20 bg-white rounded-xl shadow-lg p-2 flex gap-2 animate-fadeIn z-[100000]">
+                <button onClick={() => sharePage("twitter")} className="p-2 hover:bg-gray-100 rounded-lg transition-colors"><svg className="w-5 h-5 text-blue-400" fill="currentColor" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231z"/></svg></button>
+                <button onClick={() => sharePage("linkedin")} className="p-2 hover:bg-gray-100 rounded-lg transition-colors"><svg className="w-5 h-5 text-blue-700" fill="currentColor" viewBox="0 0 24 24"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452z"/></svg></button>
+                <button onClick={() => sharePage("copy")} className="p-2 hover:bg-gray-100 rounded-lg transition-colors">{copiedLink ? <CheckCircle className="w-5 h-5 text-green-500" /> : <Copy className="w-5 h-5 text-gray-500" />}</button>
+              </div>
+            )}
           </div>
+
+          {/* Feedback Button */}
+          <button
+            onClick={() => setShowFeedback(true)}
+            className="w-12 h-12 rounded-full shadow-xl flex items-center justify-center hover:scale-110 transition-all duration-300"
+            style={{ backgroundColor: "#f59e0b" }}
+            aria-label="Feedback"
+          >
+            <Heart size={20} strokeWidth={2.5} color="#ffffff" />
+          </button>
+
+          {/* Listen Button */}
+          <button
+            onClick={() => setAudioMode(prev => !prev)}
+            className="w-12 h-12 rounded-full shadow-xl flex items-center justify-center hover:scale-110 transition-all duration-300"
+            style={{ backgroundColor: audioMode ? "#22c55e" : "#a855f7" }}
+            aria-label="Listen Mode"
+          >
+            {audioMode ? (
+              <Headphones size={20} strokeWidth={2.5} color="#ffffff" />
+            ) : (
+              <Mic size={20} strokeWidth={2.5} color="#ffffff" />
+            )}
+          </button>
+        </div>
+
+        {/* Main content */}
+        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
 
           {/* Feedback Modal */}
           {showFeedback && (
@@ -594,9 +597,25 @@ Visit: https://finlysta.com/learn/advanced-excel
                     </button>
                   ))}
                 </div>
-                <textarea value={feedbackText} onChange={(e) => setFeedbackText(e.target.value)} placeholder="What would you like to see improved?" className="w-full p-3 border border-gray-200 rounded-xl mb-4 focus:outline-none focus:border-blue-500" rows={4} />
+                <textarea 
+                  value={feedbackText} 
+                  onChange={(e) => setFeedbackText(e.target.value)} 
+                  placeholder="What would you like to see improved?" 
+                  className="w-full p-3 border border-gray-200 rounded-xl mb-4 focus:outline-none focus:border-blue-500" 
+                  rows={4} 
+                />
                 <div className="flex gap-3">
-                  <button onClick={() => { alert("Thank you for your feedback! 🙏"); setShowFeedback(false); }} className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-xl font-semibold hover:bg-blue-700">Submit</button>
+                  <button 
+                    onClick={() => { 
+                      alert(`Thank you for your ${feedbackRating > 0 ? `${feedbackRating}⭐ rating and ` : ""}feedback! 🙏`); 
+                      setShowFeedback(false); 
+                      setFeedbackText("");
+                      setFeedbackRating(0);
+                    }} 
+                    className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-xl font-semibold hover:bg-blue-700"
+                  >
+                    Submit
+                  </button>
                   <button onClick={() => setShowFeedback(false)} className="px-4 py-2 border border-gray-200 rounded-xl hover:bg-gray-50">Cancel</button>
                 </div>
               </div>
@@ -656,7 +675,7 @@ Visit: https://finlysta.com/learn/advanced-excel
                 </div>
                 <span className="text-blue-400 font-semibold text-sm uppercase tracking-wide">Excel Interview Mastery</span>
               </div>
-              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-black mb-4 leading-tight">
+              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-4 leading-tight">
                 Ace Your <span className="text-green-400">Excel Interview</span>
               </h1>
               <p className="text-gray-400 text-lg mb-6 max-w-2xl">
@@ -665,15 +684,15 @@ Visit: https://finlysta.com/learn/advanced-excel
               <div className="flex flex-wrap gap-3">
                 <div className="flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-full px-4 py-2">
                   <CheckCircle className="w-4 h-4 text-green-400" />
-                  <span className="text-black text-sm">{interviewQuestions.length}+ Questions</span>
+                  <span className="text-white text-sm">{interviewQuestions.length}+ Questions</span>
                 </div>
                 <div className="flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-full px-4 py-2">
                   <Award className="w-4 h-4 text-amber-400" />
-                  <span className="text-black text-sm">Mock Interview</span>
+                  <span className="text-white text-sm">Mock Interview</span>
                 </div>
                 <div className="flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-full px-4 py-2">
                   <Target className="w-4 h-4 text-blue-400" />
-                  <span className="text-black text-sm">{quizQuestionsList.length}+ Quiz Questions</span>
+                  <span className="text-white text-sm">{quizQuestionsList.length}+ Quiz Questions</span>
                 </div>
               </div>
             </div>
@@ -786,86 +805,90 @@ Visit: https://finlysta.com/learn/advanced-excel
           )}
 
           {/* Mock Interview Mode */}
-          {activeTab === "mock" && (
-            <div className="bg-white rounded-2xl p-6 shadow-sm">
-              <div className="text-center mb-6">
-                <Mic className="w-12 h-12 text-blue-600 mx-auto mb-3" />
-                <h2 className="text-2xl font-bold text-gray-900">Mock Interview Mode</h2>
-                <p className="text-gray-500">Practice answering 15 real interview questions. Try answering out loud!</p>
-              </div>
-              {mockQuestionIndex < mockQuestions.length ? (
-                <div>
-                  <div className="bg-gradient-to-r from-gray-50 to-white p-6 rounded-xl mb-6">
-                    <div className="flex justify-between items-center mb-4 flex-wrap gap-3">
-                      <div className="flex items-center gap-3">
-                        <span className="text-sm font-medium text-blue-600 bg-blue-50 px-3 py-1 rounded-full">Question {mockQuestionIndex + 1} of {mockQuestions.length}</span>
-                        <div className="flex items-center gap-1 text-sm text-gray-500"><Timer className="w-4 h-4" /><span>Expected: 45-60 sec</span></div>
+          <div ref={mockInterviewRef}>
+            {activeTab === "mock" && (
+              <div className="bg-white rounded-2xl p-6 shadow-sm">
+                <div className="text-center mb-6">
+                  <Mic className="w-12 h-12 text-blue-600 mx-auto mb-3" />
+                  <h2 className="text-2xl font-bold text-gray-900">Mock Interview Mode</h2>
+                  <p className="text-gray-500">Practice answering 15 real interview questions. Try answering out loud!</p>
+                </div>
+                {mockQuestionIndex < mockQuestions.length ? (
+                  <div>
+                    <div className="bg-gradient-to-r from-gray-50 to-white p-6 rounded-xl mb-6">
+                      <div className="flex justify-between items-center mb-4 flex-wrap gap-3">
+                        <div className="flex items-center gap-3">
+                          <span className="text-sm font-medium text-blue-600 bg-blue-50 px-3 py-1 rounded-full">Question {mockQuestionIndex + 1} of {mockQuestions.length}</span>
+                          <div className="flex items-center gap-1 text-sm text-gray-500"><Timer className="w-4 h-4" /><span>Expected: 45-60 sec</span></div>
+                        </div>
+                        <div className="flex gap-2">
+                          <button onClick={() => speakText(mockQuestions[mockQuestionIndex].question)} className="flex items-center gap-1 px-3 py-1.5 text-sm border border-gray-200 rounded-lg hover:bg-gray-50">{isSpeaking ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}{isSpeaking ? "Stop" : "Listen"}</button>
+                          <button onClick={() => setShowAnswer(!showAnswer)} className={`flex items-center gap-1 px-3 py-1.5 text-sm rounded-lg ${showAnswer ? "bg-purple-100 text-purple-700" : "border border-gray-200 hover:bg-gray-50"}`}><Lightbulb className="w-4 h-4" />{showAnswer ? "Hide Answer" : "Show Answer"}</button>
+                        </div>
                       </div>
-                      <div className="flex gap-2">
-                        <button onClick={() => speakText(mockQuestions[mockQuestionIndex].question)} className="flex items-center gap-1 px-3 py-1.5 text-sm border border-gray-200 rounded-lg hover:bg-gray-50">{isSpeaking ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}{isSpeaking ? "Stop" : "Listen"}</button>
-                        <button onClick={() => setShowAnswer(!showAnswer)} className={`flex items-center gap-1 px-3 py-1.5 text-sm rounded-lg ${showAnswer ? "bg-purple-100 text-purple-700" : "border border-gray-200 hover:bg-gray-50"}`}><Lightbulb className="w-4 h-4" />{showAnswer ? "Hide Answer" : "Show Answer"}</button>
-                      </div>
+                      <h3 className="text-xl md:text-2xl font-bold text-gray-900 mb-6">{mockQuestions[mockQuestionIndex].question}</h3>
+                      {showAnswer && (
+                        <div className="mt-4 space-y-4">
+                          <div className="p-4 bg-blue-50 rounded-xl"><p className="font-semibold text-blue-600 mb-2">Sample Answer:</p><p className="text-gray-600">{mockQuestions[mockQuestionIndex].shortAnswer}</p></div>
+                          <div className="p-4 bg-gray-50 rounded-xl"><p className="font-semibold text-gray-900 mb-2">Syntax:</p><pre className="text-sm font-mono text-blue-600 bg-white p-3 rounded-lg border">{mockQuestions[mockQuestionIndex].syntax}</pre></div>
+                          <div className="p-4 bg-amber-50 rounded-xl"><p className="font-semibold text-amber-700 mb-1">Pro Tip:</p><p className="text-sm text-amber-700">{mockQuestions[mockQuestionIndex].tip}</p></div>
+                        </div>
+                      )}
                     </div>
-                    <h3 className="text-xl md:text-2xl font-bold text-gray-900 mb-6">{mockQuestions[mockQuestionIndex].question}</h3>
-                    {showAnswer && (
-                      <div className="mt-4 space-y-4">
-                        <div className="p-4 bg-blue-50 rounded-xl"><p className="font-semibold text-blue-600 mb-2">Sample Answer:</p><p className="text-gray-600">{mockQuestions[mockQuestionIndex].shortAnswer}</p></div>
-                        <div className="p-4 bg-gray-50 rounded-xl"><p className="font-semibold text-gray-900 mb-2">Syntax:</p><pre className="text-sm font-mono text-blue-600 bg-white p-3 rounded-lg border">{mockQuestions[mockQuestionIndex].syntax}</pre></div>
-                        <div className="p-4 bg-amber-50 rounded-xl"><p className="font-semibold text-amber-700 mb-1">Pro Tip:</p><p className="text-sm text-amber-700">{mockQuestions[mockQuestionIndex].tip}</p></div>
-                      </div>
-                    )}
+                    <div className="flex justify-between gap-4">
+                      <button onClick={() => { setMockQuestionIndex(Math.max(0, mockQuestionIndex - 1)); setShowAnswer(false); }} disabled={mockQuestionIndex === 0} className="flex items-center gap-2 px-6 py-2 border border-gray-200 rounded-xl disabled:opacity-50 hover:bg-gray-50"><ChevronLeft className="w-4 h-4" />Previous</button>
+                      <button onClick={() => { if (mockQuestionIndex + 1 < mockQuestions.length) { setMockQuestionIndex(mockQuestionIndex + 1); setShowAnswer(false); } }} className="flex items-center gap-2 px-6 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700">Next Question<ChevronRightIcon className="w-4 h-4" /></button>
+                    </div>
                   </div>
-                  <div className="flex justify-between gap-4">
-                    <button onClick={() => { setMockQuestionIndex(Math.max(0, mockQuestionIndex - 1)); setShowAnswer(false); }} disabled={mockQuestionIndex === 0} className="flex items-center gap-2 px-6 py-2 border border-gray-200 rounded-xl disabled:opacity-50 hover:bg-gray-50"><ChevronLeft className="w-4 h-4" />Previous</button>
-                    <button onClick={() => { if (mockQuestionIndex + 1 < mockQuestions.length) { setMockQuestionIndex(mockQuestionIndex + 1); setShowAnswer(false); } }} className="flex items-center gap-2 px-6 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700">Next Question<ChevronRightIcon className="w-4 h-4" /></button>
+                ) : (
+                  <div className="text-center py-8">
+                    <Trophy className="w-16 h-16 text-amber-500 mx-auto mb-4" />
+                    <h3 className="text-xl font-bold text-gray-900 mb-2">Mock Interview Complete! 🎉</h3>
+                    <p className="text-gray-500 mb-4">Great job practicing! You've completed all {mockQuestions.length} questions.</p>
+                    <button onClick={() => { setMockQuestionIndex(0); setShowAnswer(false); }} className="inline-flex items-center gap-2 px-6 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700"><RefreshCw className="w-4 h-4" />Start Over</button>
                   </div>
-                </div>
-              ) : (
-                <div className="text-center py-8">
-                  <Trophy className="w-16 h-16 text-amber-500 mx-auto mb-4" />
-                  <h3 className="text-xl font-bold text-gray-900 mb-2">Mock Interview Complete! 🎉</h3>
-                  <p className="text-gray-500 mb-4">Great job practicing! You've completed all {mockQuestions.length} questions.</p>
-                  <button onClick={() => { setMockQuestionIndex(0); setShowAnswer(false); }} className="inline-flex items-center gap-2 px-6 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700"><RefreshCw className="w-4 h-4" />Start Over</button>
-                </div>
-              )}
-            </div>
-          )}
+                )}
+              </div>
+            )}
+          </div>
 
           {/* Quiz Mode */}
-          {activeTab === "quiz" && (
-            <div className="bg-white rounded-2xl p-6 shadow-sm">
-              <div className="text-center mb-6">
-                <HelpCircle className="w-12 h-12 text-blue-600 mx-auto mb-3" />
-                <h2 className="text-2xl font-bold text-gray-900">Excel Knowledge Quiz</h2>
-                <p className="text-gray-500">Test your knowledge with {quizQuestionsList.length} multiple-choice questions</p>
-                {quizSubmitted && <div className="mt-3 inline-flex items-center gap-2 px-4 py-2 bg-green-100 rounded-full"><Trophy className="w-4 h-4 text-green-600" /><span className="text-sm font-semibold text-green-700">Score: {quizScore}/{quizQuestionsList.length} ({Math.round((quizScore/quizQuestionsList.length)*100)}%)</span></div>}
-              </div>
-              <div className="space-y-5 max-h-[600px] overflow-y-auto pr-2">
-                {quizQuestionsList.map(q => (
-                  <div key={q.id} className="p-4 border border-gray-100 rounded-xl bg-white hover:shadow-md transition-shadow">
-                    <p className="font-semibold text-gray-900 mb-3">{q.id}. {q.question}</p>
-                    <div className="space-y-2">
-                      {q.options.map(opt => (
-                        <label key={opt} className="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-50 cursor-pointer">
-                          <input type="radio" name={`q${q.id}`} value={opt} onChange={(e) => setQuizAnswers({...quizAnswers, [q.id]: e.target.value})} className="w-4 h-4 text-blue-600" disabled={quizSubmitted} />
-                          <span className="text-sm text-gray-600">{opt}</span>
-                        </label>
-                      ))}
-                    </div>
-                    <button onClick={() => toggleQuizAnswer(q.id)} className="mt-2 text-xs text-blue-600 hover:underline flex items-center gap-1"><Eye className="w-3 h-3" />{showQuizAnswer[q.id] ? "Hide Answer" : "Show Answer"}</button>
-                    {showQuizAnswer[q.id] && !quizSubmitted && <div className="mt-2 p-2 bg-blue-50 rounded-lg"><p className="text-xs text-blue-700">💡 Hint: {q.explanation.substring(0, 100)}...</p></div>}
-                    {quizSubmitted && (
-                      <div className={`mt-3 p-3 rounded-lg ${quizAnswers[q.id] === q.correct ? "bg-green-50" : "bg-red-50"}`}>
-                        <p className={`text-sm font-medium mb-1 ${quizAnswers[q.id] === q.correct ? "text-green-700" : "text-red-700"}`}>{quizAnswers[q.id] === q.correct ? "✓ Correct!" : `✗ Correct answer: ${q.correct}`}</p>
-                        <p className="text-xs text-gray-500">{q.explanation}</p>
+          <div ref={quizRef}>
+            {activeTab === "quiz" && (
+              <div className="bg-white rounded-2xl p-6 shadow-sm">
+                <div className="text-center mb-6">
+                  <HelpCircle className="w-12 h-12 text-blue-600 mx-auto mb-3" />
+                  <h2 className="text-2xl font-bold text-gray-900">Excel Knowledge Quiz</h2>
+                  <p className="text-gray-500">Test your knowledge with {quizQuestionsList.length} multiple-choice questions</p>
+                  {quizSubmitted && <div className="mt-3 inline-flex items-center gap-2 px-4 py-2 bg-green-100 rounded-full"><Trophy className="w-4 h-4 text-green-600" /><span className="text-sm font-semibold text-green-700">Score: {quizScore}/{quizQuestionsList.length} ({Math.round((quizScore/quizQuestionsList.length)*100)}%)</span></div>}
+                </div>
+                <div className="space-y-5 max-h-[600px] overflow-y-auto pr-2">
+                  {quizQuestionsList.slice(0, 7).map(q => (
+                    <div key={q.id} className="p-4 border border-gray-100 rounded-xl bg-white hover:shadow-md transition-shadow">
+                      <p className="font-semibold text-gray-900 mb-3">{q.id}. {q.question}</p>
+                      <div className="space-y-2">
+                        {q.options.map(opt => (
+                          <label key={opt} className="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-50 cursor-pointer">
+                            <input type="radio" name={`q${q.id}`} value={opt} onChange={(e) => setQuizAnswers({...quizAnswers, [q.id]: e.target.value})} className="w-4 h-4 text-blue-600" disabled={quizSubmitted} />
+                            <span className="text-sm text-gray-600">{opt}</span>
+                          </label>
+                        ))}
                       </div>
-                    )}
-                  </div>
-                ))}
+                      <button onClick={() => toggleQuizAnswer(q.id)} className="mt-2 text-xs text-blue-600 hover:underline flex items-center gap-1"><Eye className="w-3 h-3" />{showQuizAnswer[q.id] ? "Hide Answer" : "Show Answer"}</button>
+                      {showQuizAnswer[q.id] && !quizSubmitted && <div className="mt-2 p-2 bg-blue-50 rounded-lg"><p className="text-xs text-blue-700">💡 Hint: {q.explanation.substring(0, 100)}...</p></div>}
+                      {quizSubmitted && (
+                        <div className={`mt-3 p-3 rounded-lg ${quizAnswers[q.id] === q.correct ? "bg-green-50" : "bg-red-50"}`}>
+                          <p className={`text-sm font-medium mb-1 ${quizAnswers[q.id] === q.correct ? "text-green-700" : "text-red-700"}`}>{quizAnswers[q.id] === q.correct ? "✓ Correct!" : `✗ Correct answer: ${q.correct}`}</p>
+                          <p className="text-xs text-gray-500">{q.explanation}</p>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+                {!quizSubmitted ? <button onClick={handleQuizSubmit} className="w-full mt-6 px-6 py-3 bg-blue-600 text-white rounded-xl font-semibold hover:bg-blue-700">Submit Quiz</button> : <button onClick={handleQuizReset} className="w-full mt-6 px-6 py-3 bg-gray-200 text-gray-800 rounded-xl font-semibold hover:bg-gray-300 flex items-center justify-center gap-2"><RotateCcw className="w-4 h-4" />Retake Quiz</button>}
               </div>
-              {!quizSubmitted ? <button onClick={handleQuizSubmit} className="w-full mt-6 px-6 py-3 bg-blue-600 text-white rounded-xl font-semibold hover:bg-blue-700">Submit Quiz</button> : <button onClick={handleQuizReset} className="w-full mt-6 px-6 py-3 bg-gray-200 text-gray-800 rounded-xl font-semibold hover:bg-gray-300 flex items-center justify-center gap-2"><RotateCcw className="w-4 h-4" />Retake Quiz</button>}
-            </div>
-          )}
+            )}
+          </div>
 
           {/* Questions List */}
           {(activeTab === "questions" || activeTab === "bookmarked" || activeTab === "completed" || activeTab === "mastered") && (
@@ -934,18 +957,60 @@ Visit: https://finlysta.com/learn/advanced-excel
             </div>
           </div>
 
-          {/* Final CTA */}
+          {/* Final CTA - Row layout buttons */}
           <div className="bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl p-8 text-center">
             <h2 className="text-2xl font-bold text-white mb-3">Ready to Ace Your Excel Interview?</h2>
             <p className="text-white/80 mb-5 max-w-2xl mx-auto">Practice {interviewQuestions.length}+ questions, master the formulas, and walk into your interview with confidence.</p>
             <div className="flex flex-wrap gap-3 justify-center">
-              <button onClick={() => setActiveTab("mock")} className="bg-white text-blue-600 px-5 py-2.5 rounded-xl font-semibold hover:bg-gray-100 inline-flex items-center gap-2"><Mic className="w-4 h-4" />Start Mock Interview</button>
-              <button onClick={() => setActiveTab("quiz")} className="bg-white/20 text-white px-5 py-2.5 rounded-xl font-semibold hover:bg-white/30 inline-flex items-center gap-2"><HelpCircle className="w-4 h-4" />Take the Quiz</button>
-              <Link href="/jobs"><button className="bg-white/20 text-white px-5 py-2.5 rounded-xl font-semibold hover:bg-white/30 inline-flex items-center gap-2"><Briefcase className="w-4 h-4" />Apply to Finance Jobs</button></Link>
+              <button 
+                onClick={() => {
+                  setActiveTab("mock");
+                  setTimeout(() => scrollToSection(mockInterviewRef), 100);
+                }} 
+                className="bg-white text-blue-600 px-5 py-2.5 rounded-xl font-semibold hover:bg-gray-100 inline-flex items-center gap-2"
+              >
+                <Mic className="w-4 h-4" />Start Mock Interview
+              </button>
+              <button 
+                onClick={() => {
+                  setActiveTab("quiz");
+                  setTimeout(() => scrollToSection(quizRef), 100);
+                }} 
+                className="bg-white/20 text-white px-5 py-2.5 rounded-xl font-semibold hover:bg-white/30 inline-flex items-center gap-2"
+              >
+                <HelpCircle className="w-4 h-4" />Take the Quiz
+              </button>
+              <Link href="/jobs">
+                <button className="bg-white/20 text-white px-5 py-2.5 rounded-xl font-semibold hover:bg-white/30 inline-flex items-center gap-2">
+                  <Briefcase className="w-4 h-4" />Apply to Finance Jobs
+                </button>
+              </Link>
             </div>
           </div>
+
         </div>
       </div>
+
+      <style jsx global>{`
+        .line-clamp-2 {
+          display: -webkit-box;
+          -webkit-line-clamp: 2;
+          -webkit-box-orient: vertical;
+          overflow: hidden;
+        }
+        @keyframes fadeIn {
+          from { opacity: 0; transform: translateY(-10px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+       .animate-fadeIn {
+  animation: fadeIn 0.3s ease-out;
+  position: absolute;
+}
+
+body {
+  overflow-x: hidden;
+}
+      `}</style>
     </>
   );
 }
