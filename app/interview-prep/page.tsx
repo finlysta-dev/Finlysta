@@ -675,7 +675,7 @@ Visit: https://finlysta.com/learn/advanced-excel
                 </div>
                 <span className="text-blue-400 font-semibold text-sm uppercase tracking-wide">Excel Interview Mastery</span>
               </div>
-              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-4 leading-tight">
+              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-black mb-4 leading-tight">
                 Ace Your <span className="text-green-400">Excel Interview</span>
               </h1>
               <p className="text-gray-400 text-lg mb-6 max-w-2xl">
@@ -684,15 +684,15 @@ Visit: https://finlysta.com/learn/advanced-excel
               <div className="flex flex-wrap gap-3">
                 <div className="flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-full px-4 py-2">
                   <CheckCircle className="w-4 h-4 text-green-400" />
-                  <span className="text-white text-sm">{interviewQuestions.length}+ Questions</span>
+                  <span className="text-black text-sm">{interviewQuestions.length}+ Questions</span>
                 </div>
                 <div className="flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-full px-4 py-2">
                   <Award className="w-4 h-4 text-amber-400" />
-                  <span className="text-white text-sm">Mock Interview</span>
+                  <span className="text-black text-sm">Mock Interview</span>
                 </div>
                 <div className="flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-full px-4 py-2">
                   <Target className="w-4 h-4 text-blue-400" />
-                  <span className="text-white text-sm">{quizQuestionsList.length}+ Quiz Questions</span>
+                  <span className="text-black text-sm">{quizQuestionsList.length}+ Quiz Questions</span>
                 </div>
               </div>
             </div>
