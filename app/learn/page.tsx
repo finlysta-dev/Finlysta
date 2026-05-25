@@ -1,17 +1,20 @@
 'use client';
 
 import Link from 'next/link';
-import { useState } from 'react';
+import Image from 'next/image';
+import { useState, useEffect } from 'react';
 import { 
-  Search, BookOpen, Clock, TrendingUp, Award, Users, 
-  FileSpreadsheet, Database, BarChart3, Code, Landmark, 
-  Home, User, Bell, ChevronRight, Sparkles, Target, CheckCircle,
-  Circle, Lock, Play, Star, Zap, LineChart, PieChart, MessageCircle,
-  X, Filter, ArrowRight, GraduationCap, Globe, Briefcase, 
-  Coffee, ThumbsUp, Rocket, Calendar, Activity, Compass
+  Search, BookOpen, Clock, TrendingUp, Users, 
+  FileSpreadsheet, BarChart3, Landmark, Bell, 
+  Sparkles, Target, CheckCircle, Circle, 
+  PieChart, MessageCircle, ArrowRight, Compass, 
+  Flame, Rocket, Star, Zap, GraduationCap,
+  Award, Trophy, Calendar, CheckSquare,
+  Eye, ThumbsUp, Share2, Bookmark, ChevronRight,
+  Layers, Database, LineChart, Briefcase, Cloud, Code, Shield, Gift,
+  RotateCcw
 } from 'lucide-react';
 
-// Types
 interface Chapter {
   id: number;
   title: string;
@@ -27,27 +30,26 @@ interface Category {
   name: string;
   slug: string;
   icon: any;
-  iconBg: string;
   gradient: string;
+  bgLight: string;
+  tagBg: string;
   color: string;
-  lightColor: string;
   description: string;
   totalChapters: number;
   completedChapters: number;
   chapters: Chapter[];
 }
 
-// Complete chapter data for all 6 categories
 const categories: Category[] = [
   {
     id: 1,
     name: 'Finance Fundamentals',
     slug: 'finance-fundamentals',
     icon: Landmark,
-    iconBg: 'bg-emerald-50',
     gradient: 'from-emerald-500 to-teal-500',
+    bgLight: 'bg-emerald-50',
+    tagBg: 'bg-emerald-100',
     color: 'emerald',
-    lightColor: 'bg-emerald-50',
     description: 'Master core finance concepts, statements, and forecasting',
     totalChapters: 8,
     completedChapters: 2,
@@ -67,10 +69,10 @@ const categories: Category[] = [
     name: 'Advanced Excel',
     slug: 'advanced-excel',
     icon: FileSpreadsheet,
-    iconBg: 'bg-blue-50',
     gradient: 'from-blue-500 to-indigo-500',
+    bgLight: 'bg-blue-50',
+    tagBg: 'bg-blue-100',
     color: 'blue',
-    lightColor: 'bg-blue-50',
     description: 'Master spreadsheets for financial analysis',
     totalChapters: 8,
     completedChapters: 1,
@@ -90,10 +92,10 @@ const categories: Category[] = [
     name: 'Financial Analysis',
     slug: 'financial-analysis',
     icon: TrendingUp,
-    iconBg: 'bg-amber-50',
     gradient: 'from-amber-500 to-orange-500',
+    bgLight: 'bg-amber-50',
+    tagBg: 'bg-amber-100',
     color: 'amber',
-    lightColor: 'bg-amber-50',
     description: 'Analyze data, interpret ratios, and make informed decisions',
     totalChapters: 8,
     completedChapters: 0,
@@ -113,10 +115,10 @@ const categories: Category[] = [
     name: 'Financial Reporting',
     slug: 'financial-reporting',
     icon: PieChart,
-    iconBg: 'bg-cyan-50',
     gradient: 'from-cyan-500 to-blue-500',
+    bgLight: 'bg-cyan-50',
+    tagBg: 'bg-cyan-100',
     color: 'cyan',
-    lightColor: 'bg-cyan-50',
     description: 'Create professional financial reports and dashboards',
     totalChapters: 8,
     completedChapters: 0,
@@ -136,10 +138,10 @@ const categories: Category[] = [
     name: 'Power BI',
     slug: 'powerbi',
     icon: BarChart3,
-    iconBg: 'bg-orange-50',
     gradient: 'from-orange-500 to-red-500',
+    bgLight: 'bg-orange-50',
+    tagBg: 'bg-orange-100',
     color: 'orange',
-    lightColor: 'bg-orange-50',
     description: 'Create stunning dashboards and data visualizations',
     totalChapters: 8,
     completedChapters: 0,
@@ -159,10 +161,10 @@ const categories: Category[] = [
     name: 'Business Communication',
     slug: 'business-communication',
     icon: MessageCircle,
-    iconBg: 'bg-purple-50',
     gradient: 'from-purple-500 to-pink-500',
+    bgLight: 'bg-purple-50',
+    tagBg: 'bg-purple-100',
     color: 'purple',
-    lightColor: 'bg-purple-50',
     description: 'Master finance communication, reports, and presentations',
     totalChapters: 8,
     completedChapters: 0,
@@ -179,20 +181,31 @@ const categories: Category[] = [
   }
 ];
 
-const getLevelBadge = (level: string) => {
+const getLevelStyles = (level: string) => {
   switch(level) {
-    case 'Beginner': return { bg: 'bg-emerald-100 text-emerald-700', icon: '🌱', label: 'Beginner' };
-    case 'Intermediate': return { bg: 'bg-amber-100 text-amber-700', icon: '📈', label: 'Intermediate' };
-    case 'Advanced': return { bg: 'bg-rose-100 text-rose-700', icon: '🚀', label: 'Advanced' };
-    default: return { bg: 'bg-gray-100 text-gray-600', icon: '📚', label: level };
+    case 'Beginner': return 'bg-emerald-100 text-emerald-700';
+    case 'Intermediate': return 'bg-amber-100 text-amber-700';
+    case 'Advanced': return 'bg-rose-100 text-rose-700';
+    default: return 'bg-gray-100 text-gray-700';
   }
 };
 
 export default function LearnPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
-  const [selectedLevel, setSelectedLevel] = useState<string | null>(null);
   const [chapterStates, setChapterStates] = useState(categories);
+  const [isScrolled, setIsScrolled] = useState(false);
+  const [mounted, setMounted] = useState(false);
+  const [showResetConfirm, setShowResetConfirm] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 50);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   const toggleChapter = (categoryId: number, chapterId: number) => {
     setChapterStates(prev => prev.map(cat => {
@@ -207,10 +220,18 @@ export default function LearnPage() {
     }));
   };
 
+  const resetAllProgress = () => {
+    setChapterStates(prev => prev.map(cat => ({
+      ...cat,
+      completedChapters: 0,
+      chapters: cat.chapters.map(ch => ({ ...ch, completed: false }))
+    })));
+    setShowResetConfirm(false);
+  };
+
   const totalChapters = chapterStates.reduce((sum, cat) => sum + cat.totalChapters, 0);
   const totalCompleted = chapterStates.reduce((sum, cat) => sum + cat.completedChapters, 0);
   const totalProgress = (totalCompleted / totalChapters) * 100;
-  const popularChapters = chapterStates.flatMap(cat => cat.chapters).filter(ch => ch.id <= 2).length;
 
   const filteredCategories = chapterStates
     .map(category => ({
@@ -220,161 +241,185 @@ export default function LearnPage() {
           chapter.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
           chapter.description.toLowerCase().includes(searchQuery.toLowerCase());
         const matchesCategory = !selectedCategory || category.slug === selectedCategory;
-        const matchesLevel = !selectedLevel || chapter.level === selectedLevel;
-        return matchesSearch && matchesCategory && matchesLevel;
+        return matchesSearch && matchesCategory;
       })
     }))
     .filter(category => category.chapters.length > 0);
 
   const clearFilters = () => {
     setSelectedCategory(null);
-    setSelectedLevel(null);
     setSearchQuery('');
   };
 
-  const hasActiveFilters = selectedCategory !== null || selectedLevel !== null || searchQuery !== '';
+  // Get margin top for categories based on name
+  const getCategoryMargin = (categoryName: string) => {
+    const categoriesWithMargin = [
+      'Advanced Excel',
+      'Financial Analysis',
+      'Financial Reporting',
+      'Power BI',
+      'Business Communication'
+    ];
+    return categoriesWithMargin.includes(categoryName) ? "mt-12" : "";
+  };
+
+  if (!mounted) {
+    return null;
+  }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-white to-gray-50">
-      
+    <div className="min-h-screen bg-white">
+      <style jsx global>{`
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+        * { font-family: 'Inter', sans-serif; }
+      `}</style>
+
       {/* Header */}
-      <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-gray-100">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            <Link href="/" className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-[#FFD700] to-[#FFA500]"></div>
-              <span className="text-xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent">Finlysta</span>
+      <header className={`fixed top-0 w-full z-50 transition-all duration-300 ${isScrolled ? 'bg-white/90 backdrop-blur-xl border-b shadow-sm' : 'bg-transparent'}`}>
+        <div className="max-w-7xl mx-auto px-6 lg:px-8">
+          <div className="flex items-center justify-between h-20">
+            <Link href="/" className="flex items-center">
+              <Image 
+                src="/Finlysta.png" 
+                alt="Finlysta logo"
+                width={180} 
+                height={40}
+                priority
+                className="object-contain"
+              />
             </Link>
             
             <div className="hidden md:flex items-center gap-8">
               <Link href="/" className="text-sm font-medium text-gray-600 hover:text-gray-900 transition">Home</Link>
-              <Link href="/learn" className="text-sm font-medium text-[#FFD700] transition">Learn</Link>
+              <Link href="/learn" className="text-sm font-semibold text-blue-600">Learn</Link>
               <Link href="/roadmap" className="text-sm font-medium text-gray-600 hover:text-gray-900 transition">Roadmap</Link>
               <Link href="/blogs" className="text-sm font-medium text-gray-600 hover:text-gray-900 transition">Blogs</Link>
+               <Link href="/interview-prep" className="text-sm font-medium text-gray-600 hover:text-gray-900 transition">Interview Prep</Link>
             </div>
 
-            <div className="flex items-center gap-3">
-              <button className="w-9 h-9 rounded-full bg-gray-100 flex items-center justify-center hover:bg-gray-200 transition">
+            <div className="flex items-center gap-2">
+              <button className="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center hover:bg-gray-200 transition">
                 <Bell size={16} className="text-gray-600" />
               </button>
-              <div className="w-9 h-9 rounded-full bg-gradient-to-br from-[#FFD700] to-[#FFA500] flex items-center justify-center cursor-pointer">
-                <User size={16} className="text-white" />
-              </div>
             </div>
           </div>
         </div>
       </header>
 
       {/* Hero Section */}
-      <section className="relative overflow-hidden">
-        <div className="absolute top-0 -right-40 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl"></div>
-        <div className="absolute bottom-0 -left-40 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl"></div>
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-amber-500/5 rounded-full blur-3xl"></div>
-
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 lg:py-20">
-          <div className="text-center max-w-4xl mx-auto">
-            {/* Badge */}
-            <div className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-full text-sm font-semibold text-blue-700 mb-6 shadow-sm">
-              <Sparkles size={14} className="text-[#FFD700]" />
-              <span>New lessons added weekly</span>
+      <section className="pt-56 pb-16 bg-gradient-to-br from-blue-50 via-white to-purple-50">
+        <div className="max-w-4xl mx-auto px-6 lg:px-8 text-center mt-20">
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-white rounded-full text-xs font-medium text-blue-600 mb-6 shadow-sm">
+            <Sparkles size={12} />
+            New lessons added weekly
+          </div>
+          
+          <h1 className="text-5xl md:text-6xl lg:text-7xl font-black tracking-tight text-gray-900 mb-6">
+            Master Finance &{" "}
+            <span className="bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">Analytics</span>
+          </h1>
+          
+          <p className="text-gray-600 max-w-2xl mx-auto text-lg">
+            Learn the exact skills companies are looking for. From Excel fundamentals to advanced financial modeling. Bite-sized lessons, real-world projects, 100% free.
+          </p>
+          
+{/* Search */}
+<div className="max-w-xl mx-auto mt-9 mb-8">
+  <div className="relative">
+    <Search
+      size={18}
+      className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"
+    />
+    <input
+      type="text"
+      placeholder="          Search chapters, skills, topics..."
+      value={searchQuery}
+      onChange={(e) => setSearchQuery(e.target.value)}
+      className="w-full pl-28 pr-4 py-3.5 bg-white border border-gray-200 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 placeholder:text-gray-400"
+    />
+  </div>
+</div>
+          {/* Stats */}
+          <div className="flex justify-center gap-8">
+            <div className="text-center">
+              <div className="text-2xl font-bold text-gray-900">{totalChapters}</div>
+              <div className="text-xs text-gray-500">Free Chapters</div>
             </div>
-
-            {/* Heading */}
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black text-gray-900 mb-5 leading-[1.2] tracking-tight">
-              Master Finance & Analytics{' '}
-              <span className="text-[#FFD700]">
-                Skills That Get You Hired
-              </span>
-            </h1>
-
-            {/* Description */}
-            <p className="text-lg text-gray-500 mb-8 max-w-2xl mx-auto leading-relaxed">
-              Learn the exact skills companies are looking for — from Excel basics to advanced financial modeling. 
-              Bite-sized lessons, real-world projects, and completely free.
-            </p>
-
-            {/* Search Bar */}
-            <div className="relative max-w-2xl mx-auto mb-8">
-              <div className="absolute inset-0 bg-gradient-to-r from-blue-500/10 to-purple-500/10 rounded-2xl blur-xl"></div>
-              <div className="relative bg-white rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.08)]">
-                <Search size={20} className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-400" />
-                <input
-                  type="text"
-                  placeholder="Search Excel, SQL, Power BI, Financial Modeling..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-12 pr-4 py-4 bg-transparent rounded-2xl outline-none text-gray-900 placeholder-gray-400 text-base"
-                />
-              </div>
-            </div>
-
-            {/* Stats Cards */}
-            <div className="flex flex-wrap justify-center gap-4">
-              <div className="bg-white rounded-2xl px-6 py-3 shadow-sm border border-gray-100">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center">
-                    <BookOpen size={20} className="text-blue-500" />
-                  </div>
-                  <div>
-                    <div className="text-2xl font-bold text-gray-900">{totalChapters}</div>
-                    <div className="text-xs text-gray-500">Free Chapters</div>
-                  </div>
-                </div>
-              </div>
-              <div className="bg-white rounded-2xl px-6 py-3 shadow-sm border border-gray-100">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-amber-50 flex items-center justify-center">
-                    <Star size={20} className="text-amber-500" />
-                  </div>
-                  <div>
-                    <div className="text-2xl font-bold text-gray-900">{popularChapters}</div>
-                    <div className="text-xs text-gray-500">Popular Topics</div>
-                  </div>
-                </div>
-              </div>
+            <div className="w-px h-8 bg-gray-200"></div>
+            <div className="text-center">
+              <div className="text-2xl font-bold text-gray-900">100%</div>
+              <div className="text-xs text-gray-500">Free Forever</div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Progress Overview - Inline */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="bg-gradient-to-r from-gray-900 to-gray-800 rounded-2xl p-5 shadow-xl">
-          <div className="flex flex-wrap items-center justify-between gap-4">
-            <div className="flex items-center gap-4">
-              <div className="w-12 h-12 rounded-xl bg-white/10 backdrop-blur flex items-center justify-center">
-                <Target size={22} className="text-[#FFD700]" />
+      {/* Progress Bar with Reset Button */}
+      <section className="max-w-2xl mx-auto px-6 lg:px-8 -mt-6">
+        <div className="bg-white rounded-xl p-5 shadow-sm border border-gray-100">
+          <div className="flex items-center justify-between mb-3">
+            <div className="flex items-center gap-2">
+              <div className="w-8 h-8 rounded-lg bg-gradient-to-r from-blue-600 to-purple-600 flex items-center justify-center">
+                <Target size={16} className="text-white" />
               </div>
-              <div>
-                <div className="flex items-center gap-3">
-                  <h3 className="text-white font-semibold text-base">Your Learning Journey</h3>
-                  <span className="text-[#FFD700] text-sm font-semibold">{Math.round(totalProgress)}%</span>
-                </div>
-                <p className="text-gray-300 text-xs">{totalCompleted} of {totalChapters} chapters completed • {Math.floor(totalCompleted / totalChapters * 30)} day streak 🔥</p>
-              </div>
+              <span className="text-base font-semibold text-gray-900">Your Progress</span>
             </div>
-            <div className="w-full max-w-xs">
-              <div className="w-full h-2 bg-white/20 rounded-full overflow-hidden">
-                <div className="h-full bg-gradient-to-r from-[#FFD700] to-[#FFA500] rounded-full transition-all duration-500" style={{ width: `${totalProgress}%` }}></div>
-              </div>
+            <div className="flex items-center gap-3">
+              <span className="text-lg font-bold text-blue-600">{Math.round(totalProgress)}%</span>
+              {totalCompleted > 0 && (
+                <div className="relative">
+                  <button
+                    onClick={() => setShowResetConfirm(!showResetConfirm)}
+                    className="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center hover:bg-gray-200 transition"
+                    title="Reset Progress"
+                  >
+                    <RotateCcw size={14} className="text-gray-600" />
+                  </button>
+                  {showResetConfirm && (
+                    <div className="absolute right-0 top-10 z-20 bg-white rounded-lg shadow-lg border border-gray-200 p-3 w-48">
+                      <p className="text-xs text-gray-600 mb-2">Reset all progress?</p>
+                      <div className="flex gap-2">
+                        <button
+                          onClick={resetAllProgress}
+                          className="px-3 py-1 bg-red-500 text-white rounded-md text-xs hover:bg-red-600 transition"
+                        >
+                          Yes, Reset
+                        </button>
+                        <button
+                          onClick={() => setShowResetConfirm(false)}
+                          className="px-3 py-1 bg-gray-200 text-gray-700 rounded-md text-xs hover:bg-gray-300 transition"
+                        >
+                          Cancel
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
           </div>
+          <div className="h-2.5 bg-gray-100 rounded-full overflow-hidden">
+            <div 
+              className="h-full bg-gradient-to-r from-blue-600 to-purple-600 rounded-full transition-all duration-500"
+              style={{ width: `${totalProgress}%` }}
+            />
+          </div>
+          <p className="text-sm text-gray-500 mt-3">{totalCompleted} of {totalChapters} chapters completed</p>
         </div>
       </section>
 
-      {/* Categories & Chapters */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pb-24">
-        {/* Category Pills */}
-        <div className="flex flex-wrap gap-2 mb-8 pb-2 overflow-x-auto">
+      {/* Category Pills */}
+      <section className="max-w-7xl mx-auto px-6 lg:px-8 pt-10 pb-6">
+        <div className="flex flex-wrap justify-center gap-2">
           <button
             onClick={() => setSelectedCategory(null)}
-            className={`px-5 py-2.5 rounded-full text-sm font-medium transition-all ${
+            className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
               selectedCategory === null
-                ? 'bg-gray-900 text-white shadow-lg'
-                : 'bg-white text-gray-600 hover:bg-gray-100 border border-gray-200'
+                ? 'bg-gray-900 text-white shadow-md'
+                : 'bg-white text-gray-700 hover:bg-gray-100 border border-gray-200'
             }`}
           >
-            All Categories
+            All
           </button>
           {chapterStates.map(cat => {
             const Icon = cat.icon;
@@ -382,205 +427,210 @@ export default function LearnPage() {
               <button
                 key={cat.slug}
                 onClick={() => setSelectedCategory(cat.slug)}
-                className={`px-5 py-2.5 rounded-full text-sm font-medium transition-all flex items-center gap-2 ${
+                className={`px-4 py-2 rounded-full text-sm font-medium flex items-center gap-1.5 transition-all ${
                   selectedCategory === cat.slug
-                    ? `${cat.lightColor} text-gray-900 shadow-sm border border-gray-200`
-                    : 'bg-white text-gray-600 hover:bg-gray-100 border border-gray-200'
+                    ? `bg-gradient-to-r ${cat.gradient} text-white shadow-md`
+                    : 'bg-white text-gray-700 hover:bg-gray-100 border border-gray-200'
                 }`}
               >
-                <Icon size={16} />
-                <span>{cat.name}</span>
+                <Icon size={14} />
+                {cat.name}
               </button>
             );
           })}
         </div>
+      </section>
 
-        {/* Chapters Grid */}
+      {/* Chapters Grid - Card Style */}
+      <section className="max-w-7xl mx-auto px-6 lg:px-8 py-8 pb-20">
         {filteredCategories.length === 0 ? (
-          <div className="text-center py-16 bg-white rounded-3xl border border-gray-100">
-            <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <Search size={32} className="text-gray-300" />
+          <div className="text-center py-16">
+            <div className="w-16 h-16 bg-gray-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
+              <Search size={28} className="text-gray-400" />
             </div>
-            <h3 className="text-xl font-semibold text-gray-900 mb-2">No topics found</h3>
-            <p className="text-gray-500 mb-4">Try adjusting your filters or search terms</p>
-            <button onClick={clearFilters} className="px-5 py-2.5 bg-gradient-to-r from-[#FFD700] to-[#FFA500] text-gray-900 rounded-xl text-sm font-medium">
-              Clear all filters
+            <h3 className="text-lg font-semibold text-gray-900 mb-1">No topics found</h3>
+            <p className="text-gray-500 text-sm mb-4">Try adjusting your search or filters</p>
+            <button 
+              onClick={clearFilters}
+              className="px-4 py-2 bg-gray-900 text-white rounded-lg text-sm font-medium hover:bg-gray-800 transition"
+            >
+              Clear filters
             </button>
           </div>
         ) : (
-          filteredCategories.map((category) => {
-            const CategoryIcon = category.icon;
-            const categoryProgress = (category.completedChapters / category.totalChapters) * 100;
-            const levelBadge = getLevelBadge;
-
-            return (
-              <div key={category.id} className="mb-12 last:mb-0">
-                {/* Category Header */}
-                <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
-                  <div className="flex items-center gap-4">
-                    <div className={`w-14 h-14 rounded-2xl ${category.lightColor} flex items-center justify-center shadow-sm`}>
-                      <CategoryIcon size={28} className="text-gray-700" />
+          <div className="space-y-12">
+            {filteredCategories.map((category) => {
+              const CategoryIcon = category.icon;
+              const categoryProgress = (category.completedChapters / category.totalChapters) * 100;
+              
+              return (
+                <div key={category.id} className={getCategoryMargin(category.name)}>
+                  {/* Category Header - Removed color blocks */}
+                  <div className="flex items-center justify-between mb-5">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-xl bg-gray-100 flex items-center justify-center">
+                        <CategoryIcon size={20} className="text-gray-600" />
+                      </div>
+                      <div>
+                        <h2 className="text-xl font-bold text-gray-900">{category.name}</h2>
+                        <p className="text-xs text-gray-500">{category.description}</p>
+                      </div>
                     </div>
-                    <div>
-                      <h2 className="text-2xl font-bold text-gray-900">{category.name}</h2>
-                      <p className="text-sm text-gray-500">{category.description}</p>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-4">
                     <div className="text-right">
                       <div className="text-sm font-bold text-gray-900">{Math.round(categoryProgress)}%</div>
-                      <div className="text-xs text-gray-400">{category.completedChapters}/{category.totalChapters} done</div>
-                    </div>
-                    <div className="w-32 h-2 bg-gray-100 rounded-full overflow-hidden">
-                      <div className={`h-full bg-gradient-to-r ${category.gradient} rounded-full`} style={{ width: `${categoryProgress}%` }}></div>
+                      <div className="text-xs text-gray-400">{category.completedChapters}/{category.totalChapters}</div>
                     </div>
                   </div>
-                </div>
-
-                {/* Chapters Grid - 3 columns */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {category.chapters.map((chapter) => {
-                    const level = levelBadge(chapter.level);
-                    const isPopular = chapter.id <= 2;
-                    
-                    return (
+                  
+                  {/* Progress bar under category */}
+                  <div className="h-1 bg-gray-100 rounded-full overflow-hidden mb-6">
+                    <div 
+                      className={`h-full bg-gradient-to-r ${category.gradient} rounded-full transition-all duration-500`}
+                      style={{ width: `${categoryProgress}%` }}
+                    />
+                  </div>
+                  
+                  {/* Chapter Cards */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {category.chapters.map((chapter) => (
                       <Link
                         key={chapter.id}
                         href={`/learn/${category.slug}/${chapter.slug}`}
-                        className="group block bg-white rounded-2xl border border-gray-100 overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
+                        className="group"
                       >
-                        <div className={`h-1.5 bg-gradient-to-r ${category.gradient}`}></div>
-                        
-                        <div className="p-6">
-                          <div className="flex items-start justify-between mb-4">
-                            <div className="flex items-center gap-2">
-                              <div className={`w-10 h-10 rounded-xl ${category.lightColor} flex items-center justify-center`}>
-                                <CategoryIcon size={18} className="text-gray-700" />
+                        <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden hover:shadow-lg transition-all duration-300 hover:-translate-y-0.5">
+                          {/* Top section - Removed colored background */}
+                          <div className="p-5">
+                            <div className="flex items-start justify-between mb-3">
+                              <div className="w-10 h-10 rounded-xl bg-gray-100 flex items-center justify-center">
+                                <CategoryIcon size={18} className="text-gray-600" />
                               </div>
-                              {isPopular && (
-                                <span className="flex items-center gap-1 px-2 py-1 bg-amber-50 rounded-full text-[10px] font-semibold text-amber-600">
-                                  <Zap size={10} className="text-amber-500" />
-                                  Popular
-                                </span>
-                              )}
+                              <button 
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  e.stopPropagation();
+                                  toggleChapter(category.id, chapter.id);
+                                }}
+                              >
+                                {chapter.completed ? (
+                                  <CheckCircle size={18} className="text-emerald-500" />
+                                ) : (
+                                  <Circle size={18} className="text-gray-300 group-hover:text-gray-400 transition" />
+                                )}
+                              </button>
                             </div>
-                            <button 
-                              onClick={(e) => {
-                                e.preventDefault();
-                                e.stopPropagation();
-                                toggleChapter(category.id, chapter.id);
-                              }}
-                              className="text-gray-400 hover:text-emerald-500 transition"
-                            >
-                              {chapter.completed ? (
-                                <CheckCircle size={18} className="text-emerald-500" />
-                              ) : (
-                                <Circle size={18} />
-                              )}
-                            </button>
+                            
+                            <h3 className="font-bold text-gray-900 text-lg mb-2 group-hover:text-blue-600 transition line-clamp-1">
+                              {chapter.title}
+                            </h3>
+                            
+                            <p className="text-gray-600 text-sm mb-4 line-clamp-2">
+                              {chapter.description}
+                            </p>
+                            
+                            <div className="flex flex-wrap gap-2">
+                              <span className={`${getLevelStyles(chapter.level)} px-2.5 py-1 rounded-full text-xs font-medium`}>
+                                {chapter.level}
+                              </span>
+                              <span className="bg-gray-100 px-2.5 py-1 rounded-full text-xs text-gray-500 flex items-center gap-1">
+                                <Clock size={11} />
+                                {chapter.duration}
+                              </span>
+                            </div>
                           </div>
                           
-                          <h3 className="text-lg font-bold text-gray-900 mb-2 group-hover:text-[#FFD700] transition-colors line-clamp-1">
-                            {chapter.title}
-                          </h3>
-                          
-                          <p className="text-sm text-gray-500 mb-4 line-clamp-2 leading-relaxed">
-                            {chapter.description}
-                          </p>
-                          
-                          <div className="flex items-center gap-3">
-                            <span className={`text-[11px] font-medium px-2.5 py-1 rounded-full flex items-center gap-1 ${level.bg}`}>
-                              <span>{level.icon}</span>
-                              <span>{chapter.level}</span>
-                            </span>
-                            <span className="text-[11px] text-gray-400 flex items-center gap-1">
-                              <Clock size={11} />
-                              {chapter.duration}
-                            </span>
+                          {/* Bottom with Explore button */}
+                          <div className="flex items-center justify-between px-5 py-3 bg-white border-t border-gray-50">
+                            <span className="text-sm font-medium text-gray-600">Start Learning</span>
+                            <div className="w-8 h-8 bg-gray-100 rounded-xl flex items-center justify-center group-hover:bg-gray-200 transition group-hover:scale-105">
+                              <ArrowRight size={14} className="text-gray-600" />
+                            </div>
                           </div>
                         </div>
                       </Link>
-                    );
-                  })}
+                    ))}
+                  </div>
                 </div>
-              </div>
-            );
-          })
+              );
+            })}
+          </div>
         )}
       </section>
 
-      {/* Why Learn with Finlysta */}
-      <section className="bg-white py-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <div className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-full text-sm font-semibold text-blue-700 mb-4">
-              <Rocket size={14} />
-              <span>Why Finlysta?</span>
+      {/* Features Section */}
+      <section className="bg-gray-50 py-16 border-t border-gray-100">
+        <div className="max-w-7xl mx-auto px-6 lg:px-8">
+          <div className="text-center mb-10">
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-white rounded-full text-xs font-medium text-blue-600 mb-4 shadow-sm">
+              <Rocket size={12} />
+              Why choose Finlysta
             </div>
-            <h2 className="text-3xl font-bold text-gray-900 mb-3">Learn with Confidence</h2>
-            <p className="text-gray-500 max-w-2xl mx-auto">Join thousands of students who transformed their careers with Finlysta</p>
+            <h2 className="text-2xl font-bold text-gray-900">Learn with Confidence</h2>
+            <p className="text-gray-500 text-sm mt-1">Join thousands transforming their careers</p>
           </div>
-
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
-            <div className="text-center p-6 bg-gray-50 rounded-2xl hover:bg-white hover:shadow-md transition-all">
-              <div className="w-14 h-14 rounded-2xl bg-emerald-100 flex items-center justify-center mx-auto mb-4">
-                <BookOpen size={28} className="text-emerald-600" />
-              </div>
-              <div className="text-2xl font-bold text-gray-900">48+</div>
-              <div className="text-sm text-gray-500">Free Lessons</div>
-            </div>
-            <div className="text-center p-6 bg-gray-50 rounded-2xl hover:bg-white hover:shadow-md transition-all">
-              <div className="w-14 h-14 rounded-2xl bg-purple-100 flex items-center justify-center mx-auto mb-4">
-                <Clock size={28} className="text-purple-600" />
-              </div>
-              <div className="text-2xl font-bold text-gray-900">30+</div>
-              <div className="text-sm text-gray-500">Hours of Content</div>
-            </div>
-            <div className="text-center p-6 bg-gray-50 rounded-2xl hover:bg-white hover:shadow-md transition-all">
-              <div className="w-14 h-14 rounded-2xl bg-blue-100 flex items-center justify-center mx-auto mb-4">
-                <Users size={28} className="text-blue-600" />
-              </div>
-              <div className="text-2xl font-bold text-gray-900">10K+</div>
-              <div className="text-sm text-gray-500">Active Learners</div>
-            </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-2xl mx-auto">
+            {[
+              { icon: BookOpen, title: 'Free Lessons', value: '48+', description: 'Completely free access' },
+              { icon: Clock, title: 'Hours of Content', value: '30+', description: 'Learn at your pace' },
+            ].map((item, idx) => {
+              const Icon = item.icon;
+              return (
+                <div key={idx} className="bg-white rounded-2xl p-6 text-center hover:shadow-md transition">
+                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-100 to-purple-100 flex items-center justify-center mx-auto mb-3">
+                    <Icon size={22} className="text-blue-600" />
+                  </div>
+                  <div className="text-2xl font-bold text-gray-900">{item.value}</div>
+                  <div className="font-medium text-gray-700 text-sm mt-1">{item.title}</div>
+                  <p className="text-xs text-gray-400 mt-1">{item.description}</p>
+                </div>
+              );
+            })}
           </div>
         </div>
       </section>
 
       {/* CTA Section */}
-      <section className="relative overflow-hidden bg-gradient-to-r from-gray-900 to-gray-800 py-16">
-        <div className="absolute top-0 right-0 w-96 h-96 bg-[#FFD700]/10 rounded-full blur-3xl"></div>
-        <div className="absolute bottom-0 left-0 w-96 h-96 bg-orange-500/10 rounded-full blur-3xl"></div>
-        
-        <div className="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/10 rounded-full text-sm font-medium text-[#FFD700] mb-6">
-            <Sparkles size={14} />
-            <span>100% Free — Always</span>
-          </div>
-          <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">Ready to Start Your Journey?</h2>
-          <p className="text-gray-300 mb-8 max-w-md mx-auto">
-            Join thousands of students mastering finance skills for their dream careers
-          </p>
-          <div className="flex flex-wrap gap-4 justify-center">
-            <Link
-              href="/roadmap"
-              className="inline-flex items-center gap-2 px-8 py-3.5 bg-gradient-to-r from-[#FFD700] to-[#FFA500] text-gray-900 font-bold rounded-xl hover:shadow-xl transition-all hover:scale-105"
-            >
-              <Compass size={18} />
-              View Career Roadmap
-              <ArrowRight size={16} />
-            </Link>
-            <Link
-              href="/blogs"
-              className="inline-flex items-center gap-2 px-8 py-3.5 bg-white/10 backdrop-blur text-white font-bold rounded-xl hover:bg-white/20 transition-all hover:scale-105 border border-white/20"
-            >
-              <BookOpen size={18} />
-              Read Our Blogs
-              <ArrowRight size={16} />
-            </Link>
+      <section className="py-16">
+        <div className="max-w-4xl mx-auto px-6 lg:px-8">
+          <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 p-10 text-center">
+            <div className="absolute inset-0 bg-white/5" />
+            <div className="relative">
+              <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-white/20 backdrop-blur-sm rounded-full text-xs font-medium text-white mb-5">
+                <Gift size={12} />
+                100% Free, Always
+              </div>
+              <h2 className="text-2xl md:text-3xl font-bold text-white mb-3">Ready to Transform Your Skills?</h2>
+              <p className="text-white text-sm mb-6 max-w-md mx-auto">
+                Join thousands of learners building in-demand finance expertise
+              </p>
+              <div className="flex flex-wrap gap-3 justify-center">
+                <Link
+                  href="/roadmap"
+                  className="px-5 py-2.5 bg-white text-gray-900 font-semibold rounded-xl text-sm hover:shadow-lg transition hover:scale-105"
+                >
+                  View Career Roadmap
+                </Link>
+                <Link
+                  href="/blogs"
+                  className="px-5 py-2.5 bg-white/20 backdrop-blur-sm text-white font-semibold rounded-xl text-sm hover:bg-white/30 transition"
+                >
+                  Read Our Insights
+                </Link>
+              </div>
+            </div>
           </div>
         </div>
       </section>
+
+      {/* Footer - Centered only */}
+      <footer className="border-t border-gray-100 py-8 bg-white">
+        <div className="max-w-7xl mx-auto px-6 lg:px-8">
+          <div className="text-center text-sm text-gray-500">
+            <p>© 2026 Finlysta. All rights reserved.</p>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 }

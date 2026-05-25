@@ -11,7 +11,7 @@ export default function Header() {
     { href: "/", label: "Home" },
     { href: "/jobs", label: "Jobs" },
     { href: "/internships", label: "Internships" },
-    { href: "/roadmap", label: "Careers" },
+    { href: "/roadmap", label: "Roadmap" },
     { href: "/learn", label: "Learning Hub" },
     { href: "/interview-prep", label: "Interview Prep" },
     { href: "/blogs", label: "Blogs" },

@@ -185,9 +185,9 @@ const BlogPreviewSection = () => {
             </div>
             <h2 className="text-3xl md:text-4xl lg:text-5xl font-black tracking-tight text-[#0A2540] mb-4">
               Insights, stories, and tools for <br />
-              <span className="bg-gradient-to-r from-[#FFD700] to-[#FFA500] bg-clip-text">
-                building your finance career
-              </span>
+<span className="text-[#0A2540] relative z-10 opacity-100">
+  building your finance career
+</span>
             </h2>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 max-w-4xl mx-auto">
@@ -864,7 +864,7 @@ export default function HomePageContent() {
               <ul className="space-y-2.5 text-sm text-slate-500">
                 <li><Link href="/learn" className="hover:text-[#0A2540] transition-colors">Learning Hub</Link></li>
                 <li><Link href="/blogs/how-to-become-financial-analyst-india-2026" className="hover:text-[#0A2540] transition-colors">Career Guide</Link></li>
-                <li><Link href="/blogs/financial-modeling-interview-questions" className="hover:text-[#0A2540] transition-colors">Interview Prep</Link></li>
+                <li><Link href="/interview-prep" className="hover:text-[#0A2540] transition-colors">Interview Prep</Link></li>
               </ul>
             </div>
             <div className="lg:col-span-2">

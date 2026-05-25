@@ -78,7 +78,13 @@ import {
   SkipForward,
   SkipBack,
   MessageSquare,
-  ThumbsUp as ThumbsUpIcon
+  ThumbsUp as ThumbsUpIcon,
+  Facebook,
+  Linkedin,
+  Twitter,
+  Mail,
+  Share,
+  X
 } from "lucide-react";
 
 import Head from "next/head";
@@ -161,14 +167,26 @@ export default function AdvancedExcelPage() {
   ];
 
   // Add more questions (7-15)
+  const questionTexts = [
+    "What are volatile functions?",
+    "How do you create a dependent drop-down list?",
+    "What is Conditional Formatting?",
+    "How do you protect worksheets?",
+    "Explain COUNTIF vs COUNTIFS",
+    "What are Excel Tables?",
+    "Explain TEXTJOIN function",
+    "How to find nth match?",
+    "What's the difference between HLOOKUP and VLOOKUP?"
+  ];
+  
   for (let i = 7; i <= 15; i++) {
     interviewQuestions.push({
       id: i,
-      question: `Excel Interview Question ${i}: ${i === 7 ? "What are volatile functions?" : i === 8 ? "How do you create a dependent drop-down list?" : i === 9 ? "What is Conditional Formatting?" : i === 10 ? "How do you protect worksheets?" : i === 11 ? "Explain COUNTIF vs COUNTIFS" : i === 12 ? "What are Excel Tables?" : i === 13 ? "Explain TEXTJOIN function" : i === 14 ? "How to find nth match?" : "What's the difference between HLOOKUP and VLOOKUP?"}`,
-      shortAnswer: `Key concept explanation for Excel ${i}`,
-      answer: `Detailed answer covering key concepts and best practices.`,
-      syntax: `=SYNTAX_FOR_QUESTION_${i}(range, criteria)`,
-      example: `=EXAMPLE${i}(A1:A100) - practical example`,
+      question: `${questionTexts[i - 7]}`,
+      shortAnswer: `Key concept explanation for this topic.`,
+      answer: `Detailed answer covering key concepts and best practices for ${questionTexts[i - 7]}.`,
+      syntax: `=FUNCTION_NAME(range, criteria)`,
+      example: `=EXAMPLE(${i})(A1:A100) - practical example`,
       category: i % 2 === 0 ? "Formulas" : "Data Analysis",
       difficulty: i < 10 ? "Intermediate" : "Advanced",
       tip: `Pro tip for mastering this concept.`,
@@ -251,6 +269,7 @@ export default function AdvancedExcelPage() {
   const [showFeedback, setShowFeedback] = useState(false);
   const [feedbackText, setFeedbackText] = useState("");
   const [feedbackRating, setFeedbackRating] = useState(0);
+  const [feedbackName, setFeedbackName] = useState("");
 
   // Refs for scrolling
   const mockInterviewRef = useRef<HTMLDivElement>(null);
@@ -404,70 +423,157 @@ export default function AdvancedExcelPage() {
       window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`, "_blank");
     } else if (platform === "linkedin") {
       window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`, "_blank");
+    } else if (platform === "whatsapp") {
+      window.open(`https://wa.me/?text=${encodeURIComponent(text + " " + url)}`, "_blank");
+    } else if (platform === "facebook") {
+      window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`, "_blank");
     }
     setShowShareOptions(false);
+  };
+
+  // Submit feedback - Only submission, no display
+  const submitFeedback = () => {
+    if (feedbackText.trim() || feedbackRating > 0) {
+      // Save to localStorage for admin reference only (not displayed to users)
+      const newFeedback = {
+        name: feedbackName.trim() || "Anonymous",
+        rating: feedbackRating,
+        comment: feedbackText,
+        date: new Date().toISOString().split('T')[0]
+      };
+      const savedFeedback = localStorage.getItem("excel_feedback");
+      let existingFeedback = savedFeedback ? JSON.parse(savedFeedback) : [];
+      existingFeedback = [newFeedback, ...existingFeedback].slice(0, 50);
+      localStorage.setItem("excel_feedback", JSON.stringify(existingFeedback));
+      
+      alert(`Thank you for your ${feedbackRating}⭐ rating and feedback! 🙏`);
+      setShowFeedback(false);
+      setFeedbackText("");
+      setFeedbackRating(0);
+      setFeedbackName("");
+    } else {
+      alert("Please share your feedback or rating before submitting.");
+    }
   };
 
   // Download PDF with all questions and answers
   const downloadPDF = () => {
     const pdfContent = `
-╔══════════════════════════════════════════════════════════════════╗
-║                    FINLYSTA EXCEL INTERVIEW PREP                 ║
-║                    Complete Interview Questions & Answers        ║
-╚══════════════════════════════════════════════════════════════════╝
-
-Generated: ${new Date().toLocaleDateString()}
-Questions Mastered: ${completedQuestions.length}/${interviewQuestions.length}
-Mastered: ${masteredQuestions.length}/${interviewQuestions.length}
-Streak: ${streak} days
-
-${"=".repeat(70)}
-
-${interviewQuestions.map(q => `
-📌 QUESTION ${q.id}: ${q.question}
-
-🎯 SHORT ANSWER:
-${q.shortAnswer}
-
-📚 DETAILED ANSWER:
-${q.answer}
-
-💻 SYNTAX:
-${q.syntax || "N/A"}
-
-📊 EXAMPLE:
-${q.example}
-
-💡 PRO TIP:
-${q.tip}
-
-${"─".repeat(50)}
-
-`).join('\n')}
-
-${"=".repeat(70)}
-
-🎯 QUICK REFERENCE - TOP FORMULAS:
-• XLOOKUP: =XLOOKUP(value, lookup_array, return_array, "Not Found")
-• SUMIFS: =SUMIFS(sum_range, criteria_range1, criteria1, criteria_range2, criteria2)
-• FILTER: =FILTER(range, condition, "No results")
-• UNIQUE: =UNIQUE(range)
-• TEXTJOIN: =TEXTJOIN(", ", TRUE, range)
-
-⚡ EXCEL SHORTCUTS:
-${excelShortcuts.map(s => `• ${s.shortcut}: ${s.action} - ${s.description}`).join('\n')}
-
-${"=".repeat(70)}
-
-Prepared by Finlysta - Your Finance Career Partner
-Visit: https://finlysta.com/learn/advanced-excel
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <meta charset="UTF-8">
+        <title>Finlysta - Excel Interview Questions</title>
+        <style>
+          body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 40px;
+            color: #333;
+          }
+          .header {
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #2563eb;
+            padding-bottom: 20px;
+          }
+          .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: #2563eb;
+          }
+          .title {
+            font-size: 28px;
+            font-weight: bold;
+            margin-top: 10px;
+          }
+          .subtitle {
+            color: #666;
+            font-size: 14px;
+          }
+          .question-card {
+            margin-bottom: 30px;
+            page-break-inside: avoid;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 20px;
+            background: #f9fafb;
+          }
+          .question-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #1f2937;
+            margin-bottom: 10px;
+          }
+          .short-answer {
+            background: #e0f2fe;
+            padding: 10px;
+            border-radius: 8px;
+            margin: 10px 0;
+          }
+          .full-answer {
+            margin: 10px 0;
+          }
+          .syntax {
+            background: #f3f4f6;
+            padding: 10px;
+            font-family: monospace;
+            border-radius: 8px;
+            margin: 10px 0;
+          }
+          .footer {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #e5e7eb;
+            font-size: 12px;
+            color: #666;
+          }
+        </style>
+      </head>
+      <body>
+        <div class="header">
+          <div class="logo">🏦 Finlysta</div>
+          <div class="title">Excel Interview Preparation Guide</div>
+          <div class="subtitle">30+ Questions with Detailed Answers</div>
+          <div class="subtitle">Generated: ${new Date().toLocaleDateString()}</div>
+        </div>
+        
+        ${interviewQuestions.map(q => `
+          <div class="question-card">
+            <div class="question-title">Q${q.id}. ${q.question}</div>
+            <div class="short-answer"><strong>📌 Short Answer:</strong> ${q.shortAnswer}</div>
+            <div class="full-answer"><strong>📚 Detailed Answer:</strong> ${q.answer}</div>
+            <div class="syntax"><strong>💻 Syntax:</strong> ${q.syntax || "N/A"}</div>
+            <div><strong>📊 Example:</strong> ${q.example}</div>
+            <div style="margin-top: 10px;"><strong>💡 Pro Tip:</strong> ${q.tip}</div>
+          </div>
+        `).join('')}
+        
+        <div style="margin-top: 40px;">
+          <h3>⚡ Quick Reference - Top Formulas</h3>
+          <ul>
+            <li>XLOOKUP: =XLOOKUP(value, lookup_array, return_array, "Not Found")</li>
+            <li>SUMIFS: =SUMIFS(sum_range, criteria_range1, criteria1, criteria_range2, criteria2)</li>
+            <li>FILTER: =FILTER(range, condition, "No results")</li>
+            <li>UNIQUE: =UNIQUE(range)</li>
+            <li>TEXTJOIN: =TEXTJOIN(", ", TRUE, range)</li>
+          </ul>
+        </div>
+        
+        <div class="footer">
+          <p>Prepared by Finlysta - Your Finance Career Partner</p>
+          <p>Visit: https://finlysta.com/learn/advanced-excel</p>
+        </div>
+      </body>
+      </html>
     `;
     
-    const blob = new Blob([pdfContent], { type: "text/plain" });
+    const blob = new Blob([pdfContent], { type: "text/html" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `finlysta-excel-interview-questions-${new Date().toISOString().split('T')[0]}.txt`;
+    a.download = `finlysta-excel-interview-questions-${new Date().toISOString().split('T')[0]}.html`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
@@ -531,10 +637,8 @@ Visit: https://finlysta.com/learn/advanced-excel
 
       <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
         
-        {/* Floating buttons - FIXED position at right side */}
- <div
-  className="fixed top-24 right-4 z-[99999] flex flex-col gap-4"
->
+        {/* Floating buttons - Right side */}
+        <div className="fixed top-1/2 right-4 z-[99999] -translate-y-1/2 flex flex-row gap-4">
           
           {/* Share Button */}
           <div className="relative">
@@ -546,10 +650,33 @@ Visit: https://finlysta.com/learn/advanced-excel
               <Share2 size={20} color="white" />
             </button>
             {showShareOptions && (
-             <div className="fixed top-24 right-20 bg-white rounded-xl shadow-lg p-2 flex gap-2 animate-fadeIn z-[100000]">
-                <button onClick={() => sharePage("twitter")} className="p-2 hover:bg-gray-100 rounded-lg transition-colors"><svg className="w-5 h-5 text-blue-400" fill="currentColor" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231z"/></svg></button>
-                <button onClick={() => sharePage("linkedin")} className="p-2 hover:bg-gray-100 rounded-lg transition-colors"><svg className="w-5 h-5 text-blue-700" fill="currentColor" viewBox="0 0 24 24"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452z"/></svg></button>
-                <button onClick={() => sharePage("copy")} className="p-2 hover:bg-gray-100 rounded-lg transition-colors">{copiedLink ? <CheckCircle className="w-5 h-5 text-green-500" /> : <Copy className="w-5 h-5 text-gray-500" />}</button>
+              <div className="absolute top-0 left-0 translate-x-[-100%] ml-[-10px] bg-white rounded-xl shadow-lg p-3 flex flex-col gap-2 animate-fadeIn z-[100000] min-w-[160px]">
+                <div className="flex justify-between items-center mb-2 pb-2 border-b border-gray-100">
+                  <span className="text-sm font-semibold text-gray-700">Share via</span>
+                  <button onClick={() => setShowShareOptions(false)} className="p-1 hover:bg-gray-100 rounded-lg">
+                    <X size={16} className="text-gray-500" />
+                  </button>
+                </div>
+                <button onClick={() => sharePage("twitter")} className="flex items-center gap-3 p-2 hover:bg-gray-100 rounded-lg transition-colors">
+                  <svg className="w-5 h-5 text-blue-400" fill="currentColor" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231z"/></svg>
+                  <span>Twitter</span>
+                </button>
+                <button onClick={() => sharePage("linkedin")} className="flex items-center gap-3 p-2 hover:bg-gray-100 rounded-lg transition-colors">
+                  <svg className="w-5 h-5 text-blue-700" fill="currentColor" viewBox="0 0 24 24"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452z"/></svg>
+                  <span>LinkedIn</span>
+                </button>
+                <button onClick={() => sharePage("whatsapp")} className="flex items-center gap-3 p-2 hover:bg-gray-100 rounded-lg transition-colors">
+                  <svg className="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 24 24"><path d="M20.138 3.86C17.95 1.67 15.06.5 12 .5 5.7.5.5 5.7.5 12c0 2.2.7 4.3 2 6.1L.5 23.5l5.5-1.5c1.8 1.1 3.9 1.7 6 1.7 6.3 0 11.5-5.2 11.5-11.5 0-3.1-1.2-6-3.4-8.2zM12 21.5c-1.8 0-3.6-.5-5.1-1.4l-.4-.2-3.3.9.9-3.2-.2-.4c-1-1.5-1.5-3.3-1.5-5.1 0-5.2 4.2-9.4 9.4-9.4 2.5 0 4.9 1 6.7 2.8 1.8 1.8 2.8 4.2 2.8 6.7 0 5.2-4.2 9.4-9.4 9.4z"/></svg>
+                  <span>WhatsApp</span>
+                </button>
+                <button onClick={() => sharePage("facebook")} className="flex items-center gap-3 p-2 hover:bg-gray-100 rounded-lg transition-colors">
+                  <svg className="w-5 h-5 text-blue-600" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.07C24 5.41 18.63 0 12 0S0 5.41 0 12.07C0 18.1 4.39 23.1 10.13 24v-8.44H7.08v-3.49h3.05V9.41c0-3.02 1.8-4.7 4.56-4.7 1.32 0 2.7.24 2.7.24v2.96h-1.52c-1.5 0-1.97.93-1.97 1.89v2.27h3.35l-.53 3.49h-2.82V24C19.61 23.1 24 18.1 24 12.07z"/></svg>
+                  <span>Facebook</span>
+                </button>
+                <button onClick={() => sharePage("copy")} className="flex items-center gap-3 p-2 hover:bg-gray-100 rounded-lg transition-colors">
+                  {copiedLink ? <CheckCircle className="w-5 h-5 text-green-500" /> : <Copy className="w-5 h-5 text-gray-500" />}
+                  <span>{copiedLink ? "Copied!" : "Copy Link"}</span>
+                </button>
               </div>
             )}
           </div>
@@ -582,7 +709,7 @@ Visit: https://finlysta.com/learn/advanced-excel
         {/* Main content */}
         <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
 
-          {/* Feedback Modal */}
+          {/* Feedback Modal - No display of submitted feedback */}
           {showFeedback && (
             <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
               <div className="bg-white rounded-2xl p-6 max-w-md w-full">
@@ -590,6 +717,7 @@ Visit: https://finlysta.com/learn/advanced-excel
                   <h3 className="text-xl font-bold text-gray-900">Share your feedback!</h3>
                   <button onClick={() => setShowFeedback(false)} className="p-1 hover:bg-gray-100 rounded-lg">✕</button>
                 </div>
+                
                 <div className="flex justify-center gap-2 mb-4">
                   {[1, 2, 3, 4, 5].map(star => (
                     <button key={star} onClick={() => setFeedbackRating(star)} className="text-2xl transition-transform hover:scale-110">
@@ -597,6 +725,15 @@ Visit: https://finlysta.com/learn/advanced-excel
                     </button>
                   ))}
                 </div>
+                
+                <input
+                  type="text"
+                  placeholder="Your name (optional)"
+                  value={feedbackName}
+                  onChange={(e) => setFeedbackName(e.target.value)}
+                  className="w-full p-3 border border-gray-200 rounded-xl mb-3 focus:outline-none focus:border-blue-500"
+                />
+                
                 <textarea 
                   value={feedbackText} 
                   onChange={(e) => setFeedbackText(e.target.value)} 
@@ -604,19 +741,14 @@ Visit: https://finlysta.com/learn/advanced-excel
                   className="w-full p-3 border border-gray-200 rounded-xl mb-4 focus:outline-none focus:border-blue-500" 
                   rows={4} 
                 />
+                
                 <div className="flex gap-3">
-                  <button 
-                    onClick={() => { 
-                      alert(`Thank you for your ${feedbackRating > 0 ? `${feedbackRating}⭐ rating and ` : ""}feedback! 🙏`); 
-                      setShowFeedback(false); 
-                      setFeedbackText("");
-                      setFeedbackRating(0);
-                    }} 
-                    className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-xl font-semibold hover:bg-blue-700"
-                  >
+                  <button onClick={submitFeedback} className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-xl font-semibold hover:bg-blue-700">
                     Submit
                   </button>
-                  <button onClick={() => setShowFeedback(false)} className="px-4 py-2 border border-gray-200 rounded-xl hover:bg-gray-50">Cancel</button>
+                  <button onClick={() => setShowFeedback(false)} className="px-4 py-2 border border-gray-200 rounded-xl hover:bg-gray-50">
+                    Cancel
+                  </button>
                 </div>
               </div>
             </div>
@@ -692,7 +824,7 @@ Visit: https://finlysta.com/learn/advanced-excel
                 </div>
                 <div className="flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-full px-4 py-2">
                   <Target className="w-4 h-4 text-blue-400" />
-                  <span className="text-black text-sm">{quizQuestionsList.length}+ Quiz Questions</span>
+                  <span className="text-blacck text-sm">{quizQuestionsList.length}+ Quiz Questions</span>
                 </div>
               </div>
             </div>
@@ -1002,14 +1134,9 @@ Visit: https://finlysta.com/learn/advanced-excel
           from { opacity: 0; transform: translateY(-10px); }
           to { opacity: 1; transform: translateY(0); }
         }
-       .animate-fadeIn {
-  animation: fadeIn 0.3s ease-out;
-  position: absolute;
-}
-
-body {
-  overflow-x: hidden;
-}
+        .animate-fadeIn {
+          animation: fadeIn 0.3s ease-out;
+        }
       `}</style>
     </>
   );
