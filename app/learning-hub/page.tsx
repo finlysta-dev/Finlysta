@@ -291,7 +291,7 @@ export default function LearnPage() {
             
             <div className="hidden md:flex items-center gap-8">
               <Link href="/" className="text-sm font-medium text-gray-600 hover:text-gray-900 transition">Home</Link>
-              <Link href="/learn" className="text-sm font-semibold text-blue-600">Learn</Link>
+              <Link href="/learning-hub" className="text-sm font-semibold text-blue-600">Learning Hub</Link>
               <Link href="/roadmap" className="text-sm font-medium text-gray-600 hover:text-gray-900 transition">Roadmap</Link>
               <Link href="/blogs" className="text-sm font-medium text-gray-600 hover:text-gray-900 transition">Blogs</Link>
                <Link href="/interview-prep" className="text-sm font-medium text-gray-600 hover:text-gray-900 transition">Interview Prep</Link>
@@ -495,7 +495,7 @@ export default function LearnPage() {
                     {category.chapters.map((chapter) => (
                       <Link
                         key={chapter.id}
-                        href={`/learn/${category.slug}/${chapter.slug}`}
+                        href={`/learning-hub/${category.slug}/${chapter.slug}`}
                         className="group"
                       >
                         <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden hover:shadow-lg transition-all duration-300 hover:-translate-y-0.5">

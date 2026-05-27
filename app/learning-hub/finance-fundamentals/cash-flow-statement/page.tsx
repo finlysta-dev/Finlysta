@@ -1,4 +1,4 @@
-// app/learn/financial-statements/cash-flow-statement/page.tsx
+// app/learning-hub/finance-fundamentals/cash-flow-statement/page.tsx
 import React from 'react';
 import {
   BookOpen,
@@ -272,12 +272,12 @@ export default function CashFlowStatementPage() {
   ];
 
   const relatedLessonsData: RelatedLessonProps[] = [
-    { title: "Profit & Loss Statement", duration: "12 min", icon: TrendingUp, href: "/learn/financial-statements/profit-loss-statement" },
-    { title: "Balance Sheet", duration: "14 min", icon: Scale, href: "/learn/financial-statements/balance-sheet" },
-    { title: "Financial Ratios Masterclass", duration: "25 min", icon: Percent, href: "/learn/financial-analysis/ratios" },
-    { title: "Free Cash Flow Deep Dive", duration: "18 min", icon: Banknote, href: "/learn/financial-analysis/free-cash-flow" },
-    { title: "Working Capital Management", duration: "20 min", icon: RefreshCw, href: "/learn/financial-analysis/working-capital" },
-    { title: "Financial Modeling Basics", duration: "30 min", icon: PieChart, href: "/learn/modeling/basics" }
+    { title: "Profit & Loss Statement", duration: "12 min", icon: TrendingUp, href: "/learning-hub/finance-fundamentals/profit-loss-statement" },
+    { title: "Balance Sheet", duration: "14 min", icon: Scale, href: "/learning-hub/finance-fundamentals/balance-sheet" },
+    { title: "Financial Ratios Masterclass", duration: "25 min", icon: Percent, href: "/learning-hub/financial-analysis/ratios" },
+    { title: "Free Cash Flow Deep Dive", duration: "18 min", icon: Banknote, href: "/learning-hub/financial-analysis/free-cash-flow" },
+    { title: "Working Capital Management", duration: "20 min", icon: RefreshCw, href: "/learning-hub/financial-analysis/working-capital" },
+    { title: "Financial Modeling Basics", duration: "30 min", icon: PieChart, href: "/learning-hub/modeling/basics" }
   ];
 
   return (
@@ -288,9 +288,9 @@ export default function CashFlowStatementPage() {
         <div className={styles.breadcrumb}>
           <a href="/" className={styles.breadcrumbLink}>Home</a>
           <ChevronRight className="w-3 h-3" />
-          <a href="/learn" className={styles.breadcrumbLink}>Learn</a>
+          <a href="/learning-hub" className={styles.breadcrumbLink}>Learn</a>
           <ChevronRight className="w-3 h-3" />
-          <a href="/learn/financial-statements" className={styles.breadcrumbLink}>Financial Statements</a>
+          <a href="/learning-hub/finance-fundamentals" className={styles.breadcrumbLink}>Financial Statements</a>
           <ChevronRight className="w-3 h-3" />
           <span className="text-[#111827] font-medium">Cash Flow Statement</span>
         </div>
@@ -559,7 +559,7 @@ export default function CashFlowStatementPage() {
                   ($110.5B vs $97B), showing conservative accounting and strong cash conversion.
                 </p>
                 <div className="mt-3 pt-2 border-t border-[#10B981]/20">
-                  <a href="/learn/financial-analysis/apple-cash-flow" className="text-sm text-[#10B981] font-semibold hover:underline inline-flex items-center gap-1">
+                  <a href="/learning-hub/financial-analysis/apple-cash-flow" className="text-sm text-[#10B981] font-semibold hover:underline inline-flex items-center gap-1">
                     Deep dive into Apple's cash flow <ArrowRight className="w-3 h-3" />
                   </a>
                 </div>
@@ -693,13 +693,13 @@ export default function CashFlowStatementPage() {
 
         {/* ===== 17. NEXT LESSON CTA ===== */}
         <div className="mb-10 flex justify-between items-center flex-wrap gap-4">
-          <a href="/learn/financial-analysis/ratios" className="inline-flex items-center gap-3 px-6 py-3 bg-[#111827] text-black rounded-xl font-semibold hover:bg-[#1f2937] transition-colors group">
+          <a href="/learning-hub/finance-fundamentals/financial-ratios" className="inline-flex items-center gap-3 px-6 py-3 bg-[#111827] text-black rounded-xl font-semibold hover:bg-[#1f2937] transition-colors group">
             Continue to Financial Ratios
             <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
           </a>
           <div className="flex gap-4">
-            <a href="/learn/financial-statements/profit-loss-statement" className="text-sm text-[#6B7280] hover:text-[#10B981] transition-colors">P&L Statement →</a>
-            <a href="/learn/financial-statements/balance-sheet" className="text-sm text-[#6B7280] hover:text-[#10B981] transition-colors">Balance Sheet →</a>
+            <a href="/learning-hub/finance-fundamentals/profit-loss-statement" className="text-sm text-[#6B7280] hover:text-[#10B981] transition-colors">P&L Statement →</a>
+            <a href="/learning-hub/finance-fundamentals/balance-sheet" className="text-sm text-[#6B7280] hover:text-[#10B981] transition-colors">Balance Sheet →</a>
           </div>
         </div>
       </div>

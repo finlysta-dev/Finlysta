@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
@@ -33,8 +33,8 @@ export default function InternshipsPage() {
   const [activeFilters, setActiveFilters] = useState<string[]>([]);
   const [imageErrors, setImageErrors] = useState<{ [key: string]: boolean }>({});
 
-  // ✅ UPDATED: Removed Tableau, VBA, SAP, QuickBooks, Tally, Risk Management, Auditing, Communication, Teamwork
-  // ✅ RENAMED: Excel → Advanced Excel
+  // ? UPDATED: Removed Tableau, VBA, SAP, QuickBooks, Tally, Risk Management, Auditing, Communication, Teamwork
+  // ? RENAMED: Excel ? Advanced Excel
   const popularTags = [
     'Advanced Excel', 'Python', 'Power BI', 'SQL', 'Financial Modeling',
     'Data Analysis'
@@ -235,7 +235,7 @@ export default function InternshipsPage() {
               onClick={() => fetchInternships()} 
               className="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold px-8 py-3 rounded-lg transition whitespace-nowrap"
             >
-              Find Internship →
+              Find Internship ?
             </button>
           </div>
 
@@ -370,7 +370,7 @@ export default function InternshipsPage() {
                       )}
                       {internship.stipend && formatStipend(internship.stipend) && (
                         <div className="flex items-center gap-2 text-sm font-semibold text-emerald-600">
-                          <span>💰</span>
+                          <span>??</span>
                           <span>{formatStipend(internship.stipend)}</span>
                         </div>
                       )}
@@ -420,13 +420,13 @@ export default function InternshipsPage() {
           </div>
         )}
 
-        {/* ✅ ADDED: Back to Home link at bottom */}
+        {/* ? ADDED: Back to Home link at bottom */}
         <div className="text-center mt-12 pb-8">
           <Link 
             href="/" 
             className="inline-flex items-center gap-2 text-[#0A2540] hover:text-emerald-600 transition-colors font-medium"
           >
-            ← Back to Home
+            ? Back to Home
           </Link>
         </div>
       </div>

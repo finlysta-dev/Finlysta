@@ -8,61 +8,38 @@ datasource db {
   directUrl = env("DIRECT_URL")
 }
 
-// Main Opportunities (Jobs & Internships combined)
 model Opportunity {
-  id           String   @id @default(cuid())
-  slug         String   @unique
-
-  // BASIC INFO
-  title        String
-  company      String
-  companyLogo  String?
-  aboutCompany String?
-
-  // JOB TYPE
-  type         String   // "job" | "internship"
-  workMode     String   // "remote" | "onsite" | "hybrid"
-  location     String
-
-  // CONDITIONAL FIELDS
-  experience   String?  // for jobs (e.g., "0-2 years")
-  duration     String?  // for internships (e.g., "3 months")
-
-  // PAY
-  salary       String?  // ₹4–8 LPA or ₹15,000/month
-
-  // SKILLS
-  skills       String[]
-
-  // DETAIL PAGE CONTENT
+  id               String             @id @default(cuid())
+  slug             String             @unique
+  title            String
+  company          String
+  companyLogo      String?
+  aboutCompany     String?
+  type             String
+  workMode         String
+  location         String
+  experience       String?
+  duration         String?
+  salary           String?
+  skills           String[]
   overview         String?
   responsibilities String?
   qualifications   String?
   benefits         String?
-
-  // APPLY
-  applyLink    String
-
-  // STATUS FLAGS
-  isNew        Boolean  @default(true)
-  isVerified   Boolean  @default(false)
-  isTrending   Boolean  @default(false)
-  isActivelyHiring Boolean @default(true)
-  published    Boolean  @default(true)
-
-  // DATES
-  postedAt     DateTime @default(now())
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-  deadline     DateTime? // Application deadline
-
-  // COUNTERS
-  views        Int      @default(0)
-  applyClicks  Int      @default(0)
-
-  // RELATIONS
-  viewsLog     OpportunityView[]
-  clicksLog    OpportunityClick[]
+  applyLink        String
+  isNew            Boolean            @default(true)
+  isVerified       Boolean            @default(false)
+  isTrending       Boolean            @default(false)
+  isActivelyHiring Boolean            @default(true)
+  published        Boolean            @default(true)
+  postedAt         DateTime           @default(now())
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt
+  deadline         DateTime?
+  views            Int                @default(0)
+  applyClicks      Int                @default(0)
+  clicksLog        OpportunityClick[]
+  viewsLog         OpportunityView[]
 
   @@index([type])
   @@index([slug])
@@ -74,12 +51,11 @@ model Opportunity {
   @@index([published])
 }
 
-// Anonymous view tracking for opportunities
 model OpportunityView {
-  id            String   @id @default(cuid())
+  id            String      @id @default(cuid())
   opportunityId String
   sessionId     String?
-  viewedAt      DateTime @default(now())
+  viewedAt      DateTime    @default(now())
   opportunity   Opportunity @relation(fields: [opportunityId], references: [id], onDelete: Cascade)
 
   @@index([opportunityId])
@@ -87,12 +63,11 @@ model OpportunityView {
   @@index([sessionId])
 }
 
-// Anonymous click tracking for opportunities
 model OpportunityClick {
-  id            String   @id @default(cuid())
+  id            String      @id @default(cuid())
   opportunityId String
   sessionId     String?
-  clickedAt     DateTime @default(now())
+  clickedAt     DateTime    @default(now())
   opportunity   Opportunity @relation(fields: [opportunityId], references: [id], onDelete: Cascade)
 
   @@index([opportunityId])
@@ -100,10 +75,9 @@ model OpportunityClick {
   @@index([sessionId])
 }
 
-// Public stats for homepage
 model SystemStat {
   id        String   @id @default(cuid())
-  label     String   // "Active Opportunities", "Companies", etc.
+  label     String
   value     String
   icon      String?
   order     Int      @default(0)
@@ -114,14 +88,13 @@ model SystemStat {
   @@index([order])
 }
 
-// Learning resources
 model CareerResource {
   id            String   @id @default(cuid())
   title         String
   slug          String   @unique
   excerpt       String
   content       String?
-  category      String   // "resume", "interview", "skills", etc.
+  category      String
   coverImage    String?
   published     Boolean  @default(true)
   createdAt     DateTime @default(now())
@@ -136,7 +109,6 @@ model CareerResource {
   @@index([slug])
 }
 
-// Visitor analytics
 model Visitor {
   id        String   @id @default(cuid())
   sessionId String
@@ -151,17 +123,16 @@ model Visitor {
   @@index([page])
 }
 
-// Contact form submissions
 model ContactMessage {
   id        String    @id @default(cuid())
   name      String
   email     String
-  userType  String    // "student", "professional", "employer"
+  userType  String
   subject   String
   message   String
   company   String?
   createdAt DateTime  @default(now())
-  status    String    @default("NEW") // "NEW", "READ", "REPLIED", "ARCHIVED"
+  status    String    @default("NEW")
   reply     String?
   repliedAt DateTime?
   repliedBy String?
@@ -171,13 +142,12 @@ model ContactMessage {
   @@index([email])
 }
 
-// Admin users
 model Admin {
   id        String    @id @default(cuid())
   email     String    @unique
   password  String
   name      String?
-  role      String    @default("ADMIN") // "ADMIN", "SUPER_ADMIN"
+  role      String    @default("ADMIN")
   createdAt DateTime  @default(now())
   lastLogin DateTime?
 
@@ -185,28 +155,22 @@ model Admin {
   @@index([role])
 }
 
-// Daily stats for analytics dashboard
 model DailyStat {
-  id            String   @id @default(cuid())
-  date          DateTime @unique
-  totalVisitors Int      @default(0)
-  totalViews    Int      @default(0)
-  totalClicks   Int      @default(0)
-  applications  Int      @default(0)
-  newSubscribers Int     @default(0)
-  
-  // Blog specific stats
-  blogViews       Int      @default(0)
-  blogClicks      Int      @default(0)
-  uniqueBlogReaders Int    @default(0)
-  
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  id                String   @id @default(cuid())
+  date              DateTime @unique
+  totalVisitors     Int      @default(0)
+  totalViews        Int      @default(0)
+  totalClicks       Int      @default(0)
+  applications      Int      @default(0)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  newSubscribers    Int      @default(0)
+  blogClicks        Int      @default(0)
+  blogViews         Int      @default(0)
+  uniqueBlogReaders Int      @default(0)
 
   @@index([date])
 }
-
-// BLOG MODELS - Complete blog analytics system
 
 model Blog {
   id          String   @id @default(cuid())
@@ -223,14 +187,9 @@ model Blog {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   
-  // Analytics counters
   views       Int      @default(0)
   clicks      Int      @default(0)
-  avgReadTime Int?     // Average time spent reading in seconds
-  
-  // Relations
-  viewsLog    BlogView[]
-  clicksLog   BlogClick[]
+  avgReadTime Int?
   
   @@index([slug])
   @@index([published])
@@ -238,7 +197,6 @@ model Blog {
   @@index([publishedAt])
   @@index([author])
 }
-
 model BlogView {
   id        String   @id @default(cuid())
   blogId    String
@@ -246,10 +204,8 @@ model BlogView {
   ipAddress String?
   userAgent String?
   referrer  String?
-  readTime  Int?     // Time spent on page in seconds
+  readTime  Int?
   viewedAt  DateTime @default(now())
-  
-  blog      Blog     @relation(fields: [blogId], references: [id], onDelete: Cascade)
   
   @@index([blogId])
   @@index([sessionId])
@@ -260,49 +216,36 @@ model BlogClick {
   id        String   @id @default(cuid())
   blogId    String
   sessionId String?
-  targetUrl String   // Where the click went (external link, internal link, etc.)
-  linkText  String?  // Text of the clicked link
-  linkType  String?  // "external", "internal", "download", etc.
+  targetUrl String
+  linkText  String?
+  linkType  String?
   clickedAt DateTime @default(now())
-  
-  blog      Blog     @relation(fields: [blogId], references: [id], onDelete: Cascade)
   
   @@index([blogId])
   @@index([sessionId])
   @@index([clickedAt])
 }
-
-// NEWSLETTER / EMAIL SUBSCRIBERS
 model Subscriber {
-  id            String    @id @default(cuid())
-  email         String    @unique
-  name          String?   // Optional: subscriber's name
-  status        String    @default("ACTIVE") // "ACTIVE", "UNSUBSCRIBED", "BOUNCED", "COMPLAINED"
-  subscribedAt  DateTime  @default(now())
-  unsubscribedAt DateTime?
-  ipAddress     String?   // IP address at subscription time
-  userAgent     String?   // Browser/device info
-  source        String?   // Where they subscribed from (footer, popup, etc.)
-  
-  // Email marketing preferences
-  preferences   Json?     // Store preferences as JSON (categories, frequency, etc.)
-  
-  // Job & Internship Preferences
-  interestedIn  String?   // "jobs", "internships", or null (can also be comma-separated if multiple allowed)
-  frequency     String?   // "daily", "weekly", "monthly"
-  
-  // Tracking
-  lastEmailSent DateTime?
-  emailCount    Int       @default(0)
-  openCount     Int       @default(0)
-  clickCount    Int       @default(0)
-  
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
-
-  // Relations
-  newsletterEmails NewsletterEmail[]
+  id               String            @id @default(cuid())
+  email            String            @unique
+  createdAt        DateTime          @default(now())
+  clickCount       Int               @default(0)
+  emailCount       Int               @default(0)
+  ipAddress        String?
+  lastEmailSent    DateTime?
+  name             String?
+  openCount        Int               @default(0)
+  preferences      Json?
+  source           String?
+  status           String            @default("ACTIVE")
+  subscribedAt     DateTime          @default(now())
+  unsubscribedAt   DateTime?
+  updatedAt        DateTime          @updatedAt
+  userAgent        String?
+  frequency        String?
+  interestedIn     String?
   emailLogs        EmailLog[]
+  newsletterEmails NewsletterEmail[]
 
   @@index([email])
   @@index([status])
@@ -311,59 +254,46 @@ model Subscriber {
   @@index([frequency])
 }
 
-// Newsletter campaigns (for admin to send emails)
 model NewsletterCampaign {
-  id            String    @id @default(cuid())
-  title         String
-  subject       String
-  content       String    // Email content (HTML)
-  previewText   String?   // Preheader text
-  status        String    @default("DRAFT") // "DRAFT", "SENT", "SCHEDULED", "CANCELLED"
-  scheduledFor  DateTime? // When to send
-  sentAt        DateTime?
-  
-  // Targeting
-  targetAudience String?  // "all", "active", "inactive", etc.
-  
-  // Stats
-  totalSent     Int       @default(0)
-  totalOpened   Int       @default(0)
-  totalClicked  Int       @default(0)
-  totalUnsubscribed Int   @default(0)
-  
-  createdBy     String?   // Admin ID who created
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
-
-  // Relations
-  emails        NewsletterEmail[]
+  id                String            @id @default(cuid())
+  title             String
+  subject           String
+  content           String
+  previewText       String?
+  status            String            @default("DRAFT")
+  scheduledFor      DateTime?
+  sentAt            DateTime?
+  targetAudience    String?
+  totalSent         Int               @default(0)
+  totalOpened       Int               @default(0)
+  totalClicked      Int               @default(0)
+  totalUnsubscribed Int               @default(0)
+  createdBy         String?
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+  emails            NewsletterEmail[]
 
   @@index([status])
   @@index([sentAt])
   @@index([scheduledFor])
 }
 
-// Individual emails sent to subscribers
 model NewsletterEmail {
-  id             String    @id @default(cuid())
-  campaignId     String
-  subscriberId   String
-  status         String    @default("PENDING") // "PENDING", "SENT", "OPENED", "CLICKED", "BOUNCED", "UNSUBSCRIBED"
-  sentAt         DateTime?
-  openedAt       DateTime?
-  clickedAt      DateTime?
-  openedCount    Int       @default(0)
-  clickedCount   Int       @default(0)
-  
-  // Tracking
-  userAgent      String?
-  ipAddress      String?
-  
-  createdAt      DateTime  @default(now())
-  updatedAt      DateTime  @updatedAt
-
-  campaign       NewsletterCampaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
-  subscriber     Subscriber @relation(fields: [subscriberId], references: [id], onDelete: Cascade)
+  id           String             @id @default(cuid())
+  campaignId   String
+  subscriberId String
+  status       String             @default("PENDING")
+  sentAt       DateTime?
+  openedAt     DateTime?
+  clickedAt    DateTime?
+  openedCount  Int                @default(0)
+  clickedCount Int                @default(0)
+  userAgent    String?
+  ipAddress    String?
+  createdAt    DateTime           @default(now())
+  updatedAt    DateTime           @updatedAt
+  campaign     NewsletterCampaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  subscriber   Subscriber         @relation(fields: [subscriberId], references: [id], onDelete: Cascade)
 
   @@index([campaignId])
   @@index([subscriberId])
@@ -371,19 +301,45 @@ model NewsletterEmail {
   @@index([sentAt])
 }
 
-// Email logs for debugging
 model EmailLog {
-  id           String    @id @default(cuid())
+  id           String     @id @default(cuid())
   subscriberId String
-  emailType    String    // "WELCOME", "NEWSLETTER", "DIGEST", "ALERT"
+  emailType    String
   subject      String
-  status       String    // "SENT", "FAILED", "OPENED", "CLICKED"
+  status       String
   errorMessage String?
-  sentAt       DateTime  @default(now())
-  
+  sentAt       DateTime   @default(now())
   subscriber   Subscriber @relation(fields: [subscriberId], references: [id], onDelete: Cascade)
 
   @@index([subscriberId])
   @@index([sentAt])
   @@index([status])
+}
+
+model Feedback {
+  id         String    @id @default(cuid())
+  name       String    @default("Anonymous")
+  email      String?
+  rating     Int
+  comment    String    @default("")
+  page       String    @default("/")
+  sessionId  String?
+  category   String?
+  userAgent  String?
+  ipAddress  String?
+  country    String?
+  device     String?
+  status     String    @default("NEW")
+  adminNotes String?
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  reviewedAt DateTime?
+  reviewedBy String?
+
+  @@index([rating])
+  @@index([status])
+  @@index([createdAt])
+  @@index([page])
+  @@index([category])
+  @@index([sessionId])
 }

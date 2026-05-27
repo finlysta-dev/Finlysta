@@ -485,7 +485,7 @@ const CTASection = () => {
             </button>
           </Link>
           
-          <Link href="/learn">
+          <Link href="/learning-hub">
             <button 
               className="px-8 py-3.5 md:px-10 md:py-4 text-sm md:text-base font-semibold rounded-xl transition-all duration-300 hover:scale-105 cursor-pointer flex items-center justify-center gap-2 bg-white/10 backdrop-blur-sm text-black border border-white/20 hover:bg-white-20 min-w-[200px]"
             >
@@ -779,7 +779,7 @@ export default function HomePageContent() {
             </div>
             
             <div className="text-center mt-6">
-              <Link href="/learn">
+              <Link href="/learning-hub">
                   <button className="text-sm text-black font-semibold hover:text-gray-700 transition-colors inline-flex items-center gap-1">
                   Get Free Learning Resources <ArrowRight size={14} />
                 </button>
@@ -862,7 +862,7 @@ export default function HomePageContent() {
             <div className="lg:col-span-2">
               <h4 className="text-slate-900 font-bold text-sm mb-4">Resources</h4>
               <ul className="space-y-2.5 text-sm text-slate-500">
-                <li><Link href="/learn" className="hover:text-[#0A2540] transition-colors">Learning Hub</Link></li>
+                <li><Link href="/learning-hub" className="hover:text-[#0A2540] transition-colors">Learning Hub</Link></li>
                 <li><Link href="/blogs/how-to-become-financial-analyst-india-2026" className="hover:text-[#0A2540] transition-colors">Career Guide</Link></li>
                 <li><Link href="/interview-prep" className="hover:text-[#0A2540] transition-colors">Interview Prep</Link></li>
               </ul>

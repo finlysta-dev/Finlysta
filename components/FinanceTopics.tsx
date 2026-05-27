@@ -21,7 +21,7 @@ const FinanceTopics = () => {
       gradient: "from-emerald-500 to-teal-500",
       bgGradient: "from-emerald-500/10 to-teal-500/10",
       borderColor: "border-emerald-200",
-      link: "/learn/finance",
+      link: "/learning-hub/finance",
       description: "Master core finance concepts & principles",
       topicCount: "6 topics",
       topics: [
@@ -39,7 +39,7 @@ const FinanceTopics = () => {
       gradient: "from-blue-500 to-indigo-500",
       bgGradient: "from-blue-500/10 to-indigo-500/10",
       borderColor: "border-blue-200",
-      link: "/learn/excel",
+      link: "/learning-hub/excel",
       description: "Master spreadsheets for financial analysis",
       topicCount: "6 topics",
       topics: [
@@ -57,7 +57,7 @@ const FinanceTopics = () => {
       gradient: "from-amber-500 to-orange-500",
       bgGradient: "from-amber-500/10 to-orange-500/10",
       borderColor: "border-amber-200",
-      link: "/learn/financial-analysis",
+      link: "/learning-hub/financial-analysis",
       description: "Analyze data & make informed decisions",
       topicCount: "6 topics",
       topics: [
@@ -75,7 +75,7 @@ const FinanceTopics = () => {
       gradient: "from-cyan-500 to-blue-500",
       bgGradient: "from-cyan-500/10 to-blue-500/10",
       borderColor: "border-cyan-200",
-      link: "/learn/reporting",
+      link: "/learning-hub/reporting",
       description: "Create professional financial reports",
       topicCount: "6 topics",
       topics: [
@@ -93,7 +93,7 @@ const FinanceTopics = () => {
       gradient: "from-orange-500 to-red-500",
       bgGradient: "from-orange-500/10 to-red-500/10",
       borderColor: "border-orange-200",
-      link: "/learn/powerbi",
+      link: "/learning-hub/powerbi",
       description: "Create stunning dashboards & visualizations",
       topicCount: "6 topics",
       topics: [
@@ -111,7 +111,7 @@ const FinanceTopics = () => {
       gradient: "from-purple-500 to-pink-500",
       bgGradient: "from-purple-500/10 to-pink-500/10",
       borderColor: "border-purple-200",
-      link: "/learn/communication",
+      link: "/learning-hub/communication",
       description: "Master finance communication & presentation",
       topicCount: "6 topics",
       topics: [
@@ -266,7 +266,7 @@ const FinanceTopics = () => {
            Start Learning Now
             </p>
             <Link
-              href="/learn"
+              href="/learning-hub"
               className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#FFD700] text-[#0A2540] font-semibold rounded-lg hover:bg-[#FFE44D] transition-all text-sm"
             >
               Explore All Topics

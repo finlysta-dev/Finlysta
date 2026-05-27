@@ -38,7 +38,7 @@ export default function NotFound() {
             <Link href="/jobs" className="text-sm text-blue-600 hover:underline">Jobs</Link>
             <Link href="/internships" className="text-sm text-blue-600 hover:underline">Internships</Link>
             <Link href="/blogs" className="text-sm text-blue-600 hover:underline">Blogs</Link>
-            <Link href="/learn" className="text-sm text-blue-600 hover:underline">Learning Hub</Link>
+            <Link href="/learning-hub" className="text-sm text-blue-600 hover:underline">Learning Hub</Link>
           </div>
         </div>
       </div>

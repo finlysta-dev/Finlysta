@@ -1,4 +1,4 @@
-// app/learn/financial-analysis/ratios/page.tsx
+// app/learning-hub/financial-analysis/ratios/page.tsx
 import React from 'react';
 import {
   BookOpen,
@@ -305,12 +305,12 @@ export default function FinancialRatiosPage() {
   ];
 
   const relatedLessonsData: RelatedLessonProps[] = [
-    { title: "Profit & Loss Statement", duration: "12 min", icon: TrendingUp, href: "/learn/financial-statements/profit-loss-statement" },
-    { title: "Balance Sheet", duration: "14 min", icon: Scale, href: "/learn/financial-statements/balance-sheet" },
-    { title: "Cash Flow Statement", duration: "16 min", icon: Activity, href: "/learn/financial-statements/cash-flow-statement" },
-    { title: "EBITDA Explained", duration: "15 min", icon: Calculator, href: "/learn/financial-analysis/ebitda" },
-    { title: "Financial Modeling Basics", duration: "30 min", icon: PieChart, href: "/learn/modeling/basics" },
-    { title: "Valuation Fundamentals", duration: "25 min", icon: BadgeDollarSign, href: "/learn/valuation/intro" }
+    { title: "Profit & Loss Statement", duration: "12 min", icon: TrendingUp, href: "/learning-hub/finance-fundamentals/profit-loss-statement" },
+    { title: "Balance Sheet", duration: "14 min", icon: Scale, href: "/learning-hub/finance-fundamentals/balance-sheet" },
+    { title: "Cash Flow Statement", duration: "16 min", icon: Activity, href: "/learning-hub/finance-fundamentals/cash-flow-statement" },
+    { title: "EBITDA Explained", duration: "15 min", icon: Calculator, href: "/learning-hub/financial-analysis/ebitda" },
+    { title: "Financial Modeling Basics", duration: "30 min", icon: PieChart, href: "/learning-hub/modeling/basics" },
+    { title: "Valuation Fundamentals", duration: "25 min", icon: BadgeDollarSign, href: "/learning-hub/valuation/intro" }
   ];
 
   return (
@@ -321,9 +321,9 @@ export default function FinancialRatiosPage() {
         <div className={styles.breadcrumb}>
           <a href="/" className={styles.breadcrumbLink}>Home</a>
           <ChevronRight className="w-3 h-3" />
-          <a href="/learn" className={styles.breadcrumbLink}>Learn</a>
+          <a href="/learning-hub" className={styles.breadcrumbLink}>Learn</a>
           <ChevronRight className="w-3 h-3" />
-          <a href="/learn/financial-analysis" className={styles.breadcrumbLink}>Financial Analysis</a>
+          <a href="/learning-hub/financial-analysis" className={styles.breadcrumbLink}>Financial Analysis</a>
           <ChevronRight className="w-3 h-3" />
           <span className="text-[#111827] font-medium">Financial Ratios</span>
         </div>
@@ -600,7 +600,7 @@ export default function FinancialRatiosPage() {
                   <strong>Takeaway:</strong> Ratio analysis reveals different strategies — Apple uses leverage aggressively, Microsoft prioritizes balance sheet strength.
                 </p>
                 <div className="mt-3 pt-2 border-t border-[#7C3AED]/20">
-                  <a href="/learn/financial-analysis/ratio-case-study" className="text-sm text-[#7C3AED] font-semibold hover:underline inline-flex items-center gap-1">
+                  <a href="/learning-hub/financial-analysis/ratio-case-study" className="text-sm text-[#7C3AED] font-semibold hover:underline inline-flex items-center gap-1">
                     Deep dive into ratio analysis <ArrowRight className="w-3 h-3" />
                   </a>
                 </div>
@@ -747,13 +747,13 @@ export default function FinancialRatiosPage() {
 
         {/* ===== 17. NEXT LESSON CTA ===== */}
         <div className="mb-10 flex justify-between items-center flex-wrap gap-4">
-          <a href="/learn/financial-analysis/ebitda" className="inline-flex items-center gap-3 px-6 py-3 bg-gradient-to-r from-[#2563EB] to-[#7C3AED] text-black rounded-xl font-semibold hover:opacity-90 transition-all group">
+          <a href="/learning-hub/financial-analysis/ebitda" className="inline-flex items-center gap-3 px-6 py-3 bg-gradient-to-r from-[#2563EB] to-[#7C3AED] text-black rounded-xl font-semibold hover:opacity-90 transition-all group">
             Continue to EBITDA Deep Dive
             <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
           </a>
           <div className="flex gap-4">
-            <a href="/learn/financial-statements/cash-flow-statement" className="text-sm text-[#6B7280] hover:text-[#7C3AED] transition-colors">Cash Flow →</a>
-            <a href="/learn/valuation/intro" className="text-sm text-[#6B7280] hover:text-[#7C3AED] transition-colors">Valuation →</a>
+            <a href="/learning-hub/finance-fundamentals/cash-flow-statement" className="text-sm text-[#6B7280] hover:text-[#7C3AED] transition-colors">Cash Flow →</a>
+            <a href="/learning-hub/valuation/intro" className="text-sm text-[#6B7280] hover:text-[#7C3AED] transition-colors">Valuation →</a>
           </div>
         </div>
       </div>

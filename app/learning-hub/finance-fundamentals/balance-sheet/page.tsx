@@ -1,4 +1,4 @@
-// app/learn/financial-statements/profit-loss-statement/page.tsx
+// app/learning-hub/finance-fundamentals/balance-sheet/page.tsx
 import React from 'react';
 import {
   BookOpen,
@@ -37,7 +37,14 @@ import {
   Wallet,
   ShoppingBag,
   Building2,
-  LucideIcon
+  LucideIcon,
+  Scale,
+  Landmark,
+  Building,
+  CreditCard,
+  PiggyBank,
+  BriefcaseIcon,
+  LineChart
 } from 'lucide-react';
 
 // ============================================================================
@@ -89,7 +96,7 @@ interface CommonMistakeProps {
 }
 
 // ============================================================================
-// STYLES - Reduced line spacing
+// STYLES - Same as P&L page
 // ============================================================================
 const styles = {
   container: "max-w-[1280px] mx-auto px-6 md:px-8 py-8 md:py-12",
@@ -116,7 +123,7 @@ const styles = {
 };
 
 // ============================================================================
-// REUSABLE COMPONENTS
+// REUSABLE COMPONENTS - Same as P&L page
 // ============================================================================
 const Tag: React.FC<TagProps> = ({ children, icon: Icon }) => (
   <span className={styles.tag}>
@@ -199,69 +206,72 @@ const CommonMistake: React.FC<CommonMistakeProps> = ({ mistake, correction }) =>
 );
 
 // ============================================================================
-// MAIN PAGE COMPONENT
+// MAIN PAGE COMPONENT - Balance Sheet
 // ============================================================================
-export default function ProfitLossStatementPage() {
+export default function BalanceSheetPage() {
+  // Balance Sheet specific data
   const conceptsData: ConceptCardProps[] = [
-    { icon: DollarSign, title: "Revenue", definition: "Total income generated from primary business operations before any deductions.", example: "Amazon earned $574B from product sales in 2023." },
-    { icon: ShoppingBag, title: "COGS", definition: "Direct costs attributable to the production of goods sold by a company.", example: "Apple's COGS includes component costs for iPhones." },
-    { icon: Building2, title: "Operating Expenses", definition: "Costs required to run the business that aren't directly tied to production.", example: "Sales & marketing, R&D, and administrative costs." },
-    { icon: Percent, title: "Net Profit Margin", definition: "Percentage of revenue that remains as profit after all expenses.", example: "A 15% margin means $0.15 profit per $1 revenue." }
+    { icon: Wallet, title: "Assets", definition: "Resources owned by a company that have economic value and can be converted to cash.", example: "Cash, inventory, buildings, patents, and accounts receivable." },
+    { icon: CreditCard, title: "Liabilities", definition: "Obligations and debts owed by a company to others, settled over time.", example: "Bank loans, accounts payable, mortgages, and bonds payable." },
+    { icon: Users, title: "Shareholder Equity", definition: "Residual interest in assets after deducting liabilities; owners' claim.", example: "Common stock, retained earnings, and additional paid-in capital." },
+    { icon: TrendingUp, title: "Working Capital", definition: "Difference between current assets and current liabilities.", example: "Positive working capital ($500k assets - $300k liabilities = $200k)." }
   ];
 
   const formulasData: FormulaCardProps[] = [
-    { formula: "Gross Profit = Revenue - COGS", explanation: "Shows profitability of core products before overhead costs." },
-    { formula: "Operating Income = Gross Profit - Operating Expenses", explanation: "Profit from core business operations." },
-    { formula: "Net Income = Revenue - All Expenses", explanation: "Bottom line — total profit after everything." },
-    { formula: "Gross Margin = (Gross Profit / Revenue) × 100", explanation: "Percentage of revenue after production costs." },
-    { formula: "Net Margin = (Net Income / Revenue) × 100", explanation: "Final profitability percentage." }
+    { formula: "Assets = Liabilities + Shareholder Equity", explanation: "The fundamental accounting equation that must always balance." },
+    { formula: "Working Capital = Current Assets - Current Liabilities", explanation: "Measures short-term financial health and liquidity." },
+    { formula: "Current Ratio = Current Assets / Current Liabilities", explanation: "Liquidity ratio measuring ability to pay short-term obligations." },
+    { formula: "Debt to Equity Ratio = Total Liabilities / Shareholder Equity", explanation: "Shows financial leverage and risk level." },
+    { formula: "Book Value = Total Assets - Total Liabilities", explanation: "Net asset value of a company if liquidated today." }
   ];
 
   const whyItMattersData: WhyItMattersCardProps[] = [
-    { icon: TrendingUp, title: "Investor Confidence", explanation: "Investors use P&L to assess growth potential and profitability trends." },
-    { icon: Briefcase, title: "Strategic Planning", explanation: "Identifies cost-saving opportunities and revenue drivers." },
-    { icon: Shield, title: "Loan Approval", explanation: "Banks analyze P&L statements before approving business loans." },
-    { icon: Users, title: "Stakeholder Communication", explanation: "Transparent reporting builds trust with partners and employees." }
+    { icon: Shield, title: "Financial Stability", explanation: "Shows if a company can survive economic downturns and unexpected expenses." },
+    { icon: TrendingUp, title: "Liquidity Analysis", explanation: "Indicates ability to pay short-term bills and manage cash flow." },
+    { icon: Scale, title: "Debt Evaluation", explanation: "Reveals how much debt a company uses to finance operations." },
+    { icon: Users, title: "Investment Decisions", explanation: "Helps investors assess risk and potential returns before investing." }
   ];
 
   const interviewQuestionsData: { question: string; answer: string }[] = [
-    { question: "What's the difference between gross profit and net profit?", answer: "Gross profit is revenue minus COGS, showing efficiency in production. Net profit subtracts ALL expenses (operating, interest, taxes) from revenue. A company can have healthy gross profit but low net profit due to high operating costs or debt payments. For example, a retailer might have 50% gross margins but only 5% net margins after rent and salaries." },
-    { question: "How do you analyze a P&L statement for investment decisions?", answer: "Focus on three key areas: revenue growth trends (consistent 10-20% YoY is healthy), margin expansion (gross vs net margins widening), and expense control (operating expenses as % of revenue should stabilize or decrease). Also check for one-time charges that distort true operational performance. Compare with industry peers for context." },
-    { question: "What are red flags in a P&L statement?", answer: "Key red flags include: declining gross margins (pricing pressure or rising costs), revenue growing faster than cash flow (aggressive accounting), frequent 'one-time' restructuring charges, inconsistent expense patterns, and net income disconnected from operational cash flow. Also watch for unexplained fluctuations in COGS or SG&A relative to revenue changes." }
+    { question: "What's the difference between assets and liabilities?", answer: "Assets are what a company OWNS (cash, inventory, property) that provide future economic benefit. Liabilities are what a company OWES (loans, accounts payable, debt) to others. The difference between them is shareholder equity. A healthy company typically has more assets than liabilities, creating positive equity for owners." },
+    { question: "What is working capital and why does it matter?", answer: "Working capital = Current Assets - Current Liabilities. It measures a company's operational efficiency and short-term financial health. Positive working capital means a company can pay its upcoming bills and invest in growth. Negative working capital might indicate cash flow problems or potential bankruptcy risk in severe cases." },
+    { question: "What does negative shareholder equity mean?", answer: "Negative shareholder equity occurs when total liabilities exceed total assets. This means the company owes more than it owns. Often caused by sustained losses, excessive debt, or large dividend payments. It's a serious red flag for investors, suggesting potential insolvency or bankruptcy risk if not addressed quickly." }
   ];
 
   const faqsData: FAQItemProps[] = [
-    { question: "What is a Profit & Loss Statement vs a Balance Sheet?", answer: "A P&L statement shows financial performance over a period (quarter/year) — revenue, expenses, and profit. A Balance Sheet is a snapshot at a specific date — assets, liabilities, and equity. Think of P&L as a video of performance, Balance Sheet as a photo of financial position. Both are essential for complete financial analysis." },
-    { question: "How often should companies prepare P&L statements?", answer: "Public companies file quarterly (10-Q) and annually (10-K). Private companies typically prepare monthly for management review, quarterly for board reports, and annually for taxes. For startups, monthly P&L helps track burn rate and unit economics. Even freelancers benefit from quarterly P&L to manage taxes and profitability." },
-    { question: "What's EBITDA and why does it matter?", answer: "EBITDA = Earnings Before Interest, Taxes, Depreciation, Amortization. It measures operational profitability by removing financing and accounting decisions. Investors use it to compare companies across different capital structures and tax situations. However, critics note it ignores real costs like asset maintenance. Always review both EBITDA and net income." },
-    { question: "How does COGS differ from operating expenses?", answer: "COGS (Cost of Goods Sold) are direct costs tied to production — materials, direct labor, manufacturing overhead. Operating expenses (OpEx) are indirect costs — rent for HQ, marketing, R&D, admin salaries. For a bakery: flour (COGS) vs. advertising (OpEx). This distinction affects gross margin calculation and tax treatment." },
-    { question: "Why do investors care about net margin?", answer: "Net margin shows how much profit a company keeps from each dollar of revenue after ALL costs. A company with 20% net margin keeps $0.20 per $1 revenue. Higher net margins suggest better pricing power, cost control, and operational efficiency. Investors compare net margins across competitors to identify which company runs more efficiently." },
-    { question: "Can startups have negative net income?", answer: "Yes, many early-stage startups operate at a loss intentionally. They prioritize growth over profitability — spending heavily on R&D, marketing, and hiring to capture market share. Amazon operated at a loss for years before becoming profitable. Investors evaluate burn rate, unit economics, and path to profitability, not just current net income." }
+    { question: "What is a Balance Sheet vs a P&L Statement?", answer: "A Balance Sheet shows financial position at a SPECIFIC point in time — assets, liabilities, and equity. Think of it as a financial photo. A P&L Statement shows performance OVER a period — revenue, expenses, and profit. Think of it as a financial video. Both are essential for complete financial analysis." },
+    { question: "How often should companies prepare balance sheets?", answer: "Public companies file balance sheets quarterly (10-Q) and annually (10-K). Private companies typically prepare monthly for management, quarterly for board reporting, and annually for taxes. Startups often review weekly to monitor cash burn and runway. Even small businesses benefit from quarterly balance sheets." },
+    { question: "What are current vs non-current assets?", answer: "Current assets convert to cash within ONE YEAR — cash, inventory, accounts receivable. Non-current assets are long-term — property, equipment, patents, goodwill. The distinction matters for liquidity analysis. A company with mostly non-current assets might struggle to pay immediate bills despite high total assets." },
+    { question: "What is a good current ratio?", answer: "A current ratio above 1.0 means current assets exceed current liabilities. Industry standards vary: 1.5-3.0 is generally healthy. Below 1.0 signals potential liquidity problems. Above 5.0 might indicate inefficient use of cash. Compare to industry peers rather than absolute numbers." },
+    { question: "What does a high debt-to-equity ratio indicate?", answer: "Debt-to-equity above 2.0 (200%) suggests aggressive leverage. This can amplify returns in good times but increases bankruptcy risk during downturns. Capital-intensive industries (utilities, manufacturing) typically have higher ratios. Tech companies often have lower ratios. Compare within the same industry." },
+    { question: "What is retained earnings?", answer: "Retained earnings are cumulative profits reinvested in the business rather than paid as dividends. It's part of shareholder equity. Growing retained earnings usually signal profitable operations. Companies with negative retained earnings have accumulated losses over time, which concerns investors about long-term viability." }
   ];
 
   const keyTermsData: KeyTermProps[] = [
-    { term: "Revenue", definition: "Total sales or income generated from normal business operations." },
-    { term: "COGS", definition: "Direct costs of producing goods sold, including materials and labor." },
-    { term: "Gross Margin", definition: "Revenue minus COGS, shown as percentage of revenue." },
-    { term: "Operating Expenses", definition: "Indirect costs like rent, marketing, and R&D." },
-    { term: "EBITDA", definition: "Earnings before interest, taxes, depreciation, amortization." },
-    { term: "Net Income", definition: "Bottom-line profit after ALL expenses and taxes." }
+    { term: "Assets", definition: "Resources owned with economic value — cash, inventory, property." },
+    { term: "Liabilities", definition: "Obligations and debts owed to others — loans, payables." },
+    { term: "Shareholder Equity", definition: "Owners' claim after liabilities — common stock, retained earnings." },
+    { term: "Current Assets", definition: "Assets convertible to cash within one year." },
+    { term: "Current Liabilities", definition: "Obligations due within one year." },
+    { term: "Working Capital", definition: "Current assets minus current liabilities — liquidity measure." },
+    { term: "Liquidity", definition: "Ability to pay short-term obligations quickly." },
+    { term: "Solvency", definition: "Ability to meet long-term debt obligations." }
   ];
 
   const commonMistakesData: CommonMistakeProps[] = [
-    { mistake: "Confusing Revenue with Profit", correction: "Revenue is total sales. Profit is what remains after costs. A company can have high revenue but zero profit." },
-    { mistake: "Ignoring Margin Trends", correction: "Always analyze margins (gross, operating, net) not just absolute numbers. Declining margins signal problems." },
-    { mistake: "Not Comparing Periods", correction: "Always compare YoY or QoQ. One quarter alone doesn't show the full trend or seasonality." },
-    { mistake: "Overlooking One-Time Items", correction: "Adjust for unusual gains/losses to see true operational performance." }
+    { mistake: "Ignoring debt levels", correction: "Always analyze total debt and debt-to-equity ratio, not just assets." },
+    { mistake: "Looking only at revenue", correction: "Revenue doesn't show financial health — balance sheet reveals true stability." },
+    { mistake: "Confusing assets with profit", correction: "High assets don't equal profit — companies can be asset-rich but cash-poor." },
+    { mistake: "Ignoring liquidity", correction: "Current ratio and working capital matter more than total asset value for survival." }
   ];
 
   const relatedLessonsData: RelatedLessonProps[] = [
-    { title: "Balance Sheet Explained", duration: "15 min", icon: Layers, href: "/learn/financial-statements/balance-sheet" },
-    { title: "Cash Flow Statement", duration: "18 min", icon: Activity, href: "/learn/financial-statements/cash-flow-statement" },
-    { title: "Financial Ratios Masterclass", duration: "25 min", icon: Percent, href: "/learn/financial-analysis/ratios" },
-    { title: "Income Statement Analysis", duration: "20 min", icon: TrendingUp, href: "/learn/financial-analysis/income-statement" },
-    { title: "EBITDA Deep Dive", duration: "12 min", icon: Calculator, href: "/learn/financial-analysis/ebitda" },
-    { title: "Financial Modeling Basics", duration: "30 min", icon: PieChart, href: "/learn/modeling/basics" }
+    { title: "Profit & Loss Statement", duration: "12 min", icon: TrendingUp, href: "/learning-hub/finance-fundamentals/profit-loss-statement" },
+    { title: "Cash Flow Statement", duration: "18 min", icon: Activity, href: "/learning-hub/finance-fundamentals/cash-flow-statement" },
+    { title: "Financial Ratios Masterclass", duration: "25 min", icon: Percent, href: "/learning-hub/financial-analysis/ratios" },
+    { title: "Working Capital Management", duration: "20 min", icon: Wallet, href: "/learning-hub/financial-analysis/working-capital" },
+    { title: "Debt-to-Equity Deep Dive", duration: "15 min", icon: Scale, href: "/learning-hub/financial-analysis/debt-to-equity" },
+    { title: "Financial Modeling Basics", duration: "30 min", icon: PieChart, href: "/learning-hub/modeling/basics" }
   ];
 
   return (
@@ -272,16 +282,15 @@ export default function ProfitLossStatementPage() {
         <div className={styles.breadcrumb}>
           <a href="/" className={styles.breadcrumbLink}>Home</a>
           <ChevronRight className="w-3 h-3" />
-          <a href="/learn" className={styles.breadcrumbLink}>Learn</a>
+          <a href="/learning-hub" className={styles.breadcrumbLink}>Learn</a>
           <ChevronRight className="w-3 h-3" />
-          <a href="/learn/finance-fundamentals" className={styles.breadcrumbLink}>finance-fundamentals</a>
+          <a href="/learning-hub/finance-fundamentals" className={styles.breadcrumbLink}>Financial Statements</a>
           <ChevronRight className="w-3 h-3" />
-          <span className="text-[#111827] font-medium">Profit & Loss Statement</span>
+          <span className="text-[#111827] font-medium">Balance Sheet</span>
         </div>
 
         {/* ===== 2. HERO SECTION - Premium Gradient Background ===== */}
         <div className="relative overflow-hidden rounded-[32px] mb-12 bg-gradient-to-br from-[#0F172A] via-[#1E293B] to-[#0F172A]">
-          {/* Background decoration */}
           <div className="absolute top-0 right-0 w-96 h-96 bg-[#2563EB]/10 rounded-full blur-3xl"></div>
           <div className="absolute bottom-0 left-0 w-80 h-80 bg-[#10B981]/5 rounded-full blur-3xl"></div>
           
@@ -290,24 +299,24 @@ export default function ProfitLossStatementPage() {
             <div>
               <div className="flex flex-wrap gap-3 mb-5">
                 <Tag>📘 Beginner</Tag>
-                <Tag icon={Clock}>12 min read</Tag>
+                <Tag icon={Clock}>14 min read</Tag>
                 <Tag icon={BookOpen}>Finance Basics</Tag>
               </div>
               
-  <h1 className="text-4xl md:text-6xl font-black text-[#111827] leading-[1.1] max-w-[700px] mb-5 relative z-10 tracking-[-0.02em]">
-  Profit & Loss Statement Explained for Beginners
-</h1>
+              <h1 className="text-4xl md:text-6xl font-black text-black leading-[1.1] max-w-[700px] mb-5 relative z-10 tracking-[-0.02em]">
+                Balance Sheet Explained for Beginners
+              </h1>
               
               <p className="text-lg text-[#94A3B8] leading-relaxed max-w-[620px] mb-6">
-                Learn how companies track revenue, expenses, and profitability using real-world financial statement examples and practical analysis techniques.
+                Learn how businesses track assets, liabilities, and shareholder equity using real-world balance sheet examples and practical financial analysis.
               </p>
               
-              {/* Learning stats - more meaningful than fake user counts */}
+              {/* Learning stats */}
               <div className="flex flex-wrap gap-5">
                 <div className="bg-white/10 backdrop-blur-sm rounded-2xl px-5 py-3 border border-white/20">
                   <div className="flex items-center gap-2">
                     <CheckCircle className="w-5 h-5 text-[#10B981]" />
-                    <p className="text-lg font-bold text-black">6</p>
+                    <p className="text-lg font-bold text-black">4</p>
                   </div>
                   <p className="text-xs text-[#94A3B8]">Key Concepts</p>
                 </div>
@@ -335,61 +344,44 @@ export default function ProfitLossStatementPage() {
               </div>
             </div>
             
-            {/* Right side - Premium Visual Flow Diagram */}
+            {/* Right side - Balance Sheet Visual Diagram */}
             <div className="flex items-center justify-center">
               <div className="relative w-full max-w-md">
                 <div className="space-y-2">
-                  {/* Revenue Box */}
+                  {/* Assets Box */}
                   <div className="bg-[#DBEAFE] rounded-xl p-3 text-center shadow-lg transform hover:scale-[1.02] transition-transform">
                     <div className="flex items-center justify-center gap-2 mb-0.5">
-                      <DollarSign className="w-5 h-5 text-[#1E40AF]" />
-                      <span className="font-bold text-[#1E40AF] text-sm">REVENUE</span>
+                      <Wallet className="w-5 h-5 text-[#1E40AF]" />
+                      <span className="font-bold text-[#1E40AF] text-sm">ASSETS</span>
                     </div>
                     <p className="text-xl font-bold text-[#1E40AF]">$1,000,000</p>
+                    <p className="text-xs text-[#1E40AF] mt-0.5">What company OWNS</p>
                   </div>
                   <div className="flex justify-center">
-                    <ArrowRight className="w-5 h-5 text-[#94A3B8]" />
+                    <span className="text-[#94A3B8] text-sm font-bold">=</span>
                   </div>
-                  {/* COGS Box */}
-                  <div className="bg-[#FEE2E2] rounded-xl p-3 text-center shadow-lg">
-                    <div className="flex items-center justify-center gap-2 mb-0.5">
-                      <ShoppingBag className="w-5 h-5 text-[#991B1B]" />
-                      <span className="font-bold text-[#991B1B] text-sm">COGS</span>
+                  <div className="grid grid-cols-2 gap-2">
+                    {/* Liabilities Box */}
+                    <div className="bg-[#FEE2E2] rounded-xl p-3 text-center shadow-lg">
+                      <div className="flex items-center justify-center gap-2 mb-0.5">
+                        <CreditCard className="w-5 h-5 text-[#991B1B]" />
+                        <span className="font-bold text-[#991B1B] text-sm">LIABILITIES</span>
+                      </div>
+                      <p className="text-xl font-bold text-[#991B1B]">$600,000</p>
+                      <p className="text-xs text-[#991B1B] mt-0.5">What company OWES</p>
                     </div>
-                    <p className="text-xl font-bold text-[#991B1B]">($400,000)</p>
+                    {/* Equity Box */}
+                    <div className="bg-[#DCFCE7] rounded-xl p-3 text-center shadow-lg">
+                      <div className="flex items-center justify-center gap-2 mb-0.5">
+                        <Users className="w-5 h-5 text-[#166534]" />
+                        <span className="font-bold text-[#166534] text-sm">EQUITY</span>
+                      </div>
+                      <p className="text-xl font-bold text-[#166534]">$400,000</p>
+                      <p className="text-xs text-[#166534] mt-0.5">Owners' claim</p>
+                    </div>
                   </div>
                   <div className="flex justify-center">
-                    <ArrowRight className="w-5 h-5 text-[#94A3B8]" />
-                  </div>
-                  {/* Gross Profit Box */}
-                  <div className="bg-[#DCFCE7] rounded-xl p-3 text-center shadow-lg">
-                    <div className="flex items-center justify-center gap-2 mb-0.5">
-                      <TrendingUp className="w-5 h-5 text-[#166534]" />
-                      <span className="font-bold text-[#166534] text-sm">GROSS PROFIT</span>
-                    </div>
-                    <p className="text-xl font-bold text-[#166534]">$600,000</p>
-                  </div>
-                  <div className="flex justify-center">
-                    <ArrowRight className="w-5 h-5 text-[#94A3B8]" />
-                  </div>
-                  {/* OpEx Box */}
-                  <div className="bg-[#FEF3C7] rounded-xl p-3 text-center shadow-lg">
-                    <div className="flex items-center justify-center gap-2 mb-0.5">
-                      <Building2 className="w-5 h-5 text-[#92400E]" />
-                      <span className="font-bold text-[#92400E] text-sm">OPERATING EXPENSES</span>
-                    </div>
-                    <p className="text-xl font-bold text-[#92400E]">($350,000)</p>
-                  </div>
-                  <div className="flex justify-center">
-                    <ArrowRight className="w-5 h-5 text-[#94A3B8]" />
-                  </div>
-                  {/* Net Profit Box */}
-                  <div className="bg-[#EDE9FE] rounded-xl p-3 text-center shadow-lg transform hover:scale-[1.02] transition-transform">
-                    <div className="flex items-center justify-center gap-2 mb-0.5">
-                      <Award className="w-5 h-5 text-[#5B21B6]" />
-                      <span className="font-bold text-[#5B21B6] text-sm">NET PROFIT</span>
-                    </div>
-                    <p className="text-xl font-bold text-[#5B21B6]">$250,000</p>
+                    <span className="text-[#94A3B8] text-xs">Assets = Liabilities + Equity</span>
                   </div>
                 </div>
               </div>
@@ -402,12 +394,12 @@ export default function ProfitLossStatementPage() {
           <h2 className={styles.sectionHeading}>What You'll Learn</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             {[
-              "Read and interpret any P&L statement confidently",
-              "Calculate gross profit, operating income, and net profit",
-              "Identify red flags and opportunities in financial reports",
-              "Compare companies using profitability ratios",
-              "Build a basic P&L from transaction data",
-              "Use P&L insights for investment decisions"
+              "Understand assets, liabilities, and shareholder equity",
+              "Read and interpret any company balance sheet",
+              "Calculate working capital and liquidity ratios",
+              "Analyze financial health and debt levels",
+              "Use balance sheets for investment decisions",
+              "Spot red flags in company financial statements"
             ].map((item, idx) => (
               <div key={idx} className="flex items-center gap-3 p-3 bg-white rounded-xl shadow-sm">
                 <CheckCircle className="w-5 h-5 text-[#10B981] flex-shrink-0" />
@@ -422,14 +414,14 @@ export default function ProfitLossStatementPage() {
           <div className={styles.card}>
             <div className="flex items-center gap-3 mb-3">
               <FileText className="w-7 h-7 text-[#2563EB]" />
-              <h2 className="text-2xl font-bold text-[#111827]">What Is a Profit & Loss Statement?</h2>
+              <h2 className="text-2xl font-bold text-[#111827]">What Is a Balance Sheet?</h2>
             </div>
             <p className="text-[#111827] leading-relaxed">
-              A <strong className="text-[#111827]">Profit & Loss (P&L) Statement</strong>, also known as an Income Statement, 
-              is a financial report that summarizes a company's revenues, costs, and expenses over a specific period 
-              (quarter, year). It shows whether a company can generate profit by increasing revenue, reducing costs, 
-              or both. Unlike a balance sheet, which is a snapshot at one point in time, the P&L tells the story of 
-              business performance over time — <strong className="text-[#2563EB]">think of P&L as a video of performance, Balance Sheet as a photo</strong>.
+              A <strong className="text-[#111827]">Balance Sheet</strong> is a financial statement that shows a company's 
+              <strong className="text-[#2563EB]"> assets, liabilities, and shareholder equity</strong> at a specific point in time — 
+              like a financial snapshot or photo. Unlike a P&L statement that shows performance over time, the balance sheet 
+              reveals what a company OWNS and OWES on a single day. The fundamental equation always balances: 
+              <strong className="text-[#10B981]"> Assets = Liabilities + Equity</strong>. This equality is why it's called a "balance" sheet.
             </p>
             <div className="mt-4 pt-3 border-t border-gray-100 flex items-center gap-2 text-sm text-[#6B7280]">
               <Clock className="w-4 h-4" />
@@ -473,16 +465,16 @@ export default function ProfitLossStatementPage() {
 
         {/* ===== 8. STEP-BY-STEP EXPLANATION ===== */}
         <section className="mb-12">
-          <h2 className={styles.sectionHeading}>📋 How to Analyze a P&L Statement</h2>
+          <h2 className={styles.sectionHeading}>📋 How to Analyze a Balance Sheet</h2>
           <div className="relative">
             <div className="absolute left-6 top-0 bottom-0 w-0.5 bg-[#EFF6FF] hidden md:block"></div>
             <div className="space-y-6">
               {[
-                { step: "1", title: "Start with Revenue", desc: "Check year-over-year growth rate. Is it consistent? Above industry average?" },
-                { step: "2", title: "Calculate Gross Profit Margin", desc: "Gross Profit / Revenue. Compare to competitors and historical trends." },
-                { step: "3", title: "Analyze Operating Expenses", desc: "Are costs growing slower than revenue? Look for efficiency improvements." },
-                { step: "4", title: "Review Operating Income", desc: "Profit from core business. Ignore one-time items for true performance." },
-                { step: "5", title: "Check Net Income", desc: "Bottom line after everything. Watch for unusual tax events or interest costs." }
+                { step: "1", title: "Check Total Assets", desc: "Are assets growing year-over-year? What types of assets dominate (cash vs property)?" },
+                { step: "2", title: "Review Liabilities", desc: "How much debt? Is it short-term or long-term? Compare debt to equity ratio." },
+                { step: "3", title: "Analyze Shareholder Equity", desc: "Is equity growing? Check retained earnings trends over multiple years." },
+                { step: "4", title: "Calculate Liquidity Ratios", desc: "Current ratio and working capital show ability to pay short-term bills." },
+                { step: "5", title: "Compare Industry Benchmarks", desc: "A 2.0 current ratio might be excellent or poor depending on industry." }
               ].map((item, idx) => (
                 <div key={idx} className="flex gap-4 relative">
                   <div className="w-10 h-10 bg-[#2563EB] text-white rounded-2xl flex items-center justify-center font-bold text-lg flex-shrink-0 z-10">
@@ -515,28 +507,28 @@ export default function ProfitLossStatementPage() {
                 </div>
                 <div className="space-y-2">
                   <div className="flex justify-between py-2 border-b border-gray-100">
-                    <span className="text-[#6B7280]">Revenue</span>
-                    <span className="font-semibold text-[#111827]">$383.3B</span>
+                    <span className="text-[#6B7280]">Total Assets</span>
+                    <span className="font-semibold text-[#111827]">$352.6B</span>
                   </div>
                   <div className="flex justify-between py-2 border-b border-gray-100">
-                    <span className="text-[#6B7280]">COGS</span>
-                    <span className="font-semibold text-[#111827]">($214.1B)</span>
+                    <span className="text-[#6B7280]">Total Liabilities</span>
+                    <span className="font-semibold text-[#111827]">$290.4B</span>
                   </div>
                   <div className="flex justify-between py-2 border-b border-gray-100 font-medium">
-                    <span className="text-[#111827]">Gross Profit</span>
-                    <span className="text-[#10B981] font-bold">$169.2B (44.1%)</span>
+                    <span className="text-[#111827]">Shareholder Equity</span>
+                    <span className="text-[#10B981] font-bold">$62.2B</span>
                   </div>
                   <div className="flex justify-between py-2 border-b border-gray-100">
-                    <span className="text-[#6B7280]">Operating Expenses</span>
-                    <span className="font-semibold text-[#111827]">($54.9B)</span>
+                    <span className="text-[#6B7280]">Cash Reserves</span>
+                    <span className="font-semibold text-[#111827]">$61.6B</span>
                   </div>
-                  <div className="flex justify-between py-2 border-b border-gray-100 font-medium">
-                    <span className="text-[#111827]">Operating Income</span>
-                    <span className="text-[#10B981] font-bold">$114.3B</span>
+                  <div className="flex justify-between py-2 border-b border-gray-100">
+                    <span className="text-[#6B7280]">Long-term Debt</span>
+                    <span className="font-semibold text-[#111827]">$98.2B</span>
                   </div>
                   <div className="flex justify-between py-2">
-                    <span className="text-[#111827] font-bold">Net Income</span>
-                    <span className="text-[#10B981] font-bold text-xl">$97.0B</span>
+                    <span className="text-[#111827] font-bold">Current Ratio</span>
+                    <span className="text-[#10B981] font-bold">0.99</span>
                   </div>
                 </div>
               </div>
@@ -544,13 +536,13 @@ export default function ProfitLossStatementPage() {
                 <Lightbulb className="w-6 h-6 text-[#2563EB] mb-2" />
                 <h3 className="font-bold text-[#111827] mb-1">Key Insight</h3>
                 <p className="text-[#6B7280] leading-relaxed text-sm">
-                  Apple's 44.1% gross margin shows strong pricing power and supply chain efficiency. 
-                  The gap between gross and net margin (44.1% → 25.3%) reflects significant R&D and 
-                  marketing investments — $30B annually.
+                  Apple's balance sheet shows massive cash reserves ($61.6B) but also high long-term debt ($98.2B). 
+                  The current ratio of 0.99 suggests potential short-term pressure, but their brand strength and 
+                  cash flow generation mitigate this risk. Shareholder equity of $62.2B represents owner value.
                 </p>
                 <div className="mt-3 pt-2 border-t border-[#2563EB]/20">
-                  <a href="/learn/financial-analysis/apple-case-study" className="text-sm text-[#2563EB] font-semibold hover:underline inline-flex items-center gap-1">
-                    Deep dive into Apple's financials <ArrowRight className="w-3 h-3" />
+                  <a href="/learning-hub/financial-analysis/apple-balance-sheet" className="text-sm text-[#2563EB] font-semibold hover:underline inline-flex items-center gap-1">
+                    Deep dive into Apple's balance sheet <ArrowRight className="w-3 h-3" />
                   </a>
                 </div>
               </div>
@@ -587,7 +579,7 @@ export default function ProfitLossStatementPage() {
         {/* ===== 12. KEY TERMS GLOSSARY ===== */}
         <section className="mb-12">
           <h2 className={styles.sectionHeading}>📖 Key Terms Glossary</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
             {keyTermsData.map((term, idx) => (
               <KeyTerm key={idx} {...term} />
             ))}
@@ -603,33 +595,29 @@ export default function ProfitLossStatementPage() {
                 <Calculator className="w-7 h-7 text-[#2563EB]" />
               </div>
               <div>
-                <h3 className="text-2xl font-bold text-[#111827] mb-1">Build a P&L from Scratch</h3>
-                <p className="text-[#6B7280]">Use the data below to calculate Gross Profit, Operating Income, and Net Profit.</p>
+                <h3 className="text-2xl font-bold text-[#111827] mb-1">Balance Sheet Analysis</h3>
+                <p className="text-[#6B7280]">Use the data below to calculate Shareholder Equity, Working Capital, and Current Ratio.</p>
               </div>
             </div>
             
             <div className="bg-[#F8FAFC] rounded-2xl p-5 mb-5">
-              <h4 className="font-semibold text-[#111827] mb-3">Company Data (Q1 2025)</h4>
+              <h4 className="font-semibold text-[#111827] mb-3">Company Data (Dec 31, 2025)</h4>
               <div className="space-y-1.5 font-mono text-sm">
                 <div className="flex justify-between py-1 border-b border-gray-200">
-                  <span className="text-[#6B7280]">Revenue</span>
+                  <span className="text-[#6B7280]">Total Assets</span>
+                  <span className="font-semibold text-[#111827]">$5,000,000</span>
+                </div>
+                <div className="flex justify-between py-1 border-b border-gray-200">
+                  <span className="text-[#6B7280]">Total Liabilities</span>
                   <span className="font-semibold text-[#111827]">$2,500,000</span>
                 </div>
                 <div className="flex justify-between py-1 border-b border-gray-200">
-                  <span className="text-[#6B7280]">COGS</span>
+                  <span className="text-[#6B7280]">Current Assets</span>
                   <span className="font-semibold text-[#111827]">$1,200,000</span>
                 </div>
-                <div className="flex justify-between py-1 border-b border-gray-200">
-                  <span className="text-[#6B7280]">Operating Expenses</span>
-                  <span className="font-semibold text-[#111827]">$850,000</span>
-                </div>
-                <div className="flex justify-between py-1 border-b border-gray-200">
-                  <span className="text-[#6B7280]">Interest Expense</span>
-                  <span className="font-semibold text-[#111827]">$50,000</span>
-                </div>
                 <div className="flex justify-between py-1">
-                  <span className="text-[#6B7280]">Tax Rate</span>
-                  <span className="font-semibold text-[#111827]">25%</span>
+                  <span className="text-[#6B7280]">Current Liabilities</span>
+                  <span className="font-semibold text-[#111827]">$800,000</span>
                 </div>
               </div>
             </div>
@@ -641,10 +629,9 @@ export default function ProfitLossStatementPage() {
               </summary>
               <div className="mt-5 p-5 bg-[#EFF6FF] rounded-xl">
                 <div className="space-y-1.5 font-mono text-[#111827]">
-                  <p>Gross Profit = $2,500,000 - $1,200,000 = <strong className="text-[#10B981] text-lg">$1,300,000</strong></p>
-                  <p>Operating Income = $1,300,000 - $850,000 = <strong className="text-[#10B981] text-lg">$450,000</strong></p>
-                  <p>Pre-Tax Income = $450,000 - $50,000 = <strong className="text-[#10B981] text-lg">$400,000</strong></p>
-                  <p>Net Profit = $400,000 × (1 - 0.25) = <strong className="text-[#10B981] text-lg">$300,000</strong></p>
+                  <p>Shareholder Equity = $5,000,000 - $2,500,000 = <strong className="text-[#10B981] text-lg">$2,500,000</strong></p>
+                  <p>Working Capital = $1,200,000 - $800,000 = <strong className="text-[#10B981] text-lg">$400,000</strong></p>
+                  <p>Current Ratio = $1,200,000 / $800,000 = <strong className="text-[#10B981] text-lg">1.5</strong></p>
                 </div>
               </div>
             </details>
@@ -656,12 +643,12 @@ export default function ProfitLossStatementPage() {
           <h2 className={styles.sectionHeading}>💡 Key Takeaways</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             {[
-              "P&L shows profitability over time, not just cash position",
-              "Gross margin reveals pricing power and production efficiency",
-              "Operating expenses should grow slower than revenue for scaling",
-              "Always compare margins to industry peers, not absolute numbers",
-              "Watch for one-time charges that distort true performance",
-              "Combine P&L analysis with balance sheet for full picture"
+              "Balance sheet shows financial position at a specific point in time (a photo)",
+              "Assets must always equal liabilities plus shareholder equity",
+              "Liquidity ratios measure ability to pay short-term obligations",
+              "High debt levels increase financial risk and bankruptcy probability",
+              "Compare balance sheet metrics to industry peers for context",
+              "Track balance sheet trends over multiple years for meaningful insights"
             ].map((item, idx) => (
               <div key={idx} className="flex items-center gap-3 p-3 bg-white rounded-xl shadow-sm">
                 <CheckCircle className="w-5 h-5 text-[#10B981] flex-shrink-0" />
@@ -693,13 +680,13 @@ export default function ProfitLossStatementPage() {
 
         {/* ===== 17. NEXT LESSON CTA ===== */}
         <div className="mb-10 flex justify-between items-center flex-wrap gap-4">
-          <a href="/learn/financial-statements/balance-sheet" className="inline-flex items-center gap-3 px-6 py-3 bg-[#111827] text-black rounded-xl font-semibold hover:bg-[#1f2937] transition-colors group">
-            Continue to Balance Sheet
+          <a href="/learning-hub/finance-fundamentals/cash-flow-statement" className="inline-flex items-center gap-3 px-6 py-3 bg-[#111827] text-black rounded-xl font-semibold hover:bg-[#1f2937] transition-colors group">
+            Continue to Cash Flow Statement
             <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
           </a>
           <div className="flex gap-4">
-            <a href="/learn/financial-statements/cash-flow-statement" className="text-sm text-[#6B7280] hover:text-[#2563EB] transition-colors">Cash Flow →</a>
-            <a href="/learn/financial-analysis/ratios" className="text-sm text-[#6B7280] hover:text-[#2563EB] transition-colors">Financial Ratios →</a>
+            <a href="/learning-hub/finance-fundamentals/profit-loss-statement" className="text-sm text-[#6B7280] hover:text-[#2563EB] transition-colors">P&L Statement →</a>
+            <a href="/learning-hub/financial-analysis/ratios" className="text-sm text-[#6B7280] hover:text-[#2563EB] transition-colors">Financial Ratios →</a>
           </div>
         </div>
       </div>
@@ -707,11 +694,11 @@ export default function ProfitLossStatementPage() {
       {/* ===== 18. FOOTER CTA ===== */}
       <div className="bg-[#0F172A] mt-10">
         <div className="max-w-[1280px] mx-auto px-6 py-12 text-center">
-          <h2 className="text-3xl md:text-4xl font-bold text-black mb-3">Start Your Financial Analyst Roadmap</h2>
+          <h2 className="text-3xl md:text-4xl font-bold text-white mb-3">Start Your Financial Analyst Roadmap</h2>
           <p className="text-[#94A3B8] mb-6 max-w-2xl mx-auto">
             Master financial statements, valuation, and modeling with our structured learning path.
           </p>
-          <a href="/roadmap" className="inline-flex items-center gap-2 px-6 py-3 bg-[#2563EB] text-black rounded-xl font-semibold hover:bg-[#1D4ED8] transition-colors">
+          <a href="/roadmap" className="inline-flex items-center gap-2 px-6 py-3 bg-[#2563EB] text-white rounded-xl font-semibold hover:bg-[#1D4ED8] transition-colors">
             View Full Curriculum
             <ArrowRight className="w-4 h-4" />
           </a>
