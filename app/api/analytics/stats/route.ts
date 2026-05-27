@@ -323,14 +323,20 @@ export async function GET(request: NextRequest) {
     const bounceRate = parseFloat(((bouncedSessions / totalSessions) * 100).toFixed(1));
 
     // ============================================================
-    // AVG SESSION DURATION
+    // AVG SESSION DURATION - FIXED with orderBy
     // ============================================================
     let avgSessionDuration = 0;
     try {
+      // Fixed: Added orderBy as required by Prisma when using take
       const sessions = await prisma.visitor.groupBy({
         by: ['sessionId'],
         _min: { createdAt: true },
         _max: { createdAt: true },
+        orderBy: {
+          _min: {
+            createdAt: 'asc'
+          }
+        },
         take: 100,
       });
       
