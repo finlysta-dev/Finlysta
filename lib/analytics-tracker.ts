@@ -2,8 +2,8 @@
 // Tracks anonymous user behavior across the entire website
 
 class FinlystaAnalytics {
-  private sessionId: string;
-  private pageEnterTime: number;
+  private sessionId: string = '';
+  private pageEnterTime: number = 0;
   private eventsQueue: any[] = [];
   private maxScrollDepth: number = 0;
   private totalClicks: number = 0;
@@ -26,6 +26,7 @@ class FinlystaAnalytics {
     this.trackScrollDepth();
     this.startFlushInterval();
     this.trackReturningVisitor();
+    this.trackTimeOnPage();
   }
 
   // ===== SESSION MANAGEMENT =====
