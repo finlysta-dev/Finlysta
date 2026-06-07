@@ -278,7 +278,7 @@ const FAQCTASection = () => {
           <div className="flex flex-col items-center justify-center mt-16">
             <div className="w-full max-w-2xl">
               <img
-                src="/Faq.png"
+                src="/faq.png"
                 alt="FAQ Illustration"
                 className="w-full h-auto object-contain"
               />
