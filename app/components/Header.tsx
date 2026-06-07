@@ -106,7 +106,7 @@ export default function Header() {
           {/* For Employers Button - Right Side */}
           <div className="hidden md:block">
             <Link
-              href="/for-employers"
+              href="/employers"
               className="inline-flex items-center px-5 py-2 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
             >
               For Employers
@@ -171,7 +171,7 @@ export default function Header() {
               })}
               {/* For Employers button in mobile menu */}
               <Link
-                href="/for-employers"
+                href="/employers"
                 onClick={() => setMobileMenuOpen(false)}
                 className="block mt-2 px-4 py-3 bg-blue-600 text-white font-bold rounded-xl hover:bg-blue-700 transition-all duration-200 text-center"
               >
