@@ -35,7 +35,7 @@
     ".next/types/**/*.ts",
     ".next/dev/types/**/*.ts",
     "**/*.mts"
-, "test-db.js"  ],
+, "test-db.js", "app/interview-prep/advanced-excel-interview-questions", "app/interview-prep/advanced-excel-interview-questions"  ],
   "exclude": [
     "node_modules"
   ]

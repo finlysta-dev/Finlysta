@@ -1,162 +1,205 @@
 "use client";
 
-import { Shield } from "lucide-react";
+import { Shield, Lock, Eye, Database, Cookie, UserCheck, Clock, Users, RefreshCw, Mail, CheckCircle, FileText, Server, AlertTriangle, Globe, Smartphone, Fingerprint } from "lucide-react";
+import Link from "next/link";
 
 export default function PrivacyPolicy() {
   return (
-    <section className="w-full py-24 px-4 md:px-6 bg-gradient-to-b from-white via-white to-gray-50/50 overflow-hidden">
-      <div className="max-w-4xl mx-auto">
-        {/* Privacy Policy Section */}
-        <div>
-          <div className="text-center mb-8">
-            <div className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-600/10 to-purple-600/10 px-4 py-2 rounded-full mb-6 border border-blue-200/50">
-              <Shield className="w-4 h-4 text-blue-600" />
-              <span className="text-sm font-medium bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                Your Privacy Matters
-              </span>
-            </div>
-            
-            <h3 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">
-              Privacy Policy
-            </h3>
-            <p className="text-sm text-gray-500">Last Updated: March 2026</p>
+    <main className="min-h-screen bg-gradient-to-b from-white via-gray-50 to-gray-100">
+      
+      {/* Hero Section */}
+      <section className="relative overflow-hidden bg-gradient-to-br from-blue-600 via-indigo-700 to-purple-800 text-white">
+        <div className="absolute top-0 right-0 w-96 h-96 bg-white/10 rounded-full blur-3xl"></div>
+        <div className="absolute bottom-0 left-0 w-96 h-96 bg-purple-400/20 rounded-full blur-3xl"></div>
+        
+        <div className="max-w-5xl mx-auto px-6 py-20 md:py-24 relative z-10 text-center">
+          <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm rounded-full px-5 py-2 mb-6 border border-white/30">
+            <Shield className="w-4 h-4" />
+            <span className="text-sm font-medium">Your Privacy Matters</span>
           </div>
           
-          <div className="space-y-6 text-gray-600 text-sm leading-relaxed">
-            {/* Our Promise - Highlighted */}
-            <div className="bg-gradient-to-r from-blue-50 to-indigo-50 p-8 rounded-2xl border border-blue-100 mb-8">
-              <p className="text-gray-700 text-base leading-relaxed">
-                We respect your privacy. Any personal information shared on Finlysta is used only to improve the platform experience. 
-                <span className="block mt-3 text-lg font-semibold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                  We do not sell or misuse user data. You have full control over your profile visibility and information.
-                </span>
+          <h1 className="text-4xl md:text-6xl font-bold mb-6 tracking-tight">
+            Privacy Policy
+          </h1>
+          
+          <p className="text-lg text-blue-100 max-w-2xl mx-auto">
+            We are committed to protecting your personal information and being transparent about how we use it.
+          </p>
+          
+          <p className="text-sm text-blue-200/80 mt-4">Last Updated: March 2026</p>
+        </div>
+        
+        {/* Wave Decoration */}
+        <div className="absolute bottom-0 left-0 right-0">
+          <svg className="w-full h-12 text-gray-50" viewBox="0 0 1200 120" preserveAspectRatio="none">
+            <path d="M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V0H0V27.35A600.21,600.21,0,0,0,321.39,56.44Z" fill="currentColor"></path>
+          </svg>
+        </div>
+      </section>
+
+      <div className="max-w-5xl mx-auto px-6 py-12">
+        
+        {/* Our Promise - Highlighted Card */}
+        <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl p-8 mb-12 border border-blue-100 shadow-lg">
+          <div className="flex items-start gap-4">
+            <div className="w-12 h-12 bg-blue-600 rounded-xl flex items-center justify-center flex-shrink-0 shadow-md">
+              <Shield className="w-6 h-6 text-white" />
+            </div>
+            <div>
+              <h2 className="text-xl font-bold text-gray-900 mb-2">Our Promise to You</h2>
+              <p className="text-gray-700 leading-relaxed">
+                We respect your privacy. Any personal information shared on Finlysta is used only to improve the platform experience.
               </p>
-            </div>
-            
-            <div className="grid md:grid-cols-2 gap-6">
-              {/* Left Column */}
-              <div className="space-y-4">
-                <div className="bg-white p-5 rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow group">
-                  <h4 className="font-semibold text-gray-900 mb-2 flex items-center gap-2">
-                    <span className="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center text-xs text-blue-600 group-hover:scale-110 transition-transform">1</span>
-                    Information We Collect
-                  </h4>
-                  <p className="text-gray-600">Name, email address, academic details, skills, resume, career preferences, and platform interactions to provide personalized internship matches.</p>
-                </div>
-                
-                <div className="bg-white p-5 rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow group">
-                  <h4 className="font-semibold text-gray-900 mb-2 flex items-center gap-2">
-                    <span className="w-6 h-6 bg-purple-100 rounded-full flex items-center justify-center text-xs text-purple-600 group-hover:scale-110 transition-transform">2</span>
-                    How We Use Your Information
-                  </h4>
-                  <p className="text-gray-600">Account management, internship matching, employer communication, platform improvements, and important updates about your applications.</p>
-                </div>
-                
-                <div className="bg-white p-5 rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow group">
-                  <h4 className="font-semibold text-gray-900 mb-2 flex items-center gap-2">
-                    <span className="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center text-xs text-green-600 group-hover:scale-110 transition-transform">3</span>
-                    Data Protection & Security
-                  </h4>
-                  <p className="text-gray-600">256-bit SSL encryption, secure password hashing, regular security audits, restricted employee access, and automated backups to prevent data loss.</p>
-                </div>
-                
-                <div className="bg-white p-5 rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow group">
-                  <h4 className="font-semibold text-gray-900 mb-2 flex items-center gap-2">
-                    <span className="w-6 h-6 bg-orange-100 rounded-full flex items-center justify-center text-xs text-orange-600 group-hover:scale-110 transition-transform">4</span>
-                    Your Privacy Choices
-                  </h4>
-                  <p className="text-gray-600">Full control over profile visibility, account deletion option, data download capability, and email notification preferences.</p>
-                </div>
-              </div>
-              
-              {/* Right Column */}
-              <div className="space-y-4">
-                <div className="bg-white p-5 rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow group">
-                  <h4 className="font-semibold text-gray-900 mb-2 flex items-center gap-2">
-                    <span className="w-6 h-6 bg-red-100 rounded-full flex items-center justify-center text-xs text-red-600 group-hover:scale-110 transition-transform">5</span>
-                    Information Sharing
-                  </h4>
-                  <p className="text-gray-600">We never sell your data. Information is shared only with employers when you apply, with your explicit consent, or when required by law.</p>
-                </div>
-                
-                <div className="bg-white p-5 rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow group">
-                  <h4 className="font-semibold text-gray-900 mb-2 flex items-center gap-2">
-                    <span className="w-6 h-6 bg-yellow-100 rounded-full flex items-center justify-center text-xs text-yellow-600 group-hover:scale-110 transition-transform">6</span>
-                    Cookies & Tracking
-                  </h4>
-                  <p className="text-gray-600">Essential cookies keep you logged in securely, Remember preferences, and analyze platform performance. Control cookies through browser settings.</p>
-                </div>
-                
-                <div className="bg-white p-5 rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow group">
-                  <h4 className="font-semibold text-gray-900 mb-2 flex items-center gap-2">
-                    <span className="w-6 h-6 bg-indigo-100 rounded-full flex items-center justify-center text-xs text-indigo-600 group-hover:scale-110 transition-transform">7</span>
-                    Your Rights
-                  </h4>
-                  <p className="text-gray-600">Access, rectify, erase, or export your data. Restrict processing or object to data use. Contact us to exercise these rights.</p>
-                </div>
-              </div>
-            </div>
-            
-            {/* Additional Information - Customized */}
-            <div className="mt-8 grid md:grid-cols-3 gap-4">
-              {/* Data Retention Card */}
-              <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition-all hover:border-blue-200 group">
-                <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
-                  <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                </div>
-                <h4 className="font-semibold text-gray-900 mb-2">Data Retention</h4>
-                <p className="text-gray-500 text-sm">Account active: data retained. Account deleted: removed within 30 days</p>
-              </div>
-
-              {/* Children's Privacy Card */}
-              <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition-all hover:border-purple-200 group">
-                <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
-                  <svg className="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
-                  </svg>
-                </div>
-                <h4 className="font-semibold text-gray-900 mb-2">Children's Privacy</h4>
-                <p className="text-gray-500 text-sm">Not for under 13. Contact us immediately if concerns arise</p>
-              </div>
-
-              {/* Policy Updates Card */}
-              <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition-all hover:border-green-200 group">
-                <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
-                  <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                  </svg>
-                </div>
-                <h4 className="font-semibold text-gray-900 mb-2">Policy Updates</h4>
-                <p className="text-gray-500 text-sm">Changes notified via email or platform notification</p>
-              </div>
-            </div>
-
-            {/* Simple Contact Note - No Email IDs */}
-            <div className="mt-4 text-center text-sm text-gray-500 italic">
-              <p>For privacy-related questions, please contact us through our platform's support channel.</p>
-            </div>
-            
-            <div className="text-center">
-              <p className="text-xs text-gray-400 mt-8 pt-4 border-t border-gray-100">
-                © 2026 Finlysta. All rights reserved. | Effective: March 1, 2026 | Version 2.0
+              <p className="text-lg font-semibold text-blue-700 mt-3">
+                We do not sell or misuse user data. You have full control over your profile visibility and information.
               </p>
             </div>
           </div>
         </div>
-      </div>
 
-      <style jsx>{`
-        @keyframes gradient {
-          0%, 100% { background-position: 0% 50%; }
-          50% { background-position: 100% 50%; }
-        }
-        .animate-gradient {
-          animation: gradient 3s ease infinite;
-          background-size: 200% auto;
-        }
-      `}</style>
-    </section>
+        {/* Main Content Grid */}
+        <div className="grid md:grid-cols-2 gap-6 mb-12">
+          {/* Information We Collect */}
+          <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm hover:shadow-md transition-all group">
+            <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+              <Database className="w-6 h-6 text-blue-600" />
+            </div>
+            <h3 className="text-lg font-bold text-gray-900 mb-2">Information We Collect</h3>
+            <p className="text-gray-600 text-sm leading-relaxed">
+              Name, email address, academic details, skills, resume, career preferences, and platform interactions to provide personalized internship matches.
+            </p>
+          </div>
+
+          {/* How We Use Your Information */}
+          <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm hover:shadow-md transition-all group">
+            <div className="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+              <Eye className="w-6 h-6 text-purple-600" />
+            </div>
+            <h3 className="text-lg font-bold text-gray-900 mb-2">How We Use Your Information</h3>
+            <p className="text-gray-600 text-sm leading-relaxed">
+              Account management, internship matching, employer communication, platform improvements, and important updates about your applications.
+            </p>
+          </div>
+
+          {/* Data Protection & Security */}
+          <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm hover:shadow-md transition-all group">
+            <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+              <Lock className="w-6 h-6 text-green-600" />
+            </div>
+            <h3 className="text-lg font-bold text-gray-900 mb-2">Data Protection & Security</h3>
+            <p className="text-gray-600 text-sm leading-relaxed">
+              256-bit SSL encryption, secure password hashing, regular security audits, restricted employee access, and automated backups to prevent data loss.
+            </p>
+          </div>
+
+          {/* Your Privacy Choices */}
+          <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm hover:shadow-md transition-all group">
+            <div className="w-12 h-12 bg-orange-100 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+              <UserCheck className="w-6 h-6 text-orange-600" />
+            </div>
+            <h3 className="text-lg font-bold text-gray-900 mb-2">Your Privacy Choices</h3>
+            <p className="text-gray-600 text-sm leading-relaxed">
+              Full control over profile visibility, account deletion option, data download capability, and email notification preferences.
+            </p>
+          </div>
+
+          {/* Information Sharing */}
+          <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm hover:shadow-md transition-all group">
+            <div className="w-12 h-12 bg-red-100 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+              <Globe className="w-6 h-6 text-red-600" />
+            </div>
+            <h3 className="text-lg font-bold text-gray-900 mb-2">Information Sharing</h3>
+            <p className="text-gray-600 text-sm leading-relaxed">
+              We never sell your data. Information is shared only with employers when you apply, with your explicit consent, or when required by law.
+            </p>
+          </div>
+
+          {/* Cookies & Tracking */}
+          <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm hover:shadow-md transition-all group">
+            <div className="w-12 h-12 bg-yellow-100 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+              <Cookie className="w-6 h-6 text-yellow-600" />
+            </div>
+            <h3 className="text-lg font-bold text-gray-900 mb-2">Cookies & Tracking</h3>
+            <p className="text-gray-600 text-sm leading-relaxed">
+              Essential cookies keep you logged in securely, remember preferences, and analyze platform performance. Control cookies through browser settings.
+            </p>
+          </div>
+
+          {/* Your Rights */}
+          <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm hover:shadow-md transition-all group">
+            <div className="w-12 h-12 bg-indigo-100 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+              <CheckCircle className="w-6 h-6 text-indigo-600" />
+            </div>
+            <h3 className="text-lg font-bold text-gray-900 mb-2">Your Rights</h3>
+            <p className="text-gray-600 text-sm leading-relaxed">
+              Access, rectify, erase, or export your data. Restrict processing or object to data use. Contact us to exercise these rights.
+            </p>
+          </div>
+
+          {/* Data Retention */}
+          <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm hover:shadow-md transition-all group">
+            <div className="w-12 h-12 bg-teal-100 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+              <Clock className="w-6 h-6 text-teal-600" />
+            </div>
+            <h3 className="text-lg font-bold text-gray-900 mb-2">Data Retention</h3>
+            <p className="text-gray-600 text-sm leading-relaxed">
+              Account active: data retained. Account deleted: removed within 30 days. Some anonymized data may be kept for analytics.
+            </p>
+          </div>
+
+          {/* Children's Privacy */}
+          <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm hover:shadow-md transition-all group">
+            <div className="w-12 h-12 bg-pink-100 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+              <Users className="w-6 h-6 text-pink-600" />
+            </div>
+            <h3 className="text-lg font-bold text-gray-900 mb-2">Children's Privacy</h3>
+            <p className="text-gray-600 text-sm leading-relaxed">
+              Our platform is not intended for users under 13. If you believe a child has provided us with personal information, please contact us immediately.
+            </p>
+          </div>
+
+          {/* Policy Updates */}
+          <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm hover:shadow-md transition-all group">
+            <div className="w-12 h-12 bg-cyan-100 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+              <RefreshCw className="w-6 h-6 text-cyan-600" />
+            </div>
+            <h3 className="text-lg font-bold text-gray-900 mb-2">Policy Updates</h3>
+            <p className="text-gray-600 text-sm leading-relaxed">
+              We may update this privacy policy from time to time. Changes will be notified via email or platform notification.
+            </p>
+          </div>
+        </div>
+
+        {/* Contact Section */}
+        <div className="bg-gray-900 rounded-2xl p-8 text-center mb-8">
+          <div className="inline-flex items-center gap-2 bg-white/10 rounded-full px-4 py-1.5 mb-4">
+            <Mail className="w-4 h-4 text-gray-400" />
+            <span className="text-xs font-medium text-gray-300">Questions?</span>
+          </div>
+          <h3 className="text-2xl font-bold text-white mb-3">Have privacy concerns?</h3>
+          <p className="text-gray-400 mb-6 max-w-2xl mx-auto">
+            If you have any questions about this Privacy Policy or how we handle your data, please don't hesitate to contact us.
+          </p>
+          <Link href="/contact">
+            <button className="inline-flex items-center gap-2 bg-white text-gray-900 px-6 py-3 rounded-xl font-semibold hover:bg-gray-100 transition-all duration-300">
+              Contact Support
+              <Mail className="w-4 h-4" />
+            </button>
+          </Link>
+        </div>
+
+        {/* Footer */}
+        <div className="text-center pt-8 border-t border-gray-200">
+          <p className="text-xs text-gray-500">
+            © {new Date().getFullYear()} Finlysta. All rights reserved. | Effective: March 1, 2026 | Version 2.0
+          </p>
+          <div className="flex justify-center gap-6 mt-3">
+            <Link href="/terms" className="text-xs text-gray-400 hover:text-indigo-600 transition-colors">Terms of Service</Link>
+            <Link href="/privacy" className="text-xs text-gray-400 hover:text-indigo-600 transition-colors">Privacy Policy</Link>
+            <Link href="/contact" className="text-xs text-gray-400 hover:text-indigo-600 transition-colors">Contact Us</Link>
+          </div>
+        </div>
+      </div>
+    </main>
   );
 }

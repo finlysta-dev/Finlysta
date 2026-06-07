@@ -11,881 +11,399 @@ import {
   Target, Award, Users, Star, Zap, Globe, Code2, Layers, LineChart,
   Radio, Filter, BriefcaseIcon, ExternalLink, Calendar, Laptop,
   Building, Award as AwardIcon, FolderOpen, GitBranch, BookMarked, AlertCircle,
-  TrendingUp as TrendingUpIcon, BadgeCheck, ChartLine, Plus, Minus
+  TrendingUp as TrendingUpIcon, BadgeCheck, ChartLine, Plus, Minus, Check,
+  FileSpreadsheet, FileText, ClipboardList, MessageSquare
 } from "lucide-react";
 import Link from "next/link";
 import Header from "./components/Header";
 import TrendingInternships from "@/components/TrendingOpportunities";
-import FinanceTopics from "@/components/FinanceTopics";
-import Newsletter from "@/components/Newsletter";
 
-// Helper components for missing Lucide icons
-const HelpCircle = ({ size, className }: { size?: number; className?: string }) => {
-  return (
-    <svg xmlns="http://www.w3.org/2000/svg" width={size || 24} height={size || 24} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
-      <circle cx="12" cy="12" r="10"></circle>
-      <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
-      <line x1="12" y1="17" x2="12.01" y2="17"></line>
-    </svg>
-  );
-};
+const HelpCircle = ({ size, className }: { size?: number; className?: string }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" width={size || 24} height={size || 24} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+    <circle cx="12" cy="12" r="10"></circle>
+    <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+    <line x1="12" y1="17" x2="12.01" y2="17"></line>
+  </svg>
+);
 
-const FileText = ({ size, className }: { size?: number; className?: string }) => {
-  return (
-    <svg xmlns="http://www.w3.org/2000/svg" width={size || 24} height={size || 24} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
-      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-      <polyline points="14 2 14 8 20 8"></polyline>
-      <line x1="16" y1="13" x2="8" y2="13"></line>
-      <line x1="16" y1="17" x2="8" y2="17"></line>
-      <polyline points="10 9 9 9 8 9"></polyline>
-    </svg>
-  );
-};
-
-// BLOG PREVIEW SECTION - Dynamic version that fetches from your API
-const BlogPreviewSection = () => {
-  const router = useRouter();
-  const [blogs, setBlogs] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [imageErrors, setImageErrors] = useState<Record<string, boolean>>({});
-
-  // Custom display titles for homepage (shorter, cleaner)
-  const getDisplayTitle = (fullTitle: string, category: string) => {
-    if (fullTitle.includes("Cold DMs")) {
-      return "Stop Sending Cold DMs That Get Ignored";
-    }
-    if (fullTitle.includes("Financial Analyst")) {
-      return "How to Become a Financial Analyst in India";
-    }
-    if (fullTitle.includes("Financial Modeling")) {
-      return "Top Financial Modeling Interview Questions";
-    }
-    if (fullTitle.includes("Investment Banking")) {
-      return "Investment Banking vs Equity Research";
-    }
-    return fullTitle.split(":")[0].split(" - ")[0].substring(0, 60);
-  };
-
-  // Custom subtitles for homepage
-  const getDisplaySubtitle = (fullTitle: string) => {
-    if (fullTitle.includes("Cold DMs")) {
-      return "The ultimate networking playbook for finance freshers in 2026.";
-    }
-    if (fullTitle.includes("Financial Analyst")) {
-      return "A step-by-step roadmap for freshers to land their first finance role.";
-    }
-    if (fullTitle.includes("Financial Modeling")) {
-      return "Master your finance interviews with these essential questions and expert answers.";
-    }
-    if (fullTitle.includes("Investment Banking")) {
-      return "Compare salary, work-life balance, and growth prospects in IB vs ER roles.";
-    }
-    return "";
-  };
-
-  // Get read time based on title
-  const getReadTime = (title: string) => {
-    if (title.includes("Financial Modeling")) return "12 min read";
-    if (title.includes("Investment Banking")) return "10 min read";
-    if (title.includes("Cold DMs")) return "8 min read";
-    return "8 min read";
-  };
-
-  useEffect(() => {
-    fetchBlogs();
-  }, []);
-
-  const fetchBlogs = async () => {
-    try {
-      setLoading(true);
-      const res = await fetch("/api/career-resources");
-      const data = await res.json();
-      
-      let blogsData = [];
-      if (Array.isArray(data)) {
-        blogsData = data;
-      } else if (data.resources && Array.isArray(data.resources)) {
-        blogsData = data.resources;
-      } else if (data.data && Array.isArray(data.data)) {
-        blogsData = data.data;
-      } else {
-        blogsData = [];
-      }
-      
-      // Filter only text/blog type resources and take first 2
-      const textBlogs = blogsData.filter((item: any) => item.type === 'text');
-      setBlogs(textBlogs.slice(0, 2));
-    } catch (err) {
-      console.error("Error fetching blogs:", err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleReadMore = (slug: string) => {
-    router.push(`/blogs/${slug}`);
-  };
-
-  const handleExploreAllBlogs = () => {
-    router.push(`/blogs`);
-  };
-
-  // Function to get Google Drive direct image URL
-  const getGoogleDriveImageUrl = (url: string | null) => {
-    if (!url) return null;
-    
-    const driveMatch = url.match(/\/d\/([^\/]+)/);
-    if (driveMatch) {
-      const fileId = driveMatch[1];
-      return `https://drive.google.com/uc?export=view&id=${fileId}`;
-    }
-    
-    if (url.includes('uc?export=view') || url.includes('usercontent')) {
-      return url;
-    }
-    
-    return url;
-  };
-
-  const handleImageError = (blogId: string) => {
-    setImageErrors(prev => ({ ...prev, [blogId]: true }));
-  };
-
-  const getCategoryLabel = (category: string) => {
-    const categories: Record<string, string> = {
-      'resume-tips': 'Resume Tips',
-      'jobs': 'Job Search',
-      'roadmap': 'Career Roadmaps',
-      'profile-tips': 'Profile Tips',
-      'interview': 'Interview Prep',
-      'skills': 'Skill Development',
-      'career': 'Career Guide',
-      'Career Advice': 'Career Advice',
-      'networking': 'Networking',
-    };
-    return categories[category] || category.replace('-', ' ');
-  };
-
-  const formatDate = (date: string) => {
-    return new Date(date).toLocaleDateString('en-US', {
-      month: 'short',
-      day: 'numeric',
-      year: 'numeric'
-    });
-  };
-
-  if (loading) {
-    return (
-      <section className="py-16 md:py-20 bg-[#F8FAFC]">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <div className="inline-flex items-center gap-2 bg-gradient-to-r from-[#FFD700]/20 to-[#FFA500]/20 rounded-full px-4 py-1.5 mb-4">
-              <BookOpen size={14} className="text-[#FFD700]" />
-              <span className="text-xs font-semibold text-[#0A2540]">📘 Fresh Insights</span>
-            </div>
-            <h2 className="text-3xl md:text-4xl lg:text-5xl font-black tracking-tight text-[#0A2540] mb-4">
-              Insights, stories, and tools for <br />
-<span className="text-[#0A2540] relative z-10 opacity-100">
-  building your finance career
-</span>
-            </h2>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 max-w-4xl mx-auto">
-            {[1, 2].map((i) => (
-              <div key={i} className="bg-white rounded-[32px] overflow-hidden shadow-sm border border-gray-100 animate-pulse">
-                <div className="h-[220px] bg-gray-200"></div>
-                <div className="p-6 space-y-3">
-                  <div className="h-4 bg-gray-200 rounded w-32"></div>
-                  <div className="h-6 bg-gray-200 rounded w-3/4"></div>
-                  <div className="h-4 bg-gray-200 rounded w-full"></div>
-                  <div className="h-4 bg-gray-200 rounded w-2/3"></div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-    );
-  }
-
-  if (blogs.length === 0) {
-    return null;
-  }
-
-  return (
-    <section className="py-16 md:py-20 bg-[#F8FAFC]">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        
-        {/* Section Header */}
-        <div className="text-center mb-12">
-          <div className="inline-flex items-center gap-2 bg-gradient-to-r from-[#FFD700]/20 to-[#FFA500]/20 rounded-full px-4 py-1.5 mb-4">
-            <BookOpen size={14} className="text-[#FFD700]" />
-            <span className="text-xs font-semibold text-[#0A2540]">📘 Fresh Insights</span>
-          </div>
-          <h2 className="text-3xl md:text-4xl lg:text-5xl font-black tracking-tight text-[#0A2540] mb-4">
-            Insights, stories, and tools for <br />
-            <span className="bg-gradient-to-r from-[#FFD700] to-[#FFA500] bg-clip-text text-transparent">
-              building your finance career
-            </span>
-          </h2>
-          <p className="text-sm md:text-base text-slate-600 max-w-2xl mx-auto">
-            Expert career advice, interview tips, and practical finance guides for students and freshers.
-          </p>
-        </div>
-
-        {/* Blog Cards Grid - 2 cards only for cleaner design */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 max-w-5xl mx-auto">
-          {blogs.map((blog) => {
-            const coverImageUrl = blog.coverImage ? getGoogleDriveImageUrl(blog.coverImage) : null;
-            const hasImageError = imageErrors[blog.id];
-            const categoryLabel = getCategoryLabel(blog.category);
-            const displayTitle = getDisplayTitle(blog.title, blog.category);
-            const displaySubtitle = getDisplaySubtitle(blog.title);
-            const readTime = getReadTime(blog.title);
-            
-            return (
-              <div 
-                key={blog.id}
-                onClick={() => handleReadMore(blog.slug)}
-                className="group bg-white rounded-[32px] overflow-hidden shadow-[0_8px_30px_rgba(0,0,0,0.06)] border border-gray-100 hover:shadow-[0_20px_40px_rgba(0,0,0,0.1)] transition-all duration-300 hover:-translate-y-1 cursor-pointer"
-              >
-                {/* Blog Image */}
-                <div className="relative overflow-hidden bg-gradient-to-br from-[#0A2540] to-[#1a3a5c]">
-                  {coverImageUrl && !hasImageError ? (
-                    <img
-                      src={coverImageUrl}
-                      alt={displayTitle}
-                      className="w-full h-[240px] md:h-[260px] object-cover group-hover:scale-105 transition-transform duration-500"
-                      onError={() => handleImageError(blog.id)}
-                    />
-                  ) : (
-                    <div className="w-full h-[240px] md:h-[260px] flex flex-col items-center justify-center bg-gradient-to-br from-[#0A2540] to-[#1a3a5c]">
-                      <BookOpen size={64} className="text-white/20 mb-3" />
-                      <span className="text-white/40 text-sm">Finance Guide</span>
-                    </div>
-                  )}
-                </div>
-
-                {/* Blog Content */}
-                <div className="p-6 md:p-7">
-                  {/* Meta info - Single line with category, read time, and date */}
-                  <div className="flex items-center gap-2 text-xs text-slate-500 mb-3">
-                    <span className="font-medium text-[#D4A017]">{categoryLabel}</span>
-                    <span>•</span>
-                    <span>{readTime}</span>
-                    <span>•</span>
-                    <span>{formatDate(blog.createdAt)}</span>
-                  </div>
-
-                  {/* Title - Full line, responsive text size, no scroll */}
-                  <h3 className="text-base sm:text-lg md:text-xl font-bold text-[#0A2540] leading-tight mb-3 group-hover:text-[#D4A017] transition-colors">
-                    {displayTitle}
-                  </h3>
-
-                  {/* Subtitle - Clean description */}
-                  {displaySubtitle && (
-                    <p className="text-sm text-slate-600 leading-relaxed mb-5">
-                      {displaySubtitle}
-                    </p>
-                  )}
-
-                  {/* Read More Link - Improved hover effect */}
-                  <div className="flex items-center pt-3 border-t border-gray-100 mt-2">
-                    <span className="text-sm font-semibold text-[#0A2540] group-hover:text-[#D4A017] transition-all duration-300 flex items-center gap-1 group-hover:gap-2">
-                      Read full article
-                      <ArrowRight size={14} className="transition-transform group-hover:translate-x-1" />
-                    </span>
-                  </div>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-
-        {/* Explore All Blogs Button */}
-        <div className="text-center mt-12">
-          <button
-            onClick={handleExploreAllBlogs}
-            className="inline-flex items-center gap-2 px-8 py-3.5 bg-white border-2 border-[#FFD700] text-[#0A2540] font-semibold rounded-xl hover:bg-[#FFD700] hover:border-[#FFD700] transition-all duration-300 text-sm hover:shadow-md"
-          >
-            Explore All Blogs
-            <ArrowRight size={14} />
-          </button>
-        </div>
-      </div>
-    </section>
-  );
-};
-
-// Simplified FAQ Component
-const FAQ = () => {
-  const [openIndex, setOpenIndex] = useState<number | null>(null);
-
-   const faqs = [
-    { 
-      q: "How is Finlysta different from traditional job portals?", 
-      a: "Unlike traditional portals, Finlysta focuses only on entry-level finance roles. Every listing is manually reviewed — no ghost jobs, no spam, no irrelevant senior positions."
-    },
-    { 
-      q: "Are the jobs on Finlysta verified?", 
-      a: "Yes. Every job and internship listed on Finlysta is manually reviewed to help students avoid fake listings, spam, and irrelevant senior-level roles."
-    },
-    { 
-      q: "What kind of finance jobs are available on Finlysta?", 
-      a: "Finlysta features entry-level finance roles including Financial Analyst, FP&A, Investment Banking, Equity Research, Audit, Tax, MIS, Accounting, and Article Trainee opportunities."
-    },
-    { 
-      q: "Who can use Finlysta?", 
-      a: "Finlysta is designed for finance students, graduates, and career-switchers looking for internships and entry-level positions in financial analysis, investment banking, equity research, accounting, and related fields."
-    },
-    { 
-      q: "Can freshers apply for jobs on Finlysta?", 
-      a: "Absolutely. Finlysta is built specifically for students, graduates, and first-time job seekers looking for fresher-friendly finance opportunities."
-    },
-    { 
-      q: "Is Finlysta really free?", 
-      a: "Yes — 100% free for job seekers. Always. Companies pay to post, but you'll never pay anything to find your first finance role."
-    },
-  ];
-
-  return (
-    <section className="bg-[#F8FAFC] py-16 md:py-20">
-      <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-        
-        {/* Header */}
-        <div className="text-center mb-10">
-          <div className="inline-flex items-center gap-2 bg-gradient-to-r from-[#FFD700]/20 to-[#FFD700]/10 rounded-full px-4 py-1.5 mb-4">
-            <HelpCircle size={14} className="text-[#FFD700]" />
-            <span className="text-xs font-semibold text-[#0A2540]">Frequently Asked Questions</span>
-          </div>
-          <h2 className="text-2xl sm:text-3xl font-bold text-[#0A2540] mb-3">
-            Everything You Need to Know About <span className="text-[#FFD700]">Finlysta</span>
-          </h2>
-          <p className="text-sm text-[#64748B] max-w-2xl mx-auto">
-            Find answers to common questions about finance jobs, internships, and how Finlysta works
-          </p>
-        </div>
-
-        {/* FAQ Accordion */}
-        <div className="space-y-4">
-          {faqs.map((faq, idx) => {
-            const isOpen = openIndex === idx;
-            
-            return (
-              <div 
-                key={idx} 
-                className={`bg-white border rounded-2xl transition-all duration-300 ${
-                  isOpen 
-                    ? 'border-[#FFD700]/40 shadow-md' 
-                    : 'border-gray-100 hover:border-[#FFD700]/30 hover:shadow-sm'
-                }`}
-              >
-                <button
-                  onClick={() => setOpenIndex(isOpen ? null : idx)}
-                  className="flex justify-between items-center w-full py-4 px-6 text-left"
-                  aria-expanded={isOpen}
-                >
-                  <span className="text-sm sm:text-base font-semibold text-[#0A2540] pr-4">
-                    {faq.q}
-                  </span>
-                  <span className={`flex-shrink-0 w-6 h-6 rounded-full bg-[#F8FAFC] flex items-center justify-center transition-all duration-300 ${
-                    isOpen ? 'bg-[#FFD700]/10' : ''
-                  }`}>
-                    {isOpen ? (
-                      <Minus size={14} className="text-[#FFD700]" />
-                    ) : (
-                      <Plus size={14} className="text-[#0A2540]" />
-                    )}
-                  </span>
-                </button>
-                
-                <div 
-                  className={`overflow-hidden transition-all duration-300 ease-in-out px-6 ${
-                    isOpen ? 'max-h-40 opacity-100 pb-5' : 'max-h-0 opacity-0'
-                  }`}
-                >
-                  <p className="text-sm text-[#64748B] leading-relaxed">
-                    {faq.a}
-                  </p>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-
-        {/* Bottom CTA */}
-        <div className="text-center mt-10 pt-4">
-          <p className="text-sm text-[#64748B] mb-3">
-            Still have questions?
-          </p>
-          <a 
-            href="mailto:support@finlysta.com" 
-            className="inline-flex items-center gap-2 text-sm font-medium text-[#FFD700] hover:text-[#FFA500] transition-colors"
-          >
-            Contact our support team
-            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
-            </svg>
-          </a>
-        </div>
-
-      </div>
-    </section>
-  );
-};
-
-// Call to Action Section
-const CTASection = () => {
-  return (
-    <div className="relative overflow-hidden bg-gradient-to-b from-[#0A2540] to-[#133B5C] py-20 md:py-24">
-      {/* Background Blur Elements */}
-      <div className="absolute top-0 right-0 w-96 h-96 bg-[#FFD700]/10 rounded-full blur-3xl"></div>
-      <div className="absolute bottom-0 left-0 w-96 h-96 bg-[#FFA500]/10 rounded-full blur-3xl"></div>
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full max-w-4xl mx-auto bg-[#FFD700]/[0.03] rounded-full blur-3xl"></div>
-      
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
-        
-        {/* Badge */}
-        <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full px-4 py-1.5 mb-6">
-          <Sparkles size={13} className="text-[#FFD700]" />
-          <span className="text-xs font-semibold text-black">
-            Built for Finance Freshers
-          </span>
-        </div>
-        
-        {/* Heading */}
-        <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-black mb-4 leading-tight">
-          Start Your Finance Career <br className="hidden sm:block" />
-          <span className="bg-gradient-to-r from-[#FFD700] to-[#FFA500] bg-clip-text text">
-            with Confidence
-          </span>
-        </h2>
-        
-        {/* Subheading */}
-        <p className="text-base md:text-lg text-white/80 mb-10 max-w-2xl mx-auto leading-relaxed">
-          Verified finance jobs, internships, and learning resources 
-          <br className="hidden sm:block" />
-          designed for students and freshers.
-        </p>
-        
-        {/* Buttons */}
-        <div className="flex flex-col sm:flex-row gap-4 justify-center">
-          <Link href="/jobs">
-            <button 
-              className="group px-8 py-3.5 md:px-10 md:py-4 text-sm md:text-base font-bold rounded-xl transition-all duration-300 hover:scale-105 cursor-pointer flex items-center justify-center gap-2 min-w-[200px]"
-              style={{
-                background: "linear-gradient(135deg, #FFD700 0%, #FFA500 100%)",
-                color: "#0A2540",
-                boxShadow: "0 8px 20px -6px rgba(255, 215, 0, 0.3)"
-              }}
-            >
-              <Briefcase size={18} />
-              <span>Browse Jobs</span>
-              <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
-            </button>
-          </Link>
-          
-          <Link href="/learning-hub">
-            <button 
-              className="px-8 py-3.5 md:px-10 md:py-4 text-sm md:text-base font-semibold rounded-xl transition-all duration-300 hover:scale-105 cursor-pointer flex items-center justify-center gap-2 bg-white/10 backdrop-blur-sm text-black border border-white/20 hover:bg-white-20 min-w-[200px]"
-            >
-              <BookOpen size={18} />
-              <span>Start Learning</span>
-            </button>
-          </Link>
-        </div>
-      </div>
-    </div>
-  );
-};
-
-// Skills in Demand Component
 const SkillsSection = () => {
   const skills = [
-    { name: "Advanced Excel", icon: LineChart, description: "Pivot Tables, VLOOKUP, Excel Functions" },
-    { name: "Financial Statements", icon: FileText, description: "Balance Sheet, P&L, Cash Flow" },
-    { name: "Accounting Fundamentals", icon: Calculator, description: "Journal Entries, Debit & Credit"},
-    { name: "Financial Reporting", icon: BarChart3, description: "Financial Reports, GAAP, IFRS"},
-    { name: "Financial Analysis", icon: TrendingUpIcon, description: "Ratio Analysis, Variance Analysis"},
-    { name: "Business Communication", icon: MessageCircle, description: "Presentations, Client Communication"},
+    { icon: FileSpreadsheet, title: "Advanced Excel", subtitle: "Pivot Tables, VLOOKUP,\nExcel Functions", color: "text-green-600", bg: "bg-green-50" },
+    { icon: FileText, title: "Financial Statements", subtitle: "Balance Sheet, P&L,\nCash Flow", color: "text-blue-600", bg: "bg-blue-50" },
+    { icon: Calculator, title: "Accounting Fundamentals", subtitle: "Journal Entries,\nDebit & Credit", color: "text-orange-500", bg: "bg-orange-50" },
+    { icon: ClipboardList, title: "Financial Reporting", subtitle: "Financial Reports,\nGAAP, IFRS", color: "text-blue-600", bg: "bg-blue-50" },
+    { icon: BarChart3, title: "Financial Analysis", subtitle: "Ratio Analysis,\nVariance Analysis", color: "text-blue-600", bg: "bg-blue-50" },
+    { icon: MessageSquare, title: "Business Communication", subtitle: "Presentations,\nClient Communication", color: "text-blue-600", bg: "bg-blue-50" },
   ];
-  
+
   return (
-    <section className="py-16 bg-gradient-to-b from-gray-50 to-white">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-10">
-          <div className="inline-flex items-center gap-2 bg-gradient-to-r from-[#FFD700]/20 to-[#FFA500]/20 rounded-full px-4 py-1.5 mb-4">
-            <Zap size={14} className="text-[#FFD700]" />
-            <span className="text-xs font-semibold text-[#0A2540]">Skills That Get You Hired</span>
-          </div>
-          <h2 className="text-2xl md:text-3xl font-bold text-[#0A2540] mb-3">
-            Master In-Demand <span className="text-[#FFD700]">Finance Skills</span>
-          </h2>
-          <p className="text-sm text-slate-500 max-w-2xl mx-auto">
-            Top skills recruiters look for in entry-level finance roles
-          </p>
-        </div>
-        
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-5">
-          {skills.map((skill, idx) => (
-            <div 
-              key={idx} 
-              className="group bg-white rounded-xl p-5 border border-gray-100 shadow-sm hover:shadow-lg transition-all duration-300 hover:-translate-y-1 cursor-pointer"
-            >
-              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#FFD700]/10 to-[#FFA500]/10 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
-                <skill.icon size={22} className="text-[#FFD700]" />
-              </div>
-              <h3 className="text-base font-bold text-[#0A2540] mb-1 group-hover:text-[#FFD700] transition-colors">
-                {skill.name}
-              </h3>
-              {skill.description && (
-                <p className="text-xs text-slate-500">
-                  {skill.description}
-                </p>
-              )}
+    <section className="py-8 bg-[#F8FAFC]">
+      <div className="max-w-7xl mx-auto px-6">
+        <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
+          <div className="p-6">
+            <div className="text-left mb-6">
+              <p className="text-sm font-semibold text-[#2563EB] mb-2">Skills That Get You Hired</p>
+              <h2 className="text-2xl md:text-3xl font-bold text-[#081B4B]">Master In-Demand Finance Skills</h2>
+              <p className="mt-2 text-sm text-slate-600">Top skills recruiters look for in entry-level finance roles</p>
             </div>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-};
-
-// Role Categories Section
-const RoleCategoriesSection = () => {
-  const roleCategories = [
-    {
-      title: "Finance & Analysis",
-      icon: TrendingUpIcon,
-      bgColor: "bg-[#dbeaf5]",
-      tagBgColor: "bg-[#c8e2f4]",
-      description: "Most popular modern finance careers",
-      roles: ["Financial Analyst", "FP&A Analyst", "MIS Analyst", "Business Finance Analyst", "Revenue Analyst"]
-    },
-    {
-      title: "Accounting, Audit & Tax",
-      icon: Calculator,
-      bgColor: "bg-[#f8dfcf]",
-      tagBgColor: "bg-[#f5cdb4]",
-      description: "Huge fresher demand in India",
-      roles: ["Article Trainee", "Audit Associate", "Tax Analyst", "Accounts Executive", "Accounts Payable Analyst", "Finance Executive"]
-    },
-    {
-      title: "Banking, Investment & Risk",
-      icon: Landmark,
-      bgColor: "bg-[#d5f2ea]",
-      tagBgColor: "bg-[#afe7d8]",
-      description: "High aspirational careers",
-      roles: ["Investment Banking Analyst", "Equity Research Analyst", "Credit Analyst", "Risk Analyst", "KYC Analyst"]
-    }
-  ];
-
-  return (
-    <section className="py-16 bg-gray-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-12">
-          <div className="inline-flex items-center gap-2 bg-gradient-to-r from-[#FFD700]/20 to-[#FFA500]/20 rounded-full px-4 py-1.5 mb-4">
-            <Briefcase size={14} className="text-[#FFD700]" />
-            <span className="text-xs font-semibold text-[#0A2540]">✨ Curated roles for Freshers</span>
-          </div>
-          <h2 className="text-2xl md:text-3xl font-bold text-[#0A2540] mb-3">
-            Finance Careers Beyond <span className="text-[#FFD700]">Financial Analyst</span>
-          </h2>
-          <p className="text-sm text-slate-500 max-w-2xl mx-auto">
-            Discover entry-level roles across financial analysis, accounting, banking, and more
-          </p>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {roleCategories.map((category, idx) => (
-            <div 
-              key={idx} 
-              className="bg-white rounded-[28px] p-3 shadow-sm border border-white/50 hover:shadow-lg transition-all duration-300"
-            >
-              {/* Colored Content Area */}
-              <div className={`${category.bgColor} rounded-[22px] p-6 min-h-[240px]`}>
-                {/* Header with Icon */}
-                <div className="flex items-start justify-between mb-3">
-                  <div className="w-10 h-10 rounded-xl bg-white/50 flex items-center justify-center">
-                    <category.icon size={22} className="text-[#0A2540]" />
-                  </div>
+            <div className="overflow-x-auto">
+              <div className="min-w-full">
+                <div className="flex">
+                  {skills.map((skill, index) => {
+                    const Icon = skill.icon;
+                    return (
+                      <div key={index} className="flex-1 text-center px-1 pb-3">
+                        <div className="flex flex-col items-center gap-1">
+                          <div className={`w-9 h-9 rounded-full flex items-center justify-center ${skill.bg}`}>
+                            <Icon className={`w-4 h-4 ${skill.color}`} />
+                          </div>
+                          <span className="text-[11px] font-bold text-[#081B4B] leading-tight whitespace-nowrap">{skill.title}</span>
+                        </div>
+                      </div>
+                    );
+                  })}
                 </div>
-                
-                <h2 className="text-xl font-bold text-black leading-tight mb-2">
-                  {category.title}
-                </h2>
-
-                <p className="text-sm text-black/70 leading-snug mb-4">
-                  {category.description}
-                </p>
-
-                {/* Role Tags */}
-                <div className="flex flex-wrap gap-2">
-                  {category.roles.map((role, roleIdx) => (
-                    <button
-                      key={roleIdx}
-                      onClick={() => {
-                        window.location.href = `/jobs?search=${encodeURIComponent(role)}`;
-                      }}
-                      className={`px-3 py-1.5 rounded-full ${category.tagBgColor} text-xs font-medium text-black/80 hover:scale-105 transition-transform duration-200`}
-                    >
-                      {role}
-                    </button>
+                <div className="flex">
+                  {skills.map((skill, index) => (
+                    <div key={index} className="flex-1 text-center px-1 pt-1">
+                      <span className="text-[11px] text-slate-500 leading-tight whitespace-pre-line block">{skill.subtitle}</span>
+                    </div>
                   ))}
                 </div>
               </div>
-
-              {/* Bottom Explore Section */}
-              <div className="flex items-center justify-between px-5 py-4">
-                <p className="text-base font-semibold text-black">Explore {category.title.split(' ')[0]} Roles</p>
-                <button 
-                  onClick={() => {
-                    window.location.href = `/jobs?search=${encodeURIComponent(category.title.split(' &')[0])}`;
-                  }}
-                  className="w-10 h-10 rounded-xl bg-[#f3f3f3] flex items-center justify-center text-xl hover:bg-[#FFD700] hover:text-black transition-all duration-200"
-                >
-                  →
-                </button>
-              </div>
             </div>
-          ))}
-        </div>
-        
-        {/* View All Button */}
-        <div className="text-center mt-10">
-          <Link href="/jobs">
-            <button className="inline-flex items-center gap-2 px-6 py-3 bg-white border-2 border-[#FFD700] text-[#0A2540] font-semibold rounded-xl hover:bg-[#FFD700] hover:border-[#FFD700] transition-all duration-300 text-sm">
-              Browse All Entry-Level Finance Roles
-              <ArrowRight size={14} />
-            </button>
-          </Link>
+          </div>
         </div>
       </div>
     </section>
   );
 };
 
-// Main Page Content Component
+const FinanceCareerPaths = () => {
+  const categories = [
+    { title: "Finance & Analysis", subtitle: "Most popular modern finance careers", roles: ["Financial Analyst", "FP&A Analyst", "MIS Analyst", "Investment Finance Analyst"], extraRoles: 1, icon: BarChart3, iconBg: "bg-blue-50", iconColor: "text-blue-600", link: "Explore Finance Roles" },
+    { title: "Accounting, Audit & Tax", subtitle: "Huge fresher demand in India", roles: ["Article Trainee", "Audit Associate", "Tax Analyst", "Accounting Executive"], extraRoles: 2, icon: Calculator, iconBg: "bg-green-50", iconColor: "text-green-600", link: "Explore Accounting Roles" },
+    { title: "Banking, Investment & Risk", subtitle: "High aspirational careers", roles: ["Investment Banking Analyst", "Equity Research Analyst", "Credit Analyst", "Risk Analyst"], extraRoles: 1, icon: Landmark, iconBg: "bg-purple-50", iconColor: "text-purple-600", link: "Explore Banking Roles" },
+  ];
+
+  return (
+    <section className="py-12 bg-[#F8FAFC]">
+      <div className="max-w-7xl mx-auto px-6">
+        <div className="flex flex-col lg:flex-row gap-8">
+          <div className="lg:w-[260px] flex-shrink-0">
+            <h2 className="text-2xl font-bold text-[#081B4B] leading-tight">Finance Careers Beyond<br /><span className="text-[#2563EB]">Financial Analyst</span></h2>
+            <p className="mt-3 text-sm text-slate-500 leading-relaxed">Discover entry-level roles across financial<br />analysis, accounting, banking, and more.</p>
+          </div>
+          <div className="flex-1">
+            <div className="grid md:grid-cols-3 gap-5">
+              {categories.map((item, index) => {
+                const Icon = item.icon;
+                return (
+                  <div key={index} className="bg-white border border-slate-100 rounded-xl p-4 shadow-sm hover:shadow-md transition-all duration-300">
+                    <div className="flex justify-between items-start gap-3">
+                      <div className="flex-1">
+                        <h3 className="font-bold text-[#081B4B] text-sm">{item.title}</h3>
+                        <p className="text-xs text-slate-500 mt-1">{item.subtitle}</p>
+                        <ul className="mt-3 space-y-1">
+                          {item.roles.map((role) => (<li key={role} className="text-xs text-[#081B4B]">• {role}</li>))}
+                          {item.extraRoles > 0 && (<li className="text-xs text-blue-500 font-medium">+{item.extraRoles} more roles</li>)}
+                        </ul>
+                        <button onClick={() => window.location.href = `/jobs?search=${encodeURIComponent(item.title.split(' &')[0])}`} className="mt-4 text-[#2563EB] font-semibold text-xs inline-flex items-center gap-1.5 hover:gap-2 transition-all">
+                          {item.link} <ArrowRight size={12} />
+                        </button>
+                      </div>
+                      <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${item.iconBg} flex-shrink-0`}>
+                        <Icon className={`w-5 h-5 ${item.iconColor}`} />
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+            <div className="w-full flex mt-6">
+              <div style={{ marginLeft: "180px" }}>
+                <Link href="/jobs">
+                  <button className="px-6 py-2 bg-white border-2 border-[#2563EB] text-[#2563EB] rounded-lg font-semibold text-sm">Browse All Entry-Level Finance Roles →</button>
+                </Link>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+};
+
+const RoadmapLearningSection = () => {
+  const router = useRouter();
+
+  const learningTags = [
+    { name: "Finance Fundamentals", icon: GraduationCap },
+    { name: "Advanced Excel", icon: FileSpreadsheet },
+    { name: "Financial Analysis", icon: TrendingUpIcon },
+    { name: "Power BI", icon: BarChart3 },
+    { name: "Business Communication", icon: MessageCircle },
+  ];
+
+  const blogPosts = [
+    { title: "Stop Sending Cold DMs That Get Ignored", readTime: "8 min read", category: "Career Advice", slug: "stop-sending-cold-dms", image: "/blog-cold-dms.png" },
+    { title: "How to Become a Financial Analyst in India", readTime: "8 min read", category: "Career Guide", slug: "how-to-become-a-financial-analyst", image: "/blog-financial-analyst.png" },
+  ];
+
+  return (
+    <section className="py-12 bg-[#F8FAFC]">
+      <div className="max-w-7xl mx-auto px-6">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="bg-white rounded-2xl border border-blue-100 p-4 shadow-sm hover:shadow-md transition-all duration-300 flex flex-col relative overflow-hidden">
+            <div className="flex items-center gap-2 mb-1 relative z-10">
+              <GraduationCap size={16} className="text-blue-600" />
+              <p className="text-xs font-bold text-blue-600 uppercase tracking-wide">Proven Path</p>
+            </div>
+            <h3 className="text-xl font-bold text-[#081B4B]">Your Roadmap to Becoming<br />a Financial Analyst</h3>
+            <p className="text-[11px] text-slate-500 mt-1 relative z-10 leading-relaxed whitespace-pre-line">{`Follow this step-by-step guide\n— from learning fundamentals to\nlanding your first role.`}</p>
+            <div className="relative z-10 mt-1 w-full flex justify-start">
+              <Image src="/steps.png" alt="Career Roadmap Steps" width={220} height={120} quality={100} className="object-contain" />
+            </div>
+            <div className="flex flex-wrap gap-3 mt-2">
+              <button onClick={() => router.push('/learning-hub')} className="px-3 py-2 bg-blue-600 text-white rounded-xl font-medium text-[11px] hover:bg-blue-700 transition-all inline-flex">Get Free Learning Resources →</button>
+            </div>
+          </div>
+
+          <div className="bg-white rounded-2xl border border-blue-100 p-6 shadow-sm hover:shadow-md transition-all duration-300 flex flex-col">
+            <div className="flex items-center justify-between mb-2">
+              <p className="text-xs font-bold text-blue-600 uppercase tracking-wide">Best Learning Hub Categories</p>
+              <BookOpen size={16} className="text-blue-400" />
+            </div>
+            <h3 className="text-xl font-bold text-[#081B4B]">Master the Skills Recruiters Are Looking For</h3>
+            <p className="text-sm text-slate-500 mt-2">Bite-sized lessons designed to help you build a successful finance career.</p>
+            <div className="flex flex-wrap gap-2 mt-4">
+              {learningTags.map((item) => {
+                const Icon = item.icon;
+                return (
+                  <span key={item.name} className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs rounded-full bg-blue-50 text-blue-700">
+                    <Icon size={12} className="text-blue-500" />{item.name}
+                  </span>
+                );
+              })}
+            </div>
+            <div className="mt-6">
+              <p className="text-xs font-bold text-[#081B4B] uppercase tracking-wide">Career-Focused Learning Path</p>
+              <h4 className="text-xl font-bold text-[#081B4B] mt-1">Ready to Start Your Journey?</h4>
+              <div className="flex items-end justify-between mt-4">
+                <div className="flex flex-col gap-6">
+                  <button onClick={() => router.push('/learning-hub')} className="px-4 py-2 bg-blue-600 text-white rounded-xl font-medium text-sm hover:bg-blue-700 transition-all">Start Learning Now →</button>
+                  <button onClick={() => router.push('/learning-hub')} className="px-4 py-2 border border-blue-600 text-blue-600 rounded-xl font-medium text-sm hover:bg-blue-50 transition-all">Explore All Topics →</button>
+                </div>
+                <Image src="/learning-books.png" alt="Learning Resources" width={140} height={100} className="object-contain" />
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white rounded-2xl border border-blue-100 p-6 shadow-sm hover:shadow-md transition-all duration-300 flex flex-col">
+            <div className="flex items-center justify-between mb-2">
+              <p className="text-xs font-bold text-blue-600 uppercase tracking-wide">Fresh Insights</p>
+              <Sparkles size={16} className="text-blue-400" />
+            </div>
+            <h3 className="text-xl font-bold text-[#081B4B]">Insights, stories, and tools for building your finance career</h3>
+            <p className="text-sm text-slate-500 mt-2">Expert career advice, interview tips, and practical finance guides.</p>
+            <div className="space-y-4 mt-4 flex-1">
+              {blogPosts.map((blog, index) => (
+                <div key={index} className="flex gap-3">
+                  <div className="w-32 h-24 rounded-xl bg-white border border-slate-100 flex-shrink-0 overflow-hidden p-1">
+                    <Image src={blog.image} alt={blog.title} width={160} height={128} className="w-full h-full object-contain" />
+                  </div>
+                  <div className="flex-1">
+                    <h4 className="font-semibold text-[#081B4B] text-sm leading-tight">{blog.title}</h4>
+                    <p className="text-[11px] text-slate-500 mt-1">{blog.category} • {blog.readTime}</p>
+                    <button onClick={() => router.push(`/blogs/${blog.slug}`)} className="text-blue-600 text-xs font-medium mt-1 hover:underline">Read full article →</button>
+                  </div>
+                </div>
+              ))}
+            </div>
+            <button onClick={() => router.push('/blogs')} className="w-full mt-4 border border-blue-600 text-blue-600 py-2.5 rounded-xl font-medium text-sm hover:bg-blue-50 transition-all">Explore All Blogs →</button>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+};
+
+const FAQCTASection = () => {
+  const [openIndex, setOpenIndex] = useState<number | null>(null);
+
+  const faqs = [
+    { q: "How is Finlysta different from traditional job portals?", a: "Unlike traditional portals, Finlysta focuses only on entry-level finance roles. Every listing is manually reviewed — no ghost jobs, no spam, no irrelevant senior positions." },
+    { q: "Are the jobs on Finlysta verified?", a: "Yes. Every job and internship listed on Finlysta is manually reviewed to help students avoid fake listings." },
+    { q: "What kind of finance jobs are available on Finlysta?", a: "Finlysta features entry-level finance roles including Finance Executive, Finance Associate, Accounts Executive, MIS Executive, Audit Associate, Tax Associate, and Accounting roles." },
+    { q: "Who can use Finlysta?", a: "Finlysta is designed for finance students, graduates, and career-switchers looking for entry-level positions." },
+    { q: "Can freshers apply for jobs on Finlysta?", a: "Absolutely. Finlysta is built specifically for students, graduates, and first-time job seekers." },
+    { q: "Is Finlysta really free?", a: "Yes — 100% free for job seekers. Always." },
+  ];
+
+  return (
+    <section className="py-16 bg-[#F8FAFC]">
+      <div className="max-w-7xl mx-auto px-6">
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+
+          <div className="flex flex-col">
+            <p className="text-sm font-bold text-[#2563EB] mb-2">Frequently Asked Questions</p>
+            <h2 className="text-3xl font-bold text-[#081B4B] mb-6">Everything You Need to Know About Finlysta</h2>
+
+            <div className="space-y-3">
+              {faqs.map((faq, idx) => {
+                const isOpen = openIndex === idx;
+                return (
+                  <div key={idx} className="border border-slate-200 rounded-lg bg-white overflow-hidden">
+                    <button
+                      onClick={() => setOpenIndex(isOpen ? null : idx)}
+                      className="w-full flex items-center justify-between px-4 py-3 text-left hover:bg-gray-50 transition-colors"
+                    >
+                      <span className="text-sm font-bold text-[#081B4B]">{faq.q}</span>
+                      <span className="text-[#2563EB] text-lg font-bold ml-4 flex-shrink-0">
+                        {isOpen ? "−" : "+"}
+                      </span>
+                    </button>
+                    {isOpen && (
+                      <div className="px-4 pb-3">
+                        <p className="text-xs text-[#081B4B] leading-relaxed">{faq.a}</p>
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          <div className="flex flex-col items-center justify-center mt-16">
+            <div className="w-full max-w-2xl">
+              <img
+                src="/Faq.png"
+                alt="FAQ Illustration"
+                className="w-full h-auto object-contain"
+              />
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+  );
+};
+
 export default function HomePageContent() {
   const router = useRouter();
 
-  const handleFindJobs = () => {
-    router.push(`/jobs`);
-  };
-
-  const handleBrowseInternships = () => {
-    router.push(`/internships`);
-  };
-
   return (
-    <div className="bg-[#F8FAFC] min-h-screen font-sans">
+    <div className="min-h-screen font-sans">
       <Header />
 
       <main>
-        {/* HERO SECTION */}
-        <section className="relative bg-gradient-to-br from-[#EEF2FF] via-[#F8FAFC] to-white py-16 md:py-20 lg:py-24 overflow-hidden">
-          <div className="absolute top-20 right-10 w-72 h-72 bg-[#FFD700]/5 rounded-full blur-3xl"></div>
-          <div className="absolute bottom-10 left-10 w-96 h-96 bg-[#FFA500]/5 rounded-full blur-3xl"></div>
-          
-          <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-            <div className="text-center">
-              <div className="inline-flex items-center gap-2 bg-gradient-to-r from-[#FFD700]/20 to-[#FFA500]/20 rounded-full px-4 py-1.5 mb-6 animate-in fade-in slide-in-from-bottom-4 duration-700">
-                <AlertCircle size={14} className="text-[#FFD700]" />
-                <span className="text-xs font-semibold text-[#0A2540]">Entry-Level Finance Jobs & Internships.</span>
-              </div>
-              
-              <h1 className="text-4xl sm:text-5xl md:text-5xl xl:text-7xl font-black text-[#0A2540] mb-6 leading-tight animate-in fade-in slide-in-from-bottom-4 duration-700 delay-100">
-              Find Your Dream Finance Job & Internship
-                <span className="inline-block bg-gradient-to-r from-[#FFD700] to-[#FFA500] bg-clip-text text">
-                  {" "}That Match Your Skills & Interests
-                </span>
-              </h1>
-              
-              <div className="max-w-2xl mx-auto mb-6 animate-in fade-in slide-in-from-bottom-4 duration-700 delay-200">
-                <p className="text-lg sm:text-xl text-slate-800 leading-relaxed font-semibold tracking-tight">
-                  🚫 Tired of entry-level jobs asking for 2–5 years of experience?
+        <section className="relative overflow-hidden bg-[#F8FAFC] pt-6 pb-0">
+          <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-blue-100 rounded-full blur-3xl opacity-40"></div>
+          <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-blue-50 rounded-full blur-3xl opacity-30"></div>
+          <div className="max-w-7xl mx-auto px-6 lg:px-8">
+            <div className="flex flex-col lg:flex-row items-center justify-between gap-4">
+              <div className="flex-1 z-10">
+                <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-50 border border-blue-100 shadow-sm mb-6">
+                  <span className="text-blue-600 text-base">⭐</span>
+                  <span className="font-semibold text-blue-700 text-sm">Built for Finance Freshers</span>
+                </div>
+                <h1 className="text-5xl md:text-6xl lg:text-[64px] font-extrabold leading-[1.1] tracking-tight text-[#081B4B]">
+                  Empowering Future<br /><span className="text-blue-600">Finance Professionals.</span>
+                </h1>
+                <p className="mt-6 text-xl md:text-2xl leading-relaxed text-slate-600 max-w-[540px]">
+                  Opportunities, skills, and guidance to<br />help finance students and fresh<br />graduates <span className="text-blue-600">grow and stand out.</span>
                 </p>
-                <p className="text-sm sm:text-base text-slate-600 mt-3 leading-relaxed">
-                  Most job portals are built for experienced professionals.
-                  <br />
-                  Finlysta helps finance freshers discover verified internships and entry-level jobs.
-                </p>
+                <div className="flex flex-wrap gap-4 mt-8">
+                  <button onClick={() => router.push('/jobs')} style={{ backgroundColor: '#2563EB', color: '#ffffff', borderRadius: '16px', padding: '14px 32px', fontWeight: 600, fontSize: '1rem', border: 'none', cursor: 'pointer', boxShadow: '0 4px 14px rgba(37,99,235,0.25)' }}>Find My First Job →</button>
+                  <button onClick={() => router.push('/internships')} style={{ backgroundColor: '#ffffff', color: '#2563EB', borderRadius: '16px', padding: '14px 32px', fontWeight: 600, fontSize: '1rem', border: '2px solid #2563EB', cursor: 'pointer', boxShadow: '0 4px 14px rgba(37,99,235,0.10)' }}>Explore Internships →</button>
+                </div>
               </div>
-              
-              <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-0 animate-in fade-in slide-in-from-bottom-4 duration-700 delay-300">
-                <button
-                  onClick={handleFindJobs}
-                  className="px-8 py-4 rounded-xl transition-all duration-300 font-bold flex items-center justify-center gap-2 text-base min-w-[200px] cursor-pointer hover:scale-105 border-2 border-[#FFD700] bg-transparent hover:bg-[#FFD700]/10 group"
-                  style={{ color: "#0A2540" }}
-                >
-                  <Briefcase size={20} />
-                  <span>Find My First Job</span>
-                  <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
-                </button>
-
-                <button
-                  onClick={handleBrowseInternships}
-                  className="px-8 py-4 rounded-xl transition-all duration-300 font-bold flex items-center justify-center gap-2 text-base min-w-[200px] cursor-pointer hover:scale-105"
-                  style={{
-                    background: "linear-gradient(135deg, #FFD700 0%, #FFA500 100%)",
-                    color: "#0A2540",
-                    boxShadow: "0 4px 15px rgba(0, 0, 0, 0.2)"
-                  }}
-                >
-                  <GraduationCap size={20} />
-                  <span>Explore Internships</span>
-                </button>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* TRENDING OPPORTUNITIES */}
-        <TrendingInternships />
-
-        {/* SKILLS SECTION */}
-        <SkillsSection />
-
-        {/* ROLE CATEGORIES SECTION */}
-        <RoleCategoriesSection />
-
-        {/* CAREER PATH - Roadmap Image Section */}
-        <section className="py-16 bg-white">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center mb-10">
-              <div className="inline-flex items-center gap-2 bg-gradient-to-r from-[#FFD700]/20 to-[#FFA500]/20 rounded-full px-4 py-1.5 mb-4">
-                <GitBranch size={14} className="text-[#FFD700]" />
-                <span className="text-xs font-semibold text-[#0A2540]">Proven Path</span>
-              </div>
-              <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-[#0A2540] mb-3">
-                Your Roadmap to Becoming a <span className="text-[#FFD700]">Financial Analyst</span>
-              </h2>
-              <p className="text-sm md:text-base text-slate-500 max-w-2xl mx-auto">
-                Follow this step-by-step guide — from learning fundamentals to landing your first role
-              </p>
-            </div>
-            
-            <div className="relative overflow-hidden rounded-2xl shadow-xl border border-gray-100 bg-white p-4">
-              <div className="relative w-full">
-                <Image
-                  src="/roadmap.png"
-                  alt="Step-by-step career roadmap to become a financial analyst"
-                  width={1200}
-                  height={600}
-                  className="w-full h-auto object-contain rounded-lg"
-                  priority
-                />
-              </div>
-            </div>
-            
-            <div className="text-center mt-6">
-              <Link href="/learning-hub">
-                  <button className="text-sm text-black font-semibold hover:text-gray-700 transition-colors inline-flex items-center gap-1">
-                  Get Free Learning Resources <ArrowRight size={14} />
-                </button>
-              </Link>
-            </div>
-          </div>
-        </section>
-
-        {/* LEARNING SECTION */}
-        <FinanceTopics />
-
-        {/* BLOG PREVIEW SECTION */}
-        <BlogPreviewSection />
-
-        {/* FAQ SECTION */}
-        <FAQ />
-
-        {/* CTA SECTION */}
-        <CTASection />
-      </main>
-
-      {/* FOOTER */}
-      <footer className="bg-white border-t border-slate-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="pt-10 pb-6 grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-12 gap-8">
-            <div className="col-span-2 lg:col-span-4 space-y-3">
-              <Link href="/" className="flex items-center" aria-label="Finlysta Home">
-                <Image 
-                  src="/Finlysta.png" 
-                  alt="Finlysta logo"
-                  width={180} 
-                  height={40}
-                  priority
-                  className="object-contain"
-                />
-              </Link>
-              <p className="text-sm text-slate-600 leading-relaxed max-w-xs">The job board built exclusively for entry-level financial roles and internships in India.</p>
-              <div className="space-y-2 pt-1">
-                <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Follow us on</p>
-                <div className="flex gap-3">
-                  <a 
-                    href="https://www.linkedin.com/company/finlysta" 
-                    target="_blank" 
-                    rel="noopener noreferrer" 
-                    aria-label="LinkedIn"
-                    className="w-9 h-9 bg-slate-100 text-slate-600 hover:bg-[#0077B5] hover:text-white rounded-lg flex items-center justify-center transition-all duration-300"
-                  >
-                    <Linkedin size={16} />
-                  </a>
-                  <a 
-                    href="https://twitter.com/Finlysta" 
-                    target="_blank" 
-                    rel="noopener noreferrer" 
-                    aria-label="Twitter"
-                    className="w-9 h-9 bg-slate-100 text-slate-600 hover:bg-[#1DA1F2] hover:text-white rounded-lg flex items-center justify-center transition-all duration-300"
-                  >
-                    <Twitter size={16} />
-                  </a>
-                  <a 
-                    href="https://instagram.com/finlysta" 
-                    target="_blank" 
-                    rel="noopener noreferrer" 
-                    aria-label="Instagram"
-                    className="w-9 h-9 bg-slate-100 text-slate-600 hover:bg-[#E4405F] hover:text-white rounded-lg flex items-center justify-center transition-all duration-300"
-                  >
-                    <Instagram size={16} />
-                  </a>
+              <div className="flex-1 flex justify-start -ml-40 lg:-ml-52">
+                <div className="relative">
+                  <div className="absolute inset-0 bg-blue-100 blur-3xl opacity-40 rounded-full"></div>
+                  <Image src="/herostudent.png" alt="Finance Student" width={820} height={820} priority className="relative z-20 w-full max-w-[820px] drop-shadow-2xl" />
                 </div>
               </div>
             </div>
+          </div>
+        </section>
+
+        <div className="w-full border-t border-b border-gray-100 bg-white py-4 mt-8">
+          <div className="max-w-7xl mx-auto px-6 flex items-center gap-8 overflow-x-auto whitespace-nowrap scrollbar-hide">
+            <span className="text-[15px] font-semibold text-[#0F172A]">Popular Entry-Level Roles:</span>
+            <div className="flex items-center gap-2 text-[#0F172A]"><Briefcase className="w-5 h-5 text-[#2563EB]" /><span className="text-[15px] font-medium">Financial Analyst</span></div>
+            <div className="flex items-center gap-2 text-[#0F172A]"><Building2 className="w-5 h-5 text-[#2563EB]" /><span className="text-[15px] font-medium">Investment Banking</span></div>
+            <div className="flex items-center gap-2 text-[#0F172A]"><Shield className="w-5 h-5 text-[#2563EB]" /><span className="text-[15px] font-medium">Credit Analyst</span></div>
+            <div className="flex items-center gap-2 text-[#0F172A]"><TrendingUp className="w-5 h-5 text-[#2563EB]" /><span className="text-[15px] font-medium">Risk Analyst</span></div>
+            <div className="flex items-center gap-2 text-[#0F172A]"><FileText className="w-5 h-5 text-[#2563EB]" /><span className="text-[15px] font-medium">Article Trainee</span></div>
+            <div className="flex items-center gap-2 text-[#0F172A]"><GraduationCap className="w-5 h-5 text-[#2563EB]" /><span className="text-[15px] font-medium">Article Assistant</span></div>
+            <button className="w-7 h-7 rounded-full bg-[#EEF4FF] flex items-center justify-center flex-shrink-0"><ChevronRight className="w-4 h-4 text-[#2563EB]" /></button>
+          </div>
+        </div>
+
+        <TrendingInternships />
+        <SkillsSection />
+        <FinanceCareerPaths />
+        <RoadmapLearningSection />
+        <FAQCTASection />
+      </main>
+
+      <footer className="bg-white border-t border-slate-200">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="pt-12 pb-8 grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-12 gap-8">
+            <div className="col-span-2 lg:col-span-4 space-y-4">
+              <Link href="/" className="flex items-center">
+                <Image src="/Finlysta.png" alt="Finlysta Logo" width={180} height={40} priority className="object-contain" />
+              </Link>
+              <p className="text-sm text-slate-600 leading-relaxed max-w-xs">
+                The job board built exclusively for entry-level financial roles and internships in India.
+              </p>
+              <div className="flex gap-3">
+                <a href="https://www.linkedin.com/company/finlysta" target="_blank" rel="noopener noreferrer" className="w-9 h-9 bg-slate-100 text-slate-600 hover:bg-[#0077B5] hover:text-black rounded-lg flex items-center justify-center transition-all"><Linkedin size={16} /></a>
+                <a href="https://twitter.com/Finlysta" target="_blank" rel="noopener noreferrer" className="w-9 h-9 bg-slate-100 text-slate-600 hover:bg-[#1DA1F2] hover:text-black rounded-lg flex items-center justify-center transition-all"><Twitter size={16} /></a>
+                <a href="https://instagram.com/finlysta" target="_blank" rel="noopener noreferrer" className="w-9 h-9 bg-slate-100 text-slate-600 hover:bg-[#E4405F] hover:text-black rounded-lg flex items-center justify-center transition-all"><Instagram size={16} /></a>
+              </div>
+            </div>
+
             <div className="lg:col-span-2">
-              <h4 className="text-slate-900 font-bold text-sm mb-4">Jobs</h4>
-              <ul className="space-y-2.5 text-sm text-slate-500">
-                <li><Link href="/jobs" className="hover:text-[#0A2540] transition-colors">All Jobs</Link></li>
-                <li><Link href="/internships" className="hover:text-[#0A2540] transition-colors">Internships</Link></li>
-                <li><Link href="/jobs?type=remote" className="hover:text-[#0A2540] transition-colors">Remote Jobs</Link></li>
-                <li><Link href="/blogs" className="hover:text-[#0A2540] transition-colors">Career Blogs</Link></li>
+              <h4 className="font-bold text-sm mb-4 text-[#081B4B]">Jobs</h4>
+              <ul className="space-y-2 text-sm text-slate-600">
+                <li><Link href="/jobs" className="hover:text-[#2563EB] transition">All Jobs</Link></li>
+                <li><Link href="/internships" className="hover:text-[#2563EB] transition">Internships</Link></li>
+                <li><Link href="/jobs?type=remote" className="hover:text-[#2563EB] transition">Remote Jobs</Link></li>
+                <li><Link href="/blogs" className="hover:text-[#2563EB] transition">Career Blogs</Link></li>
               </ul>
             </div>
+
             <div className="lg:col-span-2">
-              <h4 className="text-slate-900 font-bold text-sm mb-4">Resources</h4>
-              <ul className="space-y-2.5 text-sm text-slate-500">
-                <li><Link href="/learning-hub" className="hover:text-[#0A2540] transition-colors">Learning Hub</Link></li>
-                <li><Link href="/blogs/how-to-become-financial-analyst-india-2026" className="hover:text-[#0A2540] transition-colors">Career Guide</Link></li>
-                <li><Link href="/interview-prep" className="hover:text-[#0A2540] transition-colors">Interview Prep</Link></li>
+              <h4 className="font-bold text-sm mb-4 text-[#081B4B]">Resources</h4>
+              <ul className="space-y-2 text-sm text-slate-600">
+                <li><Link href="/learning-hub" className="hover:text-[#2563EB] transition">Learning Hub</Link></li>
+                <li><Link href="/interview-prep" className="hover:text-[#2563EB] transition">Interview Prep</Link></li>
               </ul>
             </div>
+
             <div className="lg:col-span-2">
-              <h4 className="text-slate-900 font-bold text-sm mb-4">Company</h4>
-              <ul className="space-y-2.5 text-sm text-slate-500">
-                <li><Link href="/about" className="hover:text-[#0A2540] transition-colors">About</Link></li>
-                <li><Link href="/contact" className="hover:text-[#0A2540] transition-colors">Contact</Link></li>
-                <li><Link href="/privacy" className="hover:text-[#0A2540] transition-colors">Privacy</Link></li>
-                <li><Link href="/terms" className="hover:text-[#0A2540] transition-colors">Terms</Link></li>
+              <h4 className="font-bold text-sm mb-4 text-[#081B4B]">Company</h4>
+              <ul className="space-y-2 text-sm text-slate-600">
+                <li><Link href="/about" className="hover:text-[#2563EB] transition">About</Link></li>
+                <li><Link href="/contact" className="hover:text-[#2563EB] transition">Contact</Link></li>
+                <li><Link href="/privacy" className="hover:text-[#2563EB] transition">Privacy</Link></li>
+                <li><Link href="/terms" className="hover:text-[#2563EB] transition">Terms</Link></li>
               </ul>
             </div>
+
             <div className="lg:col-span-2">
-              <h4 className="text-slate-900 font-bold text-sm mb-4">Support</h4>
-              <a href="mailto:support@finlysta.com" className="flex items-center gap-2 text-sm text-slate-500 hover:text-[#0A2540] transition-colors">
-                <Mail size={13} /> support@finlysta.com
-              </a>
-              <p className="text-xs text-slate-400 mt-3">Reply within 24 hours</p>
+              <h4 className="font-bold text-sm mb-4 text-[#081B4B]">Support</h4>
+              <a href="mailto:support@finlysta.com" className="flex items-center gap-2 text-sm text-slate-600 hover:text-[#2563EB] transition"><Mail size={13} /> support@finlysta.com</a>
+              <p className="text-xs text-slate-500 mt-3">Reply within 24 hours</p>
             </div>
           </div>
-          <div className="border-t border-slate-100 pt-5 pb-6">
-            <div className="flex flex-col items-center justify-center gap-2 text-xs text-slate-500 text-center">
+
+          <div className="border-t border-slate-200 pt-6 pb-8">
+            <div className="flex flex-col items-center justify-center gap-2 text-xs text-slate-600 text-center">
               <span>© {new Date().getFullYear()} Finlysta Pvt. Ltd. All rights reserved.</span>
               <div className="flex items-center gap-1.5">
                 <span>Made with</span>
@@ -898,31 +416,9 @@ export default function HomePageContent() {
       </footer>
 
       <style jsx global>{`
-        .line-clamp-2 {
-          display: -webkit-box;
-          -webkit-line-clamp: 2;
-          -webkit-box-orient: vertical;
-          overflow: hidden;
-        }
-        @keyframes fade-in {
-          from { opacity: 0; }
-          to { opacity: 1; }
-        }
-        @keyframes slide-in-from-bottom-4 {
-          from { transform: translateY(1rem); opacity: 0; }
-          to { transform: translateY(0); opacity: 1; }
-        }
-        .animate-in {
-          animation-duration: 0.7s;
-          animation-fill-mode: both;
-        }
-        .fade-in { animation-name: fade-in; }
-        .slide-in-from-bottom-4 { animation-name: slide-in-from-bottom-4; }
-        .delay-100 { animation-delay: 0.1s; }
-        .delay-200 { animation-delay: 0.2s; }
-        .delay-300 { animation-delay: 0.3s; }
-        .delay-400 { animation-delay: 0.4s; }
-        .duration-700 { animation-duration: 0.7s; }
+        .line-clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+        .scrollbar-hide::-webkit-scrollbar { display: none; }
+        .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
       `}</style>
     </div>
   );
