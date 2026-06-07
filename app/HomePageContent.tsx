@@ -46,8 +46,8 @@ const SkillsSection = () => {
               <h2 className="text-2xl md:text-3xl font-bold text-[#081B4B]">Master In-Demand Finance Skills</h2>
               <p className="mt-2 text-sm text-slate-600">Top skills recruiters look for in entry-level finance roles</p>
             </div>
-            <div className="overflow-x-auto">
-              <div className="min-w-full">
+           <div className="overflow-hidden">
+            <div className="w-full">
                 <div className="flex">
                   {skills.map((skill, index) => {
                     const Icon = skill.icon;
