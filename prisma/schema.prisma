@@ -191,12 +191,16 @@ model Blog {
   clicks      Int      @default(0)
   avgReadTime Int?
   
+  blogViews   BlogView[]
+  blogClicks  BlogClick[]
+  
   @@index([slug])
   @@index([published])
   @@index([category])
   @@index([publishedAt])
   @@index([author])
 }
+
 model BlogView {
   id        String   @id @default(cuid())
   blogId    String
@@ -206,6 +210,8 @@ model BlogView {
   referrer  String?
   readTime  Int?
   viewedAt  DateTime @default(now())
+  
+  blog      Blog     @relation(fields: [blogId], references: [id], onDelete: Cascade)
   
   @@index([blogId])
   @@index([sessionId])
@@ -221,10 +227,13 @@ model BlogClick {
   linkType  String?
   clickedAt DateTime @default(now())
   
+  blog      Blog     @relation(fields: [blogId], references: [id], onDelete: Cascade)
+  
   @@index([blogId])
   @@index([sessionId])
   @@index([clickedAt])
 }
+
 model Subscriber {
   id               String            @id @default(cuid())
   email            String            @unique
@@ -342,4 +351,339 @@ model Feedback {
   @@index([page])
   @@index([category])
   @@index([sessionId])
+}
+
+// =============================================
+// COMPANY TABLE
+// =============================================
+
+model Company {
+  id               String            @id @default(cuid())
+  slug             String            @unique
+  name             String
+  logo             String?
+  website          String?
+  linkedinUrl      String?
+  email            String
+  description      String?
+  about            String?
+  foundedYear      Int?
+  companySize      String?
+  headquarters     String?
+  industry         String?
+  specialties      String[]
+  socialLinks      Json?
+  isVerified       Boolean           @default(false)
+  isActive         Boolean           @default(true)
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+  
+  recruiters       Recruiter[]
+  jobs             Job[]
+  companyJobs      CompanyJob[]
+
+  @@index([name])
+  @@index([slug])
+  @@index([industry])
+  @@index([isVerified])
+  @@index([isActive])
+  @@index([headquarters])
+}
+
+// =============================================
+// RECRUITER TABLE
+// =============================================
+
+model Recruiter {
+  id                 String          @id @default(cuid())
+  userId             String?         @unique
+  email              String          @unique
+  password           String?
+  name               String
+  companyId          String?
+  companyName        String
+  companyLogo        String?
+  companyWebsite     String?
+  companyLinkedin    String?
+  companyEmail       String
+  companyDescription String?
+  recruiterContact   String?
+  isVerified         Boolean         @default(false)
+  isActive           Boolean         @default(true)
+  role               String          @default("RECRUITER")
+  lastLogin          DateTime?
+  createdAt          DateTime        @default(now())
+  updatedAt          DateTime        @updatedAt
+  
+  company            Company?        @relation(fields: [companyId], references: [id], onDelete: SetNull)
+  jobs               Job[]
+  recruiterJobs      RecruiterJob[]
+  employerPlan       EmployerPlan?
+
+  @@index([email])
+  @@index([companyId])
+  @@index([companyName])
+  @@index([isVerified])
+  @@index([isActive])
+  @@index([role])
+}
+
+// =============================================
+// JOB TABLE
+// =============================================
+
+model Job {
+  id                  String          @id @default(cuid())
+  slug                String          @unique
+  recruiterId         String
+  companyId           String?
+  
+  jobTitle            String
+  hiringFor           String
+  jobType             String?
+  workMode            String?
+  location            String
+  numberOfOpenings    Int             @default(1)
+  salaryStipend       String
+  applicationDeadline DateTime?
+  joiningTimeline     String?
+  isFresherSuitable   Boolean         @default(true)
+  
+  eligibleEducation   String?
+  graduationYear      String?
+  experienceRequired  String?
+  skillsRequired      String[]
+  
+  responsibilities    String
+  requirements        String
+  niceToHave          String?
+  whyJoinTeam         String?
+  
+  applicationProcess  String          @default("finlysta")
+  applicationEmail    String?
+  externalLink        String?
+  additionalInstructions String?
+  
+  isGenuine           Boolean         @default(false)
+  termsAccepted       Boolean         @default(false)
+  status              String          @default("pending")
+  showOnTrending      Boolean         @default(false)
+  showOnJobs          Boolean         @default(true)
+  
+  views               Int             @default(0)
+  applicationsCount   Int             @default(0)
+  postedAt            DateTime        @default(now())
+  approvedAt          DateTime?
+  publishedAt         DateTime?
+  expiryDate          DateTime?
+  createdAt           DateTime        @default(now())
+  updatedAt           DateTime        @updatedAt
+  
+  recruiter           Recruiter       @relation(fields: [recruiterId], references: [id], onDelete: Cascade)
+  company             Company?        @relation(fields: [companyId], references: [id], onDelete: SetNull)
+  recruiterJobs       RecruiterJob[]
+  companyJobs         CompanyJob[]
+  jobSkills           JobSkill[]
+  jobApplications     JobApplication[]
+  jobViews            JobView[]
+  jobClicks           JobClick[]
+  savedJobs           SavedJob[]
+
+  @@index([recruiterId])
+  @@index([companyId])
+  @@index([slug])
+  @@index([status])
+  @@index([showOnTrending])
+  @@index([showOnJobs])
+  @@index([jobTitle])
+  @@index([hiringFor])
+  @@index([location])
+  @@index([workMode])
+  @@index([postedAt])
+  @@index([applicationDeadline])
+  @@index([expiryDate])
+}
+
+// =============================================
+// COMPANY JOB JUNCTION TABLE
+// =============================================
+
+model CompanyJob {
+  id        String   @id @default(cuid())
+  companyId String
+  jobId     String
+  status    String   @default("active")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  company   Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  job       Job      @relation(fields: [jobId], references: [id], onDelete: Cascade)
+
+  @@unique([companyId, jobId])
+  @@index([companyId])
+  @@index([jobId])
+  @@index([status])
+}
+
+// =============================================
+// RECRUITER JOB JUNCTION TABLE
+// =============================================
+
+model RecruiterJob {
+  id          String   @id @default(cuid())
+  recruiterId String
+  jobId       String
+  status      String   @default("active")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  recruiter   Recruiter @relation(fields: [recruiterId], references: [id], onDelete: Cascade)
+  job         Job       @relation(fields: [jobId], references: [id], onDelete: Cascade)
+
+  @@unique([recruiterId, jobId])
+  @@index([recruiterId])
+  @@index([jobId])
+  @@index([status])
+}
+
+// =============================================
+// JOB SKILL TABLE
+// =============================================
+
+model JobSkill {
+  id        String   @id @default(cuid())
+  jobId     String
+  skillName String
+  createdAt DateTime @default(now())
+  
+  job       Job      @relation(fields: [jobId], references: [id], onDelete: Cascade)
+
+  @@unique([jobId, skillName])
+  @@index([jobId])
+  @@index([skillName])
+}
+
+// =============================================
+// JOB APPLICATION TABLE
+// =============================================
+
+model JobApplication {
+  id              String    @id @default(cuid())
+  jobId           String
+  applicantName   String
+  applicantEmail  String
+  applicantPhone  String?
+  resumeUrl       String?
+  coverLetter     String?
+  status          String    @default("pending")
+  appliedAt       DateTime  @default(now())
+  reviewedAt      DateTime?
+  notes           String?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  
+  job             Job       @relation(fields: [jobId], references: [id], onDelete: Cascade)
+
+  @@index([jobId])
+  @@index([applicantEmail])
+  @@index([status])
+  @@index([appliedAt])
+}
+
+// =============================================
+// JOB VIEW TABLE
+// =============================================
+
+model JobView {
+  id        String   @id @default(cuid())
+  jobId     String
+  sessionId String?
+  ipAddress String?
+  userAgent String?
+  viewedAt  DateTime @default(now())
+  
+  job       Job      @relation(fields: [jobId], references: [id], onDelete: Cascade)
+
+  @@index([jobId])
+  @@index([sessionId])
+  @@index([viewedAt])
+}
+
+// =============================================
+// JOB CLICK TABLE
+// =============================================
+
+model JobClick {
+  id        String   @id @default(cuid())
+  jobId     String
+  sessionId String?
+  targetUrl String?
+  clickedAt DateTime @default(now())
+  
+  job       Job      @relation(fields: [jobId], references: [id], onDelete: Cascade)
+
+  @@index([jobId])
+  @@index([sessionId])
+  @@index([clickedAt])
+}
+
+// =============================================
+// SAVED JOB TABLE (for job seekers to save jobs)
+// =============================================
+
+model SavedJob {
+  id        String   @id @default(cuid())
+  userId    String
+  jobId     String
+  savedAt   DateTime @default(now())
+  createdAt DateTime @default(now())
+  
+  job       Job      @relation(fields: [jobId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, jobId])
+  @@index([userId])
+  @@index([jobId])
+  @@index([savedAt])
+}
+
+// =============================================
+// JOB ALERT TABLE (for job seekers to set alerts)
+// =============================================
+
+model JobAlert {
+  id          String   @id @default(cuid())
+  email       String
+  jobTitle    String?
+  location    String?
+  jobType     String?
+  frequency   String   @default("daily")
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  lastSentAt  DateTime?
+
+  @@index([email])
+  @@index([isActive])
+  @@index([frequency])
+}
+
+// =============================================
+// EMPLOYER PLAN TABLE
+// =============================================
+
+model EmployerPlan {
+  id          String   @id @default(cuid())
+  recruiterId String   @unique
+  planType    String   @default("free")
+  jobCredits  Int      @default(5)
+  usedCredits Int      @default(0)
+  expiresAt   DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  recruiter   Recruiter @relation(fields: [recruiterId], references: [id], onDelete: Cascade)
+
+  @@index([recruiterId])
+  @@index([planType])
+  @@index([expiresAt])
 }

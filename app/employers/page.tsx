@@ -134,7 +134,7 @@ const EmployerPage = () => {
                   </div>
 
                   <button
-                    onClick={() => router.push('/employer/post-job')}
+                    onClick={() => router.push('/employers/post-job')}
                     className="px-8 py-4 bg-blue-600 text-white rounded-2xl font-bold text-lg shadow-lg inline-flex items-center gap-2"
                   >
                     <Send size={18} strokeWidth={2.5} />
@@ -264,7 +264,7 @@ const EmployerPage = () => {
               
               {/* Right Side - Button */}
               <button
-                onClick={() => router.push('/employer/post-job')}
+                onClick={() => router.push('/employers/post-job')}
                 className="bg-white text-[#2563EB] px-6 py-2.5 rounded-xl font-semibold text-sm hover:bg-gray-100 transition-colors inline-flex items-center gap-2 shadow-md"
               >
                 <Send size={16} />
