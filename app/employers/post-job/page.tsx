@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import {
   UploadCloud, Shield, ShieldCheck, Lock, Send, Target,
-  BadgeCheck, Zap, Gift, Clock3, Mail, Check, ChevronDown
+  BadgeCheck, Zap, Gift, Clock3, Mail, Check, ChevronDown, Plus, X
 } from "lucide-react";
 
 const PostJobPage = () => {
@@ -13,6 +13,9 @@ const PostJobPage = () => {
   const [loading, setLoading] = useState(false);
   const [logoPreview, setLogoPreview] = useState(null);
   const [submitMessage, setSubmitMessage] = useState({ type: '', text: '' });
+  const [showOtherSkills, setShowOtherSkills] = useState(false);
+  const [otherSkillInput, setOtherSkillInput] = useState("");
+  const [customSkills, setCustomSkills] = useState([]);
 
   const [formData, setFormData] = useState({
     companyName: "",
@@ -61,7 +64,7 @@ const PostJobPage = () => {
   const skillsList = [
     "Excel", "Advanced Excel", "Financial Analysis", "Accounting",
     "GST", "Tally", "Power BI", "SQL", "Financial Modeling",
-    "MIS Reporting", "Communication", "Other",
+    "MIS Reporting", "Communication",
   ];
 
   const handleInputChange = (e) => {
@@ -84,6 +87,26 @@ const PostJobPage = () => {
       selectedSkills: prev.selectedSkills.includes(skill)
         ? prev.selectedSkills.filter((s) => s !== skill)
         : [...prev.selectedSkills, skill],
+    }));
+  };
+
+  const handleAddCustomSkill = () => {
+    if (otherSkillInput.trim() && !customSkills.includes(otherSkillInput.trim()) && !skillsList.includes(otherSkillInput.trim())) {
+      setCustomSkills([...customSkills, otherSkillInput.trim()]);
+      setFormData((prev) => ({
+        ...prev,
+        selectedSkills: [...prev.selectedSkills, otherSkillInput.trim()]
+      }));
+      setOtherSkillInput("");
+      setShowOtherSkills(false);
+    }
+  };
+
+  const handleRemoveCustomSkill = (skillToRemove) => {
+    setCustomSkills(customSkills.filter(skill => skill !== skillToRemove));
+    setFormData((prev) => ({
+      ...prev,
+      selectedSkills: prev.selectedSkills.filter(skill => skill !== skillToRemove)
     }));
   };
 
@@ -136,8 +159,6 @@ const PostJobPage = () => {
         confirmTerms: formData.confirmTerms,
       };
 
-      console.log('Submitting job data:', jobData);
-
       const response = await fetch('/api/jobs/post', {
         method: 'POST',
         headers: {
@@ -149,10 +170,10 @@ const PostJobPage = () => {
       const result = await response.json();
 
       if (response.ok) {
-        setSubmitMessage({ type: 'success', text: 'Job posted successfully. We will review and add it to jobs page.' });
+        setSubmitMessage({ type: 'success', text: '✅ Job posted successfully! We will review and add it to the jobs page within 5 minutes.' });
         setTimeout(() => {
           router.push('/employer/job-posted');
-        }, 2000);
+        }, 3000);
       } else {
         setSubmitMessage({ type: 'error', text: result.error || 'Failed to post job. Please try again.' });
       }
@@ -208,10 +229,13 @@ const PostJobPage = () => {
         <div className="max-w-[1100px] mx-auto px-6 py-3.5 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="flex items-center gap-2">
-              <div className="w-9 h-9 bg-[#2563EB] rounded-md flex items-center justify-center">
-                <span className="text-white font-black text-lg">F</span>
-              </div>
-              <span className="text-2xl font-black text-[#081B4B]">Finlysta</span>
+              <Image
+                src="/finlysta.png"
+                alt="Finlysta Logo"
+                width={140}
+                height={36}
+                className="object-contain"
+              />
             </div>
             <div className="inline-flex items-center px-3 py-1 rounded-full border border-blue-600">
               <span className="text-sm font-semibold text-blue-600">For Employers</span>
@@ -270,8 +294,8 @@ const PostJobPage = () => {
                         <img src={logoPreview} alt="Logo" className="h-16 w-auto object-contain" />
                       ) : (
                         <>
-                          <div className="w-12 h-12 bg-white border border-gray-300 rounded-lg flex items-center justify-center mb-2 shadow-md">
-                            <UploadCloud size={24} className="text-black" />
+                          <div className="w-12 h-12 bg-[#2563EB] rounded-lg flex items-center justify-center mb-2 shadow-md">
+                            <UploadCloud size={24} className="text-white" />
                           </div>
                           <span className="text-sm font-semibold text-[#2563EB]">Upload Logo</span>
                           <span className="text-xs text-gray-500 mt-0.5">PNG, JPG (Max 2MB)</span>
@@ -534,13 +558,61 @@ const PostJobPage = () => {
                       </label>
                     ))}
                   </div>
-                  {formData.selectedSkills.includes("Other") && (
-                    <div className="mt-3 max-w-xs">
+                  
+                  {/* Custom Skills Display */}
+                  {customSkills.length > 0 && (
+                    <div className="mt-3 flex flex-wrap gap-2">
+                      {customSkills.map((skill) => (
+                        <span key={skill} className="inline-flex items-center gap-1 px-2 py-1 bg-blue-100 text-blue-700 rounded-md text-sm">
+                          {skill}
+                          <button
+                            type="button"
+                            onClick={() => handleRemoveCustomSkill(skill)}
+                            className="hover:text-red-600"
+                          >
+                            <X size={14} />
+                          </button>
+                        </span>
+                      ))}
+                    </div>
+                  )}
+
+                  {/* Other Skills Button */}
+                  {!showOtherSkills ? (
+                    <button
+                      type="button"
+                      onClick={() => setShowOtherSkills(true)}
+                      className="mt-3 inline-flex items-center gap-1 text-sm text-[#2563EB] hover:text-blue-700"
+                    >
+                      <Plus size={16} /> Add other skills
+                    </button>
+                  ) : (
+                    <div className="mt-3 flex gap-2">
                       <input
-                        type="text" name="otherSkill" value={formData.otherSkill}
-                        onChange={handleInputChange} className={inputClass}
-                        placeholder="Type other skills"
+                        type="text"
+                        value={otherSkillInput}
+                        onChange={(e) => setOtherSkillInput(e.target.value)}
+                        placeholder="Enter skill (comma separated)"
+                        className="flex-1 px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#2563EB]"
+                        onKeyPress={(e) => e.key === 'Enter' && handleAddCustomSkill()}
                       />
+                      <button
+                        type="button"
+                        onClick={handleAddCustomSkill}
+                        className="px-3 py-2 bg-[#2563EB] text-white rounded-lg text-sm hover:bg-blue-700"
+                      >
+                        Add
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setShowOtherSkills(false);
+                          setOtherSkillInput("");
+                        }}
+                        className="px-3 py-2 bg-gray-200 text-gray-700 rounded-lg text-sm hover:bg-gray-300"
+                      >
+                        Cancel
+                      </button>
                     </div>
                   )}
                 </div>
@@ -754,8 +826,8 @@ const PostJobPage = () => {
           <div className="w-[320px] flex-shrink-0 space-y-5 sticky top-[72px] self-start">
 
             <div className="bg-gradient-to-br from-purple-600 to-blue-600 rounded-2xl p-5 text-white text-center">
-              <div className="mx-auto mb-3 flex items-center justify-center rounded-full" style={{ width: 80, height: 80, borderRadius: 999, background: "#DBEAFE" }}>
-                <Gift size={36} strokeWidth={2} className="text-[#2563EB]" />
+              <div className="mx-auto mb-3 flex items-center justify-center rounded-full w-20 h-20 bg-white">
+                <Gift size={40} strokeWidth={2} className="text-[#2563EB]" />
               </div>
               <div className="inline-flex items-center px-3 py-1 rounded-full bg-white/20 text-xs font-bold tracking-wide mb-2">LAUNCH OFFER</div>
               <h3 className="text-3xl font-black mb-1">100% FREE</h3>

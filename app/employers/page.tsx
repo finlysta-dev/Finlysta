@@ -155,7 +155,7 @@ const EmployerPage = () => {
                 <div className="relative w-full max-w-[1800px] lg:max-w-[2000px] -mr-28 mt-4">
                   <div className="absolute inset-0 bg-blue-100 blur-3xl opacity-30 rounded-full pointer-events-none" />
                   <Image
-                    src="/employer-hero.jpg"
+                    src="/employer-heros.png"
                     alt="Employer Hero"
                     width={2800}
                     height={1200}
