@@ -5,10 +5,8 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
     
-    console.log('========================================');
     console.log('JOB POST API CALLED');
     console.log('Received data:', JSON.stringify(body, null, 2));
-    console.log('========================================');
 
     const {
       companyName,
@@ -62,7 +60,6 @@ export async function POST(request: NextRequest) {
     });
 
     if (!recruiter) {
-      console.log('Creating new recruiter...');
       recruiter = await prisma.recruiter.create({
         data: {
           email: companyEmail,
@@ -79,12 +76,9 @@ export async function POST(request: NextRequest) {
           role: "RECRUITER",
         }
       });
-      console.log('Recruiter created:', recruiter.id);
-    } else {
-      console.log('Existing recruiter found:', recruiter.id);
     }
 
-    // 2. Create or find Company
+    // 2. Create or find Company (with required slug field)
     let company = await prisma.company.findFirst({
       where: { 
         OR: [
@@ -95,9 +89,12 @@ export async function POST(request: NextRequest) {
     });
 
     if (!company) {
-      console.log('Creating new company...');
+      // Generate a unique slug for the company
+      const companySlug = companyName.toLowerCase().replace(/[^a-z0-9]+/g, '-') + '-' + Date.now();
+      
       company = await prisma.company.create({
         data: {
+          slug: companySlug,
           name: companyName,
           logo: companyLogo || null,
           website: companyWebsite || null,
@@ -108,48 +105,13 @@ export async function POST(request: NextRequest) {
           isActive: true,
         }
       });
-      console.log('Company created:', company.id);
-    } else {
-      console.log('Existing company found:', company.id);
     }
 
-    // 3. Generate unique slug
+    // 3. Generate unique slug for job
     const baseSlug = jobTitle.toLowerCase().replace(/[^a-z0-9]+/g, '-');
     const slug = `${baseSlug}-${Date.now()}`;
 
-    // 4. Create Job with all fields
-    console.log('Creating job with data:', {
-      slug,
-      recruiterId: recruiter.id,
-      companyId: company.id,
-      jobTitle,
-      hiringFor: hiringFor || 'Internship',
-      jobType: jobType || null,
-      workMode: workMode || null,
-      location: location || 'Remote',
-      numberOfOpenings: Number(numberOfOpenings) || 1,
-      salaryStipend: salaryStipend || 'Not Disclosed',
-      applicationDeadline: applicationDeadline ? new Date(applicationDeadline) : null,
-      joiningTimeline: joiningTimeline || null,
-      isFresherSuitable: true,
-      eligibleEducation: eligibleEducation || null,
-      graduationYear: graduationYear || null,
-      experienceRequired: experienceRequired || null,
-      skillsRequired: skillsRequired || [],
-      responsibilities: responsibilities,
-      requirements: requirements,
-      niceToHave: niceToHave || null,
-      whyJoinTeam: whyJoinTeam || null,
-      applicationProcess: applicationProcess || 'finlysta',
-      applicationEmail: applicationEmail || companyEmail,
-      additionalInstructions: additionalInstructions || null,
-      isGenuine: confirmGenuine || false,
-      termsAccepted: confirmTerms || false,
-      status: 'pending',
-      showOnTrending: false,
-      showOnJobs: true,
-    });
-
+    // 4. Create Job
     const job = await prisma.job.create({
       data: {
         slug,
@@ -184,11 +146,9 @@ export async function POST(request: NextRequest) {
         showOnJobs: true,
       }
     });
-    console.log('Job created successfully with ID:', job.id);
 
     // 5. Add skills if any
     if (skillsRequired && skillsRequired.length > 0) {
-      console.log('Adding skills:', skillsRequired);
       await prisma.jobSkill.createMany({
         data: skillsRequired.map((skill: string) => ({
           jobId: job.id,
@@ -196,7 +156,6 @@ export async function POST(request: NextRequest) {
         })),
         skipDuplicates: true,
       });
-      console.log('Skills added successfully');
     }
 
     // 6. Create company-job relation
@@ -207,7 +166,6 @@ export async function POST(request: NextRequest) {
         status: "active",
       }
     });
-    console.log('CompanyJob relation created');
 
     // 7. Create recruiter-job relation
     await prisma.recruiterJob.create({
@@ -217,11 +175,6 @@ export async function POST(request: NextRequest) {
         status: "active",
       }
     });
-    console.log('RecruiterJob relation created');
-
-    console.log('========================================');
-    console.log('JOB POST SUCCESSFUL!');
-    console.log('========================================');
 
     return NextResponse.json({
       success: true,
@@ -235,9 +188,7 @@ export async function POST(request: NextRequest) {
     }, { status: 201 });
 
   } catch (error: any) {
-    console.error('========================================');
     console.error('JOB POST ERROR:', error);
-    console.error('========================================');
     
     return NextResponse.json(
       { 

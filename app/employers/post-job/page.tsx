@@ -213,8 +213,8 @@ const PostJobPage = () => {
               </div>
               <span className="text-2xl font-black text-[#081B4B]">Finlysta</span>
             </div>
-         <div className="inline-flex items-center px-3 py-1 rounded-full border border-blue-600">
-                <span className="text-sm font-semibold text-blue-600">For Employers</span>
+            <div className="inline-flex items-center px-3 py-1 rounded-full border border-blue-600">
+              <span className="text-sm font-semibold text-blue-600">For Employers</span>
             </div>
           </div>
           <div className="flex items-center gap-2">
@@ -715,10 +715,10 @@ const PostJobPage = () => {
                 </div>
 
                 <button
-  type="submit"
-  disabled={!formData.confirmGenuine || !formData.confirmTerms || loading}
-  className="w-full h-14 rounded-xl font-bold text-lg inline-flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white disabled:bg-blue-300 disabled:cursor-not-allowed transition-colors"
->
+                  type="submit"
+                  disabled={!formData.confirmGenuine || !formData.confirmTerms || loading}
+                  className="w-full h-14 rounded-xl font-bold text-lg inline-flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white disabled:bg-blue-300 disabled:cursor-not-allowed transition-colors"
+                >
                   {loading ? (
                     <>
                       <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
