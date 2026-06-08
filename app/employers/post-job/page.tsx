@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import {
   UploadCloud, Shield, ShieldCheck, Lock, Send, Target,
-  BadgeCheck, Zap, Gift, Clock3, Mail, Check, ChevronDown, Plus, X
+  BadgeCheck, Zap, Gift, Clock3, Mail, Check, ChevronDown, Plus, X, Link as LinkIcon
 } from "lucide-react";
 
 const PostJobPage = () => {
@@ -16,6 +16,7 @@ const PostJobPage = () => {
   const [showOtherSkills, setShowOtherSkills] = useState(false);
   const [otherSkillInput, setOtherSkillInput] = useState("");
   const [customSkills, setCustomSkills] = useState([]);
+  const [showExternalLink, setShowExternalLink] = useState(false);
 
   const [formData, setFormData] = useState({
     companyName: "",
@@ -67,8 +68,9 @@ const PostJobPage = () => {
     "MIS Reporting", "Communication",
   ];
 
-  const handleInputChange = (e) => {
-    const { name, value, type, checked } = e.target;
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    const { name, value, type } = e.target;
+    const checked = (e.target as HTMLInputElement).checked;
     
     if (type === "checkbox") {
       setFormData((prev) => ({ ...prev, [name]: checked }));
@@ -81,7 +83,13 @@ const PostJobPage = () => {
     }
   };
 
-  const handleSkillToggle = (skill) => {
+  const handleRadioChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+    setShowExternalLink(value === "external");
+  };
+
+  const handleSkillToggle = (skill: string) => {
     setFormData((prev) => ({
       ...prev,
       selectedSkills: prev.selectedSkills.includes(skill)
@@ -91,18 +99,23 @@ const PostJobPage = () => {
   };
 
   const handleAddCustomSkill = () => {
-    if (otherSkillInput.trim() && !customSkills.includes(otherSkillInput.trim()) && !skillsList.includes(otherSkillInput.trim())) {
-      setCustomSkills([...customSkills, otherSkillInput.trim()]);
+    const skills = otherSkillInput.split(",").map(s => s.trim()).filter(s => s);
+    const newSkills = skills.filter(s => !customSkills.includes(s) && !skillsList.includes(s));
+    
+    if (newSkills.length > 0 && customSkills.length + newSkills.length <= 20) {
+      setCustomSkills([...customSkills, ...newSkills]);
       setFormData((prev) => ({
         ...prev,
-        selectedSkills: [...prev.selectedSkills, otherSkillInput.trim()]
+        selectedSkills: [...prev.selectedSkills, ...newSkills]
       }));
       setOtherSkillInput("");
       setShowOtherSkills(false);
+    } else if (customSkills.length + newSkills.length > 20) {
+      alert("Maximum 20 custom skills allowed");
     }
   };
 
-  const handleRemoveCustomSkill = (skillToRemove) => {
+  const handleRemoveCustomSkill = (skillToRemove: string) => {
     setCustomSkills(customSkills.filter(skill => skill !== skillToRemove));
     setFormData((prev) => ({
       ...prev,
@@ -110,17 +123,17 @@ const PostJobPage = () => {
     }));
   };
 
-  const handleFileUpload = (e) => {
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
       setFormData((prev) => ({ ...prev, companyLogo: file }));
       const reader = new FileReader();
-      reader.onload = (ev) => setLogoPreview(ev.target.result);
+      reader.onload = (ev) => setLogoPreview(ev.target?.result as string);
       reader.readAsDataURL(file);
     }
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setSubmitMessage({ type: '', text: '' });
@@ -154,10 +167,13 @@ const PostJobPage = () => {
         whyJoinTeam: formData.whyJoin,
         applicationProcess: formData.applicationProcess,
         applicationEmail: formData.applicationEmail,
+        externalLink: formData.externalLink,
         additionalInstructions: formData.additionalInstructions,
         confirmGenuine: formData.confirmGenuine,
         confirmTerms: formData.confirmTerms,
       };
+
+      console.log('Submitting job data:', jobData);
 
       const response = await fetch('/api/jobs/post', {
         method: 'POST',
@@ -194,7 +210,7 @@ const PostJobPage = () => {
   const labelClass = "block text-base font-semibold text-gray-900 mb-2";
   const hintClass = "text-sm text-gray-500 mt-1";
 
-  const SectionHeader = ({ num, title, sub }) => (
+  const SectionHeader = ({ num, title, sub }: { num: string; title: string; sub: string }) => (
     <div className="mb-5">
       <div className="flex items-center gap-3 mb-1">
         <div
@@ -209,7 +225,7 @@ const PostJobPage = () => {
     </div>
   );
 
-  const SelectWrap = ({ children }) => (
+  const SelectWrap = ({ children }: { children: React.ReactNode }) => (
     <div className="relative">
       {children}
       <ChevronDown
@@ -294,7 +310,7 @@ const PostJobPage = () => {
                         <img src={logoPreview} alt="Logo" className="h-16 w-auto object-contain" />
                       ) : (
                         <>
-                          <div className="w-12 h-12 bg-[#2563EB] rounded-lg flex items-center justify-center mb-2 shadow-md">
+                          <div className="w-12 h-12 bg-gray-800 rounded-lg flex items-center justify-center mb-2 shadow-md">
                             <UploadCloud size={24} className="text-white" />
                           </div>
                           <span className="text-sm font-semibold text-[#2563EB]">Upload Logo</span>
@@ -584,7 +600,7 @@ const PostJobPage = () => {
                       onClick={() => setShowOtherSkills(true)}
                       className="mt-3 inline-flex items-center gap-1 text-sm text-[#2563EB] hover:text-blue-700"
                     >
-                      <Plus size={16} /> Add other skills
+                      <Plus size={16} /> Add other skills (max 20)
                     </button>
                   ) : (
                     <div className="mt-3 flex gap-2">
@@ -592,15 +608,15 @@ const PostJobPage = () => {
                         type="text"
                         value={otherSkillInput}
                         onChange={(e) => setOtherSkillInput(e.target.value)}
-                        placeholder="Enter skill (comma separated)"
+                        placeholder="Enter skills separated by commas"
                         className="flex-1 px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#2563EB]"
-                        onKeyPress={(e) => e.key === 'Enter' && handleAddCustomSkill()}
+                        onKeyDown={(e) => e.key === 'Enter' && handleAddCustomSkill()}
                       />
-                      <button
-                        type="button"
-                        onClick={handleAddCustomSkill}
-                        className="px-3 py-2 bg-[#2563EB] text-white rounded-lg text-sm hover:bg-blue-700"
-                      >
+                   <button
+  type="button"
+  onClick={handleAddCustomSkill}
+    className="px-3 py-2 bg-blue-600 text-white rounded-lg text-sm"
+>
                         Add
                       </button>
                       <button
@@ -716,7 +732,7 @@ const PostJobPage = () => {
                         <input
                           type="radio" name="applicationProcess" value={opt.value}
                           checked={formData.applicationProcess === opt.value}
-                          onChange={handleInputChange} className="mt-0.5 text-[#2563EB]"
+                          onChange={handleRadioChange} className="mt-0.5 text-[#2563EB]"
                         />
                         <div>
                           <div className="flex items-center gap-2 flex-wrap">
@@ -745,6 +761,20 @@ const PostJobPage = () => {
                       />
                       <p className={hintClass}>Candidates will send their applications to this email</p>
                     </div>
+                    
+                    {/* External Link Box - Shows only when External Apply Link is selected */}
+                    {showExternalLink && (
+                      <div>
+                        <label className={labelClass}>External Apply Link <span className="text-red-500">*</span></label>
+                        <input
+                          type="url" name="externalLink" value={formData.externalLink}
+                          onChange={handleInputChange} className={inputClass}
+                          placeholder="https://yourcompany.com/careers/apply"
+                        />
+                        <p className={hintClass}>Candidates will be redirected to this link to apply</p>
+                      </div>
+                    )}
+
                     <div>
                       <label className={labelClass}>
                         Additional Instructions{" "}
@@ -827,7 +857,7 @@ const PostJobPage = () => {
 
             <div className="bg-gradient-to-br from-purple-600 to-blue-600 rounded-2xl p-5 text-white text-center">
               <div className="mx-auto mb-3 flex items-center justify-center rounded-full w-20 h-20 bg-white">
-                <Gift size={40} strokeWidth={2} className="text-[#2563EB]" />
+                <Gift size={40} strokeWidth={2} className="text-gray-800" />
               </div>
               <div className="inline-flex items-center px-3 py-1 rounded-full bg-white/20 text-xs font-bold tracking-wide mb-2">LAUNCH OFFER</div>
               <h3 className="text-3xl font-black mb-1">100% FREE</h3>
