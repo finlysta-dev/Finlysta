@@ -5,20 +5,55 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import {
   UploadCloud, Shield, ShieldCheck, Lock, Send, Target,
-  BadgeCheck, Zap, Gift, Clock3, Mail, Check, ChevronDown, Plus, X, Link as LinkIcon
+  BadgeCheck, Zap, Gift, Clock3, Mail, Check, ChevronDown, Plus, X
 } from "lucide-react";
+
+type FormDataType = {
+  companyName: string;
+  companyLogo: File | null;
+  companyWebsite: string;
+  companyEmail: string;
+  companyLinkedin: string;
+  recruiterName: string;
+  recruiterContact: string;
+  companyDescription: string;
+  jobTitle: string;
+  hiringFor: string;
+  jobType: string;
+  workMode: string;
+  location: string;
+  numberOfOpenings: string;
+  salaryStipend: string;
+  applicationDeadline: string;
+  joiningTimeline: string;
+  eligibleEducation: string;
+  graduationYear: string;
+  experienceRequired: string;
+  selectedSkills: string[];
+  otherSkill: string;
+  responsibilities: string;
+  requirements: string;
+  niceToHave: string;
+  whyJoin: string;
+  applicationProcess: string;
+  applicationEmail: string;
+  externalLink: string;
+  additionalInstructions: string;
+  confirmGenuine: boolean;
+  confirmTerms: boolean;
+};
 
 const PostJobPage = () => {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
-  const [logoPreview, setLogoPreview] = useState(null);
-  const [submitMessage, setSubmitMessage] = useState({ type: '', text: '' });
+  const [logoPreview, setLogoPreview] = useState<string | null>(null);
+  const [submitMessage, setSubmitMessage] = useState<{ type: string; text: string }>({ type: '', text: '' });
   const [showOtherSkills, setShowOtherSkills] = useState(false);
   const [otherSkillInput, setOtherSkillInput] = useState("");
-  const [customSkills, setCustomSkills] = useState([]);
+  const [customSkills, setCustomSkills] = useState<string[]>([]);
   const [showExternalLink, setShowExternalLink] = useState(false);
 
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<FormDataType>({
     companyName: "",
     companyLogo: null,
     companyWebsite: "",
@@ -68,6 +103,56 @@ const PostJobPage = () => {
     "MIS Reporting", "Communication",
   ];
 
+  const resetForm = () => {
+    setFormData({
+      companyName: "",
+      companyLogo: null,
+      companyWebsite: "",
+      companyEmail: "",
+      companyLinkedin: "",
+      recruiterName: "",
+      recruiterContact: "",
+      companyDescription: "",
+      jobTitle: "",
+      hiringFor: "",
+      jobType: "",
+      workMode: "",
+      location: "",
+      numberOfOpenings: "",
+      salaryStipend: "",
+      applicationDeadline: "",
+      joiningTimeline: "",
+      eligibleEducation: "",
+      graduationYear: "",
+      experienceRequired: "",
+      selectedSkills: [],
+      otherSkill: "",
+      responsibilities: "",
+      requirements: "",
+      niceToHave: "",
+      whyJoin: "",
+      applicationProcess: "finlysta",
+      applicationEmail: "",
+      externalLink: "",
+      additionalInstructions: "",
+      confirmGenuine: false,
+      confirmTerms: false,
+    });
+    setLogoPreview(null);
+    setCustomSkills([]);
+    setShowOtherSkills(false);
+    setOtherSkillInput("");
+    setShowExternalLink(false);
+    setCharCounts({
+      responsibilities: 0,
+      requirements: 0,
+      whyJoin: 0,
+      niceToHave: 0,
+      companyDescription: 0,
+      additionalInstructions: 0,
+    });
+  };
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value, type } = e.target;
     const checked = (e.target as HTMLInputElement).checked;
@@ -103,7 +188,8 @@ const PostJobPage = () => {
     const newSkills = skills.filter(s => !customSkills.includes(s) && !skillsList.includes(s));
     
     if (newSkills.length > 0 && customSkills.length + newSkills.length <= 20) {
-      setCustomSkills([...customSkills, ...newSkills]);
+      const updatedCustomSkills = [...customSkills, ...newSkills];
+      setCustomSkills(updatedCustomSkills);
       setFormData((prev) => ({
         ...prev,
         selectedSkills: [...prev.selectedSkills, ...newSkills]
@@ -116,7 +202,8 @@ const PostJobPage = () => {
   };
 
   const handleRemoveCustomSkill = (skillToRemove: string) => {
-    setCustomSkills(customSkills.filter(skill => skill !== skillToRemove));
+    const updatedCustomSkills = customSkills.filter(skill => skill !== skillToRemove);
+    setCustomSkills(updatedCustomSkills);
     setFormData((prev) => ({
       ...prev,
       selectedSkills: prev.selectedSkills.filter(skill => skill !== skillToRemove)
@@ -173,8 +260,6 @@ const PostJobPage = () => {
         confirmTerms: formData.confirmTerms,
       };
 
-      console.log('Submitting job data:', jobData);
-
       const response = await fetch('/api/jobs/post', {
         method: 'POST',
         headers: {
@@ -187,6 +272,8 @@ const PostJobPage = () => {
 
       if (response.ok) {
         setSubmitMessage({ type: 'success', text: '✅ Job posted successfully! We will review and add it to the jobs page within 5 minutes.' });
+        // Reset form after successful submission
+        resetForm();
         setTimeout(() => {
           router.push('/employer/job-posted');
         }, 3000);
@@ -612,11 +699,11 @@ const PostJobPage = () => {
                         className="flex-1 px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#2563EB]"
                         onKeyDown={(e) => e.key === 'Enter' && handleAddCustomSkill()}
                       />
-                   <button
-  type="button"
-  onClick={handleAddCustomSkill}
-    className="px-3 py-2 bg-blue-600 text-white rounded-lg text-sm"
->
+                      <button
+                        type="button"
+                        onClick={handleAddCustomSkill}
+                        className="px-3 py-2 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700"
+                      >
                         Add
                       </button>
                       <button
