@@ -1,7 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { PrismaClient } from "@prisma/client";
-
-const prisma = new PrismaClient();
+import { prisma } from "@/lib/prisma";
 
 export async function POST(request: NextRequest) {
   try {
@@ -9,9 +7,9 @@ export async function POST(request: NextRequest) {
     console.log("📝 Received submission:", body);
 
     // Validate required fields
-    const requiredFields = ["company", "role", "location", "applyLink", "email", "howDidYouHear"];
+    const requiredFields = ["companyName", "jobTitle", "location", "companyEmail", "responsibilities", "requirements"];
     for (const field of requiredFields) {
-      if (!body[field] || !body[field].trim()) {
+      if (!body[field] || !body[field].toString().trim()) {
         console.log(`❌ Missing field: ${field}`);
         return NextResponse.json(
           { error: `${field} is required` },
@@ -21,45 +19,88 @@ export async function POST(request: NextRequest) {
     }
 
     // Generate slug
-    const slug = `${body.role.toLowerCase().replace(/[^a-z0-9]+/g, '-')}-${body.company.toLowerCase().replace(/[^a-z0-9]+/g, '-')}-${Date.now()}`;
+    const slug = `${body.jobTitle.toLowerCase().replace(/[^a-z0-9]+/g, '-')}-${Date.now()}`;
     console.log("🔗 Generated slug:", slug);
 
-    // Create opportunity - FORCE published: false and isVerified: false
-    const opportunity = await prisma.opportunity.create({
+    // Create job using the Job model
+    const job = await prisma.job.create({
       data: {
         slug: slug,
-        title: body.role,
-        company: body.company,
-        type: body.type === "Internship" ? "internship" : "job",
-        workMode: body.location.toLowerCase().includes("remote") ? "remote" : 
-                  body.location.toLowerCase().includes("hybrid") ? "hybrid" : "onsite",
+        jobTitle: body.jobTitle,
+        hiringFor: body.hiringFor || "Internship",
+        jobType: body.jobType || null,
+        workMode: body.workMode || null,
         location: body.location,
-        experience: body.type === "Job" ? (body.experience || "0-2 years") : null,
-        duration: body.type === "Internship" ? (body.duration || "3-6 months") : null,
-        salary: body.salary || "Competitive",
-        skills: [],
-        overview: body.description || null,
-        applyLink: body.applyLink,
-        // CRITICAL: These MUST be false for pending approval
-        isVerified: false,
-        published: false,  // ← This makes it pending
-        isNew: true,
-        isActivelyHiring: true,
-        postedAt: new Date(),
+        numberOfOpenings: Number(body.numberOfOpenings) || 1,
+        salaryStipend: body.salaryStipend || "Not Disclosed",
+        applicationDeadline: body.applicationDeadline ? new Date(body.applicationDeadline) : null,
+        joiningTimeline: body.joiningTimeline || null,
+        isFresherSuitable: true,
+        eligibleEducation: body.eligibleEducation || null,
+        graduationYear: body.graduationYear || null,
+        experienceRequired: body.experienceRequired || null,
+        skillsRequired: body.skillsRequired || [],
+        responsibilities: body.responsibilities,
+        requirements: body.requirements,
+        niceToHave: body.niceToHave || null,
+        whyJoinTeam: body.whyJoinTeam || null,
+        applicationProcess: body.applicationProcess || "finlysta",
+        applicationEmail: body.applicationEmail || body.companyEmail,
+        additionalInstructions: body.additionalInstructions || null,
+        isGenuine: body.confirmGenuine || false,
+        termsAccepted: body.confirmTerms || false,
+        status: "pending",
+        showOnTrending: false,
+        showOnJobs: true,
+        // Create related recruiter and company
+        recruiter: {
+          connectOrCreate: {
+            where: { email: body.companyEmail },
+            create: {
+              email: body.companyEmail,
+              name: body.recruiterName || "Recruiter",
+              companyName: body.companyName,
+              companyLogo: body.companyLogo || null,
+              companyWebsite: body.companyWebsite || null,
+              companyLinkedin: body.companyLinkedin || null,
+              companyDescription: body.companyDescription || null,
+              companyEmail: body.companyEmail,
+              recruiterContact: body.recruiterContact || null,
+              isVerified: false,
+              isActive: true,
+              role: "RECRUITER",
+            }
+          }
+        },
+        company: {
+          connectOrCreate: {
+            where: { email: body.companyEmail },
+            create: {
+              slug: body.companyName.toLowerCase().replace(/[^a-z0-9]+/g, '-') + '-' + Date.now(),
+              name: body.companyName,
+              logo: body.companyLogo || null,
+              website: body.companyWebsite || null,
+              linkedinUrl: body.companyLinkedin || null,
+              email: body.companyEmail,
+              description: body.companyDescription || null,
+              isVerified: false,
+              isActive: true,
+            }
+          }
+        }
       },
     });
 
-    console.log("✅ Created opportunity:", {
-      id: opportunity.id,
-      title: opportunity.title,
-      published: opportunity.published,
-      isVerified: opportunity.isVerified
+    console.log("✅ Created job:", {
+      id: job.id,
+      title: job.jobTitle,
+      status: job.status
     });
 
     return NextResponse.json(
       { 
         message: "Job submitted successfully for review",
-        opportunityId: opportunity.id,
+        jobId: job.id,
         status: "pending_review"
       },
       { status: 201 }
@@ -88,35 +129,35 @@ export async function GET(request: NextRequest) {
     let whereClause: any = {};
     
     if (isAdmin && status === "pending") {
-      whereClause = { 
-        published: false,
-        isVerified: false 
-      };
-      console.log("🔍 Fetching pending opportunities with where:", whereClause);
+      whereClause = { status: "pending" };
+      console.log("🔍 Fetching pending jobs with where:", whereClause);
     } else if (isAdmin && status === "approved") {
-      whereClause = { 
-        published: true, 
-        isVerified: true 
-      };
+      whereClause = { status: "approved" };
     } else if (!isAdmin) {
-      whereClause = { 
-        published: true, 
-        isVerified: true 
-      };
+      whereClause = { status: "approved", showOnJobs: true };
     }
     
-    const opportunities = await prisma.opportunity.findMany({
+    const jobs = await prisma.job.findMany({
       where: whereClause,
-      orderBy: { postedAt: "desc" },
+      include: {
+        recruiter: {
+          select: {
+            companyName: true,
+            companyLogo: true,
+          }
+        },
+        company: true,
+      },
+      orderBy: { createdAt: "desc" },
       take: isAdmin && status === "pending" ? 100 : 20,
     });
     
-    console.log(`📊 Found ${opportunities.length} opportunities with status: ${status}`);
+    console.log(`📊 Found ${jobs.length} jobs with status: ${status}`);
     
-    return NextResponse.json({ opportunities });
+    return NextResponse.json({ jobs });
     
   } catch (error) {
-    console.error("Error fetching opportunities:", error);
+    console.error("Error fetching jobs:", error);
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }
@@ -127,7 +168,7 @@ export async function GET(request: NextRequest) {
 export async function PUT(request: NextRequest) {
   try {
     const body = await request.json();
-    const { opportunityId, action, adminKey } = body;
+    const { jobId, action, adminKey } = body;
     
     const ADMIN_KEY = process.env.ADMIN_KEY || "finlysta_admin_2026";
     if (adminKey !== ADMIN_KEY) {
@@ -138,36 +179,36 @@ export async function PUT(request: NextRequest) {
     
     if (action === "approve") {
       updateData = {
-        published: true,
-        isVerified: true,
-        isNew: true,
-        isActivelyHiring: true,
+        status: "approved",
+        showOnJobs: true,
+        approvedAt: new Date(),
+        publishedAt: new Date(),
       };
-      console.log(`✅ Approving opportunity: ${opportunityId}`);
+      console.log(`✅ Approving job: ${jobId}`);
     } else if (action === "reject") {
       updateData = {
-        published: false,
-        isVerified: false,
+        status: "rejected",
+        showOnJobs: false,
       };
-      console.log(`❌ Rejecting opportunity: ${opportunityId}`);
+      console.log(`❌ Rejecting job: ${jobId}`);
     } else {
       return NextResponse.json({ error: "Invalid action" }, { status: 400 });
     }
     
-    const updated = await prisma.opportunity.update({
-      where: { id: opportunityId },
+    const updated = await prisma.job.update({
+      where: { id: jobId },
       data: updateData,
     });
     
-    console.log(`✅ ${action}d opportunity:`, updated.id, "published:", updated.published);
+    console.log(`✅ ${action}d job:`, updated.id, "status:", updated.status);
     
     return NextResponse.json({
-      message: `Opportunity ${action}d successfully`,
-      opportunity: updated,
+      message: `Job ${action}d successfully`,
+      job: updated,
     });
     
   } catch (error) {
-    console.error("Error updating opportunity:", error);
+    console.error("Error updating job:", error);
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }
