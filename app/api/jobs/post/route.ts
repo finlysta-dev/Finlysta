@@ -51,6 +51,8 @@ export async function POST(request: NextRequest) {
         }
       });
       console.log("Recruiter created:", recruiter.id);
+    } else {
+      console.log("Existing recruiter found:", recruiter.id);
     }
 
     // Second, find or create company separately
@@ -80,6 +82,8 @@ export async function POST(request: NextRequest) {
         }
       });
       console.log("Company created:", company.id);
+    } else {
+      console.log("Existing company found:", company.id);
     }
 
     // Third, create the job
@@ -154,10 +158,13 @@ export async function POST(request: NextRequest) {
       }
     });
 
+    // Return the job ID so frontend can redirect correctly
     return NextResponse.json(
       { 
+        success: true,
         message: "Job posted successfully! We will review and add it to jobs page.",
         jobId: job.id,
+        token: job.id,
         status: "pending"
       },
       { status: 201 }
@@ -248,6 +255,16 @@ export async function PUT(request: NextRequest) {
         showOnJobs: false,
       };
       console.log(`❌ Rejecting job: ${jobId}`);
+    } else if (action === "review") {
+      updateData = {
+        status: "review",
+      };
+      console.log(`🔍 Setting job to review: ${jobId}`);
+    } else if (action === "waiting") {
+      updateData = {
+        status: "waiting",
+      };
+      console.log(`⏳ Setting job to waiting: ${jobId}`);
     } else {
       return NextResponse.json({ error: "Invalid action" }, { status: 400 });
     }
@@ -260,6 +277,7 @@ export async function PUT(request: NextRequest) {
     console.log(`✅ ${action}d job:`, updated.id, "status:", updated.status);
     
     return NextResponse.json({
+      success: true,
       message: `Job ${action}d successfully`,
       job: updated,
     });

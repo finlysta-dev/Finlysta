@@ -229,9 +229,26 @@ const PostJobPage = () => {
     setSubmitMessage({ type: '', text: '' });
     
     try {
+      // Handle logo upload if present
+      let logoUrl = null;
+      if (formData.companyLogo) {
+        const logoFormData = new FormData();
+        logoFormData.append('logo', formData.companyLogo);
+        
+        const logoResponse = await fetch('/api/upload-logo', {
+          method: 'POST',
+          body: logoFormData,
+        });
+        
+        if (logoResponse.ok) {
+          const logoResult = await logoResponse.json();
+          logoUrl = logoResult.url;
+        }
+      }
+
       const jobData = {
         companyName: formData.companyName,
-        companyLogo: null,
+        companyLogo: logoUrl,
         companyWebsite: formData.companyWebsite,
         companyEmail: formData.companyEmail,
         companyLinkedin: formData.companyLinkedin,
@@ -263,7 +280,7 @@ const PostJobPage = () => {
         confirmTerms: formData.confirmTerms,
       };
 
-      const response = await fetch('/api/jobs', {
+      const response = await fetch('/api/jobs/post', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -275,8 +292,14 @@ const PostJobPage = () => {
 
       if (response.ok) {
         // Store the token and job title for the success page
-        setPosterToken(result.posterToken);
+        const token = result.posterToken || result.token || result.jobId;
+        setPosterToken(token);
         setJobTitle(formData.jobTitle);
+        
+        // Store in localStorage as backup
+        if (token) {
+          localStorage.setItem('lastPostedJobId', token);
+        }
         
         // Show success message
         setSubmitMessage({ 
@@ -289,15 +312,6 @@ const PostJobPage = () => {
         
         // Reset form after successful submission
         resetForm();
-        
-        // Auto redirect after 5 seconds (optional)
-        setTimeout(() => {
-          if (result.posterToken) {
-           router.push(`/employers/job-posted?token=${result.posterToken}`);
-          } else {
-            router.push('/employers/dashboard');
-          }
-        }, 5000);
         
       } else {
         setSubmitMessage({ type: 'error', text: result.error || 'Failed to post job. Please try again.' });
@@ -312,7 +326,7 @@ const PostJobPage = () => {
 
   const handleViewSuccessPage = () => {
     if (posterToken) {
-      router.push(`/job-posted?token=${posterToken}`);
+      router.push(`/employers/job-posted?token=${posterToken}`);
     } else {
       router.push('/employers/dashboard');
     }
@@ -390,7 +404,7 @@ const PostJobPage = () => {
             </div>
             <h2 className="text-2xl font-bold text-gray-900 mb-2">Job Posted Successfully!</h2>
             <p className="text-gray-600 mb-4">
-              Your job "{jobTitle}" has been submitted. Our team will review it within 5 Minutes.
+              Your job "{jobTitle}" has been submitted. Our team will review it within 5 minutes.
             </p>
             <div className="bg-blue-50 rounded-lg p-3 mb-4">
               <p className="text-sm text-blue-800">
@@ -400,7 +414,7 @@ const PostJobPage = () => {
             <div className="flex gap-3">
               <button
                 onClick={handleViewSuccessPage}
-                className="flex-1 bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700"
+                className="flex-1 bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors"
               >
                 View Success Page
               </button>
@@ -409,7 +423,7 @@ const PostJobPage = () => {
                   setShowSuccessModal(false);
                   router.push('/employers/dashboard');
                 }}
-                className="flex-1 bg-gray-100 text-gray-700 py-3 rounded-lg font-semibold hover:bg-gray-200"
+                className="flex-1 bg-gray-100 text-gray-700 py-3 rounded-lg font-semibold hover:bg-gray-200 transition-colors"
               >
                 Go to Dashboard
               </button>
@@ -423,7 +437,7 @@ const PostJobPage = () => {
         <div className="flex gap-8 items-start">
 
           {/* LEFT FORM */}
-          <div className="flex-1 minw-0">
+          <div className="flex-1 min-w-0">
             <div className="mb-7">
               <h1 className="text-4xl font-extrabold text-gray-900 leading-tight">Post a Job for Free</h1>
               <p className="text-lg text-gray-600 mt-2">
@@ -998,7 +1012,7 @@ const PostJobPage = () => {
                   </span>
                   <span className="text-gray-300">•</span>
                   <span className="flex items-center gap-1.5">
-                    <ShieldCheck size={13} /> Reviewed within 24 hours
+                    <ShieldCheck size={13} /> Reviewed within 5 minutes
                   </span>
                 </p>
               </section>

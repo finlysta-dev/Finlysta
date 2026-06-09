@@ -1,66 +1,69 @@
-import { NextRequest, NextResponse } from 'next/server';
+﻿import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 
 export async function GET(request: NextRequest) {
-  const searchParams = request.nextUrl.searchParams;
-  const token = searchParams.get('token');
-
-  console.log('🔍 API called with token:', token);
-
-  if (!token) {
-    console.log('❌ No token provided');
-    return NextResponse.json(
-      { success: false, error: 'No token provided' },
-      { status: 401 }
-    );
-  }
-
   try {
-    // Simplified query - find opportunity by token
-    const opportunity = await prisma.opportunity.findFirst({
-      where: {
-        posterToken: token
+    const searchParams = request.nextUrl.searchParams;
+    const token = searchParams.get('token');
+    
+    console.log('🔍 API called with token:', token);
+    
+    if (!token) {
+      return NextResponse.json(
+        { error: 'No token provided', success: false },
+        { status: 400 }
+      );
+    }
+    
+    const job = await prisma.job.findUnique({
+      where: { id: token },
+      include: {
+        recruiter: {
+          select: {
+            companyName: true,
+            companyEmail: true,
+            name: true,
+            companyLogo: true,
+          }
+        },
+        company: true,
+        jobSkills: true,
       }
     });
-
-    console.log('📊 Found opportunity:', opportunity ? 'YES - ' + opportunity.title : 'NO');
-
-    if (!opportunity) {
+    
+    if (!job) {
       return NextResponse.json(
-        { success: false, error: 'Invalid token - no job found' },
+        { error: 'Job not found', success: false },
         { status: 404 }
       );
     }
-
-    // Return the job data
+    
+    const jobData = {
+      id: job.id,
+      title: job.jobTitle,
+      company: job.company?.name || job.recruiter?.companyName || 'Company',
+      companyLogo: job.company?.logo || job.recruiter?.companyLogo || null,
+      location: job.location,
+      type: job.hiringFor,
+      workMode: job.workMode,
+      experience: job.experienceRequired || 'Fresher',
+      salary: job.salaryStipend,
+      skills: job.skillsRequired,
+      posterEmail: job.recruiter?.companyEmail || job.applicationEmail,
+      posterName: job.recruiter?.name,
+      status: job.status,
+    };
+    
     return NextResponse.json({
       success: true,
-      job: {
-        id: opportunity.id,
-        title: opportunity.title,
-        company: opportunity.company,
-        location: opportunity.location,
-        type: opportunity.type,
-        workMode: opportunity.workMode || 'On-site',
-        experience: opportunity.experience || 'Not specified',
-        salary: opportunity.salary,
-        skills: opportunity.skills || [],
-        posterEmail: opportunity.posterEmail,
-        posterName: opportunity.posterName,
-      }
+      job: jobData,
+      status: job.status,
     });
-
-  } catch (error: any) {
-    console.error('❌ Error in API:', error);
-    console.error('❌ Error message:', error?.message);
-    console.error('❌ Error stack:', error?.stack);
     
+  } catch (error) {
+    console.error('Error fetching job:', error);
     return NextResponse.json(
-      { 
-        success: false, 
-        error: 'Internal server error', 
-        details: error?.message 
-      },
+      { error: 'Internal server error', success: false },
       { status: 500 }
     );
   }
