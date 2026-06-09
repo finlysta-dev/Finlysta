@@ -52,6 +52,9 @@ const PostJobPage = () => {
   const [otherSkillInput, setOtherSkillInput] = useState("");
   const [customSkills, setCustomSkills] = useState<string[]>([]);
   const [showExternalLink, setShowExternalLink] = useState(false);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [posterToken, setPosterToken] = useState<string | null>(null);
+  const [jobTitle, setJobTitle] = useState<string>("");
 
   const [formData, setFormData] = useState<FormDataType>({
     companyName: "",
@@ -260,7 +263,7 @@ const PostJobPage = () => {
         confirmTerms: formData.confirmTerms,
       };
 
-      const response = await fetch('/api/jobs/post', {
+      const response = await fetch('/api/jobs', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -271,12 +274,31 @@ const PostJobPage = () => {
       const result = await response.json();
 
       if (response.ok) {
-        setSubmitMessage({ type: 'success', text: '✅ Job posted successfully! We will review and add it to the jobs page within 5 minutes.' });
+        // Store the token and job title for the success page
+        setPosterToken(result.posterToken);
+        setJobTitle(formData.jobTitle);
+        
+        // Show success message
+        setSubmitMessage({ 
+          type: 'success', 
+          text: '✅ Job posted successfully! Your job is now under review.' 
+        });
+        
+        // Show success modal instead of immediate redirect
+        setShowSuccessModal(true);
+        
         // Reset form after successful submission
         resetForm();
+        
+        // Auto redirect after 5 seconds (optional)
         setTimeout(() => {
-          router.push('/employer/job-posted');
-        }, 3000);
+          if (result.posterToken) {
+           router.push(`/employers/job-posted?token=${result.posterToken}`);
+          } else {
+            router.push('/employers/dashboard');
+          }
+        }, 5000);
+        
       } else {
         setSubmitMessage({ type: 'error', text: result.error || 'Failed to post job. Please try again.' });
       }
@@ -285,6 +307,14 @@ const PostJobPage = () => {
       setSubmitMessage({ type: 'error', text: 'An error occurred. Please try again.' });
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleViewSuccessPage = () => {
+    if (posterToken) {
+      router.push(`/job-posted?token=${posterToken}`);
+    } else {
+      router.push('/employers/dashboard');
     }
   };
 
@@ -351,12 +381,49 @@ const PostJobPage = () => {
         </div>
       </header>
 
+      {/* SUCCESS MODAL */}
+      {showSuccessModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl max-w-md w-full p-6 text-center">
+            <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <Check size={32} className="text-green-600" />
+            </div>
+            <h2 className="text-2xl font-bold text-gray-900 mb-2">Job Posted Successfully!</h2>
+            <p className="text-gray-600 mb-4">
+              Your job "{jobTitle}" has been submitted. Our team will review it within 5 Minutes.
+            </p>
+            <div className="bg-blue-50 rounded-lg p-3 mb-4">
+              <p className="text-sm text-blue-800">
+                🔑 Your unique tracking link has been created. You can view your job status anytime.
+              </p>
+            </div>
+            <div className="flex gap-3">
+              <button
+                onClick={handleViewSuccessPage}
+                className="flex-1 bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700"
+              >
+                View Success Page
+              </button>
+              <button
+                onClick={() => {
+                  setShowSuccessModal(false);
+                  router.push('/employers/dashboard');
+                }}
+                className="flex-1 bg-gray-100 text-gray-700 py-3 rounded-lg font-semibold hover:bg-gray-200"
+              >
+                Go to Dashboard
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* MAIN */}
       <main className="max-w-[1100px] mx-auto px-6 py-8">
         <div className="flex gap-8 items-start">
 
           {/* LEFT FORM */}
-          <div className="flex-1 min-w-0">
+          <div className="flex-1 minw-0">
             <div className="mb-7">
               <h1 className="text-4xl font-extrabold text-gray-900 leading-tight">Post a Job for Free</h1>
               <p className="text-lg text-gray-600 mt-2">
@@ -931,7 +998,7 @@ const PostJobPage = () => {
                   </span>
                   <span className="text-gray-300">•</span>
                   <span className="flex items-center gap-1.5">
-                    <ShieldCheck size={13} /> Reviewed within 5 minutes
+                    <ShieldCheck size={13} /> Reviewed within 24 hours
                   </span>
                 </p>
               </section>
@@ -968,7 +1035,7 @@ const PostJobPage = () => {
                 </div>
                 <div className="flex gap-3">
                   <div className="flex items-center justify-center flex-shrink-0 rounded-full w-9 h-9 bg-blue-50"><Zap size={20} className="text-[#2563EB]" /></div>
-                  <div><div className="font-semibold text-base text-gray-900">Fast & Easy</div><p className="text-sm text-gray-600 mt-0.5">Post in under 2 minutes. Published within 5 minutes.</p></div>
+                  <div><div className="font-semibold text-base text-gray-900">Fast & Easy</div><p className="text-sm text-gray-600 mt-0.5">Post in under 2 minutes. Published within 24 hours.</p></div>
                 </div>
               </div>
             </div>

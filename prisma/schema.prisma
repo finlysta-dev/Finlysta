@@ -41,6 +41,13 @@ model Opportunity {
   clicksLog        OpportunityClick[]
   viewsLog         OpportunityView[]
 
+  // 🆕 RECRUITER FIELDS (ADDED - ONLY THESE 5 ARE NEW)
+  posterToken      String?
+  posterEmail      String?
+  posterName       String?
+  posterPhone      String?
+  companyWebsite   String?
+
   @@index([type])
   @@index([slug])
   @@index([location])
@@ -49,6 +56,8 @@ model Opportunity {
   @@index([isTrending])
   @@index([isVerified])
   @@index([published])
+  @@index([posterToken])
+  @@index([posterEmail])
 }
 
 model OpportunityView {

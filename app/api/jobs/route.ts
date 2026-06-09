@@ -1,6 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { generateUUID, generateSlug } from "@/lib/utils";
 
+// =============================================
+// POST - Create a new job
+// =============================================
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
@@ -21,6 +25,10 @@ export async function POST(request: NextRequest) {
     // Generate slug for job
     const slug = `${body.jobTitle.toLowerCase().replace(/[^a-z0-9]+/g, '-')}-${Date.now()}`;
     console.log("🔗 Generated slug:", slug);
+
+    // Generate unique token for the opportunity (for recruiter access)
+    const posterToken = generateUUID();
+    console.log("🔑 Generated posterToken:", posterToken);
 
     // First, find or create recruiter separately
     let recruiter = await prisma.recruiter.findFirst({
@@ -50,9 +58,9 @@ export async function POST(request: NextRequest) {
           role: "RECRUITER",
         }
       });
-      console.log("Recruiter created:", recruiter.id);
+      console.log("✅ Recruiter created:", recruiter.id);
     } else {
-      console.log("Existing recruiter found:", recruiter.id);
+      console.log("✅ Existing recruiter found:", recruiter.id);
     }
 
     // Second, find or create company separately
@@ -81,9 +89,9 @@ export async function POST(request: NextRequest) {
           isActive: true,
         }
       });
-      console.log("Company created:", company.id);
+      console.log("✅ Company created:", company.id);
     } else {
-      console.log("Existing company found:", company.id);
+      console.log("✅ Existing company found:", company.id);
     }
 
     // Third, create the job
@@ -128,6 +136,57 @@ export async function POST(request: NextRequest) {
       status: job.status
     });
 
+    // 🆕 Create an Opportunity entry for the success page (with token for recruiter access)
+    const opportunity = await prisma.opportunity.create({
+      data: {
+        slug: slug + "-opp",
+        title: job.jobTitle,
+        company: body.companyName,
+        companyLogo: body.companyLogo || null,
+        aboutCompany: body.companyDescription || null,
+        type: body.jobType || "Full-time",
+        workMode: body.workMode || "On-site",
+        location: body.location,
+        experience: body.experienceRequired || "Not specified",
+        duration: null,
+        salary: body.salaryStipend || null,
+        skills: body.skillsRequired || [],
+        overview: body.responsibilities?.substring(0, 500) || null,
+        responsibilities: body.responsibilities || null,
+        qualifications: body.requirements || null,
+        benefits: body.niceToHave || null,
+        applyLink: `/jobs/${job.id}`,
+        isNew: true,
+        isVerified: false,
+        isTrending: false,
+        isActivelyHiring: true,
+        published: true,
+        postedAt: new Date(),
+        views: 0,
+        applyClicks: 0,
+        posterToken: posterToken,
+        posterEmail: body.companyEmail,
+        posterName: body.recruiterName || null,
+        posterPhone: body.recruiterContact || null,
+        companyWebsite: body.companyWebsite || null,
+      },
+    });
+
+    console.log("✅ Created opportunity with token:", {
+      id: opportunity.id,
+      posterToken: opportunity.posterToken,
+      title: opportunity.title,
+    });
+
+    // 🔍 VERIFICATION - Fetch back the opportunity to confirm it was saved
+    const verifyOpportunity = await prisma.opportunity.findUnique({
+      where: { id: opportunity.id }
+    });
+    console.log("🔍 VERIFICATION - Opportunity saved:", verifyOpportunity ? "✅ YES" : "❌ NO");
+    console.log("🔍 VERIFICATION - Token in DB:", verifyOpportunity?.posterToken);
+    console.log("🔍 VERIFICATION - Token from variable:", posterToken);
+    console.log("🔍 VERIFICATION - Match:", verifyOpportunity?.posterToken === posterToken ? "✅ YES" : "❌ NO");
+
     // Add skills if any
     if (body.skillsRequired && body.skillsRequired.length > 0) {
       await prisma.jobSkill.createMany({
@@ -137,7 +196,7 @@ export async function POST(request: NextRequest) {
         })),
         skipDuplicates: true,
       });
-      console.log("Skills added");
+      console.log("✅ Skills added");
     }
 
     // Create company-job relation
@@ -158,11 +217,25 @@ export async function POST(request: NextRequest) {
       }
     });
 
+    // Return the token along with job data for the success page
     return NextResponse.json(
       { 
         message: "Job posted successfully! We will review and add it to jobs page.",
         jobId: job.id,
-        status: "pending"
+        opportunityId: opportunity.id,
+        posterToken: posterToken,
+        status: "pending",
+        jobData: {
+          id: job.id,
+          title: job.jobTitle,
+          company: body.companyName,
+          location: body.location,
+          type: body.jobType || "Full-time",
+          experience: body.experienceRequired || "Fresher",
+          salary: body.salaryStipend,
+          skills: body.skillsRequired || [],
+          posterEmail: body.companyEmail,
+        }
       },
       { status: 201 }
     );
@@ -176,6 +249,9 @@ export async function POST(request: NextRequest) {
   }
 }
 
+// =============================================
+// GET - Fetch jobs
+// =============================================
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
@@ -226,6 +302,9 @@ export async function GET(request: NextRequest) {
   }
 }
 
+// =============================================
+// PUT - Update job status (approve/reject)
+// =============================================
 export async function PUT(request: NextRequest) {
   try {
     const body = await request.json();
@@ -246,12 +325,26 @@ export async function PUT(request: NextRequest) {
         publishedAt: new Date(),
       };
       console.log(`✅ Approving job: ${jobId}`);
+      
+      // Also update the corresponding opportunity
+      await prisma.opportunity.updateMany({
+        where: { title: body.jobTitle, company: body.companyName },
+        data: { isVerified: true, published: true }
+      });
+      
     } else if (action === "reject") {
       updateData = {
         status: "rejected",
         showOnJobs: false,
       };
       console.log(`❌ Rejecting job: ${jobId}`);
+      
+      // Also update the corresponding opportunity
+      await prisma.opportunity.updateMany({
+        where: { title: body.jobTitle, company: body.companyName },
+        data: { published: false }
+      });
+      
     } else {
       return NextResponse.json({ error: "Invalid action" }, { status: 400 });
     }
