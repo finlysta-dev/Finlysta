@@ -42,6 +42,7 @@ function JobPostedContent() {
   const [currentStatus, setCurrentStatus] = useState<string>('pending');
   const [toastMessage, setToastMessage] = useState<{ text: string; type: string } | null>(null);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [refreshMessage, setRefreshMessage] = useState<string>('');
   const pollingIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
   // Show toast notification
@@ -199,9 +200,10 @@ function JobPostedContent() {
 
   const handleManualRefresh = async () => {
     setIsRefreshing(true);
-    showToast('Refreshing job status...', 'info');
+    setRefreshMessage('Refreshing job status...');
     await fetchJobStatus();
     setIsRefreshing(false);
+    setTimeout(() => setRefreshMessage(''), 2000);
   };
 
   // Initial fetch
@@ -327,7 +329,7 @@ function JobPostedContent() {
         </div>
       </header>
 
-      {/* Toast Notification - Moved higher, right below header */}
+      {/* Toast Notification */}
       {toastMessage && (
         <div className="fixed top-[72px] right-6 z-50 animate-slide-in">
           <div className={`flex items-center gap-3 px-4 py-3 rounded-lg shadow-lg ${
@@ -344,11 +346,14 @@ function JobPostedContent() {
       )}
 
       <div className="max-w-7xl mx-auto px-6 py-8">
-        {/* Manual Refresh Button and Live Status Indicator */}
-        <div className="flex justify-between items-center mb-4">
+        {/* One Row: Live updates | Message | Refresh Now */}
+        <div className="flex items-center justify-between gap-4 mb-6">
           <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-green-100 rounded-full">
             <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
             <span className="text-xs text-green-700 font-medium">Live updates active (every 3 seconds)</span>
+          </div>
+          <div className="text-sm text-blue-600 font-medium">
+            {refreshMessage}
           </div>
           <button
             onClick={handleManualRefresh}
@@ -459,7 +464,8 @@ function JobPostedContent() {
             </button>
           </div>
           <div className="flex flex-col lg:flex-row gap-6">
-            <div className="w-20 h-20 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl flex items-center justify-center text-white text-2xl font-bold flex-shrink-0 overflow-hidden">
+            {/* Company Logo */}
+            <div className="w-20 h-20 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl flex items-center justify-center flex-shrink-0 overflow-hidden">
               {displayData.companyLogo && displayData.companyLogo.trim() !== '' ? (
                 <img
                   src={displayData.companyLogo}
@@ -472,7 +478,11 @@ function JobPostedContent() {
                     target.style.display = 'none';
                     const parent = target.parentElement;
                     if (parent) {
-                      parent.innerHTML = `<span class="text-3xl font-bold text-white">${displayData.company.charAt(0).toUpperCase()}</span>`;
+                      const fallbackSpan = document.createElement('span');
+                      fallbackSpan.className = 'text-3xl font-bold text-white';
+                      fallbackSpan.textContent = displayData.company.charAt(0).toUpperCase();
+                      parent.innerHTML = '';
+                      parent.appendChild(fallbackSpan);
                     }
                   }}
                 />
@@ -593,7 +603,7 @@ function JobPostedContent() {
               </button>
               <button
                 onClick={shareOnLinkedIn}
-                className="inline-flex items-center gap-2 bg-[#0A66C2] text-white px-6 py-3 rounded-lg hover:bg-[#004182] transition-colors font-medium"
+                className="inline-flex items-center gap-2 bg-[#0A66C2] text-black px-6 py-3 rounded-lg hover:bg-[#004182] transition-colors font-medium"
               >
                 <Linkedin className="w-5 h-5 text-black" />
                 LinkedIn

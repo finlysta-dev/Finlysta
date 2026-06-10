@@ -244,7 +244,7 @@ const TestimonialSection = () => {
               {/* Random icon from public folder - icon.png */}
               <div className="flex-shrink-0">
                 <Image
-                  src="/userprofile.png"
+                  src="/Userprofile.png"
                   alt="User Icon"
                   width={48}
                   height={48}
