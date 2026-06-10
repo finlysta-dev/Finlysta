@@ -228,6 +228,62 @@ const RoadmapLearningSection = () => {
   );
 };
 
+const TestimonialSection = () => {
+  return (
+    <section className="py-12 bg-[#F8FAFC]">
+      <div className="max-w-7xl mx-auto px-6">
+        <div className="flex justify-center mb-6">
+          <p className="text-sm font-bold text-[#081B4B] bg-blue-50 px-4 py-1.5 rounded-full">
+            Loved by Finance Freshers
+          </p>
+        </div>
+
+        <div className="max-w-2xl mx-auto">
+          <div className="bg-white border border-slate-100 rounded-xl px-6 py-6 shadow-sm hover:shadow-md transition-all duration-300">
+            <div className="flex items-start gap-4">
+              {/* Random icon from public folder - icon.png */}
+              <div className="flex-shrink-0">
+                <Image
+                  src="/userprofile.png"
+                  alt="User Icon"
+                  width={48}
+                  height={48}
+                  className="rounded-full object-cover"
+                />
+              </div>
+
+              <div className="flex-1">
+                {/* 3-line testimonial text with line breaks */}
+                <p className="text-[13px] text-slate-700 leading-relaxed">
+                  Finlysta helped me build an ATS-friendly resume, improve
+                  <br />
+                  my LinkedIn profile, and guided me through a structured
+                  <br />
+                  learning roadmap that made my career journey much clearer.
+                </p>
+
+                <div className="mt-4">
+                  <p className="text-[12px] font-semibold text-[#081B4B]">
+                    — Khushi
+                  </p>
+                  <p className="text-[11px] text-slate-500">
+                    BBA Student
+                  </p>
+                </div>
+              </div>
+
+              <ArrowRight
+                size={16}
+                className="text-[#2563EB] mt-1 flex-shrink-0 opacity-70 hover:opacity-100 transition-opacity cursor-pointer"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+};
+
 const FAQCTASection = () => {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
 
@@ -347,6 +403,7 @@ export default function HomePageContent() {
         <SkillsSection />
         <FinanceCareerPaths />
         <RoadmapLearningSection />
+        <TestimonialSection />
         <FAQCTASection />
       </main>
 
