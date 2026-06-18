@@ -407,70 +407,92 @@ export default function HomePageContent() {
         <FAQCTASection />
       </main>
 
-      <footer className="bg-white border-t border-slate-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="pt-12 pb-8 grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-12 gap-8">
-            <div className="col-span-2 lg:col-span-4 space-y-4">
-              <Link href="/" className="flex items-center">
-                <Image src="/Finlysta.png" alt="Finlysta Logo" width={180} height={40} priority className="object-contain" />
-              </Link>
-              <p className="text-sm text-slate-600 leading-relaxed max-w-xs">
-                The job board built exclusively for entry-level financial roles and internships in India.
-              </p>
-              <div className="flex gap-3">
-                <a href="https://www.linkedin.com/company/finlysta" target="_blank" rel="noopener noreferrer" className="w-9 h-9 bg-slate-100 text-slate-600 hover:bg-[#0077B5] hover:text-black rounded-lg flex items-center justify-center transition-all"><Linkedin size={16} /></a>
-                <a href="https://twitter.com/Finlysta" target="_blank" rel="noopener noreferrer" className="w-9 h-9 bg-slate-100 text-slate-600 hover:bg-[#1DA1F2] hover:text-black rounded-lg flex items-center justify-center transition-all"><Twitter size={16} /></a>
-                <a href="https://instagram.com/finlysta" target="_blank" rel="noopener noreferrer" className="w-9 h-9 bg-slate-100 text-slate-600 hover:bg-[#E4405F] hover:text-black rounded-lg flex items-center justify-center transition-all"><Instagram size={16} /></a>
-              </div>
-            </div>
+<footer className="bg-white border-t border-slate-200">
+  <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="pt-12 pb-8">
+      <div className="flex flex-nowrap justify-between gap-6">
 
-            <div className="lg:col-span-2">
-              <h4 className="font-bold text-sm mb-4 text-[#081B4B]">Jobs</h4>
-              <ul className="space-y-2 text-sm text-slate-600">
-                <li><Link href="/jobs" className="hover:text-[#2563EB] transition">All Jobs</Link></li>
-                <li><Link href="/internships" className="hover:text-[#2563EB] transition">Internships</Link></li>
-                <li><Link href="/jobs?type=remote" className="hover:text-[#2563EB] transition">Remote Jobs</Link></li>
-                <li><Link href="/blogs" className="hover:text-[#2563EB] transition">Career Blogs</Link></li>
-              </ul>
-            </div>
-
-            <div className="lg:col-span-2">
-              <h4 className="font-bold text-sm mb-4 text-[#081B4B]">Resources</h4>
-              <ul className="space-y-2 text-sm text-slate-600">
-                <li><Link href="/learning-hub" className="hover:text-[#2563EB] transition">Learning Hub</Link></li>
-                <li><Link href="/interview-prep" className="hover:text-[#2563EB] transition">Interview Prep</Link></li>
-              </ul>
-            </div>
-
-            <div className="lg:col-span-2">
-              <h4 className="font-bold text-sm mb-4 text-[#081B4B]">Company</h4>
-              <ul className="space-y-2 text-sm text-slate-600">
-                <li><Link href="/about" className="hover:text-[#2563EB] transition">About</Link></li>
-                <li><Link href="/contact" className="hover:text-[#2563EB] transition">Contact</Link></li>
-                <li><Link href="/privacy" className="hover:text-[#2563EB] transition">Privacy</Link></li>
-                <li><Link href="/terms" className="hover:text-[#2563EB] transition">Terms</Link></li>
-              </ul>
-            </div>
-
-            <div className="lg:col-span-2">
-              <h4 className="font-bold text-sm mb-4 text-[#081B4B]">Support</h4>
-              <a href="mailto:support@finlysta.com" className="flex items-center gap-2 text-sm text-slate-600 hover:text-[#2563EB] transition"><Mail size={13} /> support@finlysta.com</a>
-              <p className="text-xs text-slate-500 mt-3">Reply within 24 hours</p>
-            </div>
-          </div>
-
-          <div className="border-t border-slate-200 pt-6 pb-8">
-            <div className="flex flex-col items-center justify-center gap-2 text-xs text-slate-600 text-center">
-              <span>© {new Date().getFullYear()} Finlysta Pvt. Ltd. All rights reserved.</span>
-              <div className="flex items-center gap-1.5">
-                <span>Made with</span>
-                <Heart size={10} className="text-red-500 fill-red-500" />
-                <span>in India 🇮🇳</span>
-              </div>
-            </div>
+        {/* Logo Section */}
+        <div className="min-w-[260px] flex-shrink-0 space-y-4">
+          <Link href="/" className="flex items-center">
+            <Image src="/Finlysta.png" alt="Finlysta Logo" width={180} height={40} priority className="object-contain" />
+          </Link>
+          <p className="text-sm text-slate-600 leading-relaxed max-w-xs">
+            The job board built exclusively for entry-level financial roles and internships in India.
+          </p>
+          <div className="flex gap-3">
+            <a href="https://www.linkedin.com/company/finlysta" target="_blank" rel="noopener noreferrer" className="w-9 h-9 bg-slate-100 text-slate-600 hover:bg-[#0077B5] hover:text-white rounded-lg flex items-center justify-center transition-all"><Linkedin size={16} /></a>
+            <a href="https://twitter.com/Finlysta" target="_blank" rel="noopener noreferrer" className="w-9 h-9 bg-slate-100 text-slate-600 hover:bg-[#1DA1F2] hover:text-white rounded-lg flex items-center justify-center transition-all"><Twitter size={16} /></a>
+            <a href="https://instagram.com/finlysta" target="_blank" rel="noopener noreferrer" className="w-9 h-9 bg-slate-100 text-slate-600 hover:bg-[#E4405F] hover:text-white rounded-lg flex items-center justify-center transition-all"><Instagram size={16} /></a>
           </div>
         </div>
-      </footer>
+
+        {/* Jobs Column */}
+        <div className="flex-shrink-0">
+          <h4 className="font-bold text-sm mb-4 text-[#081B4B]">Jobs</h4>
+          <ul className="space-y-2 text-sm text-slate-600">
+            <li><Link href="/jobs" className="hover:text-[#2563EB] transition">All Jobs</Link></li>
+            <li><Link href="/internships" className="hover:text-[#2563EB] transition">Internships</Link></li>
+            <li><Link href="/jobs?type=remote" className="hover:text-[#2563EB] transition">Remote Jobs</Link></li>
+            <li><Link href="/blogs" className="hover:text-[#2563EB] transition">Career Blogs</Link></li>
+          </ul>
+        </div>
+
+        {/* Employers Column */}
+        <div className="flex-shrink-0">
+          <h4 className="font-bold text-sm mb-4 text-[#081B4B]">Employers</h4>
+          <ul className="space-y-2 text-sm text-slate-600">
+            <li><Link href="/employers/post-job" className="hover:text-[#2563EB] transition">Post a Job Free</Link></li>
+            <li><Link href="/employers/how-it-works" className="hover:text-[#2563EB] transition">How It Works</Link></li>
+          </ul>
+        </div>
+
+        {/* Resources Column */}
+        <div className="flex-shrink-0">
+          <h4 className="font-bold text-sm mb-4 text-[#081B4B]">Resources</h4>
+          <ul className="space-y-2 text-sm text-slate-600">
+            <li><Link href="/learning-hub" className="hover:text-[#2563EB] transition">Learning Hub</Link></li>
+            <li><Link href="/interview-prep" className="hover:text-[#2563EB] transition">Interview Prep</Link></li>
+          </ul>
+        </div>
+
+        {/* Company Column */}
+        <div className="flex-shrink-0">
+          <h4 className="font-bold text-sm mb-4 text-[#081B4B]">Company</h4>
+          <ul className="space-y-2 text-sm text-slate-600">
+            <li><Link href="/about" className="hover:text-[#2563EB] transition">About</Link></li>
+            <li><Link href="/contact" className="hover:text-[#2563EB] transition">Contact</Link></li>
+            <li><Link href="/privacy" className="hover:text-[#2563EB] transition">Privacy</Link></li>
+            <li><Link href="/terms" className="hover:text-[#2563EB] transition">Terms</Link></li>
+          </ul>
+        </div>
+
+        {/* Support Column */}
+        <div className="flex-shrink-0">
+          <h4 className="font-bold text-sm mb-4 text-[#081B4B]">Support</h4>
+          <div className="space-y-2">
+            <a href="mailto:support@finlysta.com" className="flex items-center gap-2 text-sm text-slate-600 hover:text-[#2563EB] transition whitespace-nowrap">
+              <Mail size={13} /> support@finlysta.com
+            </a>
+            <p className="text-xs text-slate-500 whitespace-nowrap">Reply within 24 hours</p>
+          </div>
+        </div>
+
+      </div>
+
+      <div className="border-t border-slate-200 pt-6 pb-8 mt-8">
+        <div className="flex flex-col items-center justify-center gap-2 text-xs text-slate-600 text-center">
+          <span>© {new Date().getFullYear()} Finlysta Pvt. Ltd. All rights reserved.</span>
+          <div className="flex items-center gap-1.5">
+            <span>Made with</span>
+            <Heart size={10} className="text-red-500 fill-red-500" />
+            <span>in India 🇮🇳</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
 
       <style jsx global>{`
         .line-clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }

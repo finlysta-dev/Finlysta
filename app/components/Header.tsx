@@ -109,7 +109,7 @@ export default function Header() {
               href="/employers"
               className="inline-flex items-center px-5 py-2 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
             >
-              For Employers
+             🚀 Post Jobs Free
             </Link>
           </div>
 
@@ -175,7 +175,7 @@ export default function Header() {
                 onClick={() => setMobileMenuOpen(false)}
                 className="block mt-2 px-4 py-3 bg-blue-600 text-white font-bold rounded-xl hover:bg-blue-700 transition-all duration-200 text-center"
               >
-                For Employers
+                🚀 Post Jobs Free
               </Link>
             </div>
           </div>

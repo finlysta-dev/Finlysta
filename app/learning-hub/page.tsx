@@ -1,636 +1,861 @@
-'use client';
+// app/learning-hub/page.tsx
+"use client";
 
-import Link from 'next/link';
-import Image from 'next/image';
-import { useState, useEffect } from 'react';
-import { 
-  Search, BookOpen, Clock, TrendingUp, Users, 
-  FileSpreadsheet, BarChart3, Landmark, Bell, 
-  Sparkles, Target, CheckCircle, Circle, 
-  PieChart, MessageCircle, ArrowRight, Compass, 
-  Flame, Rocket, Star, Zap, GraduationCap,
-  Award, Trophy, Calendar, CheckSquare,
-  Eye, ThumbsUp, Share2, Bookmark, ChevronRight,
-  Layers, Database, LineChart, Briefcase, Cloud, Code, Shield, Gift,
-  RotateCcw
-} from 'lucide-react';
+import Link from "next/link";
+import Image from "next/image";
+import { useState, useEffect, useRef } from "react";
+import { usePathname, useRouter } from "next/navigation";
+import { Search, ArrowRight, CheckCircle, Clock, BookOpen, Briefcase, FileText, GraduationCap, Shield, TrendingUp, Calculator, BarChart3, PieChart, Landmark, IndianRupee, MessageSquare, FileSpreadsheet, ChevronDown, X, ChevronRight } from "lucide-react";
 
-interface Chapter {
-  id: number;
-  title: string;
-  slug: string;
-  duration: string;
-  level: string;
-  description: string;
-  completed: boolean;
-}
-
-interface Category {
-  id: number;
-  name: string;
-  slug: string;
-  icon: any;
-  gradient: string;
-  bgLight: string;
-  tagBg: string;
-  color: string;
-  description: string;
-  totalChapters: number;
-  completedChapters: number;
-  chapters: Chapter[];
-}
-
-const categories: Category[] = [
-  {
-    id: 1,
-    name: 'Finance Fundamentals',
-    slug: 'finance-fundamentals',
-    icon: Landmark,
-    gradient: 'from-emerald-500 to-teal-500',
-    bgLight: 'bg-emerald-50',
-    tagBg: 'bg-emerald-100',
-    color: 'emerald',
-    description: 'Master core finance concepts, statements, and forecasting',
-    totalChapters: 8,
-    completedChapters: 2,
-    chapters: [
-      { id: 1, title: 'Profit & Loss Statement', slug: 'profit-loss-statement', duration: '12 min', level: 'Beginner', description: 'Understand revenue, expenses, and profitability', completed: true },
-      { id: 2, title: 'Balance Sheet', slug: 'balance-sheet', duration: '14 min', level: 'Beginner', description: 'Assets, liabilities, and shareholder equity', completed: true },
-      { id: 3, title: 'Cash Flow Statement', slug: 'cash-flow-statement', duration: '16 min', level: 'Intermediate', description: 'Track money movement in & out', completed: false },
-      { id: 4, title: 'Financial Ratios', slug: 'financial-ratios', duration: '15 min', level: 'Intermediate', description: 'Liquidity, profitability & efficiency metrics', completed: false },
-      { id: 5, title: 'Budgeting Basics', slug: 'budgeting-basics', duration: '10 min', level: 'Beginner', description: 'Plan and control finances effectively', completed: false },
-      { id: 6, title: 'Forecasting Methods', slug: 'forecasting-methods', duration: '18 min', level: 'Advanced', description: 'Predict future financial trends', completed: false },
-      { id: 7, title: 'Working Capital', slug: 'working-capital', duration: '12 min', level: 'Intermediate', description: 'Manage short-term finances', completed: false },
-      { id: 8, title: 'Capital Budgeting', slug: 'capital-budgeting', duration: '16 min', level: 'Advanced', description: 'Evaluate investment decisions', completed: false }
-    ]
-  },
-  {
-    id: 2,
-    name: 'Advanced Excel',
-    slug: 'advanced-excel',
-    icon: FileSpreadsheet,
-    gradient: 'from-blue-500 to-indigo-500',
-    bgLight: 'bg-blue-50',
-    tagBg: 'bg-blue-100',
-    color: 'blue',
-    description: 'Master spreadsheets for financial analysis',
-    totalChapters: 8,
-    completedChapters: 1,
-    chapters: [
-      { id: 1, title: 'Pivot Tables', slug: 'pivot-tables', duration: '15 min', level: 'Intermediate', description: 'Summarize and analyze large datasets', completed: true },
-      { id: 2, title: 'VLOOKUP & XLOOKUP', slug: 'vlookup-xlookup', duration: '12 min', level: 'Intermediate', description: 'Find and match data across spreadsheets', completed: false },
-      { id: 3, title: 'Conditional Formatting', slug: 'conditional-formatting', duration: '8 min', level: 'Beginner', description: 'Highlight trends and patterns', completed: false },
-      { id: 4, title: 'Data Validation', slug: 'data-validation', duration: '10 min', level: 'Beginner', description: 'Control data entry and prevent errors', completed: false },
-      { id: 5, title: 'Charts & Graphs', slug: 'charts-graphs', duration: '14 min', level: 'Beginner', description: 'Visualize your Excel data', completed: false },
-      { id: 6, title: 'Macros & VBA', slug: 'macros-vba', duration: '20 min', level: 'Advanced', description: 'Automate repetitive tasks', completed: false },
-      { id: 7, title: 'SUMIFS & COUNTIFS', slug: 'sumifs-countifs', duration: '10 min', level: 'Intermediate', description: 'Sum with multiple conditions', completed: false },
-      { id: 8, title: 'INDEX MATCH', slug: 'index-match', duration: '15 min', level: 'Advanced', description: 'Advanced lookup alternative', completed: false }
-    ]
-  },
-  {
-    id: 3,
-    name: 'Financial Analysis',
-    slug: 'financial-analysis',
-    icon: TrendingUp,
-    gradient: 'from-amber-500 to-orange-500',
-    bgLight: 'bg-amber-50',
-    tagBg: 'bg-amber-100',
-    color: 'amber',
-    description: 'Analyze data, interpret ratios, and make informed decisions',
-    totalChapters: 8,
-    completedChapters: 0,
-    chapters: [
-      { id: 1, title: 'Ratio Analysis', slug: 'ratio-analysis', duration: '14 min', level: 'Intermediate', description: 'Liquidity, profitability & efficiency ratios', completed: false },
-      { id: 2, title: 'Variance Analysis', slug: 'variance-analysis', duration: '12 min', level: 'Intermediate', description: 'Budget vs actual comparison', completed: false },
-      { id: 3, title: 'Trend Analysis', slug: 'trend-analysis', duration: '10 min', level: 'Beginner', description: 'Identify patterns over time', completed: false },
-      { id: 4, title: 'Scenario Analysis', slug: 'scenario-analysis', duration: '16 min', level: 'Advanced', description: 'What-if analysis for decision making', completed: false },
-      { id: 5, title: 'Benchmarking', slug: 'benchmarking', duration: '12 min', level: 'Intermediate', description: 'Compare against industry standards', completed: false },
-      { id: 6, title: 'Sensitivity Analysis', slug: 'sensitivity-analysis', duration: '14 min', level: 'Advanced', description: 'Test key variable impacts', completed: false },
-      { id: 7, title: 'Break-even Analysis', slug: 'breakeven-analysis', duration: '10 min', level: 'Beginner', description: 'Find profitability threshold', completed: false },
-      { id: 8, title: 'Dupont Analysis', slug: 'dupont-analysis', duration: '15 min', level: 'Advanced', description: 'Decompose ROE components', completed: false }
-    ]
-  },
-  {
-    id: 4,
-    name: 'Financial Reporting',
-    slug: 'financial-reporting',
-    icon: PieChart,
-    gradient: 'from-cyan-500 to-blue-500',
-    bgLight: 'bg-cyan-50',
-    tagBg: 'bg-cyan-100',
-    color: 'cyan',
-    description: 'Create professional financial reports and dashboards',
-    totalChapters: 8,
-    completedChapters: 0,
-    chapters: [
-      { id: 1, title: 'Annual Reports', slug: 'annual-reports', duration: '12 min', level: 'Beginner', description: 'Understand company performance reports', completed: false },
-      { id: 2, title: 'Quarterly Reports', slug: 'quarterly-reports', duration: '10 min', level: 'Beginner', description: 'Track periodic performance', completed: false },
-      { id: 3, title: 'Management Reports', slug: 'management-reports', duration: '14 min', level: 'Intermediate', description: 'Internal decision-making reports', completed: false },
-      { id: 4, title: 'Regulatory Filings', slug: 'regulatory-filings', duration: '16 min', level: 'Intermediate', description: 'Compliance reporting requirements', completed: false },
-      { id: 5, title: 'Investor Reports', slug: 'investor-reports', duration: '12 min', level: 'Advanced', description: 'Shareholder communication', completed: false },
-      { id: 6, title: 'Executive Dashboards', slug: 'executive-dashboards', duration: '15 min', level: 'Advanced', description: 'Visual performance tracking', completed: false },
-      { id: 7, title: 'MD&A Analysis', slug: 'mda-analysis', duration: '14 min', level: 'Intermediate', description: 'Management discussion analysis', completed: false },
-      { id: 8, title: 'Segment Reporting', slug: 'segment-reporting', duration: '12 min', level: 'Advanced', description: 'Business unit performance', completed: false }
-    ]
-  },
-  {
-    id: 5,
-    name: 'Power BI',
-    slug: 'powerbi',
-    icon: BarChart3,
-    gradient: 'from-orange-500 to-red-500',
-    bgLight: 'bg-orange-50',
-    tagBg: 'bg-orange-100',
-    color: 'orange',
-    description: 'Create stunning dashboards and data visualizations',
-    totalChapters: 8,
-    completedChapters: 0,
-    chapters: [
-      { id: 1, title: 'Power BI Basics', slug: 'powerbi-basics', duration: '12 min', level: 'Beginner', description: 'Get started with Power BI', completed: false },
-      { id: 2, title: 'Data Modeling', slug: 'data-modeling', duration: '15 min', level: 'Intermediate', description: 'Create relationships and schemas', completed: false },
-      { id: 3, title: 'DAX Functions', slug: 'dax-functions', duration: '18 min', level: 'Advanced', description: 'Calculate and analyze data', completed: false },
-      { id: 4, title: 'Visualizations', slug: 'visualizations', duration: '14 min', level: 'Beginner', description: 'Create interactive dashboards', completed: false },
-      { id: 5, title: 'Power Query', slug: 'power-query', duration: '16 min', level: 'Intermediate', description: 'Transform and clean data', completed: false },
-      { id: 6, title: 'Dashboard Design', slug: 'dashboard-design', duration: '20 min', level: 'Advanced', description: 'Best practices for dashboards', completed: false },
-      { id: 7, title: 'Row-Level Security', slug: 'row-level-security', duration: '14 min', level: 'Advanced', description: 'Control data access', completed: false },
-      { id: 8, title: 'Publishing Reports', slug: 'publishing-reports', duration: '10 min', level: 'Intermediate', description: 'Share insights with teams', completed: false }
-    ]
-  },
-  {
-    id: 6,
-    name: 'Business Communication',
-    slug: 'business-communication',
-    icon: MessageCircle,
-    gradient: 'from-purple-500 to-pink-500',
-    bgLight: 'bg-purple-50',
-    tagBg: 'bg-purple-100',
-    color: 'purple',
-    description: 'Master finance communication, reports, and presentations',
-    totalChapters: 8,
-    completedChapters: 0,
-    chapters: [
-      { id: 1, title: 'Report Writing', slug: 'report-writing', duration: '12 min', level: 'Beginner', description: 'Write clear financial reports', completed: false },
-      { id: 2, title: 'Presentation Skills', slug: 'presentation-skills', duration: '14 min', level: 'Intermediate', description: 'Present data effectively', completed: false },
-      { id: 3, title: 'Email Etiquette', slug: 'email-etiquette', duration: '8 min', level: 'Beginner', description: 'Professional email communication', completed: false },
-      { id: 4, title: 'Client Communication', slug: 'client-communication', duration: '12 min', level: 'Intermediate', description: 'Handle client interactions', completed: false },
-      { id: 5, title: 'Meeting Management', slug: 'meeting-management', duration: '10 min', level: 'Advanced', description: 'Lead finance meetings', completed: false },
-      { id: 6, title: 'Negotiation Skills', slug: 'negotiation-skills', duration: '14 min', level: 'Advanced', description: 'Negotiate effectively', completed: false },
-      { id: 7, title: 'Business Writing', slug: 'business-writing', duration: '10 min', level: 'Intermediate', description: 'Professional business documents', completed: false },
-      { id: 8, title: 'Data Storytelling', slug: 'data-storytelling', duration: '16 min', level: 'Advanced', description: 'Tell stories with data', completed: false }
-    ]
-  }
-];
-
-const getLevelStyles = (level: string) => {
-  switch(level) {
-    case 'Beginner': return 'bg-emerald-100 text-emerald-700';
-    case 'Intermediate': return 'bg-amber-100 text-amber-700';
-    case 'Advanced': return 'bg-rose-100 text-rose-700';
-    default: return 'bg-gray-100 text-gray-700';
-  }
-};
-
-export default function LearnPage() {
-  const [searchQuery, setSearchQuery] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
-  const [chapterStates, setChapterStates] = useState(categories);
-  const [isScrolled, setIsScrolled] = useState(false);
-  const [mounted, setMounted] = useState(false);
-  const [showResetConfirm, setShowResetConfirm] = useState(false);
+// ============================================
+// HEADER COMPONENT
+// ============================================
+const Header = () => {
+  const [scrolled, setScrolled] = useState(false);
+  const [resourcesDropdownOpen, setResourcesDropdownOpen] = useState(false);
+  const [searchModalOpen, setSearchModalOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const pathname = usePathname();
+  const router = useRouter();
+  const searchInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    setMounted(true);
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 50);
+      setScrolled(window.scrollY > 10);
     };
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  const toggleChapter = (categoryId: number, chapterId: number) => {
-    setChapterStates(prev => prev.map(cat => {
-      if (cat.id === categoryId) {
-        const updatedChapters = cat.chapters.map(ch => 
-          ch.id === chapterId ? { ...ch, completed: !ch.completed } : ch
-        );
-        const completedCount = updatedChapters.filter(ch => ch.completed).length;
-        return { ...cat, chapters: updatedChapters, completedChapters: completedCount };
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as HTMLElement;
+      if (resourcesDropdownOpen && !target.closest(".resources-dropdown")) {
+        setResourcesDropdownOpen(false);
       }
-      return cat;
-    }));
+    };
+    document.addEventListener("click", handleClickOutside);
+    return () => document.removeEventListener("click", handleClickOutside);
+  }, [resourcesDropdownOpen]);
+
+  useEffect(() => {
+    if (searchModalOpen && searchInputRef.current) {
+      setTimeout(() => {
+        searchInputRef.current?.focus();
+      }, 100);
+    }
+  }, [searchModalOpen]);
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      router.push(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
+      setSearchModalOpen(false);
+      setSearchQuery("");
+    }
   };
 
-  const resetAllProgress = () => {
-    setChapterStates(prev => prev.map(cat => ({
-      ...cat,
-      completedChapters: 0,
-      chapters: cat.chapters.map(ch => ({ ...ch, completed: false }))
-    })));
-    setShowResetConfirm(false);
-  };
+  const navLinks = [
+    { href: "/", label: "Home" },
+    { href: "/jobs", label: "Jobs" },
+    { href: "/internships", label: "Internships" },
+    { href: "/learning-hub", label: "Learning Hub" },
+    { href: "/career-paths", label: "Career Paths" },
+    { href: "/interview-prep", label: "Interview Prep" },
+  ];
 
-  const totalChapters = chapterStates.reduce((sum, cat) => sum + cat.totalChapters, 0);
-  const totalCompleted = chapterStates.reduce((sum, cat) => sum + cat.completedChapters, 0);
-  const totalProgress = (totalCompleted / totalChapters) * 100;
+  const resourcesItems = [
+    { href: "/blogs", label: "Blogs" },
+    { href: "/guides", label: "Guides" },
+    { href: "/templates", label: "Templates" },
+    { href: "/webinars", label: "Webinars" },
+    { href: "/case-studies", label: "Case Studies" },
+  ];
 
-  const filteredCategories = chapterStates
-    .map(category => ({
-      ...category,
-      chapters: category.chapters.filter(chapter => {
-        const matchesSearch = searchQuery === '' || 
-          chapter.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          chapter.description.toLowerCase().includes(searchQuery.toLowerCase());
-        const matchesCategory = !selectedCategory || category.slug === selectedCategory;
-        return matchesSearch && matchesCategory;
-      })
-    }))
-    .filter(category => category.chapters.length > 0);
-
-  const clearFilters = () => {
-    setSelectedCategory(null);
-    setSearchQuery('');
-  };
-
-  // Get margin top for categories based on name
-  const getCategoryMargin = (categoryName: string) => {
-    const categoriesWithMargin = [
-      'Advanced Excel',
-      'Financial Analysis',
-      'Financial Reporting',
-      'Power BI',
-      'Business Communication'
-    ];
-    return categoriesWithMargin.includes(categoryName) ? "mt-12" : "";
-  };
-
-  if (!mounted) {
-    return null;
-  }
+  const noPrefetch = ["/blogs", "/learning-hub", "/interview-prep", "/career-paths"];
 
   return (
-    <div className="min-h-screen bg-white">
-      <style jsx global>{`
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
-        * { font-family: 'Inter', sans-serif; }
-      `}</style>
-
-      {/* Header */}
-      <header className={`fixed top-0 w-full z-50 transition-all duration-300 ${isScrolled ? 'bg-white/90 backdrop-blur-xl border-b shadow-sm' : 'bg-transparent'}`}>
-        <div className="max-w-7xl mx-auto px-6 lg:px-8">
-          <div className="flex items-center justify-between h-20">
-            <Link href="/" className="flex items-center">
-              <Image 
-                src="/Finlysta.png" 
-                alt="Finlysta logo"
-                width={180} 
-                height={40}
+    <>
+      <header
+        className={`sticky top-0 z-50 transition-all duration-300 font-sans antialiased ${
+          scrolled
+            ? "bg-white/95 backdrop-blur-md shadow-lg"
+            : "bg-white shadow-sm"
+        }`}
+      >
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+          {/* Logo */}
+          <div className="flex items-center">
+            <Link
+              href="/"
+              className="flex items-center focus:outline-none focus:ring-2 focus:ring-blue-500 rounded-lg group"
+              aria-label="Finlysta - Finance Jobs and Internships for Freshers"
+            >
+              <Image
+                src="/Finlysta.png"
+                alt="Finlysta Logo"
+                width={160}
+                height={36}
                 priority
-                className="object-contain"
+                className="object-contain transition-opacity duration-300 group-hover:opacity-90"
               />
             </Link>
-            
-            <div className="hidden md:flex items-center gap-8">
-              <Link href="/" className="text-sm font-medium text-gray-600 hover:text-gray-900 transition">Home</Link>
-              <Link href="/learning-hub" className="text-sm font-semibold text-blue-600">Learning Hub</Link>
-              <Link href="/roadmap" className="text-sm font-medium text-gray-600 hover:text-gray-900 transition">Roadmap</Link>
-              <Link href="/blogs" className="text-sm font-medium text-gray-600 hover:text-gray-900 transition">Blogs</Link>
-               <Link href="/interview-prep" className="text-sm font-medium text-gray-600 hover:text-gray-900 transition">Interview Prep</Link>
-            </div>
+          </div>
 
-            <div className="flex items-center gap-2">
-              <button className="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center hover:bg-gray-200 transition">
-                <Bell size={16} className="text-gray-600" />
+          {/* Navigation - Centered */}
+          <nav
+            aria-label="Main navigation"
+            className="flex items-center justify-center gap-10 lg:gap-12 absolute left-1/2 transform -translate-x-1/2"
+          >
+            {navLinks.map((link) => {
+              const isActive = pathname === link.href;
+
+              return (
+                <div key={link.href} className="relative">
+                  <Link
+                    href={link.href}
+                    prefetch={!noPrefetch.includes(link.href)}
+                    className={`text-base font-medium transition-colors duration-200 ${
+                      isActive && link.label === "Learning Hub"
+                        ? "text-blue-600"
+                        : "text-black hover:text-blue-600"
+                    }`}
+                  >
+                    {link.label}
+                  </Link>
+
+                  {isActive && link.label === "Learning Hub" && (
+                    <div className="absolute top-full mt-1 left-0 right-0">
+                     <div className="h-1 bg-gradient-to-r from-blue-500 via-blue-600 to-blue-500 rounded-full"></div>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+
+            {/* Resources Dropdown */}
+            <div className="relative resources-dropdown">
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setResourcesDropdownOpen(!resourcesDropdownOpen);
+                }}
+                className={`flex items-center gap-1 text-base transition-colors duration-200 font-medium ${
+                  resourcesDropdownOpen || pathname.startsWith("/resources")
+                    ? "text-black"
+                    : "text-black hover:text-blue-600"
+                }`}
+              >
+                Resources
+                <ChevronDown
+                  size={16}
+                  className={`transition-transform duration-200 ${resourcesDropdownOpen ? "rotate-180" : ""}`}
+                />
               </button>
+
+              {resourcesDropdownOpen && (
+                <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-100 py-2 z-50">
+                  {resourcesItems.map((item) => (
+                    <Link
+                      key={item.href}
+                      href={item.href}
+                      onClick={() => setResourcesDropdownOpen(false)}
+                      className={`block px-4 py-2 text-sm transition-colors duration-200 ${
+                        pathname === item.href
+                          ? "text-blue-600 bg-blue-50"
+                          : "text-gray-700 hover:text-blue-600 hover:bg-gray-50"
+                      }`}
+                    >
+                      {item.label}
+                    </Link>
+                  ))}
+                </div>
+              )}
             </div>
+          </nav>
+
+          {/* Right Side */}
+          <div className="flex items-center gap-4">
+            <button
+              onClick={() => setSearchModalOpen(true)}
+              className="w-10 h-10 rounded-xl bg-gray-100 flex items-center justify-center hover:bg-gray-200 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              aria-label="Search"
+            >
+              <Search size={18} className="text-gray-600" />
+            </button>
+
+            <Link
+              href="/topics"
+              className="inline-flex items-center px-5 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 font-medium"
+            >
+              Explore Topics
+            </Link>
           </div>
         </div>
       </header>
 
-      {/* Hero Section */}
-      <section className="pt-56 pb-16 bg-gradient-to-br from-blue-50 via-white to-purple-50">
-        <div className="max-w-4xl mx-auto px-6 lg:px-8 text-center mt-20">
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-white rounded-full text-xs font-medium text-blue-600 mb-6 shadow-sm">
-            <Sparkles size={12} />
-            New lessons added weekly
-          </div>
-          
-          <h1 className="text-5xl md:text-6xl lg:text-7xl font-black tracking-tight text-gray-900 mb-6">
-            Master Finance &{" "}
-            <span className="bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">Analytics</span>
-          </h1>
-          
-          <p className="text-gray-600 max-w-2xl mx-auto text-lg">
-            Learn the exact skills companies are looking for. From Excel fundamentals to advanced financial modeling. Bite-sized lessons, real-world projects, 100% free.
-          </p>
-          
-{/* Search */}
-<div className="max-w-xl mx-auto mt-9 mb-8">
-  <div className="relative">
-    <Search
-      size={18}
-      className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"
-    />
-    <input
-      type="text"
-      placeholder="          Search chapters, skills, topics..."
-      value={searchQuery}
-      onChange={(e) => setSearchQuery(e.target.value)}
-      className="w-full pl-28 pr-4 py-3.5 bg-white border border-gray-200 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 placeholder:text-gray-400"
-    />
-  </div>
-</div>
-          {/* Stats */}
-          <div className="flex justify-center gap-8">
-            <div className="text-center">
-              <div className="text-2xl font-bold text-gray-900">{totalChapters}</div>
-              <div className="text-xs text-gray-500">Free Chapters</div>
+      {/* Search Modal */}
+      {searchModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-start justify-center pt-20 px-4 bg-black/50 backdrop-blur-sm">
+          <div className="w-full max-w-2xl bg-white rounded-2xl shadow-2xl overflow-hidden">
+            <div className="flex items-center justify-between p-5 border-b border-gray-200">
+              <h3 className="text-xl font-bold text-black">Search</h3>
+              <button
+                onClick={() => {
+                  setSearchModalOpen(false);
+                  setSearchQuery("");
+                }}
+                className="p-2 rounded-lg"
+              >
+                <X size={22} className="text-black" />
+              </button>
             </div>
-            <div className="w-px h-8 bg-gray-200"></div>
-            <div className="text-center">
-              <div className="text-2xl font-bold text-gray-900">100%</div>
-              <div className="text-xs text-gray-500">Free Forever</div>
+
+            <form onSubmit={handleSearch} className="p-5">
+              <div className="flex items-center gap-4 bg-white border border-gray-300 rounded-2xl px-5 py-4 focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-100">
+                <Search size={24} className="text-black flex-shrink-0" />
+                <input
+                  ref={searchInputRef}
+                  type="text"
+                  placeholder="Search for topics, skills or keywords..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="flex-1 outline-none bg-transparent text-black placeholder:text-gray-700 text-lg font-medium"
+                />
+              </div>
+
+              <div className="mt-5 flex justify-end">
+                <button
+                  type="submit"
+                  className="px-8 py-3 bg-[#2563EB] text-white rounded-xl font-semibold text-base"
+                >
+                  Search
+                </button>
+              </div>
+            </form>
+
+            {searchQuery && (
+              <div className="px-5 pb-5">
+                <p className="text-sm text-gray-600">
+                  Press Enter or click Search to see results for "{searchQuery}"
+                </p>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+    </>
+  );
+};
+// ============================================
+// HERO SECTION COMPONENT
+// ============================================
+const HeroSection = () => {
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      window.location.href = `/search?q=${encodeURIComponent(searchQuery.trim())}`;
+    }
+  };
+
+  return (
+    <section className="rounded-[28px] overflow-hidden">
+      <div className="grid lg:grid-cols-2 items-center gap-6 px-6 lg:px-10 py-8 lg:py-10">
+        {/* Left Side */}
+        <div>
+          <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-[#081B4B] leading-tight">
+            Learning Hub
+          </h1>
+
+          <h2 className="mt-2 md:mt-3 text-2xl md:text-3xl lg:text-4xl font-bold text-blue-600">
+            Learn. Practice. Get Hired.
+          </h2>
+
+          <p className="mt-4 md:mt-5 text-base md:text-lg lg:text-xl text-[#081B4B] max-w-[520px] leading-relaxed">
+            Explore finance topics, build practical knowledge and
+            <br />
+            strengthen your skills for real-world finance roles.
+          </p>
+
+          <form onSubmit={handleSearch} className="mt-6 md:mt-8 max-w-[560px]">
+            <div className="flex w-full rounded-xl border-2 border-slate-300 overflow-hidden bg-white">
+              <div className="flex-1 flex items-center px-4">
+                <Search className="w-5 h-5 text-slate-400 shrink-0" />
+                <input
+                  type="text"
+                  placeholder="Search for topics, skills or keywords"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full px-3 py-3 md:py-4 outline-none ring-0 border-0 focus:outline-none focus:ring-0 text-gray-800 placeholder:text-gray-400 bg-transparent"
+                />
+              </div>
+              <button
+                type="submit"
+                className="px-6 md:px-10 bg-[#2563EB] text-white font-semibold hover:bg-blue-700 transition shrink-0 focus:outline-none"
+              >
+                Search
+              </button>
+            </div>
+          </form>
+
+          <div className="mt-4 flex flex-wrap gap-3">
+            <div className="flex items-center gap-1.5 px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-sm text-gray-700 whitespace-nowrap">
+              <BookOpen size={14} className="text-blue-600" /> 100% Free
+            </div>
+            <div className="flex items-center gap-1.5 px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-sm text-gray-700 whitespace-nowrap">
+              <TrendingUp size={14} className="text-blue-600" /> Just Topics
+            </div>
+            <div className="flex items-center gap-1.5 px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-sm text-gray-700 whitespace-nowrap">
+              <CheckCircle size={14} className="text-blue-600" /> Practical Learning
+            </div>
+            <div className="flex items-center gap-1.5 px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-sm text-gray-700 whitespace-nowrap">
+              <Clock size={14} className="text-blue-600" /> Learn at Your Pace
             </div>
           </div>
         </div>
-      </section>
 
-      {/* Progress Bar with Reset Button */}
-      <section className="max-w-2xl mx-auto px-6 lg:px-8 -mt-6">
-        <div className="bg-white rounded-xl p-5 shadow-sm border border-gray-100">
-          <div className="flex items-center justify-between mb-3">
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-lg bg-gradient-to-r from-blue-600 to-purple-600 flex items-center justify-center">
-                <Target size={16} className="text-white" />
-              </div>
-              <span className="text-base font-semibold text-gray-900">Your Progress</span>
-            </div>
-            <div className="flex items-center gap-3">
-              <span className="text-lg font-bold text-blue-600">{Math.round(totalProgress)}%</span>
-              {totalCompleted > 0 && (
-                <div className="relative">
-                  <button
-                    onClick={() => setShowResetConfirm(!showResetConfirm)}
-                    className="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center hover:bg-gray-200 transition"
-                    title="Reset Progress"
-                  >
-                    <RotateCcw size={14} className="text-gray-600" />
-                  </button>
-                  {showResetConfirm && (
-                    <div className="absolute right-0 top-10 z-20 bg-white rounded-lg shadow-lg border border-gray-200 p-3 w-48">
-                      <p className="text-xs text-gray-600 mb-2">Reset all progress?</p>
-                      <div className="flex gap-2">
-                        <button
-                          onClick={resetAllProgress}
-                          className="px-3 py-1 bg-red-500 text-white rounded-md text-xs hover:bg-red-600 transition"
-                        >
-                          Yes, Reset
-                        </button>
-                        <button
-                          onClick={() => setShowResetConfirm(false)}
-                          className="px-3 py-1 bg-gray-200 text-gray-700 rounded-md text-xs hover:bg-gray-300 transition"
-                        >
-                          Cancel
-                        </button>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              )}
-            </div>
-          </div>
-          <div className="h-2.5 bg-gray-100 rounded-full overflow-hidden">
-            <div 
-              className="h-full bg-gradient-to-r from-blue-600 to-purple-600 rounded-full transition-all duration-500"
-              style={{ width: `${totalProgress}%` }}
+        <div className="flex justify-start lg:justify-center mt-8 lg:mt-0 lg:-ml-8">
+          <div className="relative w-full max-w-xl lg:max-w-2xl">
+            <div className="absolute inset-0 bg-gradient-to-br from-blue-100 to-purple-100 rounded-full opacity-50 blur-3xl"></div>
+            <Image
+              src="/learning-hub.png"
+              alt="Learning Hub Illustration"
+              width={700}
+              height={580}
+              className="relative object-contain w-full h-auto"
+              priority
             />
           </div>
-          <p className="text-sm text-gray-500 mt-3">{totalCompleted} of {totalChapters} chapters completed</p>
         </div>
-      </section>
+      </div>
+    </section>
+  );
+};
 
-      {/* Category Pills */}
-      <section className="max-w-7xl mx-auto px-6 lg:px-8 pt-10 pb-6">
-        <div className="flex flex-wrap justify-center gap-2">
-          <button
-            onClick={() => setSelectedCategory(null)}
-            className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
-              selectedCategory === null
-                ? 'bg-gray-900 text-white shadow-md'
-                : 'bg-white text-gray-700 hover:bg-gray-100 border border-gray-200'
-            }`}
+// ============================================
+// EXPLORE BY TOPIC COMPONENT
+// ============================================
+const exploreTopics = [
+  {
+    title: "Advanced Excel",
+    image: "/advanced-excel.png",
+    description: "Learn formulas, functions, pivot tables, shortcuts and data analysis.",
+    slug: "advanced-excel",
+  },
+  {
+    title: "Accounting Fundamentals",
+    image: "/accounting-fundamentals.png",
+    description: "Understand accounting basics, journal entries, ledgers and trial balance.",
+    slug: "accounting-basics",
+  },
+  {
+    title: "Financial Analysis",
+    image: "/financial-analysis.png",
+    description: "Learn ratio analysis, trend analysis and financial modeling.",
+    slug: "financial-analysis",
+  },
+  {
+    title: "Financial Statements",
+    image: "/financial-statements.png",
+    description: "Understand Balance Sheet, P&L Statement, Cash Flow Statement and more.",
+    slug: "financial-statements",
+  },
+  {
+    title: "Banking & Finance",
+    image: "/banking-finance.png",
+    description: "Explore banking products, types of accounts, loans and interest concepts.",
+    slug: "banking-finance",
+  },
+  {
+    title: "Taxation Basics",
+    image: "/taxation-basics.png",
+    description: "Learn Income Tax, GST basics and TDS in a simple way.",
+    slug: "taxation-basics",
+  },
+  {
+    title: "Power BI",
+    image: "/power-bi.png",
+    description: "Build dashboards and visualize data using Power BI tools.",
+    slug: "power-bi",
+  },
+  {
+    title: "Business Communication",
+    image: "/business-communication.png",
+    description: "Improve email writing, presentation skills and workplace communication.",
+    slug: "business-communication",
+  },
+];
+
+const ExploreByTopic = () => {
+  return (
+    <section className="py-12 md:py-16">
+      <div className="flex justify-between items-center mb-6 md:mb-8">
+        <div>
+          <h2 className="text-2xl md:text-3xl font-bold text-[#081B4B]">Explore by Topic</h2>
+          <p className="text-slate-500 mt-1">Browse finance topics and build in-demand skills</p>
+        </div>
+        <Link href="/topics" className="text-[#2563EB] font-semibold hover:underline flex items-center gap-1">
+          View all topics <ArrowRight size={16} />
+        </Link>
+      </div>
+
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-8 gap-5">
+        {exploreTopics.map((topic) => (
+          <div
+            key={topic.slug}
+            className="group bg-white border border-slate-200 rounded-2xl p-4 hover:shadow-lg transition-all hover:-translate-y-1 cursor-pointer flex flex-col"
           >
-            All
-          </button>
-          {chapterStates.map(cat => {
-            const Icon = cat.icon;
+            <div className="w-24 h-24 mb-3 flex items-center justify-center flex-shrink-0 mx-auto bg-white rounded-xl">
+              <Image
+                src={topic.image}
+                alt={topic.title}
+                width={96}
+                height={96}
+                className="object-contain w-full h-full"
+              />
+            </div>
+
+            <h3 className="font-bold text-gray-900 text-base mb-2 leading-tight text-center line-clamp-2 min-h-[44px]">
+              {topic.title}
+            </h3>
+
+            <p className="text-sm text-slate-500 mb-3 leading-relaxed text-center line-clamp-3 min-h-[60px]">
+              {topic.description}
+            </p>
+
+          <Link
+  href={`/learning-hub/topics/${topic.slug}`}
+              className="text-[#2563EB] text-sm font-semibold flex items-center justify-center gap-1 group-hover:gap-2 transition-all mt-auto"
+            >
+              Explore <ArrowRight size={14} />
+            </Link>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+};
+
+// ============================================
+// POPULAR TOPICS COMPONENT
+// ============================================
+const allPopularTopics = [
+  { 
+    title: "VLOOKUP in Excel - Complete Guide", 
+    description: "Learn VLOOKUP with examples and practical use cases.", 
+    icon: FileSpreadsheet,
+    image: "/vlookup.png"
+  },
+  { 
+    title: "How to Read Balance Sheet", 
+    description: "Step-by-step guide to understand balance sheet.", 
+    icon: Landmark,
+    image: "/balance-sheet.png"
+  },
+  { 
+    title: "Journal Entries - Explained", 
+    description: "Understand different types of journal entries.", 
+    icon: Calculator,
+    image: "/journal-entries.png"
+  },
+  { 
+    title: "Cash Flow Statement - Simplified", 
+    description: "Understand cash flow from operating, investing and financing activities.", 
+    icon: TrendingUp,
+    image: "/cash-flow.png"
+  },
+  { 
+    title: "Ratio Analysis - Complete Guide", 
+    description: "Learn liquidity, solvency, activity and profitability ratios.", 
+    icon: PieChart,
+    image: "/ratio-analysis.png"
+  },
+  { 
+    title: "Pivot Tables in Excel", 
+    description: "Summarize data and extract insights easily.", 
+    icon: BarChart3,
+    image: "/pivot-tables.png"
+  },
+  { 
+    title: "GST Basics for Beginners", 
+    description: "Understand GST, types, rates and filing basics.", 
+    icon: FileText,
+    image: "/gst-basics.png"
+  },
+  { 
+    title: "Power BI Dashboards", 
+    description: "Create interactive dashboards step-by-step.", 
+    icon: BarChart3,
+    image: "/powerbi-dashboards.png"
+  },
+  { 
+    title: "Business Communication Essentials", 
+    description: "Master email etiquette, report writing, presentation skills and professional communication.", 
+    icon: MessageSquare,
+    image: "/business-communication.png"
+  },
+  { 
+    title: "Financial Modeling", 
+    description: "Learn financial modeling, forecasting and valuation techniques.", 
+    icon: TrendingUp,
+    image: "/financial-modeling.png"
+  },
+];
+
+const PopularTopics = () => {
+  const leftTopics = allPopularTopics.slice(0, 5);
+  const rightTopics = allPopularTopics.slice(5, 10);
+
+  return (
+    <section className="py-12 md:py-16 bg-[#F8FAFC] rounded-2xl px-6 md:px-8">
+      <div className="flex justify-between items-center mb-6 md:mb-8">
+        <div>
+          <h2 className="text-2xl md:text-3xl font-bold text-[#081B4B]">Popular Topics</h2>
+          <p className="text-slate-500 mt-1">Most loved by finance students</p>
+        </div>
+        <Link href="/topics/popular" className="text-[#2563EB] font-semibold hover:underline flex items-center gap-1">
+          View all topics <ArrowRight size={16} />
+        </Link>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="space-y-4">
+          {leftTopics.map((topic, idx) => {
+            const Icon = topic.icon;
             return (
-              <button
-                key={cat.slug}
-                onClick={() => setSelectedCategory(cat.slug)}
-                className={`px-4 py-2 rounded-full text-sm font-medium flex items-center gap-1.5 transition-all ${
-                  selectedCategory === cat.slug
-                    ? `bg-gradient-to-r ${cat.gradient} text-white shadow-md`
-                    : 'bg-white text-gray-700 hover:bg-gray-100 border border-gray-200'
-                }`}
-              >
-                <Icon size={14} />
-                {cat.name}
-              </button>
+              <div key={idx} className="bg-white border border-slate-200 rounded-2xl p-5 hover:shadow-md transition cursor-pointer">
+                <div className="flex items-start justify-between">
+                  <div className="flex items-center gap-4 flex-1">
+                    <div className="w-20 h-20 rounded-xl bg-gray-50 border border-slate-200 flex items-center justify-center flex-shrink-0">
+                      {topic.image ? (
+                        <Image
+                          src={topic.image}
+                          alt={topic.title}
+                          width={70}
+                          height={70}
+                          className="object-contain w-16 h-16"
+                        />
+                      ) : (
+                        <Icon size={36} className="text-blue-600" />
+                      )}
+                    </div>
+                    <div className="flex-1">
+                      <h3 className="font-bold text-gray-800 text-base">{topic.title}</h3>
+                      <p className="text-sm text-slate-500 mt-1">{topic.description}</p>
+                    </div>
+                  </div>
+                  <ChevronRight size={20} className="text-[#2563EB] flex-shrink-0 ml-2" />
+                </div>
+              </div>
             );
           })}
         </div>
-      </section>
 
-      {/* Chapters Grid - Card Style */}
-      <section className="max-w-7xl mx-auto px-6 lg:px-8 py-8 pb-20">
-        {filteredCategories.length === 0 ? (
-          <div className="text-center py-16">
-            <div className="w-16 h-16 bg-gray-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
-              <Search size={28} className="text-gray-400" />
-            </div>
-            <h3 className="text-lg font-semibold text-gray-900 mb-1">No topics found</h3>
-            <p className="text-gray-500 text-sm mb-4">Try adjusting your search or filters</p>
-            <button 
-              onClick={clearFilters}
-              className="px-4 py-2 bg-gray-900 text-white rounded-lg text-sm font-medium hover:bg-gray-800 transition"
-            >
-              Clear filters
-            </button>
-          </div>
-        ) : (
-          <div className="space-y-12">
-            {filteredCategories.map((category) => {
-              const CategoryIcon = category.icon;
-              const categoryProgress = (category.completedChapters / category.totalChapters) * 100;
-              
-              return (
-                <div key={category.id} className={getCategoryMargin(category.name)}>
-                  {/* Category Header - Removed color blocks */}
-                  <div className="flex items-center justify-between mb-5">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-xl bg-gray-100 flex items-center justify-center">
-                        <CategoryIcon size={20} className="text-gray-600" />
-                      </div>
-                      <div>
-                        <h2 className="text-xl font-bold text-gray-900">{category.name}</h2>
-                        <p className="text-xs text-gray-500">{category.description}</p>
-                      </div>
+        <div className="space-y-4">
+          {rightTopics.map((topic, idx) => {
+            const Icon = topic.icon;
+            return (
+              <div key={idx} className="bg-white border border-slate-200 rounded-2xl p-5 hover:shadow-md transition cursor-pointer">
+                <div className="flex items-start justify-between">
+                  <div className="flex items-center gap-4 flex-1">
+                    <div className="w-20 h-20 rounded-xl bg-gray-50 border border-slate-200 flex items-center justify-center flex-shrink-0">
+                      {topic.image ? (
+                        <Image
+                          src={topic.image}
+                          alt={topic.title}
+                          width={70}
+                          height={70}
+                          className="object-contain w-16 h-16"
+                        />
+                      ) : (
+                        <Icon size={36} className="text-blue-600" />
+                      )}
                     </div>
-                    <div className="text-right">
-                      <div className="text-sm font-bold text-gray-900">{Math.round(categoryProgress)}%</div>
-                      <div className="text-xs text-gray-400">{category.completedChapters}/{category.totalChapters}</div>
+                    <div className="flex-1">
+                      <h3 className="font-bold text-gray-800 text-base">{topic.title}</h3>
+                      <p className="text-sm text-slate-500 mt-1">{topic.description}</p>
                     </div>
                   </div>
-                  
-                  {/* Progress bar under category */}
-                  <div className="h-1 bg-gray-100 rounded-full overflow-hidden mb-6">
-                    <div 
-                      className={`h-full bg-gradient-to-r ${category.gradient} rounded-full transition-all duration-500`}
-                      style={{ width: `${categoryProgress}%` }}
+                  <ChevronRight size={20} className="text-[#2563EB] flex-shrink-0 ml-2" />
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    </section>
+  );
+};
+
+// ============================================
+// LEARNING PATHS DATA
+// ============================================
+const learningPaths = [
+  {
+    title: "Finance Analyst Path",
+    skills: [
+      { name: "Advanced Excel", image: "/financial_analyst_excel.png" },
+      { name: "Financial\nStatements", image: "/financial_analyst_statements.png" },
+      { name: "Financial\nAnalysis", image: "/financial-analysis.png" },
+      { name: "Power BI", image: "/financial_analyst_powerbi.png" },
+      { name: "Interview\nPreparation", image: "/financial_analyst_interview-prep.png" },
+    ],
+    description: "Master skills required for a Financial Analyst role",
+  },
+  {
+    title: "Accounting Professional Path",
+    skills: [
+      { name: "Accounting\nBasics", image: "/financial_analyst_accounting_basics.png" },
+      { name: "Journal\nEntries", image: "/financial_analyst_journal_entries.png" },
+      { name: "Tally\nBasics", image: "/financial_analyst_tally_basics.png" },
+      { name: "GST\nBasics", image: "/financial_analyst_gst_basics.png" },
+      { name: "Interview\nPreparation", image: "/financial_analyst_interview-prep.png" },
+    ],
+    description: "Learn accounting from basics to advanced level",
+  },
+];
+
+// ============================================
+// LEARNING PATHS COMPONENT - ALL 5 SKILLS IN ONE ROW
+// ============================================
+const LearningPathsComponent = () => {
+  return (
+    <section className="py-8 md:py-12">
+      <div className="flex justify-between items-center mb-6 md:mb-8">
+        <div>
+          <h2 className="text-2xl md:text-3xl font-bold text-[#081B4B]">Learning Paths</h2>
+          <p className="text-slate-500 mt-1">Follow step-by-step paths to build strong finance skills</p>
+        </div>
+        <Link href="/learning-paths" className="text-[#2563EB] font-semibold hover:underline flex items-center gap-1">
+          View all paths <ArrowRight size={16} />
+        </Link>
+      </div>
+
+      <div className="grid lg:grid-cols-2 gap-6">
+        {learningPaths.map((path, pathIdx) => (
+          <div key={pathIdx} className="border border-slate-200 rounded-2xl p-5 hover:shadow-lg transition bg-white">
+            <h3 className="text-lg font-bold text-gray-900 mb-1">{path.title}</h3>
+            <p className="text-xs text-slate-500 mb-5">{path.description}</p>
+
+            {/* All 5 skills in one row - using flex with no wrap */}
+            <div className="flex flex-nowrap justify-between items-start gap-2 mb-5">
+              {path.skills.map((skill, skillIdx) => (
+                <div key={skillIdx} className="flex flex-col items-center flex-shrink-0 w-[70px]">
+                  <div className="w-[70px] h-[70px] rounded-xl bg-gray-50 border border-slate-200 flex items-center justify-center">
+                    <Image
+                      src={skill.image}
+                      alt={skill.name}
+                      width={76}
+                      height={76}
+                      className="object-contain w-14 h-14"
                     />
                   </div>
-                  
-                  {/* Chapter Cards */}
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {category.chapters.map((chapter) => (
-                      <Link
-                        key={chapter.id}
-                        href={`/learning-hub/${category.slug}/${chapter.slug}`}
-                        className="group"
-                      >
-                        <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden hover:shadow-lg transition-all duration-300 hover:-translate-y-0.5">
-                          {/* Top section - Removed colored background */}
-                          <div className="p-5">
-                            <div className="flex items-start justify-between mb-3">
-                              <div className="w-10 h-10 rounded-xl bg-gray-100 flex items-center justify-center">
-                                <CategoryIcon size={18} className="text-gray-600" />
-                              </div>
-                              <button 
-                                onClick={(e) => {
-                                  e.preventDefault();
-                                  e.stopPropagation();
-                                  toggleChapter(category.id, chapter.id);
-                                }}
-                              >
-                                {chapter.completed ? (
-                                  <CheckCircle size={18} className="text-emerald-500" />
-                                ) : (
-                                  <Circle size={18} className="text-gray-300 group-hover:text-gray-400 transition" />
-                                )}
-                              </button>
-                            </div>
-                            
-                            <h3 className="font-bold text-gray-900 text-lg mb-2 group-hover:text-blue-600 transition line-clamp-1">
-                              {chapter.title}
-                            </h3>
-                            
-                            <p className="text-gray-600 text-sm mb-4 line-clamp-2">
-                              {chapter.description}
-                            </p>
-                            
-                            <div className="flex flex-wrap gap-2">
-                              <span className={`${getLevelStyles(chapter.level)} px-2.5 py-1 rounded-full text-xs font-medium`}>
-                                {chapter.level}
-                              </span>
-                              <span className="bg-gray-100 px-2.5 py-1 rounded-full text-xs text-gray-500 flex items-center gap-1">
-                                <Clock size={11} />
-                                {chapter.duration}
-                              </span>
-                            </div>
-                          </div>
-                          
-                          {/* Bottom with Explore button */}
-                          <div className="flex items-center justify-between px-5 py-3 bg-white border-t border-gray-50">
-                            <span className="text-sm font-medium text-gray-600">Start Learning</span>
-                            <div className="w-8 h-8 bg-gray-100 rounded-xl flex items-center justify-center group-hover:bg-gray-200 transition group-hover:scale-105">
-                              <ArrowRight size={14} className="text-gray-600" />
-                            </div>
-                          </div>
-                        </div>
-                      </Link>
-                    ))}
-                  </div>
+                  <span className="text-[12px] font-semibold text-gray-700 text-center mt-2 leading-tight whitespace-pre-line">
+                    {skill.name}
+                  </span>
                 </div>
-              );
-            })}
-          </div>
-        )}
-      </section>
-
-      {/* Features Section */}
-      <section className="bg-gray-50 py-16 border-t border-gray-100">
-        <div className="max-w-7xl mx-auto px-6 lg:px-8">
-          <div className="text-center mb-10">
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-white rounded-full text-xs font-medium text-blue-600 mb-4 shadow-sm">
-              <Rocket size={12} />
-              Why choose Finlysta
+              ))}
             </div>
-            <h2 className="text-2xl font-bold text-gray-900">Learn with Confidence</h2>
-            <p className="text-gray-500 text-sm mt-1">Join thousands transforming their careers</p>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-2xl mx-auto">
-            {[
-              { icon: BookOpen, title: 'Free Lessons', value: '48+', description: 'Completely free access' },
-              { icon: Clock, title: 'Hours of Content', value: '30+', description: 'Learn at your pace' },
-            ].map((item, idx) => {
-              const Icon = item.icon;
-              return (
-                <div key={idx} className="bg-white rounded-2xl p-6 text-center hover:shadow-md transition">
-                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-100 to-purple-100 flex items-center justify-center mx-auto mb-3">
-                    <Icon size={22} className="text-blue-600" />
-                  </div>
-                  <div className="text-2xl font-bold text-gray-900">{item.value}</div>
-                  <div className="font-medium text-gray-700 text-sm mt-1">{item.title}</div>
-                  <p className="text-xs text-gray-400 mt-1">{item.description}</p>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      </section>
 
-      {/* CTA Section */}
-      <section className="py-16">
-        <div className="max-w-4xl mx-auto px-6 lg:px-8">
-          <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 p-10 text-center">
-            <div className="absolute inset-0 bg-white/5" />
-            <div className="relative">
-              <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-white/20 backdrop-blur-sm rounded-full text-xs font-medium text-white mb-5">
-                <Gift size={12} />
-                100% Free, Always
+            <button
+              style={{ color: "#2563EB" }}
+              className="w-full px-4 py-3 bg-white font-bold rounded-xl border border-[#93C5FD] text-sm hover:bg-blue-50 transition"
+            >
+              Start Learning →
+            </button>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+};
+
+// ============================================
+// FREE RESOURCES DATA
+// ============================================
+const freeResources = [
+  { 
+    name: "Excel Cheat Sheet", 
+    subtitle: "Quick reference guide\nfor Excel formulas",
+    image: "/excel-resource.png"
+  },
+  { 
+    name: "Accounting Notes", 
+    subtitle: "Beginner-friendly\naccounting notes",
+    image: "/accounting-notes.png"
+  },
+  { 
+    name: "Finance Interview Questions", 
+    subtitle: "Top questions with\nsample answers",
+    image: "/finance-interview.png"
+  },
+  { 
+    name: "Resume Template", 
+    subtitle: "ATS-friendly resume\ntemplate for Finance",
+    image: "/resume-template.png"
+  },
+  { 
+    name: "Career Roadmap", 
+    subtitle: "Step-by-step guide to\nbuild your finance career",
+    image: "/career-roadmap.png"
+  },
+  {
+  name: "Business Communication",
+  subtitle: "Improve workplace\ncommunication skills",
+  image: "/business-communication.png"
+}
+];
+
+// ============================================
+// FREE RESOURCES COMPONENT
+// ============================================
+const FreeResources = () => {
+  return (
+    <section className="py-12 md:py-16 bg-[#F8FAFC] rounded-2xl px-6 md:px-8">
+      <div className="flex justify-between items-center mb-6 md:mb-8">
+        <div>
+          <h2 className="text-2xl md:text-3xl font-bold text-[#081B4B]">Free Resources</h2>
+          <p className="text-slate-500 mt-1">Helpful materials to support your learning</p>
+        </div>
+        <Link href="/resources" className="text-[#2563EB] font-semibold hover:underline flex items-center gap-1">
+          View all resources <ArrowRight size={16} />
+        </Link>
+      </div>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
+        {freeResources.map((resource) => (
+          <div
+            key={resource.name}
+            className="bg-white border border-slate-200 rounded-xl p-3 hover:shadow-md transition cursor-pointer"
+          >
+            <div className="flex items-center gap-3">
+              {/* Logo Left */}
+            <div className="w-20 h-20 flex-shrink-0 flex items-center justify-center">
+                <Image
+                  src={resource.image}
+                  alt={resource.name}
+                  width={96}
+                  height={96}
+                  className="object-contain"
+                />
               </div>
-              <h2 className="text-2xl md:text-3xl font-bold text-white mb-3">Ready to Transform Your Skills?</h2>
-              <p className="text-white text-sm mb-6 max-w-md mx-auto">
-                Join thousands of learners building in-demand finance expertise
+
+              {/* Text Right */}
+              <div className="flex-1">
+                <h3 className="font-bold text-gray-800 text-sm leading-tight">
+                  {resource.name}
+                </h3>
+                <p className="text-[11px] text-slate-500 leading-relaxed whitespace-pre-line mt-1">
+                  {resource.subtitle}
+                </p>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+};
+
+// ============================================
+// CTA BANNER COMPONENT
+// ============================================
+const CTABanner = () => {
+  return (
+    <section className="py-12 md:py-16">
+      <div
+        style={{ backgroundColor: "#2563EB" }}
+        className="rounded-3xl p-8 md:p-12"
+      >
+        <div className="flex items-center justify-between">
+
+          <div className="flex items-center gap-4">
+            <div className="flex-shrink-0">
+              <Image
+                src="/light-bulb.png"
+                alt="Light Bulb"
+                width={80}
+                height={80}
+                className="object-contain"
+              />
+            </div>
+
+            <div>
+              <h2 className="text-xl md:text-2xl font-bold text-white">
+                Keep Learning. Keep Growing.
+              </h2>
+
+              <p className="text-white text-lg md:text-xl font-medium">
+                Consistent learning today, career success tomorrow.
               </p>
-              <div className="flex flex-wrap gap-3 justify-center">
-                <Link
-                  href="/roadmap"
-                  className="px-5 py-2.5 bg-white text-gray-900 font-semibold rounded-xl text-sm hover:shadow-lg transition hover:scale-105"
-                >
-                  View Career Roadmap
-                </Link>
-                <Link
-                  href="/blogs"
-                  className="px-5 py-2.5 bg-white/20 backdrop-blur-sm text-white font-semibold rounded-xl text-sm hover:bg-white/30 transition"
-                >
-                  Read Our Insights
-                </Link>
-              </div>
             </div>
           </div>
-        </div>
-      </section>
 
-      {/* Footer - Centered only */}
-      <footer className="border-t border-gray-100 py-8 bg-white">
-        <div className="max-w-7xl mx-auto px-6 lg:px-8">
-          <div className="text-center text-sm text-gray-500">
-            <p>© 2026 Finlysta. All rights reserved.</p>
-          </div>
+          <Link
+            href="/topics"
+            className="inline-flex items-center px-5 py-2 bg-white text-[#2563EB] rounded-lg font-medium"
+          >
+            Explore All Topics
+            <ArrowRight size={18} className="ml-2" />
+          </Link>
+
         </div>
-      </footer>
-    </div>
+      </div>
+    </section>
+  );
+};
+
+// ============================================
+// BOTTOM FEATURES COMPONENT
+// ============================================
+const bottomFeatures = [
+  { title: "100% Free", description: "All topics are free to learn", icon: Shield, color: "text-green-600", bgColor: "bg-green-50" },
+  { title: "Practical & Easy", description: "Learn with real examples", icon: CheckCircle, color: "text-blue-600", bgColor: "bg-blue-50" },
+  { title: "Learn at Your Pace", description: "Study anytime, anywhere", icon: Clock, color: "text-amber-600", bgColor: "bg-amber-50" },
+  { title: "Build Career-Ready Skills", description: "Get job-ready with in-demand skills", icon: Briefcase, color: "text-purple-600", bgColor: "bg-purple-50" },
+];
+
+const BottomFeatures = () => {
+  return (
+    <section className="py-8 md:py-10 border-t border-slate-200">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        {bottomFeatures.map((feature) => {
+          const Icon = feature.icon;
+          return (
+            <div key={feature.title} className="flex items-center gap-4">
+              <div className={`w-12 h-12 rounded-xl ${feature.bgColor} flex items-center justify-center shrink-0`}>
+                <Icon size={20} className={feature.color} />
+              </div>
+              <div>
+                <div className="font-semibold text-gray-800">{feature.title}</div>
+                <div className="text-xs text-slate-500">{feature.description}</div>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </section>
+  );
+};
+
+// ============================================
+// MAIN PAGE
+// ============================================
+export default function LearningHubPage() {
+  return (
+    <>
+      <Header />
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-8 space-y-4 md:space-y-6">
+        <HeroSection />
+        <ExploreByTopic />
+        <PopularTopics />
+        <LearningPathsComponent />
+        <FreeResources />
+        <CTABanner />
+        <BottomFeatures />
+      </main>
+    </>
   );
 }
