@@ -12,7 +12,7 @@ import {
   Radio, Filter, BriefcaseIcon, ExternalLink, Calendar, Laptop,
   Building, Award as AwardIcon, FolderOpen, GitBranch, BookMarked, AlertCircle,
   TrendingUp as TrendingUpIcon, BadgeCheck, ChartLine, Plus, Minus, Check,
-  FileSpreadsheet, FileText, ClipboardList, MessageSquare
+  FileSpreadsheet, FileText, ClipboardList, MessageSquare, Eye, BarChart4
 } from "lucide-react";
 import Link from "next/link";
 import Header from "./components/Header";
@@ -79,41 +79,120 @@ const SkillsSection = () => {
   );
 };
 
+// ============================================
+// STATS SECTION
+// ============================================
+const StatsSection = () => {
+  const stats = [
+    { value: "4,000+", label: "Visitors", icon: Users, color: "text-blue-600", bg: "bg-blue-50" },
+    { value: "875+", label: "Sessions", icon: Eye, color: "text-green-600", bg: "bg-green-50" },
+    { value: "Learning Hub", label: "Resources", icon: BookOpen, color: "text-purple-600", bg: "bg-purple-50" },
+    { value: "100%", label: "Free Access", icon: CheckCircle, color: "text-amber-600", bg: "bg-amber-50" },
+  ];
+
+  return (
+    <section className="py-8 bg-white">
+      <div className="max-w-7xl mx-auto px-6">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          {stats.map((stat, index) => {
+            const Icon = stat.icon;
+            return (
+              <div key={index} className="bg-[#F8FAFC] rounded-2xl p-5 text-center border border-slate-100 hover:shadow-md transition-all duration-300">
+                <div className={`w-12 h-12 rounded-xl ${stat.bg} flex items-center justify-center mx-auto mb-3`}>
+                  <Icon size={24} className={stat.color} />
+                </div>
+                <p className="text-2xl font-extrabold text-[#081B4B]">{stat.value}</p>
+                <p className="text-sm text-slate-500 mt-1">{stat.label}</p>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    </section>
+  );
+};
+
+// ============================================
+// FINANCE CAREER PATHS - Same structure for all 3 cards
+// ============================================
 const FinanceCareerPaths = () => {
   const categories = [
-    { title: "Finance & Analysis", subtitle: "Most popular modern finance careers", roles: ["Financial Analyst", "FP&A Analyst", "MIS Analyst", "Investment Finance Analyst"], extraRoles: 1, icon: BarChart3, iconBg: "bg-blue-50", iconColor: "text-blue-600", link: "Explore Finance Roles" },
-    { title: "Accounting, Audit & Tax", subtitle: "Huge fresher demand in India", roles: ["Article Trainee", "Audit Associate", "Tax Analyst", "Accounting Executive"], extraRoles: 2, icon: Calculator, iconBg: "bg-green-50", iconColor: "text-green-600", link: "Explore Accounting Roles" },
-    { title: "Banking, Investment & Risk", subtitle: "High aspirational careers", roles: ["Investment Banking Analyst", "Equity Research Analyst", "Credit Analyst", "Risk Analyst"], extraRoles: 1, icon: Landmark, iconBg: "bg-purple-50", iconColor: "text-purple-600", link: "Explore Banking Roles" },
+    { 
+      title: "Finance & Analysis", 
+      subtitle: "Most popular modern finance careers", 
+      roles: ["Financial Analyst", "FP&A Analyst", "MIS Analyst", "Investment Finance Analyst"], 
+      extraRoles: 1, 
+      icon: BarChart3, 
+      iconBg: "bg-blue-50", 
+      iconColor: "text-blue-600", 
+      link: "Explore Finance Roles",
+      bgGradient: "from-blue-50/50 to-white"
+    },
+    { 
+      title: "Accounting, Audit & Tax", 
+      subtitle: "Huge fresher demand in India", 
+      roles: ["Article Trainee", "Audit Associate", "Tax Analyst", "Accounting Executive"], 
+      extraRoles: 2, 
+      icon: Calculator, 
+      iconBg: "bg-green-50", 
+      iconColor: "text-green-600", 
+      link: "Explore Accounting Roles",
+      bgGradient: "from-green-50/50 to-white"
+    },
+    { 
+      title: "Banking, Investment & Risk", 
+      subtitle: "High aspirational careers", 
+      roles: ["Investment Banking Analyst", "Equity Research Analyst", "Credit Analyst", "Risk Analyst"], 
+      extraRoles: 1, 
+      icon: Landmark, 
+      iconBg: "bg-purple-50", 
+      iconColor: "text-purple-600", 
+      link: "Explore Banking Roles",
+      bgGradient: "from-purple-50/50 to-white"
+    },
   ];
 
   return (
     <section className="py-12 bg-[#F8FAFC]">
       <div className="max-w-7xl mx-auto px-6">
         <div className="flex flex-col lg:flex-row gap-8">
-          <div className="lg:w-[260px] flex-shrink-0">
+          <div className="lg:w-[280px] flex-shrink-0">
             <h2 className="text-2xl font-bold text-[#081B4B] leading-tight">Finance Careers Beyond<br /><span className="text-[#2563EB]">Financial Analyst</span></h2>
             <p className="mt-3 text-sm text-slate-500 leading-relaxed">Discover entry-level roles across financial<br />analysis, accounting, banking, and more.</p>
           </div>
           <div className="flex-1">
-            <div className="grid md:grid-cols-3 gap-5">
+            <div className="grid md:grid-cols-3 gap-6">
               {categories.map((item, index) => {
                 const Icon = item.icon;
                 return (
-                  <div key={index} className="bg-white border border-slate-100 rounded-xl p-4 shadow-sm hover:shadow-md transition-all duration-300">
-                    <div className="flex justify-between items-start gap-3">
+                  <div key={index} className={`bg-gradient-to-b ${item.bgGradient} border border-slate-200 rounded-xl p-5 shadow-sm hover:shadow-lg transition-all duration-300 hover:-translate-y-1`}>
+                    <div className="flex items-start justify-between gap-3">
                       <div className="flex-1">
-                        <h3 className="font-bold text-[#081B4B] text-sm">{item.title}</h3>
-                        <p className="text-xs text-slate-500 mt-1">{item.subtitle}</p>
-                        <ul className="mt-3 space-y-1">
-                          {item.roles.map((role) => (<li key={role} className="text-xs text-[#081B4B]">• {role}</li>))}
-                          {item.extraRoles > 0 && (<li className="text-xs text-blue-500 font-medium">+{item.extraRoles} more roles</li>)}
+                        <div className="flex items-center gap-2 mb-1">
+                          <div className={`w-8 h-8 rounded-lg ${item.iconBg} flex items-center justify-center flex-shrink-0`}>
+                            <Icon size={16} className={item.iconColor} />
+                          </div>
+                          <h3 className="font-bold text-[#081B4B] text-base">{item.title}</h3>
+                        </div>
+                        <p className="text-sm text-slate-500 mt-0.5">{item.subtitle}</p>
+                        <ul className="mt-3 space-y-1.5">
+                          {item.roles.map((role) => (
+                            <li key={role} className="text-sm text-[#081B4B] flex items-center gap-1.5">
+                              <span className="w-1 h-1 rounded-full bg-blue-400"></span>
+                              {role}
+                            </li>
+                          ))}
+                          {item.extraRoles > 0 && (
+                            <li className="text-sm text-blue-500 font-medium">+{item.extraRoles} more roles</li>
+                          )}
                         </ul>
-                        <button onClick={() => window.location.href = `/jobs?search=${encodeURIComponent(item.title.split(' &')[0])}`} className="mt-4 text-[#2563EB] font-semibold text-xs inline-flex items-center gap-1.5 hover:gap-2 transition-all">
-                          {item.link} <ArrowRight size={12} />
+                        <button 
+                          onClick={() => window.location.href = `/jobs?search=${encodeURIComponent(item.title.split(' &')[0])}`} 
+                          className="mt-4 text-[#2563EB] font-semibold text-sm inline-flex items-center gap-1.5 hover:gap-2 transition-all group"
+                        >
+                          {item.link} 
+                          <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
                         </button>
-                      </div>
-                      <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${item.iconBg} flex-shrink-0`}>
-                        <Icon className={`w-5 h-5 ${item.iconColor}`} />
                       </div>
                     </div>
                   </div>
@@ -123,7 +202,7 @@ const FinanceCareerPaths = () => {
             <div className="w-full flex mt-6">
               <div style={{ marginLeft: "180px" }}>
                 <Link href="/jobs">
-                  <button className="px-6 py-2 bg-white border-2 border-[#2563EB] text-[#2563EB] rounded-lg font-semibold text-sm">Browse All Entry-Level Finance Roles →</button>
+                  <button className="px-6 py-2.5 bg-white border-2 border-[#2563EB] text-[#2563EB] rounded-lg font-semibold text-sm hover:bg-blue-50 transition">Browse All Entry-Level Finance Roles →</button>
                 </Link>
               </div>
             </div>
@@ -400,6 +479,10 @@ export default function HomePageContent() {
         </div>
 
         <TrendingInternships />
+        
+        {/* Stats Section */}
+        <StatsSection />
+        
         <SkillsSection />
         <FinanceCareerPaths />
         <RoadmapLearningSection />

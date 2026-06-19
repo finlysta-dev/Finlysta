@@ -2,13 +2,16 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { usePathname } from "next/navigation";
+import { ChevronDown } from "lucide-react";
 
 export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [employerDropdownOpen, setEmployerDropdownOpen] = useState(false);
   const pathname = usePathname();
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
   // Handle scroll effect for header
   useEffect(() => {
@@ -30,6 +33,17 @@ export default function Header() {
     return () => window.removeEventListener("resize", handleResize);
   }, [mobileMenuOpen]);
 
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setEmployerDropdownOpen(false);
+      }
+    };
+    document.addEventListener("click", handleClickOutside);
+    return () => document.removeEventListener("click", handleClickOutside);
+  }, []);
+
   // Navigation links
   const navLinks = [
     { href: "/", label: "Home" },
@@ -42,6 +56,11 @@ export default function Header() {
 
   // Pages that are heavy and don't need prefetching
   const noPrefetch = ["/blogs", "/learning-hub", "/interview-prep"];
+
+  const employerLinks = [
+    { href: "/employers/post-job", label: "📌 Post a Job" },
+    { href: "/employers/post-internship", label: "📝 Post an Internship" },
+  ];
 
   return (
     <>
@@ -103,14 +122,37 @@ export default function Header() {
             })}
           </nav>
 
-          {/* For Employers Button - Right Side */}
-          <div className="hidden md:block">
-            <Link
-              href="/employers"
-              className="inline-flex items-center px-5 py-2 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-            >
-             🚀 Post Jobs Free
-            </Link>
+          {/* For Employers Dropdown - Right Side */}
+          <div className="hidden md:block" ref={dropdownRef}>
+            <div className="relative">
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setEmployerDropdownOpen(!employerDropdownOpen);
+                }}
+              className="inline-flex items-center gap-2 px-5 py-2 bg-blue-600 text-white text-[14px] font-semibold rounded-lg hover:bg-blue-700 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                🚀Post Openings Free
+                <ChevronDown 
+                  size={14} 
+                  className={`transition-transform duration-200 ${employerDropdownOpen ? "rotate-180" : ""}`}
+                />
+              </button>
+
+              {employerDropdownOpen && (
+                <div className="absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-lg border border-gray-100 py-2 z-50">
+                  {employerLinks.map((link) => (
+                    <Link
+                      key={link.href}
+                      href={link.href}
+                      onClick={() => setEmployerDropdownOpen(false)}
+                      className="block px-4 py-2.5 text-sm font-medium text-black hover:text-blue-600 hover:bg-blue-50 transition-colors duration-200"
+                    >
+                      {link.label}
+                    </Link>
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
 
           {/* Mobile Menu Button */}
@@ -160,7 +202,6 @@ export default function Header() {
                     >
                       {link.label}
                     </Link>
-                    {/* Blue line only for active page in mobile */}
                     {isActive && (
                       <div className="px-4 mt-1">
                         <div className="w-12 h-1 bg-gradient-to-r from-blue-500 via-blue-600 to-blue-500 rounded-full shadow-sm"></div>
@@ -169,14 +210,23 @@ export default function Header() {
                   </div>
                 );
               })}
-              {/* For Employers button in mobile menu */}
-              <Link
-                href="/employers"
-                onClick={() => setMobileMenuOpen(false)}
-                className="block mt-2 px-4 py-3 bg-blue-600 text-white font-bold rounded-xl hover:bg-blue-700 transition-all duration-200 text-center"
-              >
-                🚀 Post Jobs Free
-              </Link>
+              
+              {/* For Employers section in mobile menu */}
+              <div className="mt-2 border-t border-gray-100 pt-2">
+                <p className="px-4 py-1 text-xs font-semibold text-slate-400 uppercase tracking-wider">
+                  For Employers
+                </p>
+                {employerLinks.map((link) => (
+                  <Link
+                    key={link.href}
+                    href={link.href}
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="block px-4 py-3 text-base font-medium text-black hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-all duration-200"
+                  >
+                    {link.label}
+                  </Link>
+                ))}
+              </div>
             </div>
           </div>
         )}
