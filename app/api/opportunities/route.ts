@@ -49,7 +49,7 @@ export async function GET(request: NextRequest) {
     
     console.log('🔍 Fetching jobs with where:', jobsWhere);
     
-    // Fetch jobs with related data
+    // Fetch jobs with related data - include all needed fields
     const jobs = await prisma.job.findMany({
       where: jobsWhere,
       orderBy: { createdAt: 'desc' },
@@ -57,11 +57,13 @@ export async function GET(request: NextRequest) {
         recruiter: {
           select: {
             companyName: true,
+            companyLogo: true,
           }
         },
         company: {
           select: {
             name: true,
+            logo: true,
           }
         }
       }
