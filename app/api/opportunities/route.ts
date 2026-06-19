@@ -49,32 +49,44 @@ export async function GET(request: NextRequest) {
     
     console.log('🔍 Fetching jobs with where:', jobsWhere);
     
-    // Fetch jobs from jobs table
+    // Fetch jobs with related data
     const jobs = await prisma.job.findMany({
       where: jobsWhere,
       orderBy: { createdAt: 'desc' },
+      include: {
+        recruiter: {
+          select: {
+            companyName: true,
+          }
+        },
+        company: {
+          select: {
+            name: true,
+          }
+        }
+      }
     });
     
     // Format jobs to match opportunity structure
     const formattedJobs = jobs.map(job => ({
       id: job.id,
       title: job.jobTitle,
-      company: job.companyName, // Use companyName directly// Use company field, fallback to companyName
-      companyLogo: job.companyLogo,
+      company: job.company?.name || job.recruiter?.companyName || "Unknown Company",
+      companyLogo: job.company?.logo || job.recruiter?.companyLogo || null,
       location: job.location,
       salary: job.salaryStipend,
       stipendAmount: null,
       duration: "Not specified",
       skills: job.skillsRequired || [],
-      isActivelyHiring: job.isActivelyHiring || false,
+      isActivelyHiring: true,
       isVerified: true,
-      isTrending: false,
-      description: job.companyDescription || "",
-      shortDescription: null,
+      isTrending: job.showOnTrending || false,
+      description: job.responsibilities || "",
+      shortDescription: job.whyJoinTeam || null,
       workMode: job.workMode || "Onsite",
       postedAt: job.createdAt,
       applyLink: job.externalLink || null,
-      type: job.type || "job",
+      type: job.jobType || "job",
       experience: job.experienceRequired || null,
       views: job.views || 0,
       slug: job.slug,
