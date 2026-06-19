@@ -12,7 +12,7 @@ import {
   Radio, Filter, BriefcaseIcon, ExternalLink, Calendar, Laptop,
   Building, Award as AwardIcon, FolderOpen, GitBranch, BookMarked, AlertCircle,
   TrendingUp as TrendingUpIcon, BadgeCheck, ChartLine, Plus, Minus, Check,
-  FileSpreadsheet, FileText, ClipboardList, MessageSquare, Eye, BarChart4
+  FileSpreadsheet, FileText, ClipboardList, MessageSquare, Eye, BarChart4, Gift
 } from "lucide-react";
 import Link from "next/link";
 import Header from "./components/Header";
@@ -80,32 +80,77 @@ const SkillsSection = () => {
 };
 
 // ============================================
-// STATS SECTION
+// STATS SECTION - Updated with better design
 // ============================================
 const StatsSection = () => {
   const stats = [
-    { value: "4,000+", label: "Visitors", icon: Users, color: "text-blue-600", bg: "bg-blue-50" },
-    { value: "875+", label: "Sessions", icon: Eye, color: "text-green-600", bg: "bg-green-50" },
-    { value: "Learning Hub", label: "Resources", icon: BookOpen, color: "text-purple-600", bg: "bg-purple-50" },
-    { value: "100%", label: "Free Access", icon: CheckCircle, color: "text-amber-600", bg: "bg-amber-50" },
+    { 
+      value: "4,000+", 
+      label: "Visitors", 
+      description: "Students exploring finance careers with us",
+      icon: Users, 
+      color: "text-blue-600", 
+      bg: "bg-blue-50" 
+    },
+    { 
+      value: "875+", 
+      label: "Sessions", 
+      description: "Students actively exploring finance opportunities",
+      icon: Eye, 
+      color: "text-green-600", 
+      bg: "bg-green-50" 
+    },
+    { 
+      value: "Learning", 
+      label: "Hub", 
+      description: "Essential finance knowledge to build your career",
+      icon: BookOpen, 
+      color: "text-purple-600", 
+      bg: "bg-purple-50" 
+    },
+    { 
+      value: "100%", 
+      label: "Free Access", 
+      description: "Everything on Finlysta is completely free",
+      icon: Gift, 
+      color: "text-orange-500", 
+      bg: "bg-orange-50" 
+    },
   ];
 
   return (
-    <section className="py-8 bg-white">
+    <section className="py-10">
       <div className="max-w-7xl mx-auto px-6">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          {stats.map((stat, index) => {
-            const Icon = stat.icon;
-            return (
-              <div key={index} className="bg-[#F8FAFC] rounded-2xl p-5 text-center border border-slate-100 hover:shadow-md transition-all duration-300">
-                <div className={`w-12 h-12 rounded-xl ${stat.bg} flex items-center justify-center mx-auto mb-3`}>
-                  <Icon size={24} className={stat.color} />
+        <div className="bg-white border border-slate-200 rounded-2xl px-8 py-6 shadow-sm">
+          <div className="grid grid-cols-1 md:grid-cols-4">
+            {stats.map((stat, index) => {
+              const Icon = stat.icon;
+              return (
+                <div 
+                  key={index} 
+                  className={`flex items-center gap-4 px-4 py-4 md:py-0 ${
+                    index > 0 ? "border-l border-slate-200" : ""
+                  }`}
+                >
+                  <div className={`w-16 h-16 rounded-full ${stat.bg} flex items-center justify-center flex-shrink-0`}>
+                    <Icon size={30} className={stat.color} />
+                  </div>
+
+                  <div>
+                    <h3 className="text-4xl font-bold text-[#081B4B]">
+                      {stat.value}
+                    </h3>
+                    <p className="font-semibold text-black text-lg">
+                      {stat.label}
+                    </p>
+                    <p className="text-sm text-black-500 mt-0.5">
+                      {stat.description}
+                    </p>
+                  </div>
                 </div>
-                <p className="text-2xl font-extrabold text-[#081B4B]">{stat.value}</p>
-                <p className="text-sm text-slate-500 mt-1">{stat.label}</p>
-              </div>
-            );
-          })}
+              );
+            })}
+          </div>
         </div>
       </div>
     </section>
@@ -320,7 +365,6 @@ const TestimonialSection = () => {
         <div className="max-w-2xl mx-auto">
           <div className="bg-white border border-slate-100 rounded-xl px-6 py-6 shadow-sm hover:shadow-md transition-all duration-300">
             <div className="flex items-start gap-4">
-              {/* Random icon from public folder - icon.png */}
               <div className="flex-shrink-0">
                 <Image
                   src="/Userprofile.png"
@@ -332,7 +376,6 @@ const TestimonialSection = () => {
               </div>
 
               <div className="flex-1">
-                {/* 3-line testimonial text with line breaks */}
                 <p className="text-[13px] text-slate-700 leading-relaxed">
                   Finlysta helped me build an ATS-friendly resume, improve
                   <br />
@@ -434,6 +477,7 @@ export default function HomePageContent() {
       <Header />
 
       <main>
+        {/* 1. HERO SECTION */}
         <section className="relative overflow-hidden bg-[#F8FAFC] pt-6 pb-0">
           <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-blue-100 rounded-full blur-3xl opacity-40"></div>
           <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-blue-50 rounded-full blur-3xl opacity-30"></div>
@@ -465,6 +509,7 @@ export default function HomePageContent() {
           </div>
         </section>
 
+        {/* 2. POPULAR ENTRY-LEVEL ROLES */}
         <div className="w-full border-t border-b border-gray-100 bg-white py-4 mt-8">
           <div className="max-w-7xl mx-auto px-6 flex items-center gap-8 overflow-x-auto whitespace-nowrap scrollbar-hide">
             <span className="text-[15px] font-semibold text-[#0F172A]">Popular Entry-Level Roles:</span>
@@ -478,15 +523,25 @@ export default function HomePageContent() {
           </div>
         </div>
 
+        {/* 3. STATS SECTION */}
+        <StatsSection />
+
+        {/* 4. LATEST OPPORTUNITIES */}
         <TrendingInternships />
         
-        {/* Stats Section */}
-        <StatsSection />
-        
+        {/* 5. LEARNING HUB */}
         <SkillsSection />
+        
+        {/* 6. CAREER PATHS */}
         <FinanceCareerPaths />
+        
+        {/* 7. BLOGS */}
         <RoadmapLearningSection />
+        
+        {/* 8. TESTIMONIAL */}
         <TestimonialSection />
+        
+        {/* 9. FAQ */}
         <FAQCTASection />
       </main>
 
@@ -495,7 +550,6 @@ export default function HomePageContent() {
     <div className="pt-12 pb-8">
       <div className="flex flex-nowrap justify-between gap-6">
 
-        {/* Logo Section */}
         <div className="min-w-[260px] flex-shrink-0 space-y-4">
           <Link href="/" className="flex items-center">
             <Image src="/Finlysta.png" alt="Finlysta Logo" width={180} height={40} priority className="object-contain" />
@@ -510,7 +564,6 @@ export default function HomePageContent() {
           </div>
         </div>
 
-        {/* Jobs Column */}
         <div className="flex-shrink-0">
           <h4 className="font-bold text-sm mb-4 text-[#081B4B]">Jobs</h4>
           <ul className="space-y-2 text-sm text-slate-600">
@@ -521,7 +574,6 @@ export default function HomePageContent() {
           </ul>
         </div>
 
-        {/* Employers Column */}
         <div className="flex-shrink-0">
           <h4 className="font-bold text-sm mb-4 text-[#081B4B]">Employers</h4>
           <ul className="space-y-2 text-sm text-slate-600">
@@ -530,7 +582,6 @@ export default function HomePageContent() {
           </ul>
         </div>
 
-        {/* Resources Column */}
         <div className="flex-shrink-0">
           <h4 className="font-bold text-sm mb-4 text-[#081B4B]">Resources</h4>
           <ul className="space-y-2 text-sm text-slate-600">
@@ -539,7 +590,6 @@ export default function HomePageContent() {
           </ul>
         </div>
 
-        {/* Company Column */}
         <div className="flex-shrink-0">
           <h4 className="font-bold text-sm mb-4 text-[#081B4B]">Company</h4>
           <ul className="space-y-2 text-sm text-slate-600">
@@ -550,13 +600,11 @@ export default function HomePageContent() {
           </ul>
         </div>
 
-        {/* Support Column */}
         <div className="flex-shrink-0">
           <h4 className="font-bold text-sm mb-4 text-[#081B4B]">Support</h4>
           <div className="space-y-2">
             <a href="mailto:support@finlysta.com" className="flex items-center gap-2 text-sm text-slate-600 hover:text-[#2563EB] transition whitespace-nowrap">
-              <Mail size={13} /> support@finlysta.com
-            </a>
+              <Mail size={13} /> support@finlysta.com            </a>
             <p className="text-xs text-slate-500 whitespace-nowrap">Reply within 24 hours</p>
           </div>
         </div>
