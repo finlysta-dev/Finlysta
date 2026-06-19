@@ -247,6 +247,7 @@ const Header = () => {
     </>
   );
 };
+
 // ============================================
 // HERO SECTION COMPONENT
 // ============================================
@@ -425,12 +426,9 @@ const ExploreByTopic = () => {
               {topic.description}
             </p>
 
-          <Link
-  href={`/learning-hub/topics/${topic.slug}`}
-              className="text-[#2563EB] text-sm font-semibold flex items-center justify-center gap-1 group-hover:gap-2 transition-all mt-auto"
-            >
-              Explore <ArrowRight size={14} />
-            </Link>
+            <span className="text-[#2563EB] text-sm font-semibold flex items-center justify-center gap-1 mt-auto">
+              Coming Soon <ArrowRight size={14} />
+            </span>
           </div>
         ))}
       </div>
