@@ -5,7 +5,8 @@ import {
   ChevronRight, ChevronLeft, ArrowRight,
   Clock, BookOpen, Star, FileSpreadsheet, Layers,
   Copy, Clipboard, Save, Undo2, Briefcase, TrendingUp, BarChart3, LineChart,
-  Zap, CheckCircle, Target, Keyboard, Eye, Table2, Redo2
+  Zap, CheckCircle, Target, Keyboard, Eye, Table2, Redo2,
+  Home, ArrowDown, ArrowUp, ArrowRight as ArrowRightIcon, Tab, CornerDownLeft
 } from "lucide-react";
 
 // ============================================
@@ -90,71 +91,61 @@ const HeroSection = () => {
 };
 
 // ============================================
-// WHAT IS EXCEL? - 3 Column Layout
+// WHAT IS EXCEL? - Clean 3 Column Layout
 // ============================================
 const WhatIsExcel = () => {
   return (
     <section className="mb-12">
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        <div className="lg:col-span-6 bg-white border border-slate-200 rounded-2xl p-6">
-          <div className="flex items-start gap-4">
-            <div className="w-12 h-12 flex items-center justify-center flex-shrink-0">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="bg-white border border-slate-200 rounded-2xl p-5">
+          <div className="flex items-start gap-3">
+            <div className="w-10 h-10 flex items-center justify-center flex-shrink-0">
               <Image
                 src="/excel-office.png"
                 alt="Microsoft Excel"
-                width={32}
-                height={32}
+                width={28}
+                height={28}
                 className="object-contain"
               />
             </div>
             <div>
-              <h2 className="text-3xl font-bold text-black mb-2">What is Excel?</h2>
-              <p className="text-[28px] text-black leading-10">
-                Microsoft Excel is a spreadsheet program
-                <br />
-                used for organizing, analyzing and reporting data.
-                <br />
-                It is widely used in finance, accounting, banking,
-                <br />
-                auditing and business analysis tasks.
+              <h2 className="text-xl font-bold text-black mb-1">What is Excel?</h2>
+              <p className="text-sm text-black leading-relaxed">
+                Microsoft Excel is a spreadsheet program used for organizing, analyzing and reporting data. It is widely used in finance, accounting, banking, auditing and business analysis tasks.
               </p>
             </div>
           </div>
         </div>
 
-        <div className="lg:col-span-3 bg-white border border-slate-200 rounded-2xl p-4">
-          <h2 className="text-lg font-bold text-black mb-2">Workbook vs Worksheet</h2>
-          <div className="flex flex-col gap-2">
-            <div className="flex items-start gap-3">
-              <div className="w-12 h-12 rounded-xl border border-slate-200 bg-white flex items-center justify-center shadow-sm flex-shrink-0">
-                <FileSpreadsheet size={32} className="text-slate-700" />
-              </div>
-              <div>
-                <h4 className="font-bold text-black text-base">Workbook</h4>
-                <p className="text-sm text-slate-600 leading-relaxed">An Excel file that contains one or more worksheets.</p>
-                <div className="inline-flex px-3 py-1 rounded-lg border border-slate-200 bg-slate-50 text-sm font-semibold text-slate-700 mt-1">
-                  Financial_Model.xlsx
-                </div>
+        <div className="bg-white border border-slate-200 rounded-2xl p-5">
+          <h2 className="text-xl font-bold text-black mb-3">Workbook vs Worksheet</h2>
+          <div className="flex items-start gap-3">
+            <div className="w-12 h-12 rounded-xl border border-slate-200 bg-white flex items-center justify-center shadow-sm flex-shrink-0">
+              <FileSpreadsheet size={32} className="text-black" />
+            </div>
+            <div>
+              <h4 className="font-bold text-black text-base">Workbook</h4>
+              <p className="text-sm text-black leading-relaxed">An Excel file that contains one or more worksheets.</p>
+              <div className="inline-flex px-3 py-1 rounded-lg border border-slate-200 bg-slate-50 text-sm font-semibold text-black mt-1">
+                Financial_Model.xlsx
               </div>
             </div>
           </div>
         </div>
 
-        <div className="lg:col-span-3 bg-white border border-slate-200 rounded-2xl p-4">
-          <h2 className="text-lg font-bold text-black mb-2">&nbsp;</h2>
-          <div className="flex flex-col gap-2">
-            <div className="flex items-start gap-3">
-              <div className="w-12 h-12 rounded-xl border border-green-200 bg-green-50 flex items-center justify-center shadow-sm flex-shrink-0">
-                <Table2 size={32} className="text-green-600" />
-              </div>
-              <div>
-                <h4 className="font-bold text-black text-base">Worksheet</h4>
-                <p className="text-sm text-slate-600 leading-relaxed">A single spreadsheet page inside a workbook.</p>
-                <div className="flex gap-2 mt-2">
-                  <span className="px-3 py-1 rounded-lg border border-slate-200 bg-white text-sm font-medium">Sheet1</span>
-                  <span className="px-3 py-1 rounded-lg border border-slate-200 bg-white text-sm font-medium">Sheet2</span>
-                  <span className="px-3 py-1 rounded-lg border border-slate-200 bg-white text-sm font-medium">Dashboard</span>
-                </div>
+        <div className="bg-white border border-slate-200 rounded-2xl p-5">
+          <h2 className="text-xl font-bold text-black mb-3">&nbsp;</h2>
+          <div className="flex items-start gap-3">
+            <div className="w-12 h-12 rounded-xl border border-green-200 bg-green-50 flex items-center justify-center shadow-sm flex-shrink-0">
+              <Table2 size={32} className="text-green-600" />
+            </div>
+            <div>
+              <h4 className="font-bold text-black text-base">Worksheet</h4>
+              <p className="text-sm text-black leading-relaxed">A single spreadsheet page inside a workbook.</p>
+              <div className="flex flex-wrap gap-2 mt-2">
+                <span className="px-3 py-1 rounded-lg border border-slate-200 bg-white text-sm font-medium text-black">Sheet1</span>
+                <span className="px-3 py-1 rounded-lg border border-slate-200 bg-white text-sm font-medium text-black">Sheet2</span>
+                <span className="px-3 py-1 rounded-lg border border-slate-200 bg-white text-sm font-medium text-black">Dashboard</span>
               </div>
             </div>
           </div>
@@ -165,7 +156,7 @@ const WhatIsExcel = () => {
 };
 
 // ============================================
-// EXCEL INTERFACE ELEMENTS - Built with Tailwind (no images)
+// EXCEL INTERFACE ELEMENTS - 11 Cards
 // ============================================
 const ExcelInterfaceElements = () => {
   return (
@@ -174,85 +165,83 @@ const ExcelInterfaceElements = () => {
         Excel Interface Elements
       </h2>
 
-      {/* Row 1 - 4 Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
         {/* 1. Ribbon */}
         <div className="bg-white border border-slate-200 rounded-xl p-4 hover:shadow-lg transition">
           <h3 className="font-bold text-black text-base mb-2">1. Ribbon</h3>
           <div className="border rounded p-2 bg-slate-50 mb-2">
             <div className="flex gap-1 mb-1">
-              <div className="w-8 h-5 bg-white border rounded text-[8px] flex items-center justify-center">Home</div>
-              <div className="w-8 h-5 bg-white border rounded text-[8px] flex items-center justify-center">Insert</div>
-              <div className="w-8 h-5 bg-white border rounded text-[8px] flex items-center justify-center">Data</div>
+              <div className="w-8 h-5 bg-white border rounded text-[8px] flex items-center justify-center text-black">Home</div>
+              <div className="w-8 h-5 bg-white border rounded text-[8px] flex items-center justify-center text-black">Insert</div>
+              <div className="w-8 h-5 bg-white border rounded text-[8px] flex items-center justify-center text-black">Data</div>
             </div>
             <div className="flex gap-1">
-              <div className="w-8 h-5 bg-white border rounded text-[8px] flex items-center justify-center">Review</div>
-              <div className="w-8 h-5 bg-white border rounded text-[8px] flex items-center justify-center">View</div>
+              <div className="w-8 h-5 bg-white border rounded text-[8px] flex items-center justify-center text-black">Review</div>
+              <div className="w-8 h-5 bg-white border rounded text-[8px] flex items-center justify-center text-black">View</div>
             </div>
           </div>
-          <p className="text-sm text-slate-600 leading-relaxed">Contains tabs like Home, Insert, Formulas and Data used to perform tasks.</p>
+          <p className="text-sm text-black leading-relaxed">Contains tabs like Home, Insert, Formulas and Data used to perform tasks.</p>
         </div>
 
         {/* 2. Name Box */}
         <div className="bg-white border border-slate-200 rounded-xl p-4 hover:shadow-lg transition">
           <h3 className="font-bold text-black text-base mb-2">2. Name Box</h3>
-          <div className="border rounded px-3 py-1 text-sm w-20 bg-white mb-2">A1</div>
-          <p className="text-sm text-slate-600 leading-relaxed">Shows the address of the active cell. Use it to name ranges or navigate quickly.</p>
+          <div className="border rounded px-3 py-1 text-sm w-20 bg-white mb-2 text-black">A1</div>
+          <p className="text-sm text-black leading-relaxed">Shows the address of the active cell. Use it to name ranges or navigate quickly.</p>
         </div>
 
         {/* 3. Formula Bar */}
         <div className="bg-white border border-slate-200 rounded-xl p-4 hover:shadow-lg transition">
           <h3 className="font-bold text-black text-base mb-2">3. Formula Bar</h3>
           <div className="border rounded px-3 py-1 text-sm bg-white flex items-center gap-2 mb-2">
-            <span className="text-slate-400">fx</span>
-            <span className="text-slate-600">=SUM(A1:A10)</span>
+            <span className="text-black">fx</span>
+            <span className="text-black">=SUM(A1:A10)</span>
           </div>
-          <p className="text-sm text-slate-600 leading-relaxed">Displays or lets you edit the contents of the active cell.</p>
+          <p className="text-sm text-black leading-relaxed">Displays or lets you edit the contents of the active cell.</p>
         </div>
 
         {/* 4. Column Headings */}
         <div className="bg-white border border-slate-200 rounded-xl p-4 hover:shadow-lg transition">
           <h3 className="font-bold text-black text-base mb-2">4. Column Headings</h3>
           <div className="grid grid-cols-4 border rounded overflow-hidden mb-2 w-32">
-            <div className="border p-1 text-center text-xs">A</div>
-            <div className="border p-1 text-center text-xs">B</div>
-            <div className="border p-1 text-center text-xs">C</div>
-            <div className="border p-1 text-center text-xs">D</div>
+            <div className="border p-1 text-center text-xs text-black">A</div>
+            <div className="border p-1 text-center text-xs text-black">B</div>
+            <div className="border p-1 text-center text-xs text-black">C</div>
+            <div className="border p-1 text-center text-xs text-black">D</div>
           </div>
-          <p className="text-sm text-slate-600 leading-relaxed">Vertical sections identified by letters (A, B, C...).</p>
+          <p className="text-sm text-black leading-relaxed">Vertical sections identified by letters (A, B, C...).</p>
         </div>
       </div>
 
-      {/* Row 2 - 4 Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
         {/* 5. Row Headings */}
         <div className="bg-white border border-slate-200 rounded-xl p-4 hover:shadow-lg transition">
           <h3 className="font-bold text-black text-base mb-2">5. Row Headings</h3>
           <div className="border rounded overflow-hidden mb-2 w-12">
-            <div className="border-b text-center text-xs py-0.5">1</div>
-            <div className="border-b text-center text-xs py-0.5">2</div>
-            <div className="text-center text-xs py-0.5">3</div>
+            <div className="border-b text-center text-xs py-0.5 text-black">1</div>
+            <div className="border-b text-center text-xs py-0.5 text-black">2</div>
+            <div className="text-center text-xs py-0.5 text-black">3</div>
           </div>
-          <p className="text-sm text-slate-600 leading-relaxed">Horizontal lines identified by numbers (1, 2, 3...).</p>
+          <p className="text-sm text-black leading-relaxed">Horizontal lines identified by numbers (1, 2, 3...).</p>
         </div>
 
         {/* 6. Cells */}
         <div className="bg-white border border-slate-200 rounded-xl p-4 hover:shadow-lg transition">
           <h3 className="font-bold text-black text-base mb-2">6. Cells</h3>
           <div className="grid grid-cols-2 border rounded overflow-hidden mb-2 w-24">
-            <div className="border p-1 text-center text-xs">A1</div>
-            <div className="border p-1 text-center text-xs">B1</div>
-            <div className="border p-1 text-center text-xs">A2</div>
-            <div className="border p-1 text-center text-xs">B2</div>
+            <div className="border p-1 text-center text-xs text-black">A1</div>
+            <div className="border p-1 text-center text-xs text-black">B1</div>
+            <div className="border p-1 text-center text-xs text-black">A2</div>
+            <div className="border p-1 text-center text-xs text-black">B2</div>
           </div>
-          <p className="text-sm text-slate-600 leading-relaxed">Intersection of a row and column. Each has a unique address.</p>
+          <p className="text-sm text-black leading-relaxed">Intersection of a row and column. Each has a unique address.</p>
         </div>
 
         {/* 7. Active Cell */}
         <div className="bg-white border border-slate-200 rounded-xl p-4 hover:shadow-lg transition">
           <h3 className="font-bold text-black text-base mb-2">7. Active Cell</h3>
           <div className="w-16 h-8 border-2 border-green-500 bg-white rounded mb-2"></div>
-          <p className="text-sm text-slate-600 leading-relaxed">Currently selected cell with a green border.</p>
+          <p className="text-sm text-black leading-relaxed">Currently selected cell with a green border.</p>
         </div>
 
         {/* 8. Select All Button */}
@@ -261,39 +250,38 @@ const ExcelInterfaceElements = () => {
           <div className="w-8 h-8 border bg-slate-100 relative rounded mb-2">
             <div className="absolute top-0 left-0 w-0 h-0 border-l-[16px] border-b-[16px] border-l-slate-400 border-b-transparent"></div>
           </div>
-          <p className="text-sm text-slate-600 leading-relaxed">Located at top-left corner. Click to select entire worksheet.</p>
+          <p className="text-sm text-black leading-relaxed">Located at top-left corner. Click to select entire worksheet.</p>
         </div>
       </div>
 
-      {/* Row 3 - 3 Cards (centered) */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-4xl mx-auto">
         {/* 9. Sheet Tabs */}
         <div className="bg-white border border-slate-200 rounded-xl p-4 hover:shadow-lg transition">
           <h3 className="font-bold text-black text-base mb-2">9. Sheet Tabs</h3>
           <div className="flex border rounded overflow-hidden mb-2">
-            <div className="px-3 py-1 bg-white border-r text-sm">Sheet1</div>
-            <div className="px-3 py-1 bg-slate-100 text-sm">Sheet2</div>
-            <div className="px-3 py-1 bg-white text-sm">Sheet3</div>
+            <div className="px-3 py-1 bg-white border-r text-sm text-black">Sheet1</div>
+            <div className="px-3 py-1 bg-slate-100 text-sm text-black">Sheet2</div>
+            <div className="px-3 py-1 bg-white text-sm text-black">Sheet3</div>
           </div>
-          <p className="text-sm text-slate-600 leading-relaxed">Located at the bottom. Used to switch between sheets.</p>
+          <p className="text-sm text-black leading-relaxed">Located at the bottom. Used to switch between sheets.</p>
         </div>
 
         {/* 10. Status Bar */}
         <div className="bg-white border border-slate-200 rounded-xl p-4 hover:shadow-lg transition">
           <h3 className="font-bold text-black text-base mb-2">10. Status Bar</h3>
-          <div className="border rounded px-3 py-1 text-sm bg-slate-50 mb-2">Ready</div>
-          <p className="text-sm text-slate-600 leading-relaxed">Shows Ready, Average, Count and Sum information.</p>
+          <div className="border rounded px-3 py-1 text-sm bg-slate-50 mb-2 text-black">Ready</div>
+          <p className="text-sm text-black leading-relaxed">Shows Ready, Average, Count and Sum information.</p>
         </div>
 
         {/* 11. Quick Access Toolbar */}
         <div className="bg-white border border-slate-200 rounded-xl p-4 hover:shadow-lg transition">
           <h3 className="font-bold text-black text-base mb-2">11. Quick Access Toolbar</h3>
           <div className="flex gap-3 mb-2">
-            <Save size={20} className="text-slate-600" />
-            <Undo2 size={20} className="text-slate-600" />
-            <Redo2 size={20} className="text-slate-600" />
+            <Save size={20} className="text-black" />
+            <Undo2 size={20} className="text-black" />
+            <Redo2 size={20} className="text-black" />
           </div>
-          <p className="text-sm text-slate-600 leading-relaxed">Contains Save, Undo and Redo buttons. Can be customized.</p>
+          <p className="text-sm text-black leading-relaxed">Contains Save, Undo and Redo buttons. Can be customized.</p>
         </div>
       </div>
     </section>
@@ -311,7 +299,6 @@ const KeyConcepts = () => {
       </h2>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        {/* Cell */}
         <div className="bg-white border border-slate-200 rounded-xl p-4 hover:shadow-lg transition">
           <h3 className="font-bold text-black text-base mb-2">Cell</h3>
           <div className="grid grid-cols-2 border rounded overflow-hidden mb-2 w-24">
@@ -321,43 +308,40 @@ const KeyConcepts = () => {
             <div className="border h-6 bg-green-100"></div>
           </div>
           <span className="inline-block bg-green-100 text-green-700 px-2 py-0.5 rounded text-sm mb-1">Example: B3</span>
-          <p className="text-sm text-slate-600 leading-relaxed">A single box where data is entered.</p>
+          <p className="text-sm text-black leading-relaxed">A single box where data is entered.</p>
         </div>
 
-        {/* Row */}
         <div className="bg-white border border-slate-200 rounded-xl p-4 hover:shadow-lg transition">
           <h3 className="font-bold text-black text-base mb-2">Row</h3>
           <div className="border rounded overflow-hidden mb-2 w-32">
             <div className="flex">
-              <div className="w-6 border-r text-center text-xs">1</div>
+              <div className="w-6 border-r text-center text-xs text-black">1</div>
               <div className="flex-1 h-5"></div>
             </div>
             <div className="flex">
-              <div className="w-6 border-r text-center text-xs">2</div>
+              <div className="w-6 border-r text-center text-xs text-black">2</div>
               <div className="flex-1 h-5 bg-green-50"></div>
             </div>
             <div className="flex">
-              <div className="w-6 border-r text-center text-xs">3</div>
+              <div className="w-6 border-r text-center text-xs text-black">3</div>
               <div className="flex-1 h-5"></div>
             </div>
           </div>
           <span className="inline-block bg-green-100 text-green-700 px-2 py-0.5 rounded text-sm mb-1">Example: Row 5</span>
-          <p className="text-sm text-slate-600 leading-relaxed">Horizontal line of cells identified by numbers.</p>
+          <p className="text-sm text-black leading-relaxed">Horizontal line of cells identified by numbers.</p>
         </div>
 
-        {/* Column */}
         <div className="bg-white border border-slate-200 rounded-xl p-4 hover:shadow-lg transition">
           <h3 className="font-bold text-black text-base mb-2">Column</h3>
           <div className="grid grid-cols-3 border rounded overflow-hidden mb-2 w-32">
-            <div className="border text-center bg-green-50 text-sm">A</div>
-            <div className="border text-center text-sm">B</div>
-            <div className="border text-center text-sm">C</div>
+            <div className="border text-center bg-green-50 text-sm text-black">A</div>
+            <div className="border text-center text-sm text-black">B</div>
+            <div className="border text-center text-sm text-black">C</div>
           </div>
           <span className="inline-block bg-green-100 text-green-700 px-2 py-0.5 rounded text-sm mb-1">Example: Column C</span>
-          <p className="text-sm text-slate-600 leading-relaxed">Vertical section of cells identified by letters.</p>
+          <p className="text-sm text-black leading-relaxed">Vertical section of cells identified by letters.</p>
         </div>
 
-        {/* Range */}
         <div className="bg-white border border-slate-200 rounded-xl p-4 hover:shadow-lg transition">
           <h3 className="font-bold text-black text-base mb-2">Range</h3>
           <div className="grid grid-cols-4 border rounded overflow-hidden mb-2 w-32">
@@ -371,8 +355,61 @@ const KeyConcepts = () => {
             ))}
           </div>
           <span className="inline-block bg-blue-100 text-blue-700 px-2 py-0.5 rounded text-sm mb-1">Example: C3:E6</span>
-          <p className="text-sm text-slate-600 leading-relaxed">A group of selected cells.</p>
+          <p className="text-sm text-black leading-relaxed">A group of selected cells.</p>
         </div>
+      </div>
+    </section>
+  );
+};
+
+// ============================================
+// NAVIGATION SHORTCUTS - 6 Shortcuts
+// ============================================
+const navigationShortcuts = [
+  {
+    shortcut: "Ctrl + Home",
+    action: "Go to A1"
+  },
+  {
+    shortcut: "Ctrl + End",
+    action: "Last used cell"
+  },
+  {
+    shortcut: "Ctrl + Arrow",
+    action: "Jump data"
+  },
+  {
+    shortcut: "Tab",
+    action: "Move right"
+  },
+  {
+    shortcut: "Enter",
+    action: "Move down"
+  },
+  {
+    shortcut: "Shift + Tab",
+    action: "Move left"
+  }
+];
+
+const NavigationShortcuts = () => {
+  return (
+    <section className="mb-12">
+      <h2 className="text-2xl md:text-3xl font-bold text-[#081B4B] mb-6">
+        Navigation Shortcuts
+      </h2>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        {navigationShortcuts.map((item, idx) => (
+          <div key={idx} className="bg-white border border-slate-200 rounded-xl p-4 hover:shadow-lg transition flex items-center justify-between">
+            <div>
+              <span className="font-bold text-black text-sm">{item.shortcut}</span>
+              <p className="text-sm text-black mt-1">{item.action}</p>
+            </div>
+            <div className="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center">
+              <Keyboard size={16} className="text-blue-600" />
+            </div>
+          </div>
+        ))}
       </div>
     </section>
   );
@@ -431,7 +468,7 @@ const CommonShortcuts = () => {
                 <Icon size={28} className={shortcut.color} />
               </div>
               <h3 className="font-bold text-black text-lg mb-2">{shortcut.title}</h3>
-              <p className="text-sm text-slate-600">{shortcut.description}</p>
+              <p className="text-sm text-black">{shortcut.description}</p>
             </div>
           );
         })}
@@ -489,7 +526,7 @@ const FinanceUseCases = () => {
                 <Icon size={28} className={useCase.color} />
               </div>
               <h3 className="font-bold text-black text-lg mb-2">{useCase.title}</h3>
-              <p className="text-sm text-slate-600">{useCase.description}</p>
+              <p className="text-sm text-black">{useCase.description}</p>
             </div>
           );
         })}
@@ -518,7 +555,7 @@ const QuickTips = () => {
         </h3>
         <ul className="space-y-3">
           {tips.map((tip, idx) => (
-            <li key={idx} className="flex items-center gap-2 text-slate-700">
+            <li key={idx} className="flex items-center gap-2 text-black">
               <CheckCircle size={18} className="text-blue-600" />
               {tip}
             </li>
@@ -537,8 +574,11 @@ const PracticeExercise = () => {
     "Ribbon",
     "Formula Bar",
     "Name Box",
-    "Sheet Tabs",
+    "Rows",
+    "Columns",
+    "Cells",
     "Active Cell",
+    "Sheet Tabs",
     "Status Bar"
   ];
 
@@ -548,16 +588,46 @@ const PracticeExercise = () => {
         <h2 className="text-2xl md:text-3xl font-bold text-[#081B4B] mb-4">
           Practice Exercise
         </h2>
-        <p className="text-slate-600 mb-4">
+        <p className="text-black mb-4">
           Open Excel and identify the following components:
         </p>
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-3 gap-3">
           {items.map((item, idx) => (
             <div key={idx} className="bg-white border border-slate-200 rounded-lg p-3 text-center hover:shadow-md transition">
               <Target size={18} className="text-blue-600 mx-auto mb-1" />
-              <span className="text-sm font-medium text-[#081B4B]">{item}</span>
+              <span className="text-sm font-medium text-black">{item}</span>
             </div>
           ))}
+        </div>
+      </div>
+    </section>
+  );
+};
+
+// ============================================
+// NEXT TOPIC CARD
+// ============================================
+const NextTopicCard = () => {
+  return (
+    <section className="mb-12">
+      <div className="bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl p-8 shadow-lg">
+        <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+          <div>
+            <span className="text-blue-200 text-sm font-medium">Next Topic →</span>
+            <h3 className="text-2xl md:text-3xl font-bold text-white mt-1">
+              Formulas & Functions
+            </h3>
+            <p className="text-blue-100 mt-2">
+              Master basic to advanced formulas and functions in Excel.
+            </p>
+          </div>
+          <Link
+            href="/learning-hub/advanced-excel/formulas-functions"
+            className="inline-flex items-center gap-3 px-6 py-3 bg-white text-blue-600 font-semibold rounded-xl hover:bg-gray-100 transition shadow-md"
+          >
+            Start Learning
+            <ArrowRight size={18} />
+          </Link>
         </div>
       </div>
     </section>
@@ -604,10 +674,12 @@ export default function ExcelInterfaceNavigationPage() {
       <WhatIsExcel />
       <ExcelInterfaceElements />
       <KeyConcepts />
+      <NavigationShortcuts />
       <CommonShortcuts />
       <FinanceUseCases />
       <QuickTips />
       <PracticeExercise />
+      <NextTopicCard />
       <BottomNavigation />
     </main>
   );

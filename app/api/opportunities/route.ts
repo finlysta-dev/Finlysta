@@ -59,7 +59,7 @@ export async function GET(request: NextRequest) {
     const formattedJobs = jobs.map(job => ({
       id: job.id,
       title: job.jobTitle,
-      company: job.companyName,
+      company: job.company || job.companyName, // Use company field, fallback to companyName
       companyLogo: job.companyLogo,
       location: job.location,
       salary: job.salaryStipend,
