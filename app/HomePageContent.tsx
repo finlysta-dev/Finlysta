@@ -560,7 +560,7 @@ export default function HomePageContent() {
           <div className="flex gap-3">
             <a href="https://www.linkedin.com/company/finlysta" target="_blank" rel="noopener noreferrer" className="w-9 h-9 bg-slate-100 text-slate-600 hover:bg-[#0077B5] hover:text-white rounded-lg flex items-center justify-center transition-all"><Linkedin size={16} /></a>
             <a href="https://twitter.com/Finlysta" target="_blank" rel="noopener noreferrer" className="w-9 h-9 bg-slate-100 text-slate-600 hover:bg-[#1DA1F2] hover:text-white rounded-lg flex items-center justify-center transition-all"><Twitter size={16} /></a>
-            <a href="https://instagram.com/finlysta" target="_blank" rel="noopener noreferrer" className="w-9 h-9 bg-slate-100 text-slate-600 hover:bg-[#E4405F] hover:text-white rounded-lg flex items-center justify-center transition-all"><Instagram size={16} /></a>
+            <a href="https://instagram.com/finlysta.in" target="_blank" rel="noopener noreferrer" className="w-9 h-9 bg-slate-100 text-slate-600 hover:bg-[#E4405F] hover:text-white rounded-lg flex items-center justify-center transition-all"><Instagram size={16} /></a>
           </div>
         </div>
 
