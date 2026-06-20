@@ -81,7 +81,8 @@ export const identifyUser = (userId: string, userProperties: Record<string, any>
 export const clearUser = (): void => {
   if (typeof window === 'undefined') return;
   try {
-    amplitude.setUserId(null);
+    // Clear user ID by passing undefined (not null)
+    amplitude.setUserId(undefined);
     console.log('👤 User cleared');
   } catch (error) {
     console.error('Failed to clear user:', error);
