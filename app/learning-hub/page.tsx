@@ -220,7 +220,7 @@ const Header = () => {
                   placeholder="Search for topics, skills or keywords..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="flex-1 outline-none bg-transparent text-black placeholder:text-gray-700 text-lg font-medium"
+                  className="flex-1 outline-none bg-transparent text-black placeholder:text-gray-500 text-lg font-medium"
                 />
               </div>
 
@@ -292,12 +292,12 @@ const HeroSection = () => {
                   className="w-full px-3 py-3 md:py-4 outline-none ring-0 border-0 focus:outline-none focus:ring-0 text-gray-800 placeholder:text-gray-400 bg-transparent"
                 />
               </div>
-              <button
-                type="submit"
-                className="px-6 md:px-10 bg-[#2563EB] text-white font-semibold hover:bg-blue-700 transition shrink-0 focus:outline-none"
-              >
-                Search
-              </button>
+<button
+  type="submit"
+  className="px-6 md:px-10 py-4 bg-blue-600 text-white font-bold rounded-md"
+>
+  Search
+</button>
             </div>
           </form>
 
@@ -344,48 +344,56 @@ const exploreTopics = [
     image: "/advanced-excel.png",
     description: "Learn formulas, functions, pivot tables, shortcuts and data analysis.",
     slug: "advanced-excel",
+    isExplore: true
   },
   {
     title: "Accounting Fundamentals",
     image: "/accounting-fundamentals.png",
     description: "Understand accounting basics, journal entries, ledgers and trial balance.",
     slug: "accounting-basics",
+    isExplore: false
   },
   {
     title: "Financial Analysis",
     image: "/financial-analysis.png",
     description: "Learn ratio analysis, trend analysis and financial modeling.",
     slug: "financial-analysis",
+    isExplore: false
   },
   {
     title: "Financial Statements",
     image: "/financial-statements.png",
     description: "Understand Balance Sheet, P&L Statement, Cash Flow Statement and more.",
     slug: "financial-statements",
+    isExplore: false
   },
   {
     title: "Banking & Finance",
     image: "/banking-finance.png",
     description: "Explore banking products, types of accounts, loans and interest concepts.",
     slug: "banking-finance",
+    isExplore: false
   },
   {
     title: "Taxation Basics",
     image: "/taxation-basics.png",
     description: "Learn Income Tax, GST basics and TDS in a simple way.",
     slug: "taxation-basics",
+    isExplore: false
   },
   {
     title: "Power BI",
     image: "/power-bi.png",
     description: "Build dashboards and visualize data using Power BI tools.",
     slug: "power-bi",
+    isExplore: false
   },
   {
     title: "Business Communication",
     image: "/business-communication.png",
     description: "Improve email writing, presentation skills and workplace communication.",
     slug: "business-communication",
+    isExplore: false
   },
 ];
 
@@ -426,12 +434,18 @@ const ExploreByTopic = () => {
               {topic.description}
             </p>
 
-            <Link
-              href={`/learning-hub/topics/${topic.slug}`}
-              className="text-[#2563EB] text-sm font-semibold flex items-center justify-center gap-1 group-hover:gap-2 transition-all mt-auto"
-            >
-              Explore <ArrowRight size={14} />
-            </Link>
+            {topic.isExplore ? (
+              <Link
+                href={`/learning-hub/topics/${topic.slug}`}
+                className="text-[#2563EB] text-sm font-semibold flex items-center justify-center gap-1 mt-auto group-hover:gap-2 transition-all"
+              >
+                Explore <ArrowRight size={14} />
+              </Link>
+            ) : (
+              <span className="text-slate-400 text-sm font-medium flex items-center justify-center gap-1 mt-auto">
+                Coming Soon
+              </span>
+            )}
           </div>
         ))}
       </div>
