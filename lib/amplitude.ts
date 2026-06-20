@@ -14,14 +14,12 @@ export const initAmplitude = (): void => {
   }
 
   try {
-    // Initialize Amplitude with basic configuration
+    // Initialize Amplitude with minimal, working configuration
     amplitude.init(AMPLITUDE_API_KEY, {
       defaultTracking: {
         pageViews: true,
         sessions: true,
       },
-      serverZone: process.env.NODE_ENV === 'production' ? 'US' : 'US',
-      serverZonePrefix: 'api2.amplitude.com',
     });
 
     console.log('✅ Amplitude initialized successfully');
@@ -37,7 +35,7 @@ export const trackEvent = (eventName: string, eventProperties: Record<string, an
     console.log(`📊 [Amplitude Dev] Event: ${eventName}`, eventProperties);
   }
 
-  if (process.env.NODE_ENV === 'production' && AMPLITUDE_API_KEY) {
+  if (AMPLITUDE_API_KEY) {
     try {
       amplitude.track(eventName, eventProperties);
     } catch (error) {
@@ -61,14 +59,11 @@ export const identifyUser = (userId: string, userProperties: Record<string, any>
   
   if (userId) {
     try {
-      // Set user ID
       amplitude.setUserId(userId);
       
-      // Set user properties using identify
       if (Object.keys(userProperties).length > 0) {
         const identifyObj = new amplitude.Identify();
         
-        // Add each property
         Object.entries(userProperties).forEach(([key, value]) => {
           identifyObj.set(key, value);
         });
@@ -86,7 +81,6 @@ export const identifyUser = (userId: string, userProperties: Record<string, any>
 export const clearUser = (): void => {
   if (typeof window === 'undefined') return;
   try {
-    // Clear user ID
     amplitude.setUserId(null);
     console.log('👤 User cleared');
   } catch (error) {
