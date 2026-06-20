@@ -321,7 +321,7 @@ const HeroSection = () => {
           <div className="relative w-full max-w-xl lg:max-w-2xl">
             <div className="absolute inset-0 bg-gradient-to-br from-blue-100 to-purple-100 rounded-full opacity-50 blur-3xl"></div>
             <Image
-              src="/learning-hub.png"
+              src="/Learning-Hub.png"
               alt="Learning Hub Illustration"
               width={700}
               height={580}
