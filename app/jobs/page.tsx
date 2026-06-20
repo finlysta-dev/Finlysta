@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Head from 'next/head';
 import { Search, MapPin, ChevronRight, X, Briefcase, Building2, Clock, Award, Shield, Eye, ChevronDown, ChevronUp } from 'lucide-react';
+import { useTracking } from '@/hooks/useTracking';
 
 interface Job {
   id: string;
@@ -31,6 +32,7 @@ const skillFilters = [
 ];
 
 export default function JobsPage() {
+  const { track } = useTracking();
   const [jobs, setJobs] = useState<Job[]>([]);
   const [filteredJobs, setFilteredJobs] = useState<Job[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -40,12 +42,38 @@ export default function JobsPage() {
   const [activeFilters, setActiveFilters] = useState<string[]>([]);
   const [imageErrors, setImageErrors] = useState<{ [key: string]: boolean }>({});
   const [openFaq, setOpenFaq] = useState<number | null>(null);
+  const [searchPerformed, setSearchPerformed] = useState(false);
 
   useEffect(() => {
-    fetchJobs();
+    // Track page view when component mounts
+    track('Jobs Page Viewed', {
+      page: 'jobs',
+      timestamp: new Date().toISOString(),
+      totalJobs: jobs.length,
+    });
   }, []);
 
+  // Track when filtered jobs change
+  useEffect(() => {
+    if (jobs.length > 0 && filteredJobs.length !== jobs.length) {
+      track('Job Filters Applied', {
+        searchQuery: searchQuery || 'none',
+        location: locationQuery || 'none',
+        activeFilters: activeFilters,
+        resultsCount: filteredJobs.length,
+        totalJobs: jobs.length,
+        timestamp: new Date().toISOString(),
+      });
+    }
+  }, [filteredJobs, searchQuery, locationQuery, activeFilters]);
+
   const fetchJobs = async () => {
+    // Track that user is fetching/refreshing jobs
+    track('Jobs Refreshed', {
+      source: 'manual_refresh',
+      timestamp: new Date().toISOString(),
+    });
+
     setIsLoading(true);
     setError(null);
     try {
@@ -80,6 +108,13 @@ export default function JobsPage() {
         
         setJobs(formattedJobs);
         setFilteredJobs(formattedJobs);
+        
+        // Track successful job load
+        track('Jobs Loaded', {
+          totalJobs: formattedJobs.length,
+          source: 'api',
+          timestamp: new Date().toISOString(),
+        });
       } else {
         setJobs([]);
         setFilteredJobs([]);
@@ -89,6 +124,12 @@ export default function JobsPage() {
       setError('Failed to load jobs. Please try again later.');
       setJobs([]);
       setFilteredJobs([]);
+      
+      // Track error
+      track('Job Fetch Error', {
+        errorMessage: error instanceof Error ? error.message : 'Unknown error',
+        timestamp: new Date().toISOString(),
+      });
     } finally {
       setIsLoading(false);
     }
@@ -159,23 +200,106 @@ export default function JobsPage() {
   const addFilter = (filter: string) => {
     if (!activeFilters.includes(filter)) {
       setActiveFilters([...activeFilters, filter]);
+      
+      // Track filter addition
+      track('Job Filter Added', {
+        filterName: filter,
+        filterType: 'skill',
+        activeFiltersCount: activeFilters.length + 1,
+        timestamp: new Date().toISOString(),
+      });
     }
   };
 
   const removeFilter = (filter: string) => {
     setActiveFilters(activeFilters.filter(f => f !== filter));
+    
+    // Track filter removal
+    track('Job Filter Removed', {
+      filterName: filter,
+      filterType: 'skill',
+      activeFiltersCount: activeFilters.length - 1,
+      timestamp: new Date().toISOString(),
+    });
   };
 
   const clearAllFilters = () => {
+    const hadFilters = activeFilters.length > 0 || searchQuery || locationQuery;
     setActiveFilters([]);
     setSearchQuery('');
     setLocationQuery('');
+    
+    if (hadFilters) {
+      track('All Filters Cleared', {
+        previousFilters: activeFilters,
+        hadSearch: !!searchQuery,
+        hadLocation: !!locationQuery,
+        timestamp: new Date().toISOString(),
+      });
+    }
   };
 
   const truncateDescription = (text: string, maxLength: number = 100) => {
     if (!text) return '';
     if (text.length <= maxLength) return text;
     return text.substring(0, maxLength) + '...';
+  };
+
+  const handleJobClick = (job: Job) => {
+    track('Job Clicked', {
+      jobId: job.id,
+      jobTitle: job.title,
+      company: job.company,
+      location: job.location,
+      workMode: job.workMode,
+      salary: job.salary || 'Not specified',
+      isVerified: job.isVerified,
+      isActivelyHiring: job.isActivelyHiring,
+      timestamp: new Date().toISOString(),
+    });
+  };
+
+  const handleJobSave = (job: Job) => {
+    track('Job Saved', {
+      jobId: job.id,
+      jobTitle: job.title,
+      company: job.company,
+      timestamp: new Date().toISOString(),
+    });
+  };
+
+  const handleSearchSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    setSearchPerformed(true);
+    
+    track('Job Search Performed', {
+      query: searchQuery || 'none',
+      location: locationQuery || 'none',
+      timestamp: new Date().toISOString(),
+    });
+    
+    fetchJobs();
+  };
+
+  const handleSkillFilterClick = (skill: string) => {
+    track('Skill Filter Clicked', {
+      skillName: skill,
+      location: 'jobs_page_skills_section',
+      timestamp: new Date().toISOString(),
+    });
+    addFilter(skill);
+  };
+
+  const handleFaqToggle = (index: number, question: string) => {
+    const isOpen = openFaq === index;
+    setOpenFaq(isOpen ? null : index);
+    
+    track('FAQ Toggled', {
+      question: question,
+      action: isOpen ? 'closed' : 'opened',
+      location: 'jobs_page_faq',
+      timestamp: new Date().toISOString(),
+    });
   };
 
   const faqs = [
@@ -198,7 +322,7 @@ export default function JobsPage() {
   ];
 
   const toggleFaq = (index: number) => {
-    setOpenFaq(openFaq === index ? null : index);
+    handleFaqToggle(index, faqs[index].q);
   };
 
   const uniqueCompanies = [...new Set(jobs.map(job => job.company))].length;
@@ -255,7 +379,12 @@ export default function JobsPage() {
           <div className="text-red-500 text-6xl mb-4">⚠️</div>
           <h2 className="text-xl font-semibold text-gray-900 mb-2">Something went wrong</h2>
           <p className="text-gray-600">{error}</p>
-          <button onClick={fetchJobs} className="mt-6 px-6 py-2.5 bg-[#FFD700] text-gray-900 font-semibold rounded-lg hover:bg-[#FFA500] transition">Try Again</button>
+          <button 
+            onClick={fetchJobs} 
+            className="mt-6 px-6 py-2.5 bg-[#FFD700] text-gray-900 font-semibold rounded-lg hover:bg-[#FFA500] transition"
+          >
+            Try Again
+          </button>
         </div>
       </div>
     );
@@ -318,7 +447,13 @@ export default function JobsPage() {
         <div className="bg-white border-b border-gray-100">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
             <div className="flex items-center gap-2 text-sm">
-              <Link href="/" className="text-gray-500 hover:text-gray-700 transition-colors">Home</Link>
+              <Link 
+                href="/" 
+                className="text-gray-500 hover:text-gray-700 transition-colors"
+                onClick={() => track('Breadcrumb Clicked', { page: 'home', location: 'jobs_page' })}
+              >
+                Home
+              </Link>
               <ChevronRight size={14} className="text-gray-400" />
               <span className="text-gray-800">Finance Jobs for Freshers</span>
             </div>
@@ -338,7 +473,7 @@ export default function JobsPage() {
               
               {/* Search Form */}
               <div className="bg-white rounded-xl shadow-xl overflow-hidden max-w-2xl mx-auto">
-                <div className="flex flex-col md:flex-row">
+                <form onSubmit={handleSearchSubmit} className="flex flex-col md:flex-row">
                   <div className="flex-1 border-b md:border-b-0 md:border-r border-gray-200">
                     <div className="relative">
                       <div className="absolute left-4 top-1/2 -translate-y-1/2">
@@ -368,12 +503,12 @@ export default function JobsPage() {
                     </div>
                   </div>
                   <button 
-                    onClick={() => fetchJobs()}
+                    type="submit"
                     className="bg-[#FFD700] hover:bg-[#FFA500] text-gray-900 font-semibold px-6 py-4 transition-all duration-200"
                   >
                     Search
                   </button>
-                </div>
+                </form>
               </div>
             </div>
           </div>
@@ -389,7 +524,7 @@ export default function JobsPage() {
               {skillFilters.map((skill) => (
                 <button
                   key={skill}
-                  onClick={() => addFilter(skill)}
+                  onClick={() => handleSkillFilterClick(skill)}
                   className={`px-3 py-1.5 text-sm rounded-full transition-all duration-200 ${
                     activeFilters.includes(skill)
                       ? 'bg-[#FFD700] text-gray-900 font-medium'
@@ -485,7 +620,10 @@ export default function JobsPage() {
                             )}
                           </div>
                           
-                          <Link href={`/jobs/${job.slug}`}>
+                          <Link 
+                            href={`/jobs/${job.slug}`}
+                            onClick={() => handleJobClick(job)}
+                          >
                             <h3 className="text-lg md:text-xl font-bold text-gray-900 hover:text-gray-700 transition-colors mb-1">
                               {job.title}
                             </h3>
@@ -517,7 +655,11 @@ export default function JobsPage() {
                               {job.skills.slice(0, 5).map((skill) => (
                                 <button
                                   key={skill}
-                                  onClick={(e) => { e.preventDefault(); e.stopPropagation(); addFilter(skill); }}
+                                  onClick={(e) => { 
+                                    e.preventDefault(); 
+                                    e.stopPropagation(); 
+                                    handleSkillFilterClick(skill);
+                                  }}
                                   className="text-xs px-2 py-1 bg-gray-100 text-gray-600 rounded-md hover:bg-gray-200 transition"
                                 >
                                   {skill}
@@ -539,6 +681,7 @@ export default function JobsPage() {
                           )}
                           <Link 
                             href={`/jobs/${job.slug}`}
+                            onClick={() => handleJobClick(job)}
                             className="flex items-center gap-1 text-gray-700 font-medium text-sm hover:text-gray-900 transition-all duration-300 whitespace-nowrap"
                           >
                             View Details
@@ -600,21 +743,48 @@ export default function JobsPage() {
             </div>
           </div>
 
-          {/* Explore More Finance Career Resources - Black text only, no yellow */}
+          {/* Explore More Finance Career Resources */}
           <div className="mt-8 pt-6 border-t border-gray-200">
             <h3 className="text-md font-semibold text-gray-900 text-center mb-4">Explore More Finance Career Resources</h3>
             <div className="flex flex-wrap justify-center gap-5 text-sm">
-              <Link href="/internships" className="text-gray-600 hover:text-gray-800 transition">Finance Internships</Link>
-              <Link href="/learning-hub" className="text-gray-600 hover:text-gray-800 transition">Learning Hub</Link>
-              <Link href="/interview-prep" className="text-gray-600 hover:text-gray-800 transition">Excel Interview Questions</Link>
-              {/* <Link href="/learn/career-paths" className="text-gray-600 hover:text-gray-800 transition">Finance Career Paths</Link> */}
-              <Link href="/interview-prep" className="text-gray-600 hover:text-gray-800 transition">Interview Questions</Link>
+              <Link 
+                href="/internships" 
+                className="text-gray-600 hover:text-gray-800 transition"
+                onClick={() => track('Resource Link Clicked', { resource: 'internships', location: 'jobs_page' })}
+              >
+                Finance Internships
+              </Link>
+              <Link 
+                href="/learning-hub" 
+                className="text-gray-600 hover:text-gray-800 transition"
+                onClick={() => track('Resource Link Clicked', { resource: 'learning_hub', location: 'jobs_page' })}
+              >
+                Learning Hub
+              </Link>
+              <Link 
+                href="/interview-prep" 
+                className="text-gray-600 hover:text-gray-800 transition"
+                onClick={() => track('Resource Link Clicked', { resource: 'interview_prep', location: 'jobs_page' })}
+              >
+                Excel Interview Questions
+              </Link>
+              <Link 
+                href="/interview-prep" 
+                className="text-gray-600 hover:text-gray-800 transition"
+                onClick={() => track('Resource Link Clicked', { resource: 'interview_questions', location: 'jobs_page' })}
+              >
+                Interview Questions
+              </Link>
             </div>
           </div>
 
-          {/* Back to Home - Black text */}
+          {/* Back to Home */}
           <div className="text-center mt-6 pb-4">
-            <Link href="/" className="inline-flex items-center gap-2 text-gray-500 hover:text-gray-700 transition-colors text-sm">
+            <Link 
+              href="/" 
+              className="inline-flex items-center gap-2 text-gray-500 hover:text-gray-700 transition-colors text-sm"
+              onClick={() => track('Back to Home Clicked', { location: 'jobs_page' })}
+            >
               ← Back to Home
             </Link>
           </div>

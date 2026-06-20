@@ -9,6 +9,7 @@
     "postinstall": "prisma generate"
   },
   "dependencies": {
+    "@amplitude/analytics-browser": "^2.44.1",
     "@prisma/client": "^5.22.0",
     "@react-email/render": "^2.0.7",
     "bcryptjs": "^3.0.3",

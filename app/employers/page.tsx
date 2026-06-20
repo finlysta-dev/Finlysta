@@ -1,9 +1,10 @@
 "use client";
 
-import React from "react";
+import React, { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
+import { useTracking } from "@/hooks/useTracking";
 import {
   Briefcase, Users, Zap, CheckCircle, FileText,
   GraduationCap, Send, Target, BadgeCheck,
@@ -12,6 +13,16 @@ import {
 
 const EmployerPage = () => {
   const router = useRouter();
+  const { track } = useTracking();
+
+  // Track page view
+  useEffect(() => {
+    track('Employer Page Viewed', {
+      page: 'employers',
+      timestamp: new Date().toISOString(),
+      userType: 'employer',
+    });
+  }, []);
 
   const whyItems = [
     {
@@ -63,6 +74,44 @@ const EmployerPage = () => {
     }
   ];
 
+  // Track CTA clicks
+  const handlePostJobClick = (source: string) => {
+    track('Post Job CTA Clicked', {
+      source: source,
+      location: 'employers_page',
+      timestamp: new Date().toISOString(),
+    });
+    router.push('/employers/post-job');
+  };
+
+  // Track why item clicks
+  const handleWhyItemClick = (itemTitle: string) => {
+    track('Why Employer Item Clicked', {
+      itemTitle: itemTitle,
+      location: 'employers_page_why_section',
+      timestamp: new Date().toISOString(),
+    });
+  };
+
+  // Track how it works step clicks
+  const handleHowItWorksClick = (stepTitle: string, stepNumber: string) => {
+    track('How It Works Step Clicked', {
+      stepTitle: stepTitle,
+      stepNumber: stepNumber,
+      location: 'employers_page_how_it_works',
+      timestamp: new Date().toISOString(),
+    });
+  };
+
+  // Track mega phone CTA
+  const handleMegaPhoneCTAClick = () => {
+    track('Megaphone CTA Clicked', {
+      location: 'employers_page_megaphone_section',
+      timestamp: new Date().toISOString(),
+    });
+    router.push('/employers/post-job');
+  };
+
   return (
     <div className="min-h-screen font-sans bg-[#F8FAFC]">
       <main>
@@ -78,13 +127,18 @@ const EmployerPage = () => {
               {/* Left Content */}
               <div className="z-10">
                 <div className="flex items-center gap-4 mb-6">
-                  <Image
-                    src="/Finlysta.png"
-                    alt="Finlysta Logo"
-                    width={160}
-                    height={36}
-                    className="object-contain"
-                  />
+                  <Link 
+                    href="/"
+                    onClick={() => track('Logo Clicked', { location: 'employers_page' })}
+                  >
+                    <Image
+                      src="/Finlysta.png"
+                      alt="Finlysta Logo"
+                      width={160}
+                      height={36}
+                      className="object-contain cursor-pointer"
+                    />
+                  </Link>
                   <div className="inline-flex items-center px-5 py-2 rounded-full border border-blue-600 bg-white">
                     <span className="text-sm font-bold text-blue-600">For Employers</span>
                   </div>
@@ -118,7 +172,14 @@ const EmployerPage = () => {
                   ].map(({ icon: Icon, label }) => (
                     <div
                       key={label}
-                      className="px-3 py-1.5 bg-blue-50 text-blue-700 rounded-full text-xs font-medium flex items-center gap-1.5"
+                      className="px-3 py-1.5 bg-blue-50 text-blue-700 rounded-full text-xs font-medium flex items-center gap-1.5 cursor-pointer hover:bg-blue-100 transition-colors"
+                      onClick={() => {
+                        track('Tag Clicked', {
+                          tagLabel: label,
+                          location: 'employers_page_hero',
+                          timestamp: new Date().toISOString(),
+                        });
+                      }}
                     >
                       <Icon size={12} /> {label}
                     </div>
@@ -134,8 +195,8 @@ const EmployerPage = () => {
                   </div>
 
                   <button
-                    onClick={() => router.push('/employers/post-job')}
-                    className="px-8 py-4 bg-blue-600 text-white rounded-2xl font-bold text-lg shadow-lg inline-flex items-center gap-2"
+                    onClick={() => handlePostJobClick('hero_button')}
+                    className="px-8 py-4 bg-blue-600 text-white rounded-2xl font-bold text-lg shadow-lg inline-flex items-center gap-2 hover:bg-blue-700 transition-colors"
                   >
                     <Send size={18} strokeWidth={2.5} />
                     Post a Job for Free
@@ -193,12 +254,16 @@ const EmployerPage = () => {
 
             <div className="grid lg:grid-cols-2 gap-8">
               {/* LEFT FRAME */}
-              <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
+              <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm hover:shadow-md transition-shadow">
                 <div className="grid grid-cols-2 gap-6">
                   {whyItems.map((item, index) => {
                     const Icon = item.icon;
                     return (
-                      <div key={index} className="text-center">
+                      <div 
+                        key={index} 
+                        className="text-center cursor-pointer hover:bg-slate-50 p-3 rounded-xl transition-colors"
+                        onClick={() => handleWhyItemClick(item.title)}
+                      >
                         <div className="w-14 h-14 mx-auto rounded-full bg-blue-50 flex items-center justify-center mb-3">
                           <Icon className="w-7 h-7 text-blue-600" />
                         </div>
@@ -211,12 +276,16 @@ const EmployerPage = () => {
               </div>
 
               {/* RIGHT FRAME */}
-              <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
+              <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm hover:shadow-md transition-shadow">
                 <div className="grid grid-cols-2 gap-6">
                   {howItWorks.map((step, index) => {
                     const Icon = step.icon;
                     return (
-                      <div key={index} className="text-center">
+                      <div 
+                        key={index} 
+                        className="text-center cursor-pointer hover:bg-slate-50 p-3 rounded-xl transition-colors"
+                        onClick={() => handleHowItWorksClick(step.title, step.number)}
+                      >
                         <div className="relative inline-block mx-auto">
                           <div className="w-14 h-14 rounded-full bg-blue-50 flex items-center justify-center mx-auto mb-2">
                             <Icon className="w-7 h-7 text-blue-600" />
@@ -239,7 +308,10 @@ const EmployerPage = () => {
         {/* BLUE RECTANGLE BLOCK WITH MEGAPHONE */}
         <section className="py-12 bg-[#F8FAFC]">
           <div className="max-w-7xl mx-auto px-6">
-            <div className="bg-blue-600 rounded-2xl p-8 flex flex-col md:flex-row items-center justify-between gap-6 shadow-lg">
+            <div 
+              className="bg-blue-600 rounded-2xl p-8 flex flex-col md:flex-row items-center justify-between gap-6 shadow-lg cursor-pointer hover:shadow-xl transition-shadow"
+              onClick={handleMegaPhoneCTAClick}
+            >
               
               {/* Left Side - Megaphone Image */}
               <div className="flex-shrink-0">
@@ -264,13 +336,52 @@ const EmployerPage = () => {
               
               {/* Right Side - Button */}
               <button
-                onClick={() => router.push('/employers/post-job')}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleMegaPhoneCTAClick();
+                }}
                 className="bg-white text-[#2563EB] px-6 py-2.5 rounded-xl font-semibold text-sm hover:bg-gray-100 transition-colors inline-flex items-center gap-2 shadow-md"
               >
                 <Send size={16} />
                 Post a Job for Free
               </button>
               
+            </div>
+          </div>
+        </section>
+
+        {/* Navigation Links Section */}
+        <section className="py-8 bg-white border-t border-slate-100">
+          <div className="max-w-7xl mx-auto px-6">
+            <div className="flex flex-wrap justify-center gap-6 text-sm">
+              <Link 
+                href="/jobs" 
+                className="text-slate-600 hover:text-blue-600 transition-colors"
+                onClick={() => track('Navigation Link Clicked', { link: 'jobs', location: 'employers_page' })}
+              >
+                Browse Jobs
+              </Link>
+              <Link 
+                href="/internships" 
+                className="text-slate-600 hover:text-blue-600 transition-colors"
+                onClick={() => track('Navigation Link Clicked', { link: 'internships', location: 'employers_page' })}
+              >
+                Internships
+              </Link>
+              <Link 
+                href="/about" 
+                className="text-slate-600 hover:text-blue-600 transition-colors"
+                onClick={() => track('Navigation Link Clicked', { link: 'about', location: 'employers_page' })}
+              >
+                About Us
+              </Link>
+              <Link 
+                href="/contact" 
+                className="text-slate-600 hover:text-blue-600 transition-colors"
+                onClick={() => track('Navigation Link Clicked', { link: 'contact', location: 'employers_page' })}
+              >
+                Contact
+              </Link>
             </div>
           </div>
         </section>

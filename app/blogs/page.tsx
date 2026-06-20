@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
+import { useTracking } from '@/hooks/useTracking';
 import { 
   FileText, 
   Link as LinkIcon, 
@@ -35,13 +36,14 @@ interface Resource {
 }
 
 export default function BlogsPage() {
+  const { track } = useTracking();
+  const router = useRouter();
   const [resources, setResources] = useState<Resource[]>([]);
   const [category, setCategory] = useState("all");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [imageErrors, setImageErrors] = useState<Record<string, boolean>>({});
-  const router = useRouter();
 
   // Category configuration - ALL WITH BLUE COLOR
   const categories = [
@@ -53,11 +55,34 @@ export default function BlogsPage() {
     { id: "profile-tips", label: "Profile Tips", icon: UserCheck, color: "bg-blue-600 text-white", description: "Optimize your professional profile" },
   ];
 
+  // Track page view
   useEffect(() => {
-    fetchBlogs();
+    track('Blogs Page Viewed', {
+      page: 'blogs',
+      totalResources: resources.length,
+      timestamp: new Date().toISOString(),
+    });
   }, []);
 
+  // Track category and search changes
+  useEffect(() => {
+    if (!loading && resources.length > 0) {
+      track('Blog Filter Applied', {
+        category: category,
+        searchQuery: searchQuery || 'none',
+        resultsCount: filteredResources.length,
+        totalResources: resources.length,
+        timestamp: new Date().toISOString(),
+      });
+    }
+  }, [category, searchQuery, loading]);
+
   const fetchBlogs = async () => {
+    track('Blogs Refreshed', {
+      source: 'manual_refresh',
+      timestamp: new Date().toISOString(),
+    });
+
     try {
       setLoading(true);
       const res = await fetch("/api/career-resources");
@@ -65,16 +90,35 @@ export default function BlogsPage() {
       
       if (Array.isArray(data)) {
         setResources(data);
+        track('Blogs Loaded', {
+          totalBlogs: data.length,
+          source: 'api',
+          timestamp: new Date().toISOString(),
+        });
       } else if (data.resources && Array.isArray(data.resources)) {
         setResources(data.resources);
+        track('Blogs Loaded', {
+          totalBlogs: data.resources.length,
+          source: 'api',
+          timestamp: new Date().toISOString(),
+        });
       } else if (data.data && Array.isArray(data.data)) {
         setResources(data.data);
+        track('Blogs Loaded', {
+          totalBlogs: data.data.length,
+          source: 'api',
+          timestamp: new Date().toISOString(),
+        });
       } else {
         setResources([]);
       }
     } catch (err) {
       console.error("Error fetching blogs:", err);
       setError("Failed to load blogs");
+      track('Blogs Fetch Error', {
+        errorMessage: err instanceof Error ? err.message : 'Unknown error',
+        timestamp: new Date().toISOString(),
+      });
     } finally {
       setLoading(false);
     }
@@ -131,16 +175,98 @@ export default function BlogsPage() {
 
   const currentCategory = categories.find(c => c.id === category);
 
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="inline-block h-12 w-12 animate-spin rounded-full border-4 border-solid border-blue-600 border-r-transparent"></div>
-          <p className="mt-4 text-gray-600">Loading blogs...</p>
+  // Handle blog click
+  const handleBlogClick = (resource: Resource) => {
+    track('Blog Clicked', {
+      blogId: resource.id,
+      blogTitle: resource.title,
+      blogCategory: resource.category,
+      blogType: resource.type,
+      timestamp: new Date().toISOString(),
+    });
+
+    if (resource.type === "text") {
+      router.push(`/blogs/${resource.slug}`);
+    } else if (resource.type === "pdf" && resource.fileUrl) {
+      track('Blog PDF Opened', {
+        blogId: resource.id,
+        blogTitle: resource.title,
+        fileUrl: resource.fileUrl,
+        timestamp: new Date().toISOString(),
+      });
+      window.open(resource.fileUrl, '_blank');
+    } else if (resource.type === "link" && resource.link) {
+      track('Blog External Link Opened', {
+        blogId: resource.id,
+        blogTitle: resource.title,
+        linkUrl: resource.link,
+        timestamp: new Date().toISOString(),
+      });
+      window.open(resource.link, '_blank');
+    }
+  };
+
+  // Handle category change
+  const handleCategoryChange = (categoryId: string) => {
+    track('Blog Category Selected', {
+      category: categoryId,
+      categoryLabel: categories.find(c => c.id === categoryId)?.label || categoryId,
+      previousCategory: category,
+      timestamp: new Date().toISOString(),
+    });
+    setCategory(categoryId);
+  };
+
+  // Handle search
+  const handleSearch = (query: string) => {
+    setSearchQuery(query);
+    if (query.length > 0 && query.length % 3 === 0) {
+      track('Blog Search Performed', {
+        query: query,
+        resultsCount: filteredResources.length,
+        timestamp: new Date().toISOString(),
+      });
+    }
+  };
+
+  // Handle clear filters
+  const handleClearFilters = () => {
+    track('Blog Filters Cleared', {
+      previousCategory: category,
+      previousSearch: searchQuery,
+      timestamp: new Date().toISOString(),
+    });
+    setSearchQuery("");
+    setCategory("all");
+  };
+
+  // Handle back to home
+  const handleBackToHome = () => {
+    track('Back to Home Clicked', {
+      location: 'blogs_page',
+      timestamp: new Date().toISOString(),
+    });
+  };
+
+  // Skeleton Loading Component
+  const BlogSkeleton = () => (
+    <div className="bg-white rounded-xl shadow-sm overflow-hidden border border-gray-100 animate-pulse">
+      <div className="relative w-full h-48 bg-gray-200"></div>
+      <div className="p-5">
+        <div className="flex items-center justify-between mb-3">
+          <div className="h-5 w-20 bg-gray-200 rounded-full"></div>
+          <div className="h-5 w-16 bg-gray-200 rounded-md"></div>
+        </div>
+        <div className="h-6 bg-gray-200 rounded mb-2 w-3/4"></div>
+        <div className="h-4 bg-gray-200 rounded mb-4 w-full"></div>
+        <div className="h-4 bg-gray-200 rounded mb-4 w-2/3"></div>
+        <div className="flex items-center justify-between pt-3 border-t border-gray-100">
+          <div className="h-4 bg-gray-200 rounded w-20"></div>
+          <div className="h-4 bg-gray-200 rounded w-16"></div>
         </div>
       </div>
-    );
-  }
+    </div>
+  );
 
   if (error) {
     return (
@@ -149,7 +275,10 @@ export default function BlogsPage() {
           <div className="text-red-500 text-5xl mb-4">⚠️</div>
           <h2 className="text-2xl font-bold text-gray-800 mb-2">Something went wrong</h2>
           <p className="text-gray-600">{error}</p>
-          <button onClick={fetchBlogs} className="mt-4 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+          <button 
+            onClick={fetchBlogs} 
+            className="mt-4 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+          >
             Try Again
           </button>
         </div>
@@ -165,6 +294,7 @@ export default function BlogsPage() {
           <Link 
             href="/" 
             className="inline-flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors group"
+            onClick={handleBackToHome}
           >
             <ArrowLeft size={18} className="group-hover:-translate-x-0.5 transition-transform" />
             <span className="text-sm font-medium">Back to Home</span>
@@ -187,7 +317,7 @@ export default function BlogsPage() {
                 type="text"
                 placeholder="Search blogs..."
                 value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
+                onChange={(e) => handleSearch(e.target.value)}
                 className="w-full px-6 py-3 pr-12 text-gray-900 rounded-xl shadow-lg focus:ring-2 focus:ring-blue-300 focus:outline-none"
               />
               <Search className="absolute right-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
@@ -195,7 +325,16 @@ export default function BlogsPage() {
             {searchQuery && (
               <div className="mt-2 text-sm text-blue-200">
                 Showing results for: "{searchQuery}"
-                <button onClick={() => setSearchQuery("")} className="ml-2 underline hover:text-white">
+                <button 
+                  onClick={() => {
+                    track('Blog Search Cleared', {
+                      previousQuery: searchQuery,
+                      timestamp: new Date().toISOString(),
+                    });
+                    setSearchQuery("");
+                  }} 
+                  className="ml-2 underline hover:text-white"
+                >
                   Clear
                 </button>
               </div>
@@ -217,7 +356,7 @@ export default function BlogsPage() {
               return (
                 <button
                   key={cat.id}
-                  onClick={() => setCategory(cat.id)}
+                  onClick={() => handleCategoryChange(cat.id)}
                   className={`
                     inline-flex items-center gap-2 px-4 py-2.5 rounded-lg font-medium text-sm
                     transition-all duration-200 whitespace-nowrap
@@ -239,7 +378,7 @@ export default function BlogsPage() {
         </div>
 
         {/* Coming Soon Message */}
-        {category !== "all" && filteredResources.length === 0 && (
+        {!loading && category !== "all" && filteredResources.length === 0 && (
           <div className="mb-8 p-6 bg-amber-50 rounded-xl border border-amber-200 text-center">
             <BookOpen className="h-12 w-12 text-amber-500 mx-auto mb-3" />
             <h3 className="text-lg font-semibold text-amber-800 mb-2">Coming Soon!</h3>
@@ -250,7 +389,7 @@ export default function BlogsPage() {
         )}
 
         {/* Results Stats */}
-        {filteredResources.length > 0 && (
+        {!loading && filteredResources.length > 0 && (
           <div className="mb-5 flex items-center justify-between flex-wrap gap-3">
             <p className="text-sm text-gray-500">
               Showing <span className="font-semibold text-gray-700">{filteredResources.length}</span> blogs
@@ -258,10 +397,7 @@ export default function BlogsPage() {
             
             {(searchQuery || category !== "all") && (
               <button
-                onClick={() => {
-                  setSearchQuery("");
-                  setCategory("all");
-                }}
+                onClick={handleClearFilters}
                 className="text-sm text-red-500 hover:text-red-600 flex items-center gap-1"
               >
                 <X size={14} />
@@ -271,8 +407,14 @@ export default function BlogsPage() {
           </div>
         )}
 
-        {/* Blogs Grid */}
-        {filteredResources.length === 0 && category === "all" ? (
+        {/* Blogs Grid - Loading State with Skeletons */}
+        {loading ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+            {[...Array(6)].map((_, index) => (
+              <BlogSkeleton key={index} />
+            ))}
+          </div>
+        ) : filteredResources.length === 0 && category === "all" ? (
           <div className="text-center bg-white rounded-xl p-12 border-2 border-dashed border-gray-300">
             <BookOpen className="h-16 w-16 text-gray-400 mx-auto mb-4" />
             <h3 className="text-xl font-semibold text-gray-800 mb-2">No blogs yet</h3>
@@ -291,19 +433,11 @@ export default function BlogsPage() {
               return (
                 <div
                   key={resource.id}
-                  onClick={() => {
-                    if (resource.type === "text") {
-                      router.push(`/blogs/${resource.slug}`);
-                    } else if (resource.type === "pdf" && resource.fileUrl) {
-                      window.open(resource.fileUrl, '_blank');
-                    } else if (resource.type === "link" && resource.link) {
-                      window.open(resource.link, '_blank');
-                    }
-                  }}
+                  onClick={() => handleBlogClick(resource)}
                   className="group bg-white rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 cursor-pointer overflow-hidden border border-gray-100 hover:border-blue-200 hover:-translate-y-1"
                 >
-                  {/* Cover Image Section - FIXED: Full image visible */}
-                  {coverImageUrl && !hasImageError && (
+                  {/* Cover Image Section */}
+                  {coverImageUrl && !hasImageError ? (
                     <div className="relative w-full bg-gray-100">
                       <img
                         src={coverImageUrl}
@@ -312,10 +446,7 @@ export default function BlogsPage() {
                         onError={() => handleImageError(resource.id)}
                       />
                     </div>
-                  )}
-                  
-                  {/* No Image Fallback */}
-                  {(!coverImageUrl || hasImageError) && (
+                  ) : (
                     <div className="relative w-full h-48 overflow-hidden bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center">
                       <BookOpen className="w-16 h-16 text-white/30" />
                     </div>

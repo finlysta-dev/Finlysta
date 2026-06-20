@@ -17,6 +17,7 @@ import {
 import Link from "next/link";
 import Header from "./components/Header";
 import TrendingInternships from "@/components/TrendingOpportunities";
+import { useTracking } from "@/hooks/useTracking";
 
 const HelpCircle = ({ size, className }: { size?: number; className?: string }) => (
   <svg xmlns="http://www.w3.org/2000/svg" width={size || 24} height={size || 24} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
@@ -27,6 +28,8 @@ const HelpCircle = ({ size, className }: { size?: number; className?: string }) 
 );
 
 const SkillsSection = () => {
+  const { track } = useTracking();
+  
   const skills = [
     { icon: FileSpreadsheet, title: "Advanced Excel", subtitle: "Pivot Tables, VLOOKUP,\nExcel Functions", color: "text-green-600", bg: "bg-green-50" },
     { icon: FileText, title: "Financial Statements", subtitle: "Balance Sheet, P&L,\nCash Flow", color: "text-blue-600", bg: "bg-blue-50" },
@@ -35,6 +38,14 @@ const SkillsSection = () => {
     { icon: BarChart3, title: "Financial Analysis", subtitle: "Ratio Analysis,\nVariance Analysis", color: "text-blue-600", bg: "bg-blue-50" },
     { icon: MessageSquare, title: "Business Communication", subtitle: "Presentations,\nClient Communication", color: "text-blue-600", bg: "bg-blue-50" },
   ];
+
+  const handleSkillClick = (skillTitle: string) => {
+    track('Skill Clicked', {
+      skillName: skillTitle,
+      location: 'homepage_skills_section',
+      timestamp: new Date().toISOString(),
+    });
+  };
 
   return (
     <section className="py-8 bg-[#F8FAFC]">
@@ -52,7 +63,11 @@ const SkillsSection = () => {
                   {skills.map((skill, index) => {
                     const Icon = skill.icon;
                     return (
-                      <div key={index} className="flex-1 text-center px-1 pb-3">
+                      <div 
+                        key={index} 
+                        className="flex-1 text-center px-1 pb-3 cursor-pointer hover:opacity-80 transition-opacity"
+                        onClick={() => handleSkillClick(skill.title)}
+                      >
                         <div className="flex flex-col items-center gap-1">
                           <div className={`w-9 h-9 rounded-full flex items-center justify-center ${skill.bg}`}>
                             <Icon className={`w-4 h-4 ${skill.color}`} />
@@ -83,6 +98,8 @@ const SkillsSection = () => {
 // STATS SECTION - Updated with better design
 // ============================================
 const StatsSection = () => {
+  const { track } = useTracking();
+
   const stats = [
     { 
       value: "4,000+", 
@@ -118,6 +135,14 @@ const StatsSection = () => {
     },
   ];
 
+  const handleStatClick = (statLabel: string) => {
+    track('Statistic Viewed', {
+      statName: statLabel,
+      location: 'homepage_stats_section',
+      timestamp: new Date().toISOString(),
+    });
+  };
+
   return (
     <section className="py-10">
       <div className="max-w-7xl mx-auto px-6">
@@ -130,7 +155,8 @@ const StatsSection = () => {
                   key={index} 
                   className={`flex items-center gap-4 px-4 py-4 md:py-0 ${
                     index > 0 ? "border-l border-slate-200" : ""
-                  }`}
+                  } cursor-pointer hover:bg-slate-50 transition-colors rounded-lg`}
+                  onClick={() => handleStatClick(stat.label)}
                 >
                   <div className={`w-16 h-16 rounded-full ${stat.bg} flex items-center justify-center flex-shrink-0`}>
                     <Icon size={30} className={stat.color} />
@@ -161,6 +187,9 @@ const StatsSection = () => {
 // FINANCE CAREER PATHS - Same structure for all 3 cards
 // ============================================
 const FinanceCareerPaths = () => {
+  const { track } = useTracking();
+  const router = useRouter();
+
   const categories = [
     { 
       title: "Finance & Analysis", 
@@ -171,7 +200,8 @@ const FinanceCareerPaths = () => {
       iconBg: "bg-blue-50", 
       iconColor: "text-blue-600", 
       link: "Explore Finance Roles",
-      bgGradient: "from-blue-50/50 to-white"
+      bgGradient: "from-blue-50/50 to-white",
+      path: "/jobs?search=Finance"
     },
     { 
       title: "Accounting, Audit & Tax", 
@@ -182,7 +212,8 @@ const FinanceCareerPaths = () => {
       iconBg: "bg-green-50", 
       iconColor: "text-green-600", 
       link: "Explore Accounting Roles",
-      bgGradient: "from-green-50/50 to-white"
+      bgGradient: "from-green-50/50 to-white",
+      path: "/jobs?search=Accounting"
     },
     { 
       title: "Banking, Investment & Risk", 
@@ -193,9 +224,27 @@ const FinanceCareerPaths = () => {
       iconBg: "bg-purple-50", 
       iconColor: "text-purple-600", 
       link: "Explore Banking Roles",
-      bgGradient: "from-purple-50/50 to-white"
+      bgGradient: "from-purple-50/50 to-white",
+      path: "/jobs?search=Banking"
     },
   ];
+
+  const handleCareerPathClick = (categoryTitle: string, path: string) => {
+    track('Career Path Clicked', {
+      category: categoryTitle,
+      location: 'homepage_career_paths',
+      timestamp: new Date().toISOString(),
+    });
+    router.push(path);
+  };
+
+  const handleBrowseAllClick = () => {
+    track('Browse All Roles Clicked', {
+      location: 'homepage_career_paths',
+      timestamp: new Date().toISOString(),
+    });
+    router.push('/jobs');
+  };
 
   return (
     <section className="py-12 bg-[#F8FAFC]">
@@ -210,7 +259,11 @@ const FinanceCareerPaths = () => {
               {categories.map((item, index) => {
                 const Icon = item.icon;
                 return (
-                  <div key={index} className={`bg-gradient-to-b ${item.bgGradient} border border-slate-200 rounded-xl p-5 shadow-sm hover:shadow-lg transition-all duration-300 hover:-translate-y-1`}>
+                  <div 
+                    key={index} 
+                    className={`bg-gradient-to-b ${item.bgGradient} border border-slate-200 rounded-xl p-5 shadow-sm hover:shadow-lg transition-all duration-300 hover:-translate-y-1 cursor-pointer`}
+                    onClick={() => handleCareerPathClick(item.title, item.path)}
+                  >
                     <div className="flex items-start justify-between gap-3">
                       <div className="flex-1">
                         <div className="flex items-center gap-2 mb-1">
@@ -232,7 +285,10 @@ const FinanceCareerPaths = () => {
                           )}
                         </ul>
                         <button 
-                          onClick={() => window.location.href = `/jobs?search=${encodeURIComponent(item.title.split(' &')[0])}`} 
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleCareerPathClick(item.title, item.path);
+                          }}
                           className="mt-4 text-[#2563EB] font-semibold text-sm inline-flex items-center gap-1.5 hover:gap-2 transition-all group"
                         >
                           {item.link} 
@@ -246,9 +302,12 @@ const FinanceCareerPaths = () => {
             </div>
             <div className="w-full flex mt-6">
               <div style={{ marginLeft: "180px" }}>
-                <Link href="/jobs">
-                  <button className="px-6 py-2.5 bg-white border-2 border-[#2563EB] text-[#2563EB] rounded-lg font-semibold text-sm hover:bg-blue-50 transition">Browse All Entry-Level Finance Roles →</button>
-                </Link>
+                <button 
+                  onClick={handleBrowseAllClick}
+                  className="px-6 py-2.5 bg-white border-2 border-[#2563EB] text-[#2563EB] rounded-lg font-semibold text-sm hover:bg-blue-50 transition"
+                >
+                  Browse All Entry-Level Finance Roles →
+                </button>
               </div>
             </div>
           </div>
@@ -260,6 +319,7 @@ const FinanceCareerPaths = () => {
 
 const RoadmapLearningSection = () => {
   const router = useRouter();
+  const { track } = useTracking();
 
   const learningTags = [
     { name: "Finance Fundamentals", icon: GraduationCap },
@@ -273,6 +333,59 @@ const RoadmapLearningSection = () => {
     { title: "Stop Sending Cold DMs That Get Ignored", readTime: "8 min read", category: "Career Advice", slug: "stop-sending-cold-dms", image: "/blog-cold-dms.png" },
     { title: "How to Become a Financial Analyst in India", readTime: "8 min read", category: "Career Guide", slug: "how-to-become-a-financial-analyst", image: "/blog-financial-analyst.png" },
   ];
+
+  const handleLearningHubClick = () => {
+    track('Learning Hub Clicked', {
+      location: 'homepage_learning_section',
+      source: 'get_resources_button',
+      timestamp: new Date().toISOString(),
+    });
+    router.push('/learning-hub');
+  };
+
+  const handleExploreAllTopicsClick = () => {
+    track('Explore All Topics Clicked', {
+      location: 'homepage_learning_section',
+      timestamp: new Date().toISOString(),
+    });
+    router.push('/learning-hub');
+  };
+
+  const handleStartLearningClick = () => {
+    track('Start Learning Clicked', {
+      location: 'homepage_learning_section',
+      source: 'start_learning_button',
+      timestamp: new Date().toISOString(),
+    });
+    router.push('/learning-hub');
+  };
+
+  const handleBlogClick = (blogTitle: string, blogSlug: string) => {
+    track('Blog Clicked', {
+      blogTitle: blogTitle,
+      blogSlug: blogSlug,
+      location: 'homepage_blogs_section',
+      timestamp: new Date().toISOString(),
+    });
+    router.push(`/blogs/${blogSlug}`);
+  };
+
+  const handleExploreAllBlogsClick = () => {
+    track('Explore All Blogs Clicked', {
+      location: 'homepage_blogs_section',
+      timestamp: new Date().toISOString(),
+    });
+    router.push('/blogs');
+  };
+
+  const handleLearningTagClick = (tagName: string) => {
+    track('Learning Tag Clicked', {
+      tagName: tagName,
+      location: 'homepage_learning_section',
+      timestamp: new Date().toISOString(),
+    });
+    router.push(`/learning-hub?topic=${encodeURIComponent(tagName)}`);
+  };
 
   return (
     <section className="py-12 bg-[#F8FAFC]">
@@ -289,7 +402,12 @@ const RoadmapLearningSection = () => {
               <Image src="/steps.png" alt="Career Roadmap Steps" width={220} height={120} quality={100} className="object-contain" />
             </div>
             <div className="flex flex-wrap gap-3 mt-2">
-              <button onClick={() => router.push('/learning-hub')} className="px-3 py-2 bg-blue-600 text-white rounded-xl font-medium text-[11px] hover:bg-blue-700 transition-all inline-flex">Get Free Learning Resources →</button>
+              <button 
+                onClick={handleLearningHubClick}
+                className="px-3 py-2 bg-blue-600 text-white rounded-xl font-medium text-[11px] hover:bg-blue-700 transition-all inline-flex"
+              >
+                Get Free Learning Resources →
+              </button>
             </div>
           </div>
 
@@ -304,7 +422,11 @@ const RoadmapLearningSection = () => {
               {learningTags.map((item) => {
                 const Icon = item.icon;
                 return (
-                  <span key={item.name} className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs rounded-full bg-blue-50 text-blue-700">
+                  <span 
+                    key={item.name} 
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs rounded-full bg-blue-50 text-blue-700 cursor-pointer hover:bg-blue-100 transition-colors"
+                    onClick={() => handleLearningTagClick(item.name)}
+                  >
                     <Icon size={12} className="text-blue-500" />{item.name}
                   </span>
                 );
@@ -315,8 +437,18 @@ const RoadmapLearningSection = () => {
               <h4 className="text-xl font-bold text-[#081B4B] mt-1">Ready to Start Your Journey?</h4>
               <div className="flex items-end justify-between mt-4">
                 <div className="flex flex-col gap-6">
-                  <button onClick={() => router.push('/learning-hub')} className="px-4 py-2 bg-blue-600 text-white rounded-xl font-medium text-sm hover:bg-blue-700 transition-all">Start Learning Now →</button>
-                  <button onClick={() => router.push('/learning-hub')} className="px-4 py-2 border border-blue-600 text-blue-600 rounded-xl font-medium text-sm hover:bg-blue-50 transition-all">Explore All Topics →</button>
+                  <button 
+                    onClick={handleStartLearningClick}
+                    className="px-4 py-2 bg-blue-600 text-white rounded-xl font-medium text-sm hover:bg-blue-700 transition-all"
+                  >
+                    Start Learning Now →
+                  </button>
+                  <button 
+                    onClick={handleExploreAllTopicsClick}
+                    className="px-4 py-2 border border-blue-600 text-blue-600 rounded-xl font-medium text-sm hover:bg-blue-50 transition-all"
+                  >
+                    Explore All Topics →
+                  </button>
                 </div>
                 <Image src="/learning-books.png" alt="Learning Resources" width={140} height={100} className="object-contain" />
               </div>
@@ -332,19 +464,36 @@ const RoadmapLearningSection = () => {
             <p className="text-sm text-slate-500 mt-2">Expert career advice, interview tips, and practical finance guides.</p>
             <div className="space-y-4 mt-4 flex-1">
               {blogPosts.map((blog, index) => (
-                <div key={index} className="flex gap-3">
+                <div 
+                  key={index} 
+                  className="flex gap-3 cursor-pointer hover:bg-slate-50 p-2 rounded-lg transition-colors"
+                  onClick={() => handleBlogClick(blog.title, blog.slug)}
+                >
                   <div className="w-32 h-24 rounded-xl bg-white border border-slate-100 flex-shrink-0 overflow-hidden p-1">
                     <Image src={blog.image} alt={blog.title} width={160} height={128} className="w-full h-full object-contain" />
                   </div>
                   <div className="flex-1">
                     <h4 className="font-semibold text-[#081B4B] text-sm leading-tight">{blog.title}</h4>
                     <p className="text-[11px] text-slate-500 mt-1">{blog.category} • {blog.readTime}</p>
-                    <button onClick={() => router.push(`/blogs/${blog.slug}`)} className="text-blue-600 text-xs font-medium mt-1 hover:underline">Read full article →</button>
+                    <button 
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleBlogClick(blog.title, blog.slug);
+                      }}
+                      className="text-blue-600 text-xs font-medium mt-1 hover:underline"
+                    >
+                      Read full article →
+                    </button>
                   </div>
                 </div>
               ))}
             </div>
-            <button onClick={() => router.push('/blogs')} className="w-full mt-4 border border-blue-600 text-blue-600 py-2.5 rounded-xl font-medium text-sm hover:bg-blue-50 transition-all">Explore All Blogs →</button>
+            <button 
+              onClick={handleExploreAllBlogsClick}
+              className="w-full mt-4 border border-blue-600 text-blue-600 py-2.5 rounded-xl font-medium text-sm hover:bg-blue-50 transition-all"
+            >
+              Explore All Blogs →
+            </button>
           </div>
         </div>
       </div>
@@ -353,6 +502,17 @@ const RoadmapLearningSection = () => {
 };
 
 const TestimonialSection = () => {
+  const { track } = useTracking();
+
+  const handleTestimonialClick = () => {
+    track('Testimonial Viewed', {
+      user: 'Khushi',
+      role: 'BBA Student',
+      location: 'homepage_testimonials',
+      timestamp: new Date().toISOString(),
+    });
+  };
+
   return (
     <section className="py-12 bg-[#F8FAFC]">
       <div className="max-w-7xl mx-auto px-6">
@@ -363,7 +523,10 @@ const TestimonialSection = () => {
         </div>
 
         <div className="max-w-2xl mx-auto">
-          <div className="bg-white border border-slate-100 rounded-xl px-6 py-6 shadow-sm hover:shadow-md transition-all duration-300">
+          <div 
+            className="bg-white border border-slate-100 rounded-xl px-6 py-6 shadow-sm hover:shadow-md transition-all duration-300 cursor-pointer"
+            onClick={handleTestimonialClick}
+          >
             <div className="flex items-start gap-4">
               <div className="flex-shrink-0">
                 <Image
@@ -408,6 +571,7 @@ const TestimonialSection = () => {
 
 const FAQCTASection = () => {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
+  const { track } = useTracking();
 
   const faqs = [
     { q: "How is Finlysta different from traditional job portals?", a: "Unlike traditional portals, Finlysta focuses only on entry-level finance roles. Every listing is manually reviewed — no ghost jobs, no spam, no irrelevant senior positions." },
@@ -417,6 +581,23 @@ const FAQCTASection = () => {
     { q: "Can freshers apply for jobs on Finlysta?", a: "Absolutely. Finlysta is built specifically for students, graduates, and first-time job seekers." },
     { q: "Is Finlysta really free?", a: "Yes — 100% free for job seekers. Always." },
   ];
+
+  const handleFAQToggle = (question: string, isOpen: boolean) => {
+    track('FAQ Toggled', {
+      question: question,
+      action: isOpen ? 'opened' : 'closed',
+      location: 'homepage_faq_section',
+      timestamp: new Date().toISOString(),
+    });
+  };
+
+  const handleFAQClick = (question: string, answer: string) => {
+    track('FAQ Viewed', {
+      question: question,
+      location: 'homepage_faq_section',
+      timestamp: new Date().toISOString(),
+    });
+  };
 
   return (
     <section className="py-16 bg-[#F8FAFC]">
@@ -434,7 +615,14 @@ const FAQCTASection = () => {
                 return (
                   <div key={idx} className="border border-slate-200 rounded-lg bg-white overflow-hidden">
                     <button
-                      onClick={() => setOpenIndex(isOpen ? null : idx)}
+                      onClick={() => {
+                        const newState = isOpen ? null : idx;
+                        setOpenIndex(newState);
+                        handleFAQToggle(faq.q, !isOpen);
+                        if (!isOpen) {
+                          handleFAQClick(faq.q, faq.a);
+                        }
+                      }}
                       className="w-full flex items-center justify-between px-4 py-3 text-left hover:bg-gray-50 transition-colors"
                     >
                       <span className="text-sm font-bold text-[#081B4B]">{faq.q}</span>
@@ -471,6 +659,63 @@ const FAQCTASection = () => {
 
 export default function HomePageContent() {
   const router = useRouter();
+  const { track } = useTracking();
+
+  // Track homepage view when component mounts
+  useEffect(() => {
+    track('Homepage Viewed', {
+      page: 'home',
+      timestamp: new Date().toISOString(),
+      userType: 'visitor',
+      url: window.location.pathname,
+    });
+  }, []);
+
+  // Track hero section interactions
+  const handleHeroCTA = (buttonType: string) => {
+    track('Hero CTA Clicked', {
+      buttonType: buttonType,
+      location: 'hero_section',
+      timestamp: new Date().toISOString(),
+    });
+    
+    if (buttonType === 'find_job') {
+      router.push('/jobs');
+    } else if (buttonType === 'explore_internships') {
+      router.push('/internships');
+    }
+  };
+
+  // Track popular role clicks
+  const handlePopularRoleClick = (roleName: string) => {
+    track('Popular Role Clicked', {
+      roleName: roleName,
+      location: 'homepage_popular_roles',
+      timestamp: new Date().toISOString(),
+    });
+    
+    // Navigate to jobs with search
+    router.push(`/jobs?search=${encodeURIComponent(roleName)}`);
+  };
+
+  // Track footer interactions
+  const handleFooterLinkClick = (linkType: string, linkName: string) => {
+    track('Footer Link Clicked', {
+      linkType: linkType,
+      linkName: linkName,
+      location: 'footer',
+      timestamp: new Date().toISOString(),
+    });
+  };
+
+  // Track social media clicks
+  const handleSocialClick = (platform: string) => {
+    track('Social Media Clicked', {
+      platform: platform,
+      location: 'footer',
+      timestamp: new Date().toISOString(),
+    });
+  };
 
   return (
     <div className="min-h-screen font-sans">
@@ -495,8 +740,18 @@ export default function HomePageContent() {
                   Opportunities, skills, and guidance to<br />help finance students and fresh<br />graduates <span className="text-blue-600">grow and stand out.</span>
                 </p>
                 <div className="flex flex-wrap gap-4 mt-8">
-                  <button onClick={() => router.push('/jobs')} style={{ backgroundColor: '#2563EB', color: '#ffffff', borderRadius: '16px', padding: '14px 32px', fontWeight: 600, fontSize: '1rem', border: 'none', cursor: 'pointer', boxShadow: '0 4px 14px rgba(37,99,235,0.25)' }}>Find My First Job →</button>
-                  <button onClick={() => router.push('/internships')} style={{ backgroundColor: '#ffffff', color: '#2563EB', borderRadius: '16px', padding: '14px 32px', fontWeight: 600, fontSize: '1rem', border: '2px solid #2563EB', cursor: 'pointer', boxShadow: '0 4px 14px rgba(37,99,235,0.10)' }}>Explore Internships →</button>
+                  <button 
+                    onClick={() => handleHeroCTA('find_job')}
+                    style={{ backgroundColor: '#2563EB', color: '#ffffff', borderRadius: '16px', padding: '14px 32px', fontWeight: 600, fontSize: '1rem', border: 'none', cursor: 'pointer', boxShadow: '0 4px 14px rgba(37,99,235,0.25)' }}
+                  >
+                    Find My First Job →
+                  </button>
+                  <button 
+                    onClick={() => handleHeroCTA('explore_internships')}
+                    style={{ backgroundColor: '#ffffff', color: '#2563EB', borderRadius: '16px', padding: '14px 32px', fontWeight: 600, fontSize: '1rem', border: '2px solid #2563EB', cursor: 'pointer', boxShadow: '0 4px 14px rgba(37,99,235,0.10)' }}
+                  >
+                    Explore Internships →
+                  </button>
                 </div>
               </div>
               <div className="flex-1 flex justify-start -ml-40 lg:-ml-52">
@@ -513,13 +768,59 @@ export default function HomePageContent() {
         <div className="w-full border-t border-b border-gray-100 bg-white py-4 mt-8">
           <div className="max-w-7xl mx-auto px-6 flex items-center gap-8 overflow-x-auto whitespace-nowrap scrollbar-hide">
             <span className="text-[15px] font-semibold text-[#0F172A]">Popular Entry-Level Roles:</span>
-            <div className="flex items-center gap-2 text-[#0F172A]"><Briefcase className="w-5 h-5 text-[#2563EB]" /><span className="text-[15px] font-medium">Financial Analyst</span></div>
-            <div className="flex items-center gap-2 text-[#0F172A]"><Building2 className="w-5 h-5 text-[#2563EB]" /><span className="text-[15px] font-medium">Investment Banking</span></div>
-            <div className="flex items-center gap-2 text-[#0F172A]"><Shield className="w-5 h-5 text-[#2563EB]" /><span className="text-[15px] font-medium">Credit Analyst</span></div>
-            <div className="flex items-center gap-2 text-[#0F172A]"><TrendingUp className="w-5 h-5 text-[#2563EB]" /><span className="text-[15px] font-medium">Risk Analyst</span></div>
-            <div className="flex items-center gap-2 text-[#0F172A]"><FileText className="w-5 h-5 text-[#2563EB]" /><span className="text-[15px] font-medium">Article Trainee</span></div>
-            <div className="flex items-center gap-2 text-[#0F172A]"><GraduationCap className="w-5 h-5 text-[#2563EB]" /><span className="text-[15px] font-medium">Article Assistant</span></div>
-            <button className="w-7 h-7 rounded-full bg-[#EEF4FF] flex items-center justify-center flex-shrink-0"><ChevronRight className="w-4 h-4 text-[#2563EB]" /></button>
+            <div 
+              className="flex items-center gap-2 text-[#0F172A] cursor-pointer hover:text-blue-600 transition-colors"
+              onClick={() => handlePopularRoleClick('Financial Analyst')}
+            >
+              <Briefcase className="w-5 h-5 text-[#2563EB]" />
+              <span className="text-[15px] font-medium">Financial Analyst</span>
+            </div>
+            <div 
+              className="flex items-center gap-2 text-[#0F172A] cursor-pointer hover:text-blue-600 transition-colors"
+              onClick={() => handlePopularRoleClick('Investment Banking')}
+            >
+              <Building2 className="w-5 h-5 text-[#2563EB]" />
+              <span className="text-[15px] font-medium">Investment Banking</span>
+            </div>
+            <div 
+              className="flex items-center gap-2 text-[#0F172A] cursor-pointer hover:text-blue-600 transition-colors"
+              onClick={() => handlePopularRoleClick('Credit Analyst')}
+            >
+              <Shield className="w-5 h-5 text-[#2563EB]" />
+              <span className="text-[15px] font-medium">Credit Analyst</span>
+            </div>
+            <div 
+              className="flex items-center gap-2 text-[#0F172A] cursor-pointer hover:text-blue-600 transition-colors"
+              onClick={() => handlePopularRoleClick('Risk Analyst')}
+            >
+              <TrendingUp className="w-5 h-5 text-[#2563EB]" />
+              <span className="text-[15px] font-medium">Risk Analyst</span>
+            </div>
+            <div 
+              className="flex items-center gap-2 text-[#0F172A] cursor-pointer hover:text-blue-600 transition-colors"
+              onClick={() => handlePopularRoleClick('Article Trainee')}
+            >
+              <FileText className="w-5 h-5 text-[#2563EB]" />
+              <span className="text-[15px] font-medium">Article Trainee</span>
+            </div>
+            <div 
+              className="flex items-center gap-2 text-[#0F172A] cursor-pointer hover:text-blue-600 transition-colors"
+              onClick={() => handlePopularRoleClick('Article Assistant')}
+            >
+              <GraduationCap className="w-5 h-5 text-[#2563EB]" />
+              <span className="text-[15px] font-medium">Article Assistant</span>
+            </div>
+            <button 
+              className="w-7 h-7 rounded-full bg-[#EEF4FF] flex items-center justify-center flex-shrink-0 hover:bg-blue-100 transition-colors"
+              onClick={() => {
+                track('Popular Roles Scroll Clicked', {
+                  location: 'homepage_popular_roles',
+                  timestamp: new Date().toISOString(),
+                });
+              }}
+            >
+              <ChevronRight className="w-4 h-4 text-[#2563EB]" />
+            </button>
           </div>
         </div>
 
@@ -545,85 +846,166 @@ export default function HomePageContent() {
         <FAQCTASection />
       </main>
 
-<footer className="bg-white border-t border-slate-200">
-  <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <div className="pt-12 pb-8">
-      <div className="flex flex-nowrap justify-between gap-6">
+      <footer className="bg-white border-t border-slate-200">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="pt-12 pb-8">
+            <div className="flex flex-nowrap justify-between gap-6">
 
-        <div className="min-w-[260px] flex-shrink-0 space-y-4">
-          <Link href="/" className="flex items-center">
-            <Image src="/Finlysta.png" alt="Finlysta Logo" width={180} height={40} priority className="object-contain" />
-          </Link>
-          <p className="text-sm text-slate-600 leading-relaxed max-w-xs">
-            The job board built exclusively for entry-level financial roles and internships in India.
-          </p>
-          <div className="flex gap-3">
-            <a href="https://www.linkedin.com/company/finlysta" target="_blank" rel="noopener noreferrer" className="w-9 h-9 bg-slate-100 text-slate-600 hover:bg-[#0077B5] hover:text-white rounded-lg flex items-center justify-center transition-all"><Linkedin size={16} /></a>
-            <a href="https://twitter.com/Finlysta" target="_blank" rel="noopener noreferrer" className="w-9 h-9 bg-slate-100 text-slate-600 hover:bg-[#1DA1F2] hover:text-white rounded-lg flex items-center justify-center transition-all"><Twitter size={16} /></a>
-            <a href="https://instagram.com/finlysta.in" target="_blank" rel="noopener noreferrer" className="w-9 h-9 bg-slate-100 text-slate-600 hover:bg-[#E4405F] hover:text-white rounded-lg flex items-center justify-center transition-all"><Instagram size={16} /></a>
+              <div className="min-w-[260px] flex-shrink-0 space-y-4">
+                <Link 
+                  href="/" 
+                  className="flex items-center"
+                  onClick={() => handleFooterLinkClick('internal', 'logo')}
+                >
+                  <Image src="/Finlysta.png" alt="Finlysta Logo" width={180} height={40} priority className="object-contain" />
+                </Link>
+                <p className="text-sm text-slate-600 leading-relaxed max-w-xs">
+                  The job board built exclusively for entry-level financial roles and internships in India.
+                </p>
+                <div className="flex gap-3">
+                  <a 
+                    href="https://www.linkedin.com/company/finlysta" 
+                    target="_blank" 
+                    rel="noopener noreferrer" 
+                    className="w-9 h-9 bg-slate-100 text-slate-600 hover:bg-[#0077B5] hover:text-white rounded-lg flex items-center justify-center transition-all"
+                    onClick={() => handleSocialClick('linkedin')}
+                  >
+                    <Linkedin size={16} />
+                  </a>
+                  <a 
+                    href="https://twitter.com/Finlysta" 
+                    target="_blank" 
+                    rel="noopener noreferrer" 
+                    className="w-9 h-9 bg-slate-100 text-slate-600 hover:bg-[#1DA1F2] hover:text-white rounded-lg flex items-center justify-center transition-all"
+                    onClick={() => handleSocialClick('twitter')}
+                  >
+                    <Twitter size={16} />
+                  </a>
+                  <a 
+                    href="https://instagram.com/finlysta.in" 
+                    target="_blank" 
+                    rel="noopener noreferrer" 
+                    className="w-9 h-9 bg-slate-100 text-slate-600 hover:bg-[#E4405F] hover:text-white rounded-lg flex items-center justify-center transition-all"
+                    onClick={() => handleSocialClick('instagram')}
+                  >
+                    <Instagram size={16} />
+                  </a>
+                </div>
+              </div>
+
+              <div className="flex-shrink-0">
+                <h4 className="font-bold text-sm mb-4 text-[#081B4B]">Jobs</h4>
+                <ul className="space-y-2 text-sm text-slate-600">
+                  <li>
+                    <Link href="/jobs" className="hover:text-[#2563EB] transition" onClick={() => handleFooterLinkClick('internal', 'all_jobs')}>
+                      All Jobs
+                    </Link>
+                  </li>
+                  <li>
+                    <Link href="/internships" className="hover:text-[#2563EB] transition" onClick={() => handleFooterLinkClick('internal', 'internships')}>
+                      Internships
+                    </Link>
+                  </li>
+                  <li>
+                    <Link href="/jobs?type=remote" className="hover:text-[#2563EB] transition" onClick={() => handleFooterLinkClick('internal', 'remote_jobs')}>
+                      Remote Jobs
+                    </Link>
+                  </li>
+                  <li>
+                    <Link href="/blogs" className="hover:text-[#2563EB] transition" onClick={() => handleFooterLinkClick('internal', 'career_blogs')}>
+                      Career Blogs
+                    </Link>
+                  </li>
+                </ul>
+              </div>
+
+              <div className="flex-shrink-0">
+                <h4 className="font-bold text-sm mb-4 text-[#081B4B]">Employers</h4>
+                <ul className="space-y-2 text-sm text-slate-600">
+                  <li>
+                    <Link href="/employers/post-job" className="hover:text-[#2563EB] transition" onClick={() => handleFooterLinkClick('internal', 'post_job')}>
+                      Post a Job Free
+                    </Link>
+                  </li>
+                  <li>
+                    <Link href="/employers/how-it-works" className="hover:text-[#2563EB] transition" onClick={() => handleFooterLinkClick('internal', 'how_it_works')}>
+                      How It Works
+                    </Link>
+                  </li>
+                </ul>
+              </div>
+
+              <div className="flex-shrink-0">
+                <h4 className="font-bold text-sm mb-4 text-[#081B4B]">Resources</h4>
+                <ul className="space-y-2 text-sm text-slate-600">
+                  <li>
+                    <Link href="/learning-hub" className="hover:text-[#2563EB] transition" onClick={() => handleFooterLinkClick('internal', 'learning_hub')}>
+                      Learning Hub
+                    </Link>
+                  </li>
+                  <li>
+                    <Link href="/interview-prep" className="hover:text-[#2563EB] transition" onClick={() => handleFooterLinkClick('internal', 'interview_prep')}>
+                      Interview Prep
+                    </Link>
+                  </li>
+                </ul>
+              </div>
+
+              <div className="flex-shrink-0">
+                <h4 className="font-bold text-sm mb-4 text-[#081B4B]">Company</h4>
+                <ul className="space-y-2 text-sm text-slate-600">
+                  <li>
+                    <Link href="/about" className="hover:text-[#2563EB] transition" onClick={() => handleFooterLinkClick('internal', 'about')}>
+                      About
+                    </Link>
+                  </li>
+                  <li>
+                    <Link href="/contact" className="hover:text-[#2563EB] transition" onClick={() => handleFooterLinkClick('internal', 'contact')}>
+                      Contact
+                    </Link>
+                  </li>
+                  <li>
+                    <Link href="/privacy" className="hover:text-[#2563EB] transition" onClick={() => handleFooterLinkClick('internal', 'privacy')}>
+                      Privacy
+                    </Link>
+                  </li>
+                  <li>
+                    <Link href="/terms" className="hover:text-[#2563EB] transition" onClick={() => handleFooterLinkClick('internal', 'terms')}>
+                      Terms
+                    </Link>
+                  </li>
+                </ul>
+              </div>
+
+              <div className="flex-shrink-0">
+                <h4 className="font-bold text-sm mb-4 text-[#081B4B]">Support</h4>
+                <div className="space-y-2">
+                  <a 
+                    href="mailto:support@finlysta.com" 
+                    className="flex items-center gap-2 text-sm text-slate-600 hover:text-[#2563EB] transition whitespace-nowrap"
+                    onClick={() => handleFooterLinkClick('external', 'support_email')}
+                  >
+                    <Mail size={13} /> support@finlysta.com
+                  </a>
+                  <p className="text-xs text-slate-500 whitespace-nowrap">Reply within 24 hours</p>
+                </div>
+              </div>
+
+            </div>
+
+            <div className="border-t border-slate-200 pt-6 pb-8 mt-8">
+              <div className="flex flex-col items-center justify-center gap-2 text-xs text-slate-600 text-center">
+                <span>© {new Date().getFullYear()} Finlysta Pvt. Ltd. All rights reserved.</span>
+                <div className="flex items-center gap-1.5">
+                  <span>Made with</span>
+                  <Heart size={10} className="text-red-500 fill-red-500" />
+                  <span>in India 🇮🇳</span>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
-
-        <div className="flex-shrink-0">
-          <h4 className="font-bold text-sm mb-4 text-[#081B4B]">Jobs</h4>
-          <ul className="space-y-2 text-sm text-slate-600">
-            <li><Link href="/jobs" className="hover:text-[#2563EB] transition">All Jobs</Link></li>
-            <li><Link href="/internships" className="hover:text-[#2563EB] transition">Internships</Link></li>
-            <li><Link href="/jobs?type=remote" className="hover:text-[#2563EB] transition">Remote Jobs</Link></li>
-            <li><Link href="/blogs" className="hover:text-[#2563EB] transition">Career Blogs</Link></li>
-          </ul>
-        </div>
-
-        <div className="flex-shrink-0">
-          <h4 className="font-bold text-sm mb-4 text-[#081B4B]">Employers</h4>
-          <ul className="space-y-2 text-sm text-slate-600">
-            <li><Link href="/employers/post-job" className="hover:text-[#2563EB] transition">Post a Job Free</Link></li>
-            <li><Link href="/employers/how-it-works" className="hover:text-[#2563EB] transition">How It Works</Link></li>
-          </ul>
-        </div>
-
-        <div className="flex-shrink-0">
-          <h4 className="font-bold text-sm mb-4 text-[#081B4B]">Resources</h4>
-          <ul className="space-y-2 text-sm text-slate-600">
-            <li><Link href="/learning-hub" className="hover:text-[#2563EB] transition">Learning Hub</Link></li>
-            <li><Link href="/interview-prep" className="hover:text-[#2563EB] transition">Interview Prep</Link></li>
-          </ul>
-        </div>
-
-        <div className="flex-shrink-0">
-          <h4 className="font-bold text-sm mb-4 text-[#081B4B]">Company</h4>
-          <ul className="space-y-2 text-sm text-slate-600">
-            <li><Link href="/about" className="hover:text-[#2563EB] transition">About</Link></li>
-            <li><Link href="/contact" className="hover:text-[#2563EB] transition">Contact</Link></li>
-            <li><Link href="/privacy" className="hover:text-[#2563EB] transition">Privacy</Link></li>
-            <li><Link href="/terms" className="hover:text-[#2563EB] transition">Terms</Link></li>
-          </ul>
-        </div>
-
-        <div className="flex-shrink-0">
-          <h4 className="font-bold text-sm mb-4 text-[#081B4B]">Support</h4>
-          <div className="space-y-2">
-            <a href="mailto:support@finlysta.com" className="flex items-center gap-2 text-sm text-slate-600 hover:text-[#2563EB] transition whitespace-nowrap">
-              <Mail size={13} /> support@finlysta.com            </a>
-            <p className="text-xs text-slate-500 whitespace-nowrap">Reply within 24 hours</p>
-          </div>
-        </div>
-
-      </div>
-
-      <div className="border-t border-slate-200 pt-6 pb-8 mt-8">
-        <div className="flex flex-col items-center justify-center gap-2 text-xs text-slate-600 text-center">
-          <span>© {new Date().getFullYear()} Finlysta Pvt. Ltd. All rights reserved.</span>
-          <div className="flex items-center gap-1.5">
-            <span>Made with</span>
-            <Heart size={10} className="text-red-500 fill-red-500" />
-            <span>in India 🇮🇳</span>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</footer>
+      </footer>
 
       <style jsx global>{`
         .line-clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }

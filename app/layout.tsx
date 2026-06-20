@@ -3,6 +3,7 @@ import Script from "next/script";
 import { Suspense, lazy } from "react";
 import "./globals.css";
 import Providers from "./providers";
+import AmplitudeProvider from "./AmplitudeProvider";
 
 // Lazy load non-critical components
 const VisitorTracker = lazy(() => import("@/components/VisitorTracker"));
@@ -135,6 +136,8 @@ export default function RootLayout({
 }) {
   // Google Analytics ID
   const gaId = process.env.NEXT_PUBLIC_GA_ID || "G-FMF7M4ZRVL";
+  // Amplitude API Key
+  const amplitudeApiKey = process.env.NEXT_PUBLIC_AMPLITUDE_API_KEY;
 
   return (
     <html lang="en-IN" suppressHydrationWarning>
@@ -340,7 +343,9 @@ export default function RootLayout({
       <body suppressHydrationWarning>
         <Providers>
           <Suspense fallback={<div className="min-h-screen" />}>
-            {children}
+            <AmplitudeProvider>
+              {children}
+            </AmplitudeProvider>
           </Suspense>
 
           <Suspense fallback={null}>
@@ -404,6 +409,20 @@ export default function RootLayout({
             `,
           }}
         />
+
+        {/* Amplitude Analytics - CDN Script (optional fallback) */}
+        {amplitudeApiKey && (
+          <Script
+            id="amplitude-init"
+            strategy="afterInteractive"
+            dangerouslySetInnerHTML={{
+              __html: `
+                // Amplitude is initialized in the client component
+                console.log('Amplitude script loaded');
+              `,
+            }}
+          />
+        )}
       </body>
     </html>
   );
