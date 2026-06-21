@@ -45,7 +45,6 @@ export default function BlogsPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [imageErrors, setImageErrors] = useState<Record<string, boolean>>({});
 
-  // Category configuration - ALL WITH BLUE COLOR
   const categories = [
     { id: "all", label: "All Blogs", icon: BookOpen, color: "bg-blue-600 text-white", description: "All Blogs in one place" },
     { id: "career", label: "Career Guide", icon: Briefcase, color: "bg-blue-600 text-white", description: "Career guidance and tips" },
@@ -55,7 +54,6 @@ export default function BlogsPage() {
     { id: "profile-tips", label: "Profile Tips", icon: UserCheck, color: "bg-blue-600 text-white", description: "Optimize your professional profile" },
   ];
 
-  // Track page view
   useEffect(() => {
     track('Blogs Page Viewed', {
       page: 'blogs',
@@ -64,7 +62,6 @@ export default function BlogsPage() {
     });
   }, []);
 
-  // Track category and search changes
   useEffect(() => {
     if (!loading && resources.length > 0) {
       track('Blog Filter Applied', {
@@ -85,36 +82,54 @@ export default function BlogsPage() {
 
     try {
       setLoading(true);
+      setError("");
+      
       const res = await fetch("/api/career-resources");
+      
+      // Check if response is ok
+      if (!res.ok) {
+        throw new Error(`HTTP error! status: ${res.status}`);
+      }
+      
       const data = await res.json();
       
+      // Log the response to debug
+      console.log("API Response:", data);
+      
+      let blogData: Resource[] = [];
+      
+      // Handle different response structures
       if (Array.isArray(data)) {
-        setResources(data);
-        track('Blogs Loaded', {
-          totalBlogs: data.length,
-          source: 'api',
-          timestamp: new Date().toISOString(),
-        });
+        blogData = data;
       } else if (data.resources && Array.isArray(data.resources)) {
-        setResources(data.resources);
-        track('Blogs Loaded', {
-          totalBlogs: data.resources.length,
-          source: 'api',
-          timestamp: new Date().toISOString(),
-        });
+        blogData = data.resources;
       } else if (data.data && Array.isArray(data.data)) {
-        setResources(data.data);
-        track('Blogs Loaded', {
-          totalBlogs: data.data.length,
-          source: 'api',
-          timestamp: new Date().toISOString(),
-        });
+        blogData = data.data;
+      } else if (data.blogs && Array.isArray(data.blogs)) {
+        blogData = data.blogs;
       } else {
-        setResources([]);
+        // If no data found, try to see if there's any property that might contain the array
+        const possibleArrays = Object.values(data).filter(val => Array.isArray(val));
+        if (possibleArrays.length > 0) {
+          blogData = possibleArrays[0];
+        } else {
+          blogData = [];
+        }
       }
+      
+      console.log("Processed Blog Data:", blogData);
+      
+      setResources(blogData);
+      
+      track('Blogs Loaded', {
+        totalBlogs: blogData.length,
+        source: 'api',
+        timestamp: new Date().toISOString(),
+      });
+      
     } catch (err) {
       console.error("Error fetching blogs:", err);
-      setError("Failed to load blogs");
+      setError(err instanceof Error ? err.message : "Failed to load blogs");
       track('Blogs Fetch Error', {
         errorMessage: err instanceof Error ? err.message : 'Unknown error',
         timestamp: new Date().toISOString(),
@@ -124,13 +139,27 @@ export default function BlogsPage() {
     }
   };
 
+  // Call fetchBlogs on mount
+  useEffect(() => {
+    fetchBlogs();
+  }, []);
+
+  // Filter resources
   const filteredResources = resources.filter(resource => {
+    // Check if resource has required fields
+    if (!resource || !resource.id) return false;
+    
+    // Filter by category
     if (category !== "all" && resource.category !== category) return false;
+    
+    // Filter by search query
     if (searchQuery) {
       const query = searchQuery.toLowerCase();
-      return resource.title.toLowerCase().includes(query) ||
-             resource.excerpt.toLowerCase().includes(query);
+      const title = (resource.title || '').toLowerCase();
+      const excerpt = (resource.excerpt || '').toLowerCase();
+      return title.includes(query) || excerpt.includes(query);
     }
+    
     return true;
   });
 
@@ -143,25 +172,27 @@ export default function BlogsPage() {
   };
 
   const formatDate = (date: string) => {
-    return new Date(date).toLocaleDateString('en-US', {
-      month: 'short',
-      day: 'numeric',
-      year: 'numeric'
-    });
+    if (!date) return 'No date';
+    try {
+      return new Date(date).toLocaleDateString('en-US', {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric'
+      });
+    } catch {
+      return 'Invalid date';
+    }
   };
 
-  // Function to get Google Drive direct image URL
   const getGoogleDriveImageUrl = (url: string) => {
     if (!url) return null;
     
-    // Check if it's a Google Drive link
     const driveMatch = url.match(/\/d\/([^\/]+)/);
     if (driveMatch) {
       const fileId = driveMatch[1];
       return `https://drive.google.com/uc?export=view&id=${fileId}`;
     }
     
-    // Check if it's already a direct image URL
     if (url.includes('uc?export=view') || url.includes('usercontent')) {
       return url;
     }
@@ -175,7 +206,6 @@ export default function BlogsPage() {
 
   const currentCategory = categories.find(c => c.id === category);
 
-  // Handle blog click
   const handleBlogClick = (resource: Resource) => {
     track('Blog Clicked', {
       blogId: resource.id,
@@ -185,67 +215,31 @@ export default function BlogsPage() {
       timestamp: new Date().toISOString(),
     });
 
-    if (resource.type === "text") {
+    if (resource.type === "text" && resource.slug) {
       router.push(`/blogs/${resource.slug}`);
     } else if (resource.type === "pdf" && resource.fileUrl) {
-      track('Blog PDF Opened', {
-        blogId: resource.id,
-        blogTitle: resource.title,
-        fileUrl: resource.fileUrl,
-        timestamp: new Date().toISOString(),
-      });
       window.open(resource.fileUrl, '_blank');
     } else if (resource.type === "link" && resource.link) {
-      track('Blog External Link Opened', {
-        blogId: resource.id,
-        blogTitle: resource.title,
-        linkUrl: resource.link,
-        timestamp: new Date().toISOString(),
-      });
       window.open(resource.link, '_blank');
+    } else {
+      // Default: try to open as article if slug exists
+      if (resource.slug) {
+        router.push(`/blogs/${resource.slug}`);
+      }
     }
   };
 
-  // Handle category change
   const handleCategoryChange = (categoryId: string) => {
-    track('Blog Category Selected', {
-      category: categoryId,
-      categoryLabel: categories.find(c => c.id === categoryId)?.label || categoryId,
-      previousCategory: category,
-      timestamp: new Date().toISOString(),
-    });
     setCategory(categoryId);
   };
 
-  // Handle search
   const handleSearch = (query: string) => {
     setSearchQuery(query);
-    if (query.length > 0 && query.length % 3 === 0) {
-      track('Blog Search Performed', {
-        query: query,
-        resultsCount: filteredResources.length,
-        timestamp: new Date().toISOString(),
-      });
-    }
   };
 
-  // Handle clear filters
   const handleClearFilters = () => {
-    track('Blog Filters Cleared', {
-      previousCategory: category,
-      previousSearch: searchQuery,
-      timestamp: new Date().toISOString(),
-    });
     setSearchQuery("");
     setCategory("all");
-  };
-
-  // Handle back to home
-  const handleBackToHome = () => {
-    track('Back to Home Clicked', {
-      location: 'blogs_page',
-      timestamp: new Date().toISOString(),
-    });
   };
 
   // Skeleton Loading Component
@@ -294,7 +288,6 @@ export default function BlogsPage() {
           <Link 
             href="/" 
             className="inline-flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors group"
-            onClick={handleBackToHome}
           >
             <ArrowLeft size={18} className="group-hover:-translate-x-0.5 transition-transform" />
             <span className="text-sm font-medium">Back to Home</span>
@@ -326,13 +319,7 @@ export default function BlogsPage() {
               <div className="mt-2 text-sm text-blue-200">
                 Showing results for: "{searchQuery}"
                 <button 
-                  onClick={() => {
-                    track('Blog Search Cleared', {
-                      previousQuery: searchQuery,
-                      timestamp: new Date().toISOString(),
-                    });
-                    setSearchQuery("");
-                  }} 
+                  onClick={() => setSearchQuery("")} 
                   className="ml-2 underline hover:text-white"
                 >
                   Clear
@@ -351,7 +338,10 @@ export default function BlogsPage() {
             {categories.map((cat) => {
               const Icon = cat.icon;
               const isActive = category === cat.id;
-              const resourceCount = cat.id === "all" ? resources.length : resources.filter(r => r.category === cat.id).length;
+              const resourceCount = resources.filter(r => {
+                if (cat.id === "all") return true;
+                return r.category === cat.id;
+              }).length;
               
               return (
                 <button
@@ -377,8 +367,28 @@ export default function BlogsPage() {
           </div>
         </div>
 
+        {/* Debug Info - Remove in production */}
+        {!loading && (
+          <div className="mb-4 p-3 bg-gray-100 rounded-lg text-xs text-gray-600">
+            <p>Total resources: {resources.length}</p>
+            <p>Filtered resources: {filteredResources.length}</p>
+            <p>Current category: {category}</p>
+            <p>Search query: {searchQuery || 'none'}</p>
+            {resources.length > 0 && (
+              <div className="mt-1">
+                <p className="font-semibold">Blog titles:</p>
+                <ul className="list-disc pl-4">
+                  {resources.map(r => (
+                    <li key={r.id}>{r.title} (Category: {r.category || 'none'}, Type: {r.type || 'text'})</li>
+                  ))}
+                </ul>
+              </div>
+            )}
+          </div>
+        )}
+
         {/* Coming Soon Message */}
-        {!loading && category !== "all" && filteredResources.length === 0 && (
+        {!loading && filteredResources.length === 0 && category !== "all" && (
           <div className="mb-8 p-6 bg-amber-50 rounded-xl border border-amber-200 text-center">
             <BookOpen className="h-12 w-12 text-amber-500 mx-auto mb-3" />
             <h3 className="text-lg font-semibold text-amber-800 mb-2">Coming Soon!</h3>
@@ -407,22 +417,34 @@ export default function BlogsPage() {
           </div>
         )}
 
-        {/* Blogs Grid - Loading State with Skeletons */}
+        {/* Blogs Grid */}
         {loading ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
             {[...Array(6)].map((_, index) => (
               <BlogSkeleton key={index} />
             ))}
           </div>
-        ) : filteredResources.length === 0 && category === "all" ? (
+        ) : filteredResources.length === 0 ? (
           <div className="text-center bg-white rounded-xl p-12 border-2 border-dashed border-gray-300">
             <BookOpen className="h-16 w-16 text-gray-400 mx-auto mb-4" />
-            <h3 className="text-xl font-semibold text-gray-800 mb-2">No blogs yet</h3>
+            <h3 className="text-xl font-semibold text-gray-800 mb-2">
+              {category === "all" ? "No blogs yet" : `No ${currentCategory?.label} blogs yet`}
+            </h3>
             <p className="text-gray-500">
-              Blogs will appear here once added.
+              {category === "all" 
+                ? "Blogs will appear here once added." 
+                : `Check back soon for ${currentCategory?.label} content.`}
             </p>
+            {category !== "all" && (
+              <button
+                onClick={() => setCategory("all")}
+                className="mt-4 text-blue-600 hover:text-blue-700 font-medium"
+              >
+                View all blogs →
+              </button>
+            )}
           </div>
-        ) : filteredResources.length > 0 ? (
+        ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
             {filteredResources.map((resource) => {
               const TypeIcon = getTypeIcon(resource.type);
@@ -491,7 +513,7 @@ export default function BlogsPage() {
               );
             })}
           </div>
-        ) : null}
+        )}
       </div>
     </div>
   );

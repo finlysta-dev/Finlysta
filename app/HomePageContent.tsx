@@ -956,12 +956,12 @@ export default function HomePageContent() {
                 <ul className="space-y-2 text-sm text-slate-600">
                   <li>
                     <Link href="/about" className="hover:text-[#2563EB] transition" onClick={() => handleFooterLinkClick('internal', 'about')}>
-                      About
+                      About Us
                     </Link>
                   </li>
                   <li>
                     <Link href="/contact" className="hover:text-[#2563EB] transition" onClick={() => handleFooterLinkClick('internal', 'contact')}>
-                      Contact
+                      Contact Us
                     </Link>
                   </li>
                   <li>

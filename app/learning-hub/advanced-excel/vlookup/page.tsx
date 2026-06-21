@@ -2,14 +2,14 @@
 import Link from "next/link";
 import Image from "next/image";
 import {
-  ChevronRight, CheckCircle, Clock, User, ArrowRight, Users, Package,
+  ChevronRight, CheckCircle, Clock, User, ArrowRight, Users, Package,CircleCheckBig, Trophy,
   ChevronLeft, Mail, BookOpen, Target, AlertCircle,
   Table, FileSpreadsheet, Calculator, BarChart3,
   TrendingUp, PieChart, DollarSign, Briefcase, Building2,
   Zap, Shield, XCircle, CheckCheck, Copy, Calendar,
   Home, FolderOpen, Files, List, Menu, Search, Command,
   Navigation, Eye, Layers, Clipboard, Save, Undo2, Redo2,
-  HelpCircle, Award, ThumbsUp, Sparkles
+  HelpCircle, Award, ThumbsUp, Sparkles, Download
 } from "lucide-react";
 
 // ============================================
@@ -60,7 +60,7 @@ const HeroSection = () => {
           <div className="flex flex-wrap gap-6 mt-6">
             <div className="flex items-center gap-2">
               <Clock size={18} className="text-blue-600" />
-              <span className="text-black font-medium">10 min read</span>
+              <span className="text-black font-medium">20 min read</span>
             </div>
             <div className="flex items-center gap-2">
               <Calendar size={18} className="text-blue-600" />
@@ -103,137 +103,147 @@ const LearnAndContents = () => {
     "Example with step-by-step explanations",
     "Practical use cases in finance and analysis",
     "Common errors and how to fix them",
+    "Limitations & better alternatives",
   ];
 
   const sections = [
     { number: "1.", title: "What is VLOOKUP?" },
-    { number: "2.", title: "VLOOKUP Example" },
-    { number: "3.", title: "Practical Use Cases" },
-    { number: "4.", title: "Common Errors & Fixes" },
-    { number: "5.", title: "Tips & Best Practices" },
+    { number: "2.", title: "Syntax Breakdown" },
+    { number: "3.", title: "How VLOOKUP Works" },
+    { number: "4.", title: "Exact vs Approximate Match" },
+    { number: "5.", title: "Practical Example" },
+    { number: "6.", title: "Real Finance Use Cases" },
+    { number: "7.", title: "Common Errors" },
+    { number: "8.", title: "Limitations of VLOOKUP" },
+    { number: "9.", title: "VLOOKUP vs INDEX MATCH" },
+    { number: "10.", title: "VLOOKUP vs XLOOKUP" },
+    { number: "11.", title: "Practice Exercises" },
+    { number: "12.", title: "Key Takeaways" },
   ];
 
-  return (
-    <section className="mb-12">
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Left - What You'll Learn */}
-        <div className="bg-white border border-slate-200 rounded-2xl p-6">
-          <h2 className="text-xl font-bold text-[#081B4B] mb-4 flex items-center gap-3">
-            <BookOpen size={24} className="text-green-600" />
-            What You'll Learn
-          </h2>
-          <div className="space-y-3">
-            {learnItems.map((item, idx) => (
-              <div
-                key={idx}
-                className="flex items-center gap-3 text-[16px] text-slate-700"
-              >
-                <CheckCircle size={18} className="text-green-500 flex-shrink-0 mt-0.5" />
-                <span>{item}</span>
-              </div>
-            ))}
+return (
+    <section className="mb-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+        {/* Left - What You'll Learn - REDUCED SIZE */}
+        <div className="lg:max-w-[350px]">
+          <div className="bg-white border border-slate-200 rounded-2xl p-4">
+            <h2 className="text-base font-bold text-[#081B4B] mb-2 flex items-center gap-2">
+              <BookOpen size={18} className="text-green-600" />
+              What You'll Learn
+            </h2>
+            <div className="space-y-1.5">
+              {learnItems.map((item, idx) => (
+                <div key={idx} className="flex items-start gap-2 text-[13px] text-black font-medium">
+                  <CheckCircle size={16} className="text-green-500 flex-shrink-0 mt-1" />
+                  <span>{item}</span>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
 
-        {/* Right - On This Page */}
-        <div className="bg-white border border-slate-200 rounded-2xl p-6">
-          <h3 className="font-bold text-[#081B4B] text-lg mb-4 flex items-center gap-2">
-            <List size={20} className="text-blue-600" />
-            Table of Contents
-          </h3>
-          <div className="space-y-1">
-            {sections.map((section, idx) => (
-              <a
-                key={idx}
-                href={`#section-${idx + 1}`}
-                className="flex items-center gap-2 text-[15px] text-slate-700 hover:text-blue-600 transition hover:bg-blue-50 px-3 py-2 rounded-lg"
-              >
-                <span className="text-blue-600 font-semibold min-w-[28px]">
-                  {section.number}
-                </span>
-                <span>{section.title}</span>
-              </a>
-            ))}
-          </div>
-        </div>
+{/* Right - On This Page - Shifted Right */}
+<div className="bg-white border border-slate-200 rounded-2xl p-5 lg:ml-[60px]">
+  <h3 className="font-bold text-[#081B4B] text-lg mb-3 flex items-center gap-2">
+    <List size={18} className="text-blue-600" />
+    On this page
+  </h3>
+  <div className="space-y-0.5">
+    {sections.map((section, idx) => (
+      <a
+        key={idx}
+        href={`#section-${idx + 1}`}
+        className="flex items-center gap-2 text-[13px] text-black font-medium hover:text-blue-600 transition hover:bg-blue-50 px-2 py-1 rounded"
+      >
+        <span className="text-blue-600 font-semibold text-[11px] min-w-[22px]">
+          {section.number}
+        </span>
+        <span>{section.title}</span>
+      </a>
+    ))}
+  </div>
+</div>
       </div>
     </section>
   );
 };
-
 // ============================================
-// SECTION 1: WHAT IS VLOOKUP? - WITH SIDEBAR
+// SECTION 1: WHAT IS VLOOKUP?
 // ============================================
 const WhatIsVlookup = () => {
   return (
-    <section id="section-1" className="mb-12 scroll-mt-20">
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Left Content - 2 columns */}
+    <section id="section-1" className="mb-10 scroll-mt-20">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2">
           <h2 className="text-3xl font-bold text-[#081B4B] mb-4">1. What is VLOOKUP?</h2>
           <p className="text-lg text-slate-600 leading-relaxed mb-6">
             VLOOKUP stands for Vertical Lookup. It is an Excel function used to search for a value
-            <br/>
             in the first column of a table and return a value from the same row in a specified column.
           </p>
 
-          {/* Syntax Box */}
-          <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
-            {/* Formula */}
-            <div className="bg-slate-50 border border-slate-200 rounded-lg px-4 py-3 mb-4 overflow-x-auto">
-              <code className="text-[20px] font-bold whitespace-nowrap">
-                <span className="text-green-700">=VLOOKUP</span>
-                <span className="text-slate-700">(</span>
+          <h2 className="text-3xl font-bold text-[#081B4B] mb-4">2. Syntax Breakdown</h2>
+          
+          <div className="bg-slate-50 border border-slate-200 rounded-lg px-4 py-3 mb-6 overflow-x-auto">
+            <code className="text-[20px] font-bold whitespace-nowrap">
+              <span className="text-green-700">=VLOOKUP</span>
+              <span className="text-slate-700">(</span>
+              <span className="text-blue-600">lookup_value</span>
+              <span className="text-slate-700">, </span>
+              <span className="text-blue-600">table_array</span>
+              <span className="text-slate-700">, </span>
+              <span className="text-orange-500">col_index_num</span>
+              <span className="text-slate-700">, </span>
+              <span className="text-purple-600">[range_lookup]</span>
+              <span className="text-slate-700">)</span>
+            </code>
+          </div>
 
-                <span className="text-blue-600">lookup_value</span>
-                <span className="text-slate-700">, </span>
-
-                <span className="text-blue-600">table_array</span>
-                <span className="text-slate-700">, </span>
-
-                <span className="text-orange-500">col_index_num</span>
-                <span className="text-slate-700">, </span>
-
-                <span className="text-purple-600">[range_lookup]</span>
-
-                <span className="text-slate-700">)</span>
-              </code>
-            </div>
-
-            {/* Breakdown - 4 columns */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              <div>
-                <h4 className="text-green-700 font-bold text-base mb-1">lookup_value</h4>
-                <p className="text-black text-sm leading-5">The value to search for</p>
-              </div>
-              <div>
-                <h4 className="text-blue-600 font-bold text-base mb-1">table_array</h4>
-                <p className="text-black text-sm leading-5">The table or range where to search</p>
-              </div>
-              <div>
-                <h4 className="text-orange-500 font-bold text-base mb-1">col_index_num</h4>
-                <p className="text-black text-sm leading-5">Column number to return the value</p>
-              </div>
-              <div>
-                <h4 className="text-purple-600 font-bold text-base mb-1">[range_lookup]</h4>
-                <p className="text-black text-sm leading-5">FALSE for exact, TRUE for approximate</p>
-              </div>
-            </div>
+          <div className="rounded-2xl overflow-hidden border border-[#138A4A]">
+            <table className="w-full border-collapse">
+              <thead>
+                <tr className="bg-[#138A4A]">
+                  <th className="border border-[#138A4A] px-4 py-2 text-left text-[13px] font-bold text-white">Parameter</th>
+                  <th className="border border-[#138A4A] px-4 py-2 text-left text-[13px] font-bold text-white">Meaning</th>
+                  <th className="border border-[#138A4A] px-4 py-2 text-left text-[13px] font-bold text-white">Details</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr className="bg-white">
+                  <td className="border border-slate-300 px-4 py-2 text-[13px] text-black font-medium">lookup_value</td>
+                  <td className="border border-slate-300 px-4 py-2 text-[13px] text-black">The value to search for</td>
+                  <td className="border border-slate-300 px-4 py-2 text-[13px] text-black">Can be cell reference, value or text</td>
+                </tr>
+                <tr className="bg-white">
+                  <td className="border border-slate-300 px-4 py-2 text-[13px] text-black font-medium">table_array</td>
+                  <td className="border border-slate-300 px-4 py-2 text-[13px] text-black">The table or range to search in</td>
+                  <td className="border border-slate-300 px-4 py-2 text-[13px] text-black">The first column must contain lookup value</td>
+                </tr>
+                <tr className="bg-white">
+                  <td className="border border-slate-300 px-4 py-2 text-[13px] text-black font-medium">col_index_num</td>
+                  <td className="border border-slate-300 px-4 py-2 text-[13px] text-black">The column number to return</td>
+                  <td className="border border-slate-300 px-4 py-2 text-[13px] text-black">1 = first column, 2 = second, etc.</td>
+                </tr>
+                <tr className="bg-white">
+                  <td className="border border-slate-300 px-4 py-2 text-[13px] text-black font-medium">[range_lookup]</td>
+                  <td className="border border-slate-300 px-4 py-2 text-[13px] text-black">Match type (optional)</td>
+                  <td className="border border-slate-300 px-4 py-2 text-[13px] text-black">FALSE = Exact match, TRUE = Approximate</td>
+                </tr>
+              </tbody>
+            </table>
           </div>
         </div>
 
-        {/* Right Sidebar - 1 column */}
-        <div className="lg:col-span-1 space-y-6">
-          {/* Master Excel CTA */}
-          <div className="bg-gradient-to-br from-blue-600 to-indigo-600 rounded-2xl p-5 text-white">
-            <div className="flex items-center gap-2 mb-3">
-              <Award size={18} className="text-blue-200" />
-              <span className="text-xs font-semibold text-blue-200">CAREER RESOURCE</span>
+        <div className="lg:col-span-1 space-y-4">
+          <div className="bg-gradient-to-br from-green-600 to-green-700 rounded-2xl p-4 text-white">
+            <div className="flex items-center gap-2 mb-2">
+              <Download size={16} className="text-green-200" />
+              <span className="text-[10px] font-semibold text-green-200">PRACTICE WORKSHEET</span>
             </div>
-            <h3 className="text-xl font-bold">Master Excel for Finance Careers</h3>
-            <p className="text-sm text-blue-100 mt-2">Learn the Excel skills that top finance professionals use daily.</p>
-            <button className="w-full mt-4 px-4 py-2.5 bg-white text-blue-600 font-semibold rounded-lg hover:bg-gray-100 transition text-sm">
-              Get Started →
+            <h3 className="text-lg font-bold">Practice Workbook</h3>
+            <p className="text-sm text-green-100 mt-1">Download the practice file used in examples on this page.</p>
+            <button className="w-full mt-3 px-4 py-2 bg-white text-green-700 font-semibold rounded-lg hover:bg-gray-100 transition text-sm flex items-center justify-center gap-2">
+              <Download size={14} />
+              Download Excel File →
             </button>
           </div>
         </div>
@@ -243,98 +253,128 @@ const WhatIsVlookup = () => {
 };
 
 // ============================================
-// SECTION 2: VLOOKUP EXAMPLE - FIXED ALIGNMENT
+// SECTION 3: HOW VLOOKUP WORKS (Step-by-Step)
 // ============================================
-const VlookupExample = () => {
+const HowVlookupWorks = () => {
+  const data = [
+    { id: "101", name: "Aarav", salary: "52000" },
+    { id: "102", name: "Neha", salary: "48000" },
+    { id: "103", name: "Rohan", salary: "52000" },
+    { id: "104", name: "Priya", salary: "56000" },
+  ];
+
   return (
-    <section id="section-2" className="mb-12 scroll-mt-20">
-      <h2 className="text-3xl font-bold text-[#081B4B] mb-4">2. VLOOKUP Example</h2>
-      <p className="text-[18px] text-slate-600 mb-6">
-        Let's understand VLOOKUP with a simple example.
-      </p>
+    <section id="section-3" className="mb-10 scroll-mt-20">
+      <div className="bg-white rounded-2xl border border-slate-200 p-5">
+        <h2 className="text-2xl font-bold text-slate-900 mb-3">3. How VLOOKUP Works (Step-by-Step)</h2>
+        <p className="text-slate-600 text-sm mb-4">Let's see how VLOOKUP finds and returns the result.</p>
 
-      <div className="flex flex-col lg:flex-row gap-6">
-        {/* Employee Table */}
-        <div className="flex-1">
-          <div className="bg-white border border-slate-200 rounded-xl overflow-hidden">
-            <table className="w-full">
-              <thead>
-                <tr className="bg-[#138A4A] text-white">
-                  <th className="px-4 py-3 text-left text-[15px] font-semibold">Employee ID</th>
-                  <th className="px-4 py-3 text-left text-[15px] font-semibold">Name</th>
-                  <th className="px-4 py-3 text-left text-[15px] font-semibold">Department</th>
-                  <th className="px-4 py-3 text-left text-[15px] font-semibold">Salary</th>
-                </tr>
-              </thead>
-              <tbody>
-                {[
-                  ["101","Aarav Sharma","Finance","55000"],
-                  ["102","Neha Verma","HR","48000"],
-                  ["103","Rohan Mehta","Marketing","52000"],
-                  ["104","Priya Singh","Finance","56000"],
-                  ["105","Karan Patel","IT","60000"],
-                ].map((row,index)=>(
-                  <tr key={index} className="border-t border-slate-100">
-                    {row.map((cell,i)=>(
-                      <td
-                        key={i}
-                        className="px-4 py-3 text-[15px] text-black"
-                      >
-                        {cell}
-                      </td>
-                    ))}
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+        <div className="flex flex-col lg:flex-row gap-4">
+          <div className="flex-1">
+            <div className="flex items-center gap-2 overflow-x-auto pb-2">
+              <div className="min-w-[160px] border border-slate-200 rounded-2xl p-3 bg-white shadow-sm">
+                <h3 className="font-bold text-sm text-slate-900">Step 1</h3>
+                <p className="font-bold mt-0.5 text-slate-800 text-sm">Lookup Value</p>
+                <p className="text-xs text-black-500 mt-2">
+                  Search for the value<br/>in the first column<br/>of the table.
+                </p>
+                <div className="mt-2 border border-slate-200 rounded-lg overflow-hidden">
+                  <div className="bg-[#16A34A] text-white text-[9px] px-2 py-1 grid grid-cols-2">
+                    <span>ID</span><span>Name</span>
+                  </div>
+                  {data.map((row) => (
+                    <div key={row.id} className={`grid grid-cols-2 px-2 py-1 text-[10px] border-t border-slate-100 ${row.id === "103" ? "bg-green-50 border-2 border-[#16A34A]" : ""}`}>
+                      <span className={row.id === "103" ? "font-semibold text-[#16A34A]" : "text-black"}>{row.id}</span>
+                      <span className="text-black">{row.name}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div className="text-slate-300 text-xl flex-shrink-0">→</div>
+
+              <div className="min-w-[160px] border border-slate-200 rounded-2xl p-3 bg-white shadow-sm">
+                <h3 className="font-bold text-sm text-slate-900">Step 2</h3>
+                <p className="font-bold mt-0.5 text-slate-800 text-sm">Find the Row</p>
+                <p className="text-xs text-black-500 mt-2">
+                  Find the row that<br/>contains the<br/>lookup value.
+                </p>
+                <div className="mt-2 border border-slate-200 rounded-lg overflow-hidden">
+                  <div className="bg-[#16A34A] text-white text-[9px] px-2 py-1 grid grid-cols-2">
+                    <span>ID</span><span>Name</span>
+                  </div>
+                  {data.map((row) => (
+                    <div key={row.id} className={`grid grid-cols-2 px-2 py-1 text-[10px] border-t border-slate-100 ${row.id === "103" ? "bg-green-50 border-2 border-[#16A34A]" : ""}`}>
+                      <span className={row.id === "103" ? "font-semibold text-[#16A34A]" : "text-black"}>{row.id}</span>
+                      <span className="text-black">{row.name}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div className="text-slate-300 text-xl flex-shrink-0">→</div>
+
+              <div className="min-w-[160px] border border-slate-200 rounded-2xl p-3 bg-white shadow-sm">
+                <h3 className="font-bold text-sm text-slate-900">Step 3</h3>
+                <p className="font-bold mt-0.5 text-slate-800 text-sm">Move to Column</p>
+                <p className="text-xs text-black-500 mt-2">
+                  Move to the<br/>specified column<br/>number.
+                </p>
+                <div className="mt-2 border border-slate-200 rounded-lg overflow-hidden">
+                  <div className="bg-[#16A34A] text-white text-[9px] px-2 py-1 grid grid-cols-2">
+                    <span>ID</span><span>Salary</span>
+                  </div>
+                  {data.map((row) => (
+                    <div key={row.id} className={`grid grid-cols-2 px-2 py-1 text-[10px] border-t border-slate-100 ${row.id === "103" ? "bg-green-50 border-2 border-[#16A34A]" : ""}`}>
+                      <span className={row.id === "103" ? "font-semibold text-[#16A34A]" : "text-black"}>{row.id}</span>
+                      <span className={row.id === "103" ? "font-semibold text-[#16A34A]" : "text-black"}>
+                        {row.id === "103" ? row.salary : ""}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div className="text-slate-300 text-xl flex-shrink-0">→</div>
+
+              <div className="min-w-[160px] border border-slate-200 rounded-2xl p-3 bg-white shadow-s">
+                <h3 className="font-bold text-sm text-slate-900">Step 4</h3>
+                <p className="font-bold mt-0.5 text-slate-800 text-sm">Return Result</p>
+                <p className="text-xs text-black-500 mt-2">
+                  Return the value<br/>from that cell.
+                </p>
+                <div className="mt-3 text-center">
+                  <div className="text-3xl font-bold text-[#16A34A]">52000</div>
+                  <p className="text-xs text-black-500 mt-0.5">Salary found!</p>
+                </div>
+              </div>
+            </div>
           </div>
-        </div>
 
-        {/* Result + Formula */}
-        <div className="w-full lg:w-[380px] flex-shrink-0 space-y-5">
-          {/* Result Table */}
-          <div className="bg-white border border-slate-200 rounded-xl overflow-hidden">
-            <table className="w-full">
-              <thead>
-                <tr className="bg-slate-100">
-                  <th className="px-4 py-3 text-left font-semibold text-black text-[15px]">
-                    Employee ID
-                  </th>
-                  <th className="px-4 py-3 text-left font-semibold text-black text-[15px]">
-                    Salary
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td className="px-4 py-4 border-2 border-green-500 text-center text-black font-medium text-[15px]">
-                    103
-                  </td>
-                  <td className="px-4 py-4 border-2 border-green-500 text-center text-black font-medium text-[15px]">
-                    52000
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
+          <div className="lg:w-[320px] flex-shrink-0">
+            <h2 className="text-xl font-bold text-slate-900 mb-3">4. Exact vs Approximate Match</h2>
 
-          {/* Formula Card */}
-          <div className="bg-white border border-slate-200 rounded-xl p-5">
-            <p className="font-bold text-black mb-2 text-[15px]">
-              Formula used:
-            </p>
-            <p className="text-[18px] font-bold text-[#081B4B] mb-4">
-              =VLOOKUP(F5, A2:D6, 4, FALSE)
-            </p>
-            <p className="font-bold text-black mb-2 text-[15px]">
-              Explanation:
-            </p>
-            <ul className="space-y-2 text-[15px] text-slate-700">
-              <li>• F5 → Lookup value (103)</li>
-              <li>• A2:D6 → Table array</li>
-              <li>• 4 → Return value from 4th column (Salary)</li>
-              <li>• FALSE → Exact match</li>
-            </ul>
+            <div className="space-y-3">
+              <div className="border border-green-200 bg-green-50 rounded-2xl p-3">
+                <h3 className="font-bold text-green-700 text-base">Exact Match (Recommended)</h3>
+                <div className="bg-white rounded-lg p-1.5 mt-2 font-mono text-xs text-slate-800 border border-slate-200">
+                  =VLOOKUP(A2,D:F,2,FALSE)
+                </div>
+                <p className="mt-2 text-slate-600 text-xs">
+                  Returns exact match only.<br />If not found, returns #N/A.
+                </p>
+              </div>
+
+              <div className="border border-orange-200 bg-orange-50 rounded-2xl p-3">
+                <h3 className="font-bold text-orange-600 text-base">Approximate Match</h3>
+                <div className="bg-white rounded-lg p-1.5 mt-2 font-mono text-xs text-slate-800 border border-slate-200">
+                  =VLOOKUP(A2,D:F,2,TRUE)
+                </div>
+                <p className="mt-2 text-slate-600 text-xs">
+                  Returns the closest match<br />less than or equal to lookup value.
+                </p>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -343,53 +383,102 @@ const VlookupExample = () => {
 };
 
 // ============================================
-// SECTION 3: PRACTICAL USE CASES
+// SECTION 5: PRACTICAL EXAMPLE
 // ============================================
-const UseCases = () => {
-  const cases = [
-    {
-      title: "Salary Lookup",
-      description: "Find employee salary by Employee ID",
-      icon: DollarSign,
-      color: "text-green-600",
-      bgColor: "bg-green-100"
-    },
-    {
-      title: "Product Price Lookup",
-      description: "Look up product prices by product code",
-      icon: Package,
-      color: "text-blue-600",
-      bgColor: "bg-blue-100"
-    },
-    {
-      title: "Client Information",
-      description: "Retrieve client details from database",
-      icon: Users,
-      color: "text-orange-500",
-      bgColor: "bg-orange-100"
-    },
-    {
-      title: "Financial Reports",
-      description: "Pull financial data from multiple sheets",
-      icon: BarChart3,
-      color: "text-purple-600",
-      bgColor: "bg-purple-100"
-    }
+const PracticalExample = () => {
+  const employeeRows = [
+    ["101", "Aarav Sharma", "Finance", "55000"],
+    ["102", "Neha Verma", "HR", "48000"],
+    ["103", "Rohan Mehta", "Marketing", "52000"],
+    ["104", "Priya Singh", "Finance", "56000"],
+    ["105", "Karan Patel", "IT", "60000"],
   ];
 
   return (
-    <section id="section-3" className="mb-12 scroll-mt-20">
-      <h2 className="text-3xl font-bold text-[#081B4B] mb-4">3. Practical Use Cases in Finance</h2>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
+    <section id="section-5" className="mb-10 scroll-mt-20">
+      <h2 className="text-2xl font-bold text-[#081B4B] mb-3">5. Practical Example</h2>
+      <p className="text-[14px] text-slate-600 mb-4">Let's understand VLOOKUP with a simple example.</p>
+
+      <div className="border border-slate-300 rounded-lg overflow-hidden">
+        <table className="w-full border-collapse">
+          <thead>
+            <tr className="bg-[#138A4A]">
+              <th className="border border-slate-300 px-3 py-1.5 text-center text-[12px] font-semibold text-white">Employee ID</th>
+              <th className="border border-slate-300 px-3 py-1.5 text-center text-[12px] font-semibold text-white">Name</th>
+              <th className="border border-slate-300 px-3 py-1.5 text-center text-[12px] font-semibold text-white">Department</th>
+              <th className="border border-slate-300 px-3 py-1.5 text-center text-[12px] font-semibold text-white">Salary</th>
+            </tr>
+          </thead>
+          <tbody>
+            {employeeRows.map((row, index) => (
+              <tr key={index} className={row[0] === "103" ? "bg-green-50/60" : ""}>
+                {row.map((cell, i) => (
+                  <td key={i} className="border border-slate-300 px-3 py-1.5 text-[12px] text-black text-center">{cell}</td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div className="border border-slate-300 rounded-lg overflow-hidden">
+          <table className="w-full border-collapse">
+            <thead>
+              <tr className="bg-slate-100">
+                <th className="border border-slate-300 px-3 py-1.5 text-center font-semibold text-black text-[12px]">Employee ID</th>
+                <th className="border border-slate-300 px-3 py-1.5 text-center font-semibold text-black text-[12px]">Salary</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td className="border border-slate-300 px-3 py-1.5 text-center text-black font-medium text-[12px]">103</td>
+                <td className="border-2 border-green-500 px-3 py-1.5 text-center text-black font-medium text-[12px] bg-green-50">52000</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div className="bg-white border border-slate-200 rounded-lg p-3">
+          <p className="font-bold text-black mb-1 text-[12px]">Formula used:</p>
+          <p className="text-[13px] font-bold text-[#081B4B] mb-2">=VLOOKUP(F5, A2:D6, 4, FALSE)</p>
+          <p className="font-bold text-black mb-1 text-[12px]">Explanation:</p>
+          <ul className="space-y-0.5 text-[12px] text-black">
+            <li>• F5 → Lookup value (103)</li>
+            <li>• A2:D6 → Table array</li>
+            <li>• 4 → Return value from 4th column (Salary)</li>
+            <li>• FALSE → Exact match</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+  );
+};
+
+// ============================================
+// SECTION 6: REAL FINANCE USE CASES
+// ============================================
+const FinanceUseCases = () => {
+  const cases = [
+    { title: "Salary Lookup", description: "Find employee salary by Employee ID", icon: DollarSign, color: "text-green-600", bgColor: "bg-green-100" },
+    { title: "Product Price Lookup", description: "Look up product prices by product code", icon: Package, color: "text-blue-600", bgColor: "bg-blue-100" },
+    { title: "Client Information", description: "Retrieve client details from database", icon: Users, color: "text-orange-500", bgColor: "bg-orange-100" },
+    { title: "Financial Reports", description: "Pull financial data from multiple sheets", icon: BarChart3, color: "text-purple-600", bgColor: "bg-purple-100" }
+  ];
+
+  return (
+    <section id="section-6" className="mb-10 scroll-mt-20">
+      <h2 className="text-2xl font-bold text-[#081B4B] mb-4">6. Real Finance Use Cases</h2>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {cases.map((useCase, idx) => {
           const Icon = useCase.icon;
           return (
-            <div key={idx} className="bg-white border border-slate-200 rounded-xl p-5 text-center hover:shadow-lg transition">
-              <div className={`w-14 h-14 rounded-full ${useCase.bgColor} flex items-center justify-center mx-auto mb-3`}>
-                <Icon size={28} className={useCase.color} />
+            <div key={idx} className="bg-white border border-slate-200 rounded-xl p-4 text-center hover:shadow-lg transition">
+              <div className={`w-12 h-12 rounded-full ${useCase.bgColor} flex items-center justify-center mx-auto mb-2`}>
+                <Icon size={24} className={useCase.color} />
               </div>
-              <h3 className="text-lg font-bold text-black mb-1.5">{useCase.title}</h3>
-              <p className="text-sm text-slate-600 leading-5">{useCase.description}</p>
+              <h3 className="text-base font-bold text-black mb-1">{useCase.title}</h3>
+              <p className="text-xs text-slate-600 leading-4">{useCase.description}</p>
             </div>
           );
         })}
@@ -399,47 +488,33 @@ const UseCases = () => {
 };
 
 // ============================================
-// SECTION 4: COMMON ERRORS
+// SECTION 7: COMMON ERRORS
 // ============================================
 const ErrorsTable = () => {
   const errors = [
-    {
-      error: "#N/A",
-      cause: "Value not found",
-      fix: "Check lookup value or use IFNA()"
-    },
-    {
-      error: "#VALUE!",
-      cause: "Incorrect table_array or column index",
-      fix: "Ensure range and column number are correct"
-    },
-    {
-      error: "Wrong Result",
-      cause: "Approximate match used",
-      fix: "Use FALSE for exact match"
-    }
+    { error: "#N/A", cause: "Value not found", fix: "Check lookup value or use IFNA()" },
+    { error: "#VALUE!", cause: "Incorrect table_array or column index", fix: "Ensure range and column number are correct" },
+    { error: "Wrong Result", cause: "Approximate match used", fix: "Use FALSE for exact match" }
   ];
 
   return (
-    <section id="section-4" className="mb-12 scroll-mt-20">
-      <h2 className="text-3xl font-bold text-[#081B4B] mb-4">
-        4. Common Errors and How to Fix Them
-      </h2>
-      <div className="bg-white border border-slate-200 rounded-xl overflow-hidden">
-        <table className="w-full text-md">
+    <section id="section-7" className="mb-10 scroll-mt-20">
+      <h2 className="text-2xl font-bold text-[#081B4B] mb-4">7. Common Errors and How to Fix Them</h2>
+      <div className="border border-slate-300 rounded overflow-hidden">
+        <table className="w-full border-collapse">
           <thead>
-            <tr className="bg-slate-100 text-black font-bold">
-              <th className="px-4 py-2.5 text-left">Error</th>
-              <th className="px-4 py-2.5 text-left">Cause</th>
-              <th className="px-4 py-2.5 text-left">Solution</th>
+            <tr className="bg-slate-100">
+              <th className="border border-slate-300 px-3 py-1.5 text-left font-semibold text-black text-[12px]">Error</th>
+              <th className="border border-slate-300 px-3 py-1.5 text-left font-semibold text-black text-[12px]">Cause</th>
+              <th className="border border-slate-300 px-3 py-1.5 text-left font-semibold text-black text-[12px]">Solution</th>
             </tr>
           </thead>
-          <tbody className="text-black">
+          <tbody>
             {errors.map((item, idx) => (
-              <tr key={idx} className="border-b border-slate-100">
-                <td className="px-4 py-2.5 font-mono text-red-600 font-bold">{item.error}</td>
-                <td className="px-4 py-2.5 text-slate-600">{item.cause}</td>
-                <td className="px-4 py-2.5 text-slate-600">{item.fix}</td>
+              <tr key={idx}>
+                <td className="border border-slate-300 px-3 py-1.5 text-[12px] font-mono text-red-600 font-bold">{item.error}</td>
+                <td className="border border-slate-300 px-3 py-1.5 text-[12px] text-black">{item.cause}</td>
+                <td className="border border-slate-300 px-3 py-1.5 text-[12px] text-black">{item.fix}</td>
               </tr>
             ))}
           </tbody>
@@ -450,30 +525,34 @@ const ErrorsTable = () => {
 };
 
 // ============================================
-// SECTION 5: TIPS & BEST PRACTICES
+// SECTION 8: LIMITATIONS OF VLOOKUP
 // ============================================
-const TipsSection = () => {
-  const tips = [
-    "Always use FALSE for exact match unless you need approximate matching",
-    "Use absolute references ($A$1:$D$100) for table_array to avoid errors",
-    "Sort data ascending if using TRUE for approximate match",
-    "Use VLOOKUP with IFERROR for cleaner error handling",
-    "Consider XLOOKUP for more flexibility (if available)"
-  ];
-
+const Limitations = () => {
   return (
-    <section id="section-5" className="mb-12 scroll-mt-20">
-      <h2 className="text-[34px] font-bold text-[#081B4B] mb-6">5. Tips & Best Practices</h2>
-      <div className="bg-blue-50 border border-blue-100 rounded-2xl p-6">
-        <ul className="space-y-2.5">
-          {tips.map((tip, idx) => (
-            <li key={idx} className="flex items-start gap-3 text-slate-700 text-sm">
-              <div className="w-5 h-5 rounded-full bg-blue-200 flex items-center justify-center flex-shrink-0 mt-0.5">
-                <Zap size={12} className="text-blue-600" />
-              </div>
-              <span>{tip}</span>
-            </li>
-          ))}
+    <section id="section-8" className="mb-10 scroll-mt-20">
+      <h2 className="text-2xl font-bold text-[#081B4B] mb-4">8. Limitations of VLOOKUP</h2>
+      <div className="bg-white border border-slate-200 rounded-xl p-4">
+        <ul className="space-y-2 text-[14px] text-black">
+          <li className="flex items-start gap-3">
+            <XCircle size={16} className="text-red-500 flex-shrink-0 mt-0.5" />
+            <span><strong>Only looks right:</strong> VLOOKUP can only search in the first column and return values to the right.</span>
+          </li>
+          <li className="flex items-start gap-3">
+            <XCircle size={16} className="text-red-500 flex-shrink-0 mt-0.5" />
+            <span><strong>Column index number:</strong> Adding or removing columns breaks the formula.</span>
+          </li>
+          <li className="flex items-start gap-3">
+            <XCircle size={16} className="text-red-500 flex-shrink-0 mt-0.5" />
+            <span><strong>Exact match is not default:</strong> Forgetting FALSE returns approximate match.</span>
+          </li>
+          <li className="flex items-start gap-3">
+            <XCircle size={16} className="text-red-500 flex-shrink-0 mt-0.5" />
+            <span><strong>Performance:</strong> Slower with large datasets.</span>
+          </li>
+          <li className="flex items-start gap-3">
+            <XCircle size={16} className="text-red-500 flex-shrink-0 mt-0.5" />
+            <span><strong>No dynamic column reference:</strong> Column index is static and doesn't update automatically when columns are inserted or deleted.</span>
+          </li>
         </ul>
       </div>
     </section>
@@ -481,43 +560,241 @@ const TipsSection = () => {
 };
 
 // ============================================
-// SECTION 6: VLOOKUP VS XLOOKUP
+// SECTION 9: VLOOKUP vs INDEX MATCH
+// ============================================
+const VlookupVsIndexMatch = () => {
+  const comparisons = [
+    { feature: "Ease of use", vlookup: "Simple to write", indexMatch: "More complex to write" },
+    { feature: "Lookup direction", vlookup: "Only looks right", indexMatch: "Looks both left and right" },
+    { feature: "Column insert impact", vlookup: "Breaks when columns change", indexMatch: "No column index issues" },
+    { feature: "Performance", vlookup: "Slower with large data", indexMatch: "Faster with large data" },
+    { feature: "Best for", vlookup: "Simple lookups", indexMatch: "Complex & dynamic lookups" },
+  ];
+
+  return (
+    <section id="section-9" className="mb-10 scroll-mt-20">
+      <h2 className="text-2xl font-bold text-[#081B4B] mb-4">9. VLOOKUP vs INDEX MATCH</h2>
+      <div className="border border-slate-300 rounded-xl overflow-hidden shadow-sm">
+        <table className="w-full border-collapse">
+          <thead>
+            <tr className="bg-[#138A4A]">
+              <th className="border border-[#138A4A] px-4 py-2 text-left text-[13px] font-semibold text-black">Feature</th>
+              <th className="border border-[#138A4A] px-4 py-2 text-left text-[13px] font-semibold text-black">VLOOKUP</th>
+              <th className="border border-[#138A4A] px-4 py-2 text-left text-[13px] font-semibold text-black">INDEX MATCH</th>
+            </tr>
+          </thead>
+          <tbody>
+            {comparisons.map((item, idx) => (
+              <tr key={idx} className={idx % 2 === 0 ? "bg-white" : "bg-slate-50/80"}>
+                <td className="border border-slate-300 px-4 py-2 text-[13px] font-semibold text-green-600">{item.feature}</td>
+                <td className="border border-slate-300 px-4 py-2 text-[13px] text-black">
+                  <span className="inline-flex items-center gap-1.5">
+                    <span className="w-1.5 h-1.5 rounded-full bg-red-400"></span>
+                    {item.vlookup}
+                  </span>
+                </td>
+                <td className="border border-slate-300 px-4 py-2 text-[13px] text-black">
+                  <span className="inline-flex items-center gap-1.5">
+                    <span className="w-1.5 h-1.5 rounded-full bg-green-500"></span>
+                    {item.indexMatch}
+                  </span>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+  );
+};
+
+/// ============================================
+// SECTION 10: VLOOKUP vs XLOOKUP
 // ============================================
 const VlookupVsXlookup = () => {
+  const comparisons = [
+    { feature: "Availability", vlookup: "Older Excel", xlookup: "Excel 365 & 2021+" },
+    { feature: "Lookup Direction", vlookup: "Left to Right only", xlookup: "Left or Right" },
+    { feature: "Syntax", vlookup: "Complex", xlookup: "Simpler" },
+    { feature: "Returns", vlookup: "Single value", xlookup: "Single or Multiple values" },
+    { feature: "Error Handling", vlookup: "Harder", xlookup: "Built-in error handling" },
+    { feature: "Best for", vlookup: "Legacy workbooks", xlookup: "Modern Excel (2020+) & dynamic lookups" },
+  ];
+
   return (
-    <section id="section-6" className="mb-12 scroll-mt-20">
-      <h2 className="text-[34px] font-bold text-[#081B4B] mb-6">6. VLOOKUP vs XLOOKUP</h2>
-      <p className="text-[18px] text-slate-700 mb-6">
-        XLOOKUP is the modern replacement for VLOOKUP with more flexibility.
-      </p>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className="bg-white border border-slate-200 rounded-xl p-6">
-          <div className="flex items-center gap-3 mb-4">
-            <div className="w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center">
-              <FileSpreadsheet size={20} className="text-blue-600" />
+    <section id="section-10" className="mb-10 scroll-mt-20">
+      <h2 className="text-2xl font-bold text-[#081B4B] mb-4">10. VLOOKUP vs XLOOKUP</h2>
+      <div className="border border-slate-300 rounded-xl overflow-hidden shadow-sm">
+        <table className="w-full border-collapse">
+          <thead>
+           <tr className="bg-[#138A4A]">
+  <th className="border border-slate-300 px-4 py-2.5 text-left text-[13px] text-black-600 font-medium">
+    Feature
+  </th>
+
+  <th className="border border-slate-300 px-4 py-2.5 text-left text-[13px] text-green-600 font-medium">
+    VLOOKUP
+  </th>
+
+  <th className="border border-slate-300 px-4 py-2.5 text-left text-[13px] text-green-600 font-medium">
+    XLOOKUP
+  </th>
+</tr>
+          </thead>
+          <tbody>
+            {comparisons.map((item, idx) => (
+              <tr key={idx} className={idx % 2 === 0 ? "bg-white" : "bg-slate-50/80"}>
+                <td className="border border-slate-300 px-4 py-2.5 text-[13px] font-semibold text-green-600">
+                  {item.feature}
+                </td>
+                <td className="border border-slate-300 px-4 py-2.5 text-[13px] text-black">
+                  {item.vlookup}
+                </td>
+               <td className="border border-slate-300 px-4 py-2.5 text-[13px] text-black">
+                  {item.xlookup}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+  );
+};
+
+// ============================================
+// SECTION 11: PRACTICE EXERCISES
+// ============================================
+const PracticeExercises = () => {
+  return (
+    <section id="section-11" className="mb-12 scroll-mt-20">
+      <h2 className="text-[32px] font-bold text-[#081B4B] mb-6">
+        11. Practice Exercises
+      </h2>
+
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+
+        {/* EASY */}
+        <div className="bg-white border border-slate-200 rounded-2xl p-6">
+          
+          <div className="flex items-center gap-3 mb-5">
+            <div className="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center">
+              <CircleCheckBig size={24} className="text-green-600" />
             </div>
-            <h3 className="font-bold text-[#081B4B] text-xl">VLOOKUP</h3>
+
+            <h3 className="font-bold text-green-600 text-[24px]">
+              Easy
+            </h3>
           </div>
-          <ul className="space-y-2 text-sm text-slate-600">
-            <li className="flex items-start gap-2">• Only looks right (vertical)</li>
-            <li className="flex items-start gap-2">• Requires column index number</li>
-            <li className="flex items-start gap-2">• Limited to exact or approximate</li>
-            <li className="flex items-start gap-2">• Older function</li>
-          </ul>
+
+          <p className="text-[22px] font-bold text-black leading-9 mb-5">
+            Find the salary of employee with ID 104 using VLOOKUP.
+          </p>
+
+          <div className="border-t border-slate-200 pt-4">
+            <p className="text-[15px] text-black">
+              <span className="font-bold">Hint:</span>
+              {" "}
+              Use exact match.
+            </p>
+          </div>
+
         </div>
-        <div className="bg-gradient-to-br from-green-50 to-green-100/50 border border-green-200 rounded-xl p-6">
-          <div className="flex items-center gap-3 mb-4">
-            <div className="w-10 h-10 rounded-lg bg-green-600 flex items-center justify-center">
-              <Sparkles size={20} className="text-white" />
+
+        {/* MEDIUM */}
+        <div className="bg-white border border-slate-200 rounded-2xl p-6">
+
+          <div className="flex items-center gap-3 mb-5">
+            <div className="w-12 h-12 rounded-full bg-orange-100 flex items-center justify-center">
+              <Target size={24} className="text-orange-500" />
             </div>
-            <h3 className="font-bold text-[#081B4B] text-xl">XLOOKUP</h3>
+
+            <h3 className="font-bold text-orange-500 text-[24px]">
+              Medium
+            </h3>
           </div>
-          <ul className="space-y-2 text-sm text-slate-600">
-            <li className="flex items-start gap-2">✓ Looks both left and right</li>
-            <li className="flex items-start gap-2">✓ No column index needed</li>
-            <li className="flex items-start gap-2">✓ More flexible matching</li>
-            <li className="flex items-start gap-2">✓ Modern replacement</li>
-          </ul>
+
+        <p className="text-[22px] font-bold text-black leading-9 mb-5">
+            Find the department name of employee with ID 102.
+          </p>
+
+          <div className="border-t border-slate-200 pt-4">
+            <p className="text-[15px] text-black">
+              <span className="font-bold">Hint:</span>
+              {" "}
+              Return text value.
+            </p>
+          </div>
+
+        </div>
+
+        {/* HARD */}
+        <div className="bg-white border border-slate-200 rounded-2xl p-6">
+
+          <div className="flex items-center gap-3 mb-5">
+            <div className="w-12 h-12 rounded-full bg-red-100 flex items-center justify-center">
+              <Trophy size={24} className="text-red-500" />
+            </div>
+
+            <h3 className="font-bold text-red-500 text-[24px]">
+              Hard
+            </h3>
+          </div>
+
+         <p className="text-[22px] font-bold text-black leading-9 mb-5">
+            Create a product price lookup from a master price list sheet.
+          </p>
+
+          <div className="border-t border-slate-200 pt-4">
+            <p className="text-[15px] text-black">
+              <span className="font-bold">Hint:</span>
+              {" "}
+              Use a different sheet.
+            </p>
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+  );
+};
+// ============================================
+// SECTION 12: KEY TAKEAWAYS - 5 Blocks in One Row
+// ============================================
+const takeaways = [
+  "VLOOKUP searches for a value in the first column and returns a value from another column.",
+  "Use FALSE for exact match in most cases.",
+  "Understand the order of arguments in the syntax.",
+  "Great for quick lookups but has some limitations.",
+  "For more flexibility, use INDEX MATCH or XLOOKUP.",
+];
+
+const KeyTakeaways = () => {
+  return (
+    <section id="section-12" className="mb-10 scroll-mt-20">
+      <h2 className="text-2xl font-bold text-[#081B4B] mb-4">12. Key Takeaways</h2>
+
+      <div className="bg-white border border-[#E5E7EB] rounded-2xl overflow-hidden">
+        {/* 5 Blocks in One Row - Checkmark Left */}
+        <div className="flex flex-wrap">
+          {takeaways.map((item, index) => (
+            <div
+              key={index}
+              className={`flex-1 min-w-[10px] px-6 py-5 ${
+        index !== takeaways.length - 1
+                  ? "border-r border-slate-200"
+                  : ""
+              }`}
+            >
+              <div className="flex items-start gap-3">
+                <CheckCircle size={18} className="text-green-500 flex-shrink-0 mt-5" />
+<p className="text-[14px] leading-6 text-[#1E293B] mt-4">
+  {item}
+</p>
+              </div>
+            </div>
+          ))}
         </div>
       </div>
     </section>
@@ -534,11 +811,15 @@ export default function VlookupBlogPage() {
       <HeroSection />
       <LearnAndContents />
       <WhatIsVlookup />
-      <VlookupExample />
-      <UseCases />
+      <HowVlookupWorks />
+      <PracticalExample />
+      <FinanceUseCases />
       <ErrorsTable />
-      <TipsSection />
+      <Limitations />
+      <VlookupVsIndexMatch />
       <VlookupVsXlookup />
+      <PracticeExercises />
+      <KeyTakeaways />
     </main>
   );
 }
