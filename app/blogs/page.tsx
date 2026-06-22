@@ -86,14 +86,12 @@ export default function BlogsPage() {
       
       const res = await fetch("/api/career-resources");
       
-      // Check if response is ok
       if (!res.ok) {
         throw new Error(`HTTP error! status: ${res.status}`);
       }
       
       const data = await res.json();
       
-      // Log the response to debug
       console.log("API Response:", data);
       
       let blogData: Resource[] = [];
@@ -111,7 +109,7 @@ export default function BlogsPage() {
         // If no data found, try to see if there's any property that might contain the array
         const possibleArrays = Object.values(data).filter(val => Array.isArray(val));
         if (possibleArrays.length > 0) {
-          blogData = possibleArrays[0];
+          blogData = possibleArrays[0] as Resource[];
         } else {
           blogData = [];
         }
@@ -139,20 +137,15 @@ export default function BlogsPage() {
     }
   };
 
-  // Call fetchBlogs on mount
   useEffect(() => {
     fetchBlogs();
   }, []);
 
-  // Filter resources
   const filteredResources = resources.filter(resource => {
-    // Check if resource has required fields
     if (!resource || !resource.id) return false;
     
-    // Filter by category
     if (category !== "all" && resource.category !== category) return false;
     
-    // Filter by search query
     if (searchQuery) {
       const query = searchQuery.toLowerCase();
       const title = (resource.title || '').toLowerCase();
@@ -222,7 +215,6 @@ export default function BlogsPage() {
     } else if (resource.type === "link" && resource.link) {
       window.open(resource.link, '_blank');
     } else {
-      // Default: try to open as article if slug exists
       if (resource.slug) {
         router.push(`/blogs/${resource.slug}`);
       }
@@ -242,7 +234,6 @@ export default function BlogsPage() {
     setCategory("all");
   };
 
-  // Skeleton Loading Component
   const BlogSkeleton = () => (
     <div className="bg-white rounded-xl shadow-sm overflow-hidden border border-gray-100 animate-pulse">
       <div className="relative w-full h-48 bg-gray-200"></div>
@@ -366,26 +357,6 @@ export default function BlogsPage() {
             })}
           </div>
         </div>
-
-        {/* Debug Info - Remove in production */}
-        {!loading && (
-          <div className="mb-4 p-3 bg-gray-100 rounded-lg text-xs text-gray-600">
-            <p>Total resources: {resources.length}</p>
-            <p>Filtered resources: {filteredResources.length}</p>
-            <p>Current category: {category}</p>
-            <p>Search query: {searchQuery || 'none'}</p>
-            {resources.length > 0 && (
-              <div className="mt-1">
-                <p className="font-semibold">Blog titles:</p>
-                <ul className="list-disc pl-4">
-                  {resources.map(r => (
-                    <li key={r.id}>{r.title} (Category: {r.category || 'none'}, Type: {r.type || 'text'})</li>
-                  ))}
-                </ul>
-              </div>
-            )}
-          </div>
-        )}
 
         {/* Coming Soon Message */}
         {!loading && filteredResources.length === 0 && category !== "all" && (
