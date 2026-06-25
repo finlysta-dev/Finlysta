@@ -22,6 +22,12 @@ export default async function JobDetailPage({ params }: { params: { slug: string
     notFound();
   }
 
+  // Increment view count in database (server-side)
+  await prisma.opportunity.update({
+    where: { id: opportunity.id },
+    data: { views: { increment: 1 } },
+  });
+
   // Fetch related jobs
   const relatedJobs = await prisma.opportunity.findMany({
     where: {

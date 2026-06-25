@@ -4754,3 +4754,56 @@ video {
   white-space: nowrap;
   border-width: 0;
 }
+/* Dashboard UI Improvements */
+.dashboard-card {
+  @apply bg-white rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-all duration-300;
+}
+
+.dashboard-card-header {
+  @apply px-6 py-4 border-b border-gray-100 flex items-center justify-between;
+}
+
+.dashboard-card-body {
+  @apply px-6 py-4;
+}
+
+/* Metrics Cards */
+.metric-card {
+  @apply bg-white rounded-xl border border-gray-200 p-6 shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-1;
+}
+
+.metric-icon {
+  @apply w-12 h-12 rounded-xl flex items-center justify-center;
+}
+
+.metric-value {
+  @apply text-2xl font-bold text-gray-900;
+}
+
+.metric-label {
+  @apply text-sm text-gray-500 font-medium;
+}
+
+/* Refresh Button Animations */
+@keyframes pulse-ring {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+.refresh-active {
+  animation: pulse-ring 1s ease-in-out infinite;
+}
+
+/* Table Improvements */
+.table-container {
+  @apply bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden;
+}
+
+.table-header {
+  @apply bg-gray-50 px-6 py-3 border-b border-gray-200;
+}
+
+.table-header h2 {
+  @apply text-lg font-semibold text-gray-900;
+}

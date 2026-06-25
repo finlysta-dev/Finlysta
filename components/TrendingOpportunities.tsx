@@ -9,6 +9,7 @@ import {
   Sparkles, Eye, Bookmark, Flame, BadgeCheck, Clock,
   IndianRupee, Wifi, Globe, Calendar, GraduationCap, Grid3X3
 } from "lucide-react";
+import { trackJobView, trackApplyClick } from "@/lib/analytics/tracking";
 
 // Types
 interface Opportunity {
@@ -144,11 +145,6 @@ const formatPostedDate = (date: string) => {
   return `${Math.floor(diffDays / 365)} year ago`;
 };
 
-const trackApplyClick = async (id: string, type: string, applyLink: string) => {
-  try { await fetch('/api/track-opportunity-click', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ opportunityId: id, type }) }); } catch (error) { console.error(error); }
-  if (typeof window !== 'undefined') window.open(applyLink, '_blank');
-};
-
 const getSavedJobs = (): string[] => {
   if (typeof window === 'undefined') return [];
   const saved = localStorage.getItem('savedOpportunities');
@@ -173,7 +169,9 @@ const isJobSaved = (id: string): boolean => {
   return getSavedJobs().includes(id);
 };
 
-// Job Card Component
+// ============================================
+// JOB CARD COMPONENT - FULLY FIXED VERSION
+// ============================================
 const JobCard = ({ job, imageErrors, handleImageError, onSaveToggle }: { 
   job: Opportunity; 
   imageErrors: { [key: string]: boolean }; 
@@ -184,6 +182,7 @@ const JobCard = ({ job, imageErrors, handleImageError, onSaveToggle }: {
   const hasLogoError = imageErrors[job.id];
   const shortTitle = shortenTitle(job.title);
   const [isSaved, setIsSaved] = useState(false);
+  const [isTracking, setIsTracking] = useState(false);
 
   useEffect(() => { setIsSaved(isJobSaved(job.id)); }, [job.id]);
 
@@ -195,16 +194,50 @@ const JobCard = ({ job, imageErrors, handleImageError, onSaveToggle }: {
     onSaveToggle();
   };
 
-  const handleCardClick = (e: React.MouseEvent) => {
+  // ✅ FIXED: Async click handler with tracking completion
+  const handleCardClick = async (e: React.MouseEvent) => {
+    // Don't track if clicking on button
     const target = e.target as HTMLElement;
-    if (!target.closest('button') && !target.closest('a')) router.push(`/jobs/${job.slug}`);
+    if (target.closest('button')) {
+      return;
+    }
+    
+    // Prevent multiple clicks
+    if (isTracking) {
+      console.log('⏳ [FIXED] Already tracking, please wait...');
+      return;
+    }
+    
+    setIsTracking(true);
+    console.log('👁️ [FIXED] Card clicked! Tracking view for:', job.id);
+    
+    try {
+      await trackJobView(job.id);
+      console.log('✅ [FIXED] Job view tracked successfully for:', job.id);
+    } catch (error) {
+      console.error('❌ [FIXED] Failed to track job view:', error);
+    } finally {
+      setIsTracking(false);
+      // Navigate after tracking is complete
+      router.push(`/jobs/${job.slug}`);
+    }
+  };
+
+  const handleApplyClick = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    console.log('🖱️ [Debug] Apply button clicked for:', job.id);
+    await trackApplyClick(job.id);
+    console.log('✅ [Debug] Apply click tracked for:', job.id);
+    if (job.applyLink) {
+      window.open(job.applyLink, '_blank');
+    }
   };
 
   return (
     <div 
       onClick={handleCardClick}
-      className="bg-white rounded-2xl border border-slate-100 shadow-sm hover:shadow-lg transition-all duration-300 hover:-translate-y-1 cursor-pointer overflow-hidden flex flex-col"
-      style={{ minHeight: '460px' }}
+      className={`bg-white rounded-2xl border border-slate-100 shadow-sm hover:shadow-lg transition-all duration-300 hover:-translate-y-1 overflow-hidden flex flex-col cursor-pointer ${isTracking ? 'opacity-70' : ''}`}
     >
       <div className="p-5 flex flex-col h-full">
         {/* Actively Hiring Badge */}
@@ -260,12 +293,11 @@ const JobCard = ({ job, imageErrors, handleImageError, onSaveToggle }: {
           )}
         </div>
 
-        {/* Skills List — black dots */}
+        {/* Skills List */}
         {job.skills && job.skills.length > 0 && (
           <ul className="mt-4 space-y-2">
             {job.skills.slice(0, 5).map((skill, idx) => (
               <li key={idx} className="flex items-center gap-2 text-xs text-slate-600">
-                {/* Black dot */}
                 <span
                   style={{
                     width: '6px',
@@ -288,13 +320,9 @@ const JobCard = ({ job, imageErrors, handleImageError, onSaveToggle }: {
         {/* Flexible spacer */}
         <div className="flex-1"></div>
 
-        {/* Apply Now — always visible, no hover dependency */}
+        {/* Apply Now */}
         <button
-          onClick={(e) => {
-            e.stopPropagation();
-            if (job.applyLink) trackApplyClick(job.id, 'job', job.applyLink);
-            else router.push(`/jobs/${job.slug}`);
-          }}
+          onClick={handleApplyClick}
           style={{
             marginTop: '20px',
             backgroundColor: '#2563EB',
@@ -317,7 +345,9 @@ const JobCard = ({ job, imageErrors, handleImageError, onSaveToggle }: {
   );
 };
 
-// Main Component
+// ============================================
+// MAIN COMPONENT
+// ============================================
 export default function TrendingOpportunities() {
   const [isMounted, setIsMounted] = useState(false);
   const [allOpportunities, setAllOpportunities] = useState<Opportunity[]>([]);
@@ -426,34 +456,27 @@ export default function TrendingOpportunities() {
           <p className="text-sm text-slate-500 mt-1">Hand-picked entry-level finance jobs and internships</p>
         </div>
 
-        {/* Filter bar — filters left, View All right, all on ONE line */}
+        {/* Filter bar */}
         <div className="flex items-center justify-between mb-6 gap-3">
-          {/* Filter pills */}
           <div className="flex items-center gap-2">
             {(["all", "jobs", "internships"] as const).map((filter) => (
-  <button
-    key={filter}
-    onClick={() => handleFilterChange(filter)}
-    className={`flex items-center gap-2 px-6 py-2.5 rounded-full text-sm font-semibold transition-all duration-200 ${
-      activeFilter === filter
-        ? "bg-[#2563EB] text-Black shadow-lg"
-        : "bg-white text-[#081B4B] border border-slate-200 hover:border-[#2563EB]"
-    }`}
-  >
-    {filter === "all" && <Grid3X3 size={16} />}
-    {filter === "jobs" && <Briefcase size={16} />}
-    {filter === "internships" && <GraduationCap size={16} />}
-
-    {filter === "all"
-      ? "All"
-      : filter === "jobs"
-      ? "Jobs"
-      : "Internships"}
-  </button>
-))}
+              <button
+                key={filter}
+                onClick={() => handleFilterChange(filter)}
+                className={`flex items-center gap-2 px-6 py-2.5 rounded-full text-sm font-semibold transition-all duration-200 ${
+                  activeFilter === filter
+                    ? "bg-[#2563EB] text-Black shadow-lg"
+                    : "bg-white text-[#081B4B] border border-slate-200 hover:border-[#2563EB]"
+                }`}
+              >
+                {filter === "all" && <Grid3X3 size={16} />}
+                {filter === "jobs" && <Briefcase size={16} />}
+                {filter === "internships" && <GraduationCap size={16} />}
+                {filter === "all" ? "All" : filter === "jobs" ? "Jobs" : "Internships"}
+              </button>
+            ))}
           </div>
 
-          {/* View All — same row, pushed to right */}
           <Link href={getViewAllLink()}>
             <button className="text-[#2563EB] font-semibold text-sm hover:underline flex items-center gap-1 whitespace-nowrap">
               {getViewAllText()}
@@ -482,7 +505,6 @@ export default function TrendingOpportunities() {
               ))}
             </div>
 
-            {/* Load More — bigger box, smaller text, blue border, no fill */}
             {hasMore && (
               <div className="flex justify-center mt-10">
                 <button

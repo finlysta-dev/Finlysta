@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Head from 'next/head';
 import { Search, MapPin, ChevronRight, X, Briefcase, Building2, Clock, Award, Shield, Eye, ChevronDown, ChevronUp } from 'lucide-react';
-import { useTracking } from '@/hooks/useTracking';
+import { trackPageView, trackJobView, trackApplyClick } from '@/lib/analytics/tracking';
 
 interface Job {
   id: string;
@@ -32,7 +32,6 @@ const skillFilters = [
 ];
 
 export default function JobsPage() {
-  const { track } = useTracking();
   const [jobs, setJobs] = useState<Job[]>([]);
   const [filteredJobs, setFilteredJobs] = useState<Job[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -44,36 +43,19 @@ export default function JobsPage() {
   const [openFaq, setOpenFaq] = useState<number | null>(null);
   const [searchPerformed, setSearchPerformed] = useState(false);
 
+  // Track page view when component mounts
   useEffect(() => {
-    // Track page view when component mounts
-    track('Jobs Page Viewed', {
-      page: 'jobs',
-      timestamp: new Date().toISOString(),
-      totalJobs: jobs.length,
-    });
+    trackPageView('/jobs');
   }, []);
 
   // Track when filtered jobs change
   useEffect(() => {
     if (jobs.length > 0 && filteredJobs.length !== jobs.length) {
-      track('Job Filters Applied', {
-        searchQuery: searchQuery || 'none',
-        location: locationQuery || 'none',
-        activeFilters: activeFilters,
-        resultsCount: filteredJobs.length,
-        totalJobs: jobs.length,
-        timestamp: new Date().toISOString(),
-      });
+      // Track filter application (optional - can be removed if too noisy)
     }
   }, [filteredJobs, searchQuery, locationQuery, activeFilters]);
 
   const fetchJobs = async () => {
-    // Track that user is fetching/refreshing jobs
-    track('Jobs Refreshed', {
-      source: 'manual_refresh',
-      timestamp: new Date().toISOString(),
-    });
-
     setIsLoading(true);
     setError(null);
     try {
@@ -108,13 +90,6 @@ export default function JobsPage() {
         
         setJobs(formattedJobs);
         setFilteredJobs(formattedJobs);
-        
-        // Track successful job load
-        track('Jobs Loaded', {
-          totalJobs: formattedJobs.length,
-          source: 'api',
-          timestamp: new Date().toISOString(),
-        });
       } else {
         setJobs([]);
         setFilteredJobs([]);
@@ -124,12 +99,6 @@ export default function JobsPage() {
       setError('Failed to load jobs. Please try again later.');
       setJobs([]);
       setFilteredJobs([]);
-      
-      // Track error
-      track('Job Fetch Error', {
-        errorMessage: error instanceof Error ? error.message : 'Unknown error',
-        timestamp: new Date().toISOString(),
-      });
     } finally {
       setIsLoading(false);
     }
@@ -200,43 +169,17 @@ export default function JobsPage() {
   const addFilter = (filter: string) => {
     if (!activeFilters.includes(filter)) {
       setActiveFilters([...activeFilters, filter]);
-      
-      // Track filter addition
-      track('Job Filter Added', {
-        filterName: filter,
-        filterType: 'skill',
-        activeFiltersCount: activeFilters.length + 1,
-        timestamp: new Date().toISOString(),
-      });
     }
   };
 
   const removeFilter = (filter: string) => {
     setActiveFilters(activeFilters.filter(f => f !== filter));
-    
-    // Track filter removal
-    track('Job Filter Removed', {
-      filterName: filter,
-      filterType: 'skill',
-      activeFiltersCount: activeFilters.length - 1,
-      timestamp: new Date().toISOString(),
-    });
   };
 
   const clearAllFilters = () => {
-    const hadFilters = activeFilters.length > 0 || searchQuery || locationQuery;
     setActiveFilters([]);
     setSearchQuery('');
     setLocationQuery('');
-    
-    if (hadFilters) {
-      track('All Filters Cleared', {
-        previousFilters: activeFilters,
-        hadSearch: !!searchQuery,
-        hadLocation: !!locationQuery,
-        timestamp: new Date().toISOString(),
-      });
-    }
   };
 
   const truncateDescription = (text: string, maxLength: number = 100) => {
@@ -245,61 +188,30 @@ export default function JobsPage() {
     return text.substring(0, maxLength) + '...';
   };
 
-  const handleJobClick = (job: Job) => {
-    track('Job Clicked', {
-      jobId: job.id,
-      jobTitle: job.title,
-      company: job.company,
-      location: job.location,
-      workMode: job.workMode,
-      salary: job.salary || 'Not specified',
-      isVerified: job.isVerified,
-      isActivelyHiring: job.isActivelyHiring,
-      timestamp: new Date().toISOString(),
-    });
+  const handleJobClick = async (job: Job) => {
+    // Track job view when user clicks on a job
+    await trackJobView(job.id);
   };
 
-  const handleJobSave = (job: Job) => {
-    track('Job Saved', {
-      jobId: job.id,
-      jobTitle: job.title,
-      company: job.company,
-      timestamp: new Date().toISOString(),
-    });
+  const handleApplyClick = async (jobId: string, e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    // Track apply click
+    await trackApplyClick(jobId);
   };
 
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setSearchPerformed(true);
-    
-    track('Job Search Performed', {
-      query: searchQuery || 'none',
-      location: locationQuery || 'none',
-      timestamp: new Date().toISOString(),
-    });
-    
     fetchJobs();
   };
 
   const handleSkillFilterClick = (skill: string) => {
-    track('Skill Filter Clicked', {
-      skillName: skill,
-      location: 'jobs_page_skills_section',
-      timestamp: new Date().toISOString(),
-    });
     addFilter(skill);
   };
 
-  const handleFaqToggle = (index: number, question: string) => {
-    const isOpen = openFaq === index;
-    setOpenFaq(isOpen ? null : index);
-    
-    track('FAQ Toggled', {
-      question: question,
-      action: isOpen ? 'closed' : 'opened',
-      location: 'jobs_page_faq',
-      timestamp: new Date().toISOString(),
-    });
+  const handleFaqToggle = (index: number) => {
+    setOpenFaq(openFaq === index ? null : index);
   };
 
   const faqs = [
@@ -322,7 +234,7 @@ export default function JobsPage() {
   ];
 
   const toggleFaq = (index: number) => {
-    handleFaqToggle(index, faqs[index].q);
+    handleFaqToggle(index);
   };
 
   const uniqueCompanies = [...new Set(jobs.map(job => job.company))].length;
@@ -450,7 +362,6 @@ export default function JobsPage() {
               <Link 
                 href="/" 
                 className="text-gray-500 hover:text-gray-700 transition-colors"
-                onClick={() => track('Breadcrumb Clicked', { page: 'home', location: 'jobs_page' })}
               >
                 Home
               </Link>
@@ -679,14 +590,23 @@ export default function JobsPage() {
                               {job.salary}
                             </span>
                           )}
-                          <Link 
-                            href={`/jobs/${job.slug}`}
-                            onClick={() => handleJobClick(job)}
-                            className="flex items-center gap-1 text-gray-700 font-medium text-sm hover:text-gray-900 transition-all duration-300 whitespace-nowrap"
-                          >
-                            View Details
-                            <ChevronRight size={14} />
-                          </Link>
+                          <div className="flex flex-col gap-2">
+                            <Link 
+                              href={`/jobs/${job.slug}`}
+                              onClick={() => handleJobClick(job)}
+                              className="flex items-center gap-1 text-gray-700 font-medium text-sm hover:text-gray-900 transition-all duration-300 whitespace-nowrap"
+                            >
+                              View Details
+                              <ChevronRight size={14} />
+                            </Link>
+                            {/* Apply Button with tracking */}
+                            <button
+                              onClick={(e) => handleApplyClick(job.id, e)}
+                              className="flex items-center gap-1 bg-blue-600 text-white text-xs px-3 py-1.5 rounded-lg hover:bg-blue-700 transition whitespace-nowrap"
+                            >
+                              Apply Now
+                            </button>
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -750,28 +670,24 @@ export default function JobsPage() {
               <Link 
                 href="/internships" 
                 className="text-gray-600 hover:text-gray-800 transition"
-                onClick={() => track('Resource Link Clicked', { resource: 'internships', location: 'jobs_page' })}
               >
                 Finance Internships
               </Link>
               <Link 
                 href="/learning-hub" 
                 className="text-gray-600 hover:text-gray-800 transition"
-                onClick={() => track('Resource Link Clicked', { resource: 'learning_hub', location: 'jobs_page' })}
               >
                 Learning Hub
               </Link>
               <Link 
                 href="/interview-prep" 
                 className="text-gray-600 hover:text-gray-800 transition"
-                onClick={() => track('Resource Link Clicked', { resource: 'interview_prep', location: 'jobs_page' })}
               >
                 Excel Interview Questions
               </Link>
               <Link 
                 href="/interview-prep" 
                 className="text-gray-600 hover:text-gray-800 transition"
-                onClick={() => track('Resource Link Clicked', { resource: 'interview_questions', location: 'jobs_page' })}
               >
                 Interview Questions
               </Link>
@@ -783,7 +699,6 @@ export default function JobsPage() {
             <Link 
               href="/" 
               className="inline-flex items-center gap-2 text-gray-500 hover:text-gray-700 transition-colors text-sm"
-              onClick={() => track('Back to Home Clicked', { location: 'jobs_page' })}
             >
               ← Back to Home
             </Link>

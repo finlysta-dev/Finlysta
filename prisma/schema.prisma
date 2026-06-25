@@ -41,12 +41,15 @@ model Opportunity {
   clicksLog        OpportunityClick[]
   viewsLog         OpportunityView[]
 
-  // 🆕 RECRUITER FIELDS (ADDED - ONLY THESE 5 ARE NEW)
   posterToken      String?
   posterEmail      String?
   posterName       String?
   posterPhone      String?
   companyWebsite   String?
+
+  // Analytics relations
+  analyticsViews   AnalyticsOpportunityView[]
+  analyticsClicks  AnalyticsOpportunityClick[]
 
   @@index([type])
   @@index([slug])
@@ -497,6 +500,10 @@ model Job {
   jobViews            JobView[]
   jobClicks           JobClick[]
   savedJobs           SavedJob[]
+  
+  // Analytics relations for Job table
+  analyticsJobViews   AnalyticsJobView[]
+  analyticsApplyClicks AnalyticsApplyClick[]
 
   @@index([recruiterId])
   @@index([companyId])
@@ -695,4 +702,117 @@ model EmployerPlan {
   @@index([recruiterId])
   @@index([planType])
   @@index([expiresAt])
+}
+
+// =============================================
+// ANALYTICS TABLES
+// =============================================
+
+model AnalyticsVisitor {
+  id          String   @id @default(cuid())
+  visitorId   String   @unique
+  firstSeen   DateTime @default(now())
+  lastSeen    DateTime @updatedAt
+  isInternal  Boolean  @default(false)
+  userAgent   String?
+  ipAddress   String?
+  
+  pageViews          AnalyticsPageView[]
+  opportunityViews   AnalyticsOpportunityView[]
+  opportunityClicks  AnalyticsOpportunityClick[]
+  jobViews           AnalyticsJobView[]
+  applyClicks        AnalyticsApplyClick[]
+
+  @@index([visitorId])
+  @@index([isInternal])
+  @@index([firstSeen])
+}
+
+model AnalyticsPageView {
+  id        String   @id @default(cuid())
+  visitorId String
+  visitor   AnalyticsVisitor @relation(fields: [visitorId], references: [id], onDelete: Cascade)
+  path      String
+  timestamp DateTime @default(now())
+  referrer  String?
+
+  @@index([visitorId])
+  @@index([timestamp])
+  @@index([path])
+}
+
+model AnalyticsOpportunityView {
+  id            String   @id @default(cuid())
+  opportunityId String
+  visitorId     String
+  visitor       AnalyticsVisitor @relation(fields: [visitorId], references: [id], onDelete: Cascade)
+  timestamp     DateTime @default(now())
+  
+  opportunity   Opportunity @relation(fields: [opportunityId], references: [id], onDelete: Cascade)
+
+  @@index([opportunityId])
+  @@index([visitorId])
+  @@index([timestamp])
+}
+
+model AnalyticsOpportunityClick {
+  id            String   @id @default(cuid())
+  opportunityId String
+  visitorId     String
+  visitor       AnalyticsVisitor @relation(fields: [visitorId], references: [id], onDelete: Cascade)
+  timestamp     DateTime @default(now())
+  
+  opportunity   Opportunity @relation(fields: [opportunityId], references: [id], onDelete: Cascade)
+
+  @@index([opportunityId])
+  @@index([visitorId])
+  @@index([timestamp])
+}
+
+model AnalyticsJobView {
+  id        String   @id @default(cuid())
+  jobId     String
+  visitorId String
+  visitor   AnalyticsVisitor @relation(fields: [visitorId], references: [id], onDelete: Cascade)
+  timestamp DateTime @default(now())
+  
+  job       Job      @relation(fields: [jobId], references: [id], onDelete: Cascade)
+
+  @@index([jobId])
+  @@index([visitorId])
+  @@index([timestamp])
+}
+
+model AnalyticsApplyClick {
+  id        String   @id @default(cuid())
+  jobId     String
+  visitorId String
+  visitor   AnalyticsVisitor @relation(fields: [visitorId], references: [id], onDelete: Cascade)
+  timestamp DateTime @default(now())
+  
+  job       Job      @relation(fields: [jobId], references: [id], onDelete: Cascade)
+
+  @@index([jobId])
+  @@index([visitorId])
+  @@index([timestamp])
+}
+
+model AnalyticsDailyMetric {
+  id                String   @id @default(cuid())
+  date              DateTime @unique
+  totalVisitors     Int      @default(0)
+  uniqueVisitors    Int      @default(0)
+  opportunityViews  Int      @default(0)
+  opportunityClicks Int      @default(0)
+  jobViews          Int      @default(0)
+  applyClicks       Int      @default(0)
+  activeJobs        Int      @default(0)
+  activeInternships Int      @default(0)
+  totalOpportunities Int     @default(0)
+  addedToday        Int      @default(0)
+  addedThisWeek     Int      @default(0)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  @@index([date])
 }

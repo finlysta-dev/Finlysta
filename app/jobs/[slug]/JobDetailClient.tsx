@@ -2,7 +2,13 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { Calendar, MapPin, Building2, ChevronRight, Briefcase, Award, CheckCircle, Zap, ExternalLink, GraduationCap, Target, Sparkles, Bookmark, Share2, TrendingUp, Heart, Clock, Users, Globe, ChevronDown, ChevronUp, AlertCircle } from "lucide-react";
+import { 
+  Calendar, MapPin, Building2, ChevronRight, Briefcase, Award, 
+  CheckCircle, Zap, ExternalLink, GraduationCap, Target, Sparkles, 
+  Bookmark, Share2, TrendingUp, Heart, Clock, Users, Globe, 
+  ChevronDown, ChevronUp, AlertCircle 
+} from "lucide-react";
+import { trackJobView, trackApplyClick } from '@/lib/analytics/tracking';
 
 const getTimeAgo = (date: string) => {
   if (!date) return "Recently";
@@ -131,6 +137,13 @@ export default function JobDetailClient({ opportunity, relatedJobs }: { opportun
   const [showFullQualifications, setShowFullQualifications] = useState(false);
   const [showReportModal, setShowReportModal] = useState(false);
 
+  // Track job view when component mounts
+  useEffect(() => {
+    if (opportunity?.id) {
+      trackJobView(opportunity.id);
+    }
+  }, [opportunity?.id]);
+
   useEffect(() => {
     if (opportunity?.id) {
       const savedItems = JSON.parse(localStorage.getItem("saved_jobs") || "[]");
@@ -164,6 +177,15 @@ export default function JobDetailClient({ opportunity, relatedJobs }: { opportun
       await navigator.clipboard.writeText(url);
       setShowShareSuccess(true);
       setTimeout(() => setShowShareSuccess(false), 2000);
+    }
+  };
+
+  const handleApplyClick = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    if (opportunity?.id) {
+      await trackApplyClick(opportunity.id);
+      // Open the apply link
+      window.open(opportunity.applyLink, '_blank');
     }
   };
 
@@ -549,9 +571,12 @@ export default function JobDetailClient({ opportunity, relatedJobs }: { opportun
                   <p className="text-xs text-gray-500 mt-1">Start your finance career today</p>
                 </div>
 
-                <a href={opportunity.applyLink} target="_blank" rel="noopener noreferrer" className="w-full py-3.5 bg-blue-600 hover:bg-blue-700 text-white font-semibold text-base rounded-xl transition text-center flex items-center justify-center gap-2 shadow-md hover:shadow-lg">
+                <button 
+                  onClick={handleApplyClick}
+                  className="w-full py-3.5 bg-blue-600 hover:bg-blue-700 text-white font-semibold text-base rounded-xl transition text-center flex items-center justify-center gap-2 shadow-md hover:shadow-lg"
+                >
                   <ExternalLink size={18} /> Apply Now →
-                </a>
+                </button>
 
                 <div className="mt-4 pt-3 border-t border-gray-100 space-y-2 text-xs">
                   <div className="flex justify-between"><span className="text-gray-500">Posted</span><span className="font-medium text-gray-700">{timeAgo}</span></div>
@@ -614,9 +639,12 @@ export default function JobDetailClient({ opportunity, relatedJobs }: { opportun
 
       {/* Mobile Sticky Apply Button */}
       <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4 shadow-lg z-50">
-        <a href={opportunity.applyLink} target="_blank" rel="noopener noreferrer" className="w-full py-3.5 bg-blue-600 hover:bg-blue-700 text-white font-semibold text-base rounded-xl transition text-center flex items-center justify-center gap-2 shadow-md">
+        <button 
+          onClick={handleApplyClick}
+          className="w-full py-3.5 bg-blue-600 hover:bg-blue-700 text-white font-semibold text-base rounded-xl transition text-center flex items-center justify-center gap-2 shadow-md"
+        >
           <ExternalLink size={18} /> Apply for This Job →
-        </a>
+        </button>
       </div>
 
       {/* Footer */}
