@@ -1,3 +1,6 @@
+'use client';
+
+// ... rest of your code
 import type { Metadata } from "next";
 import { useState } from "react";
 import {
