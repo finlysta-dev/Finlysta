@@ -12,7 +12,8 @@ import {
   Radio, Filter, BriefcaseIcon, ExternalLink, Calendar, Laptop,
   Building, Award as AwardIcon, FolderOpen, GitBranch, BookMarked, AlertCircle,
   TrendingUp as TrendingUpIcon, BadgeCheck, ChartLine, Plus, Minus, Check,
-  FileSpreadsheet, FileText, ClipboardList, MessageSquare, Eye, BarChart4, Gift
+  FileSpreadsheet, FileText, ClipboardList, MessageSquare, Eye, BarChart4, Gift,
+  User
 } from "lucide-react";
 import Link from "next/link";
 import Header from "./components/Header";
@@ -96,14 +97,52 @@ const SkillsSection = () => {
 };
 
 // ============================================
-// STATS SECTION - Updated with better design
+// STATS SECTION - With Opportunities (replacing Sessions)
 // ============================================
 const StatsSection = () => {
   const { track } = useTracking();
+  const [stats, setStats] = useState({
+    totalVisitors: 0,
+    totalOpportunities: 0,
+    isLoading: true,
+  });
 
-  const stats = [
+  const fetchStats = async () => {
+    try {
+      const response = await fetch('/api/stats');
+      if (response.ok) {
+        const result = await response.json();
+        if (result.success) {
+          setStats({
+            totalVisitors: result.data.totalVisitors || 0,
+            totalOpportunities: result.data.totalOpportunities || 0,
+            isLoading: false,
+          });
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching stats:', error);
+      setStats(prev => ({ ...prev, isLoading: false }));
+    }
+  };
+
+  useEffect(() => {
+    fetchStats();
+    const interval = setInterval(fetchStats, 30000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const formatNumber = (num: number): string => {
+    if (num >= 10000000) return `${(num / 10000000).toFixed(1)}Cr+`;
+    if (num >= 1000000) return `${(num / 1000000).toFixed(1)}M+`;
+    if (num >= 100000) return `${(num / 100000).toFixed(1)}L+`;
+    if (num >= 1000) return `${(num / 1000).toFixed(1)}K+`;
+    return `${num}+`;
+  };
+
+  const statsData = [
     { 
-      value: "4,000+", 
+      value: stats.isLoading ? '...' : formatNumber(stats.totalVisitors),
       label: "Visitors", 
       description: "Students exploring finance careers with us",
       icon: Users, 
@@ -111,12 +150,12 @@ const StatsSection = () => {
       bg: "bg-blue-50" 
     },
     { 
-      value: "875+", 
-      label: "Sessions", 
-      description: "Students actively exploring finance opportunities",
-      icon: Eye, 
-      color: "text-green-600", 
-      bg: "bg-green-50" 
+      value: stats.isLoading ? '...' : formatNumber(stats.totalOpportunities),
+      label: "Opportunities", 
+      description: "Jobs & internships available",
+      icon: Briefcase, 
+      color: "text-indigo-600", 
+      bg: "bg-indigo-50" 
     },
     { 
       value: "Learning", 
@@ -149,7 +188,7 @@ const StatsSection = () => {
       <div className="max-w-7xl mx-auto px-6">
         <div className="bg-white border border-slate-200 rounded-2xl px-8 py-6 shadow-sm">
           <div className="grid grid-cols-1 md:grid-cols-4">
-            {stats.map((stat, index) => {
+            {statsData.map((stat, index) => {
               const Icon = stat.icon;
               return (
                 <div 
@@ -170,7 +209,7 @@ const StatsSection = () => {
                     <p className="font-semibold text-black text-lg">
                       {stat.label}
                     </p>
-                    <p className="text-sm text-black-500 mt-0.5">
+                    <p className="text-md text-black-500 mt-0.5">
                       {stat.description}
                     </p>
                   </div>
@@ -185,7 +224,7 @@ const StatsSection = () => {
 };
 
 // ============================================
-// FINANCE CAREER PATHS - Same structure for all 3 cards
+// FINANCE CAREER PATHS
 // ============================================
 const FinanceCareerPaths = () => {
   const { track } = useTracking();
@@ -699,7 +738,6 @@ export default function HomePageContent() {
       timestamp: new Date().toISOString(),
     });
     
-    // Navigate to jobs with search
     router.push(`/jobs?search=${encodeURIComponent(roleName)}`);
   };
 
