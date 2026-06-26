@@ -121,20 +121,20 @@ const LearnAndContents = () => {
     { number: "12.", title: "Key Takeaways" },
   ];
 
-return (
+  return (
     <section className="mb-6">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
-        {/* Left - What You'll Learn - REDUCED SIZE */}
-        <div className="lg:max-w-[350px]">
-          <div className="bg-white border border-slate-200 rounded-2xl p-4">
-            <h2 className="text-base font-bold text-[#081B4B] mb-2 flex items-center gap-2">
-              <BookOpen size={18} className="text-green-600" />
+        {/* Left - What You'll Learn - INCREASED SIZE */}
+        <div className="lg:max-w-[500px]">
+          <div className="bg-white border-2 border-blue-200 rounded-2xl p-6">
+            <h2 className="text-xl font-bold text-[#081B4B] mb-3 flex items-center gap-2">
+              <BookOpen size={20} className="text-green-600" />
               What You'll Learn
             </h2>
-            <div className="space-y-1.5">
+            <div className="space-y-2.5">
               {learnItems.map((item, idx) => (
-                <div key={idx} className="flex items-start gap-2 text-[13px] text-black font-medium">
-                  <CheckCircle size={16} className="text-green-500 flex-shrink-0 mt-1" />
+                <div key={idx} className="flex items-start gap-2.5 text-[15px] text-black font-medium">
+                  <CheckCircle size={18} className="text-green-500 flex-shrink-0 mt-0.5" />
                   <span>{item}</span>
                 </div>
               ))}
@@ -142,31 +142,34 @@ return (
           </div>
         </div>
 
-{/* Right - On This Page - Shifted Right */}
-<div className="bg-white border border-slate-200 rounded-2xl p-5 lg:ml-[60px]">
-  <h3 className="font-bold text-[#081B4B] text-lg mb-3 flex items-center gap-2">
-    <List size={18} className="text-blue-600" />
-    On this page
-  </h3>
-  <div className="space-y-0.5">
-    {sections.map((section, idx) => (
-      <a
-        key={idx}
-        href={`#section-${idx + 1}`}
-        className="flex items-center gap-2 text-[13px] text-black font-medium hover:text-blue-600 transition hover:bg-blue-50 px-2 py-1 rounded"
-      >
-        <span className="text-blue-600 font-semibold text-[11px] min-w-[22px]">
-          {section.number}
-        </span>
-        <span>{section.title}</span>
-      </a>
-    ))}
+{/* Right - On This Page - SHIFTED TO RIGHT */}
+<div className="flex flex-col lg:flex-row gap-6 items-end justify-end w-full">
+  <div className="bg-white border border-slate-200 rounded-2xl p-4 lg:max-w-[280px] lg:ml-auto">
+    <h3 className="font-bold text-[#081B4B] text-base mb-2.5 flex items-center gap-2">
+      <List size={16} className="text-blue-600" />
+      On this page
+    </h3>
+    <div className="space-y-1">
+      {sections.map((section, idx) => (
+        <a
+          key={idx}
+          href={`#section-${idx + 1}`}
+          className="flex items-center gap-2 text-[12px] text-black font-medium hover:text-blue-600 transition hover:bg-blue-50 px-2 py-1 rounded"
+        >
+          <span className="text-blue-600 font-semibold text-[9px] min-w-[20px]">
+            {section.number}
+          </span>
+          <span>{section.title}</span>
+        </a>
+      ))}
+    </div>
   </div>
 </div>
       </div>
     </section>
   );
 };
+
 // ============================================
 // SECTION 1: WHAT IS VLOOKUP?
 // ============================================
@@ -759,6 +762,7 @@ const PracticeExercises = () => {
     </section>
   );
 };
+
 // ============================================
 // SECTION 12: KEY TAKEAWAYS - 5 Blocks in One Row
 // ============================================
@@ -789,9 +793,9 @@ const KeyTakeaways = () => {
             >
               <div className="flex items-start gap-3">
                 <CheckCircle size={18} className="text-green-500 flex-shrink-0 mt-5" />
-<p className="text-[14px] leading-6 text-[#1E293B] mt-4">
-  {item}
-</p>
+                <p className="text-[14px] leading-6 text-[#1E293B] mt-4">
+                  {item}
+                </p>
               </div>
             </div>
           ))}

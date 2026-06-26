@@ -15,15 +15,15 @@ import {
 // ============================================
 const Breadcrumb = () => {
   return (
-    <div className="flex items-center gap-2 text-sm mb-6">
-      <Link href="/learning-hub" className="text-slate-500 hover:text-blue-600 transition">
+    <div className="flex items-center gap-2 text-md mb-6">
+      <Link href="/learning-hub" className="text-Black-500 hover:text-blue-600 transition">
         Learning Hub
       </Link>
-      <ChevronRight size={14} className="text-slate-400" />
-      <Link href="/learning-hub/advanced-excel" className="text-slate-500 hover:text-blue-600 transition">
+      <ChevronRight size={18} className="text-Black-500" />
+      <Link href="/learning-hub/advanced-excel" className="text-black-500 hover:text-blue-600 transition">
         Advanced Excel
       </Link>
-      <ChevronRight size={14} className="text-slate-400" />
+      <ChevronRight size={18} className="text-Black-500" />
       <span className="text-[#2563EB] font-semibold">Excel Interface & Navigation</span>
     </div>
   );
@@ -112,7 +112,7 @@ const WhatIsExcel = () => {
             </div>
             <div>
               <h2 className="text-xl font-bold text-black mb-1">What is Excel?</h2>
-              <p className="text-sm text-black leading-relaxed">
+              <p className="text-md text-black leading-relaxed">
                 Microsoft Excel is a spreadsheet program used for organizing, analyzing and reporting data. It is widely used in finance, accounting, banking, auditing and business analysis tasks.
               </p>
             </div>
@@ -131,7 +131,7 @@ const WhatIsExcel = () => {
                 </div>
                 <div>
                   <h4 className="font-bold text-black text-base">Workbook</h4>
-                  <p className="text-sm text-black leading-relaxed">An Excel file that contains one or more worksheets.</p>
+                  <p className="text-md text-black leading-relaxed">An Excel file that contains one or more worksheets.</p>
                   <div className="inline-flex px-3 py-1 rounded-lg border border-slate-200 bg-slate-50 text-sm font-semibold text-black mt-1">
                     Financial_Model.xlsx
                   </div>
@@ -147,7 +147,7 @@ const WhatIsExcel = () => {
                 </div>
                 <div>
                   <h4 className="font-bold text-black text-base">Worksheet</h4>
-                  <p className="text-sm text-black leading-relaxed">A single spreadsheet page inside a workbook is called Worksheet.</p>
+                  <p className="text-md text-black leading-relaxed">A single spreadsheet page inside a workbook is called Worksheet.</p>
                   <div className="flex flex-wrap gap-2 mt-2">
                     <span className="px-3 py-1 rounded-lg border border-slate-200 bg-white text-sm font-medium text-black">Sheet1</span>
                     <span className="px-3 py-1 rounded-lg border border-slate-200 bg-white text-sm font-medium text-black">Sheet2</span>
@@ -179,7 +179,7 @@ const ExcelInterfaceElements = () => {
         <div className="bg-white border border-slate-200 rounded-xl p-4 hover:shadow-lg transition">
           <h3 className="font-bold text-black text-base mb-2">1. Ribbon</h3>
           <div className="border rounded p-2 bg-slate-50 mb-2">
-            <div className="flex items-center gap-1.5 px-2 py-1 border-b bg-slate-50">
+            <div className="flex items-center gap-4 px-2 py-1 border-b bg-slate-50">
               <span className="text-[10px] font-medium text-black">File</span>
               <span className="text-[10px] font-medium text-black">Home</span>
               <span className="text-[10px] font-medium text-black">Insert</span>
@@ -188,14 +188,14 @@ const ExcelInterfaceElements = () => {
               <span className="text-[10px] font-medium text-black">View</span>
             </div>
           </div>
-          <p className="text-sm text-black leading-relaxed">The Ribbon is the primary visual command bar located at the very top of the Excel window. Contains tabs like Home, Insert, Formulas and Data used to perform tasks.</p>
+          <p className="text-md text-black leading-relaxed">The Ribbon is the primary visual command bar located at the very top of the Excel window. Contains tabs like Home, Insert, Formulas and Data used to perform tasks.</p>
         </div>
 
         {/* 2. Name Box */}
         <div className="bg-white border border-slate-200 rounded-xl p-4 hover:shadow-lg transition">
           <h3 className="font-bold text-black text-base mb-2">2. Name Box</h3>
           <div className="border rounded px-3 py-1 text-sm w-20 bg-white mb-2 text-black">A1</div>
-          <p className="text-sm text-black leading-relaxed">The Name Box is located on the left side of the Excel window. It shows the address of the active cell. Use it to name ranges or navigate quickly.</p>
+          <p className="text-md text-black leading-relaxed">The Name Box is located on the left side of the Excel window. It shows the address of the active cell. Use it to name ranges or navigate quickly.</p>
         </div>
 
         {/* 3. Formula Bar */}
@@ -205,7 +205,7 @@ const ExcelInterfaceElements = () => {
             <span className="text-black">fx</span>
             <span className="text-black">=SUM(A1:A10)</span>
           </div>
-          <p className="text-sm text-black leading-relaxed">It is a designated area where you can view and edit the content of a cell.</p>
+          <p className="text-md text-black leading-relaxed">It is a designated area where you can view and edit the content of a cell.</p>
         </div>
 
         {/* 4. Column Headings */}
@@ -217,7 +217,7 @@ const ExcelInterfaceElements = () => {
             <div className="border p-1 text-center text-xs text-black">C</div>
             <div className="border p-1 text-center text-xs text-black">D</div>
           </div>
-          <p className="text-sm text-black leading-relaxed">Vertical sections in a worksheet used to organize and store data. Columns are identified by letters (A, B, C, D...). They extend from top to bottom.</p>
+          <p className="text-md text-black leading-relaxed">Vertical sections in a worksheet used to organize and store data. Columns are identified by letters (A, B, C, D...). They extend from top to bottom.</p>
         </div>
       </div>
 
@@ -231,7 +231,7 @@ const ExcelInterfaceElements = () => {
             <div className="border-b text-center text-xs py-0.5 text-black">2</div>
             <div className="text-center text-xs py-0.5 text-black">3</div>
           </div>
-          <p className="text-sm text-black leading-relaxed">Horizontal sections in a worksheet used to organize and store data. Identified by numbers such as 1, 2, 3.</p>
+          <p className="text-md text-black leading-relaxed">Horizontal sections in a worksheet used to organize and store data. Identified by numbers such as 1, 2, 3.</p>
         </div>
 
         {/* 6. Cells */}
@@ -243,7 +243,7 @@ const ExcelInterfaceElements = () => {
             <div className="border p-1 text-center text-xs text-black">A2</div>
             <div className="border p-1 text-center text-xs text-black">B2</div>
           </div>
-          <p className="text-sm text-black leading-relaxed">A cell is the rectangular box formed by the intersection of a row and column. Each cell has a unique address.</p>
+          <p className="text-md text-black leading-relaxed">A cell is the rectangular box formed by the intersection of a row and column. Each cell has a unique address.</p>
         </div>
 
         {/* 7. Active Cell */}
@@ -256,7 +256,7 @@ const ExcelInterfaceElements = () => {
               backgroundColor: "#F0FDF4"
             }}
           ></div>
-          <p className="text-sm text-black leading-relaxed">The currently selected cell in a worksheet is called Active Cell. It is highlighted with a border and ready for data entry.</p>
+          <p className="text-md text-black leading-relaxed">The currently selected cell in a worksheet is called Active Cell. It is highlighted with a border and ready for data entry.</p>
         </div>
 
         {/* 8. Select All Button */}
@@ -275,7 +275,7 @@ const ExcelInterfaceElements = () => {
               }}
             />
           </div>
-          <p className="text-sm text-black leading-relaxed">The Select All button in Excel is a small gray triangle located in the top-left corner of the worksheet, exactly where the row numbers (1, 2, 3) and column letters (A, B, C) intersect.</p>
+          <p className="text-md text-black leading-relaxed">The Select All button in Excel is a small gray triangle located in the top-left corner of the worksheet, exactly where the row numbers (1, 2, 3) and column letters (A, B, C) intersect.</p>
         </div>
       </div>
 
@@ -289,14 +289,14 @@ const ExcelInterfaceElements = () => {
             <div className="px-3 py-1 bg-slate-100 text-sm text-black">Sheet2</div>
             <div className="px-3 py-1 bg-white text-sm text-black">Sheet3</div>
           </div>
-          <p className="text-sm text-black leading-relaxed">Located at the bottom of the window. Click to switch between sheets. Use + to insert a new sheet. Right-click for more options (Rename, Delete, Move, etc.)</p>
+          <p className="text-md text-black leading-relaxed">Located at the bottom of the window. Click to switch between sheets. Use + to insert a new sheet. Right-click for more options (Rename, Delete, Move, etc.)</p>
         </div>
 
         {/* 10. Status Bar */}
         <div className="bg-white border border-slate-200 rounded-xl p-4 hover:shadow-lg transition">
           <h3 className="font-bold text-black text-base mb-2">10. Status Bar</h3>
           <div className="border rounded px-3 py-1 text-sm bg-slate-50 mb-2 text-black">Ready</div>
-          <p className="text-sm text-black leading-relaxed">The Status Bar is a horizontal bar at the bottom of the worksheet that displays real-time information such as quick data calculations, current edit modes, viewing options, and toggle states.</p>
+          <p className="text-md text-black leading-relaxed">The Status Bar is a horizontal bar at the bottom of the worksheet that displays real-time information such as quick data calculations, current edit modes, viewing options, and toggle states.</p>
         </div>
 
         {/* 11. Quick Access Toolbar */}
@@ -307,7 +307,7 @@ const ExcelInterfaceElements = () => {
             <Undo2 size={20} className="text-black" />
             <Redo2 size={20} className="text-black" />
           </div>
-          <p className="text-sm text-black leading-relaxed">The Quick Access Toolbar (QAT) is a customizable toolbar that provides quick access to frequently used commands like Save, Undo, and Redo.</p>
+          <p className="text-md text-black leading-relaxed">The Quick Access Toolbar (QAT) is a customizable toolbar that provides quick access to frequently used commands like Save, Undo, and Redo.</p>
         </div>
 
         {/* 12. Title Bar */}
@@ -323,7 +323,7 @@ const ExcelInterfaceElements = () => {
               </div>
             </div>
           </div>
-          <p className="text-sm text-black leading-relaxed">The Title Bar is the topmost bar in Excel that displays the workbook name and window controls.</p>
+          <p className="text-md text-black leading-relaxed">The Title Bar is the topmost bar in Excel that displays the workbook name and window controls.</p>
         </div>
       </div>
 
@@ -339,7 +339,7 @@ const ExcelInterfaceElements = () => {
               ))}
             </div>
           </div>
-          <p className="text-sm text-black leading-relaxed">The main working area where data is entered, edited and analyzed.</p>
+          <p className="text-md text-black leading-relaxed">The main working area where data is entered, edited and analyzed.</p>
         </div>
 
         {/* 14. Range of Cells - Blue Highlighted Selection */}
@@ -357,7 +357,7 @@ const ExcelInterfaceElements = () => {
               ))}
             </div>
           </div>
-          <p className="text-sm text-black leading-relaxed">A group of selected cells treated as a single unit. Used for calculations and formatting.</p>
+          <p className="text-md text-black leading-relaxed">A group of selected cells treated as a single unit. Used for calculations and formatting.</p>
           <span className="inline-block bg-blue-50 text-blue-700 px-2 py-0.5 rounded text-xs mt-1">Example: C3:E6</span>
         </div>
 
@@ -392,7 +392,7 @@ const ExcelInterfaceElements = () => {
               </div>
             </div>
           </div>
-          <p className="text-sm text-black leading-relaxed">Scroll Bars are used to move horizontally and vertically across the worksheet to view different areas of data.</p>
+          <p className="text-md text-black leading-relaxed">Scroll Bars are used to move horizontally and vertically across the worksheet to view different areas of data.</p>
         </div>
       </div>
     </section>
