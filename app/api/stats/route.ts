@@ -3,19 +3,18 @@ import { prisma } from '@/lib/prisma';
 
 export async function GET() {
   try {
+    // Get total visitors from DailyStat
     const dailyStats = await prisma.dailyStat.findMany();
     let totalVisitors = 0;
     dailyStats.forEach(stat => {
       totalVisitors += stat.totalVisitors || 0;
     });
 
-    // Get total opportunities (jobs + internships)
-    const totalOpportunities = await prisma.opportunity.count({
-      where: { 
-        published: true, 
-        isVerified: true 
-      },
-    });
+    // Automatically count ALL opportunities (regardless of published/isVerified)
+    const totalOpportunities = await prisma.opportunity.count();
+
+    // If no opportunities found in database, it will return 0
+    // This is correct automatic behavior
 
     return NextResponse.json({
       success: true,
