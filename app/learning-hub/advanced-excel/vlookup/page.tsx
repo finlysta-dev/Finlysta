@@ -122,7 +122,7 @@ const LearnAndContents = () => {
   ];
 
   return (
-    <section className="mb-6">
+    <section className="mb-2">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
         {/* Left - What You'll Learn - INCREASED SIZE */}
         <div className="lg:max-w-[500px]">
@@ -175,7 +175,7 @@ const LearnAndContents = () => {
 // ============================================
 const WhatIsVlookup = () => {
   return (
-    <section id="section-1" className="mb-10 scroll-mt-20">
+    <section id="section-1" className="mb-10 scroll-mt-8">
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2">
           <h2 className="text-3xl font-bold text-[#081B4B] mb-4">1. What is VLOOKUP?</h2>
@@ -680,7 +680,7 @@ const PracticeExercises = () => {
         {/* EASY */}
         <div className="bg-white border border-slate-200 rounded-2xl p-6">
           
-          <div className="flex items-center gap-3 mb-5">
+         <div className="flex items-center gap-3 mb-3">
             <div className="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center">
               <CircleCheckBig size={24} className="text-green-600" />
             </div>

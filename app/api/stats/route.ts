@@ -10,11 +10,46 @@ export async function GET() {
       totalVisitors += stat.totalVisitors || 0;
     });
 
-    // Automatically count ALL opportunities (regardless of published/isVerified)
-    const totalOpportunities = await prisma.opportunity.count();
+    // Try to count opportunities with better error handling
+    let totalOpportunities = 0;
+    try {
+      totalOpportunities = await prisma.opportunity.count();
+    } catch (countError) {
+      console.error('Error counting opportunities:', countError);
+      // If counting fails, try counting with a simpler query
+      try {
+        // Get all opportunities without count (as a fallback)
+        const opportunities = await prisma.opportunity.findMany({
+          select: { id: true },
+          take: 1000, // Limit to prevent memory issues
+        });
+        totalOpportunities = opportunities.length;
+      } catch (fallbackError) {
+        console.error('Fallback counting also failed:', fallbackError);
+        totalOpportunities = 0;
+      }
+    }
 
-    // If no opportunities found in database, it will return 0
-    // This is correct automatic behavior
+    // If still 0, try to get the count from the database directly
+    if (totalOpportunities === 0) {
+      try {
+        // Use raw SQL as a last resort
+        const result = await prisma.$queryRaw`
+          SELECT COUNT(*) as count FROM "Opportunity"
+        `;
+        // @ts-ignore
+        totalOpportunities = Number(result[0]?.count) || 0;
+      } catch (sqlError) {
+        console.error('SQL count failed:', sqlError);
+      }
+    }
+
+    // Log the results for debugging
+    console.log('📊 Stats API Results:', {
+      totalVisitors,
+      totalOpportunities,
+      dailyCount: dailyStats.length,
+    });
 
     return NextResponse.json({
       success: true,
@@ -26,9 +61,15 @@ export async function GET() {
     });
   } catch (error) {
     console.error('Error fetching stats:', error);
-    return NextResponse.json(
-      { success: false, error: 'Failed to fetch stats' },
-      { status: 500 }
-    );
+    // Return fallback values on error
+    return NextResponse.json({
+      success: false,
+      data: {
+        totalVisitors: 0,
+        totalOpportunities: 0,
+        dailyCount: 0,
+        error: 'Failed to fetch stats',
+      },
+    });
   }
 }
