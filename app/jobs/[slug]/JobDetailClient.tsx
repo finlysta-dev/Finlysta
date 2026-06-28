@@ -79,14 +79,14 @@ const formatPostedTime = (date: string): string => {
 };
 
 // Format responsibilities into bullet points with proper punctuation
-const formatResponsibilities = (text: string): string[] => {
+const formatResponsibilities = (text: string | undefined): string[] => {
   if (!text) return [];
   const sentences = text.split(/[.!?]\s*|\n/).filter(s => s.trim().length > 0);
   return sentences.map(s => s.trim() + '.');
 };
 
 // Format qualifications into bullet points with proper punctuation
-const formatQualifications = (text: string): string[] => {
+const formatQualifications = (text: string | undefined): string[] => {
   if (!text) return [];
   const sentences = text.split(/[.!?]\s*|\n/).filter(s => s.trim().length > 0);
   return sentences.map(s => s.trim() + '.');
@@ -180,8 +180,9 @@ export default function JobDetailClient({ opportunity, relatedJobs = [] }: JobDe
     applyLink: opportunity.applyLink || '#',
   };
 
-  const responsibilitiesList = formatResponsibilities(job.responsibilities);
-  const qualificationsList = formatQualifications(job.qualifications);
+  // Fixed: Pass the values with proper handling
+  const responsibilitiesList = formatResponsibilities(job.responsibilities || '');
+  const qualificationsList = formatQualifications(job.qualifications || '');
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -520,7 +521,7 @@ export default function JobDetailClient({ opportunity, relatedJobs = [] }: JobDe
           </div>
         </div>
 
-        {/* NEWSLETTER SECTION - Get Job Alerts button white text on blue bg */}
+        {/* NEWSLETTER SECTION */}
         <section style={{ background: 'linear-gradient(to right, #f0f8ff, #f3f0ff)', paddingTop: '40px', paddingBottom: '40px', borderTop: '1px solid #e5e7eb', borderRadius: '12px', marginTop: '32px' }}>
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div style={{ display: 'flex', alignItems: 'center', gap: '24px', flexWrap: 'wrap' }}>
