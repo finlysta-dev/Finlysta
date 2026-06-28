@@ -346,7 +346,7 @@ export default function FinlystaUI() {
     { label: 'Data Analysis', count: getSkillsCount('data analysis'), value: 'data-analysis' },
   ]
 
-  const toggleSection = (section: string) => {
+  const toggleSection = (section: 'jobType' | 'location' | 'experience' | 'skills') => {
     setExpandedSections((prev) => ({
       ...prev,
       [section]: !prev[section],
