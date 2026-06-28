@@ -57,7 +57,7 @@ const SkillsSection = () => {
             <div className="text-left mb-6">
               <p className="text-sm font-semibold text-[#2563EB] mb-2">Skills That Get You Hired</p>
               <h2 className="text-2xl md:text-3xl font-bold text-[#081B4B]">Master In-Demand Finance Skills</h2>
-              <p className="mt-2 text-sm text-slate-600">Top skills recruiters look for in entry-level finance roles</p>
+              <p className="mt-2 text-md text-black-600">Top skills recruiters look for in entry-level finance roles</p>
             </div>
            <div className="overflow-hidden">
             <div className="w-full">
@@ -74,7 +74,7 @@ const SkillsSection = () => {
                           <div className={`w-9 h-9 rounded-full flex items-center justify-center ${skill.bg}`}>
                             <Icon className={`w-4 h-4 ${skill.color}`} />
                           </div>
-                          <span className="text-[11px] font-bold text-[#081B4B] leading-tight whitespace-nowrap">{skill.title}</span>
+                          <span className="text-[12px] font-bold text-[#081B4B] leading-tight whitespace-nowrap">{skill.title}</span>
                         </div>
                       </div>
                     );

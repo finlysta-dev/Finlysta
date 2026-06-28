@@ -6,9 +6,10 @@ export async function GET(
   { params }: { params: { slug: string } }
 ) {
   try {
-    const { slug } = params;
+    const slug = params.slug;
     
-    // Fast lookup by slug - only published and verified
+    console.log("🔍 API - Looking for job with slug:", slug);
+    
     const opportunity = await prisma.opportunity.findFirst({
       where: {
         slug: slug,
@@ -17,6 +18,8 @@ export async function GET(
       },
     });
     
+    console.log("📊 Found opportunity:", opportunity ? opportunity.title : "NOT FOUND");
+    
     if (!opportunity) {
       return NextResponse.json(
         { error: "Opportunity not found" },
@@ -24,11 +27,15 @@ export async function GET(
       );
     }
     
-    // Update view count (optional - can be done separately)
-    await prisma.opportunity.update({
-      where: { id: opportunity.id },
-      data: { views: { increment: 1 } },
-    });
+    // Update view count
+    try {
+      await prisma.opportunity.update({
+        where: { id: opportunity.id },
+        data: { views: { increment: 1 } },
+      });
+    } catch (viewError) {
+      console.error("Error updating views:", viewError);
+    }
     
     return NextResponse.json(opportunity);
     

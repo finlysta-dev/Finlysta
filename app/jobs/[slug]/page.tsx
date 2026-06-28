@@ -8,7 +8,8 @@ export default async function JobDetailPage({ params }: { params: { slug: string
   
   console.log("🔍 Looking for job with slug:", slug);
   
-  const opportunity = await prisma.opportunity.findFirst({
+  // Try to find with isVerified: true first
+  let opportunity = await prisma.opportunity.findFirst({
     where: {
       slug: slug,
       published: true,
@@ -16,24 +17,42 @@ export default async function JobDetailPage({ params }: { params: { slug: string
     },
   });
 
+  // If not found, try without isVerified filter
+  if (!opportunity) {
+    console.log("⚠️ Job not found with isVerified: true, trying without filter...");
+    opportunity = await prisma.opportunity.findFirst({
+      where: {
+        slug: slug,
+        published: true,
+      },
+    });
+  }
+
   console.log("📊 Found opportunity:", opportunity ? opportunity.title : "NOT FOUND");
+  console.log("📊 isVerified:", opportunity?.isVerified);
+  console.log("📊 published:", opportunity?.published);
 
   if (!opportunity) {
+    console.log("❌ No opportunity found with slug:", slug);
     notFound();
   }
 
   // Increment view count in database (server-side)
-  await prisma.opportunity.update({
-    where: { id: opportunity.id },
-    data: { views: { increment: 1 } },
-  });
+  try {
+    await prisma.opportunity.update({
+      where: { id: opportunity.id },
+      data: { views: { increment: 1 } },
+    });
+  } catch (error) {
+    console.error("Error updating views:", error);
+  }
 
   // Fetch related jobs
   const relatedJobs = await prisma.opportunity.findMany({
     where: {
       type: opportunity.type,
       published: true,
-      isVerified: true,
+      isVerified: opportunity.isVerified || true,
       slug: { not: slug },
       id: { not: opportunity.id },
     },

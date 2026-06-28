@@ -17,22 +17,29 @@ model Opportunity {
   aboutCompany     String?
   type             String
   workMode         String
-  location         String
+  location         String             // Existing - used for full address or general location
+  city             String?            // City name (e.g., "Bangalore", "Mumbai")
+  state            String?            // State name (e.g., "Karnataka", "Maharashtra")
+  country          String?            // Country name (e.g., "India")
   experience       String?
   duration         String?
   salary           String?
   skills           String[]
-  overview         String?
+  overview         String?            // Existing - used for detailed description
+  shortDescription String?            // Short description for job cards
   responsibilities String?
   qualifications   String?
   benefits         String?
   applyLink        String
-  isNew            Boolean            @default(true)
+  isNew            Boolean            @default(true)      // Existing - marks if job is new
+  status           String?            @default("active")   // NEW - "new", "active", "expired", "draft"
+  featured         Boolean            @default(false)     // NEW - marks featured jobs
   isVerified       Boolean            @default(false)
   isTrending       Boolean            @default(false)
   isActivelyHiring Boolean            @default(true)
   published        Boolean            @default(true)
   postedAt         DateTime           @default(now())
+  postedTime       String?            // Human-readable posted time (e.g., "2h ago")
   createdAt        DateTime           @default(now())
   updatedAt        DateTime           @updatedAt
   deadline         DateTime?
@@ -54,11 +61,14 @@ model Opportunity {
   @@index([type])
   @@index([slug])
   @@index([location])
+  @@index([city])
   @@index([workMode])
   @@index([postedAt])
   @@index([isTrending])
   @@index([isVerified])
   @@index([published])
+  @@index([status])
+  @@index([featured])
   @@index([posterToken])
   @@index([posterEmail])
 }

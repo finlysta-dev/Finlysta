@@ -1,677 +1,612 @@
-"use client";
+'use client';
 
-import { useState, useEffect } from "react";
-import Link from "next/link";
-import { 
-  Calendar, MapPin, Building2, ChevronRight, Briefcase, Award, 
-  CheckCircle, Zap, ExternalLink, GraduationCap, Target, Sparkles, 
-  Bookmark, Share2, TrendingUp, Heart, Clock, Users, Globe, 
-  ChevronDown, ChevronUp, AlertCircle 
-} from "lucide-react";
-import { trackJobView, trackApplyClick } from '@/lib/analytics/tracking';
+import React, { useState } from 'react';
+import { ArrowLeft, MapPin, Calendar, Clock, Briefcase, DollarSign, Building2, Share2, Heart, Linkedin, Twitter, MessageCircle, Mail, Link as LinkIcon, ChevronRight, Bell, Bookmark, ArrowUpRight, X, Hourglass, Send } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import Image from 'next/image';
+import Link from 'next/link';
 
-const getTimeAgo = (date: string) => {
-  if (!date) return "Recently";
-  const posted = new Date(date);
+interface Job {
+  id: string;
+  slug: string;
+  title: string;
+  company: string;
+  companyLogo?: string;
+  type: string;
+  workMode: string;
+  location: string;
+  city?: string;
+  state?: string;
+  country?: string;
+  experience?: string;
+  duration?: string;
+  salary?: string;
+  skills: string[];
+  overview?: string;
+  shortDescription?: string;
+  isNew: boolean;
+  isVerified: boolean;
+  isTrending: boolean;
+  isActivelyHiring: boolean;
+  postedAt: string;
+  postedTime?: string;
+  views: number;
+  applyClicks: number;
+  logoBg?: string;
+  timeAgo?: string;
+  description?: string;
+  aboutCompany?: string;
+  responsibilities?: string;
+  qualifications?: string;
+  benefits?: string;
+  applyLink?: string;
+}
+
+interface JobDetailClientProps {
+  opportunity: any;
+  relatedJobs: any[];
+}
+
+// Helper functions
+const getCompanyColor = (company: string) => {
+  const colors = [
+    'bg-black', 'bg-blue-900', 'bg-blue-600', 
+    'bg-orange-500', 'bg-red-600', 'bg-green-600',
+    'bg-purple-600', 'bg-teal-600', 'bg-pink-600',
+    'bg-indigo-600', 'bg-rose-600', 'bg-amber-600'
+  ];
+  const index = company.length % colors.length;
+  return colors[index];
+};
+
+const formatPostedTime = (date: string): string => {
+  if (!date) return 'Recently';
+  const postedDate = new Date(date);
   const now = new Date();
-  const diffDays = Math.floor((now.getTime() - posted.getTime()) / (1000 * 60 * 60 * 24));
-  if (diffDays === 0) return "Today";
-  if (diffDays === 1) return "Yesterday";
-  if (diffDays < 7) return `${diffDays} days ago`;
-  if (diffDays < 30) return `${Math.floor(diffDays / 7)} weeks ago`;
-  return `${Math.floor(diffDays / 30)} months ago`;
+  const diffMs = now.getTime() - postedDate.getTime();
+  const diffMins = Math.floor(diffMs / 60000);
+  const diffHours = Math.floor(diffMs / 3600000);
+  const diffDays = Math.floor(diffMs / 86400000);
+  
+  if (diffMins < 1) return 'Just now';
+  if (diffMins < 60) return `${diffMins}m ago`;
+  if (diffHours < 24) return `${diffHours}h ago`;
+  if (diffDays === 1) return 'Yesterday';
+  if (diffDays < 7) return `${diffDays}d ago`;
+  if (diffDays < 30) return `${Math.floor(diffDays / 7)}w ago`;
+  if (diffDays < 365) return `${Math.floor(diffDays / 30)}mo ago`;
+  return `${Math.floor(diffDays / 365)}y ago`;
 };
 
-const getLocationDisplay = (location: string, workMode: string) => {
-  if (!location) return null;
-  if (workMode === "remote") return "Remote";
-  if (workMode === "hybrid") return `${location} (Hybrid)`;
-  if (location === "PAN India" || location.toLowerCase().includes("pan india")) {
-    return "Multiple Locations (On-site)";
-  }
-  return `${location} (On-site)`;
-};
-
-const getCompanyInitials = (company: string) => {
-  if (!company) return "CO";
-  const words = company.split(" ");
-  if (words.length === 1) return company.substring(0, 2).toUpperCase();
-  return (words[0][0] + words[1][0]).toUpperCase();
-};
-
-// Fixed: Proper bullet point formatting - smarter period detection
-const formatBulletPoints = (text: string) => {
+// Format responsibilities into bullet points with proper punctuation
+const formatResponsibilities = (text: string): string[] => {
   if (!text) return [];
-  
-  // Special case: Don't split on periods that are part of abbreviations (B., M., etc.)
-  // First, protect abbreviations by replacing them with a placeholder
-  let protectedText = text;
-  
-  // Protect common degree abbreviations (B.B.A., B.Com, M.B.A., etc.)
-  const degreeAbbreviations = [
-    'B.B.A', 'BBA', 'B.Com', 'BCOM', 'B.Sc', 'BSc', 'B.A', 'BA',
-    'M.B.A', 'MBA', 'M.Com', 'MCOM', 'M.Sc', 'MSc', 'M.A', 'MA',
-    'Ph.D', 'PhD', 'B.F.M', 'BFM', 'B.M.S', 'BMS', 'B.B.I', 'BBI', 'B.A.F', 'BAF'
-  ];
-  
-  degreeAbbreviations.forEach(abbr => {
-    const regex = new RegExp(`\\b${abbr}\\b`, 'gi');
-    protectedText = protectedText.replace(regex, abbr.replace(/\./g, '___DOT___'));
-  });
-  
-  // Also protect single letters with periods (like "B.", "M.", "C.")
-  protectedText = protectedText.replace(/\b([A-Z])\.\s/g, '$1___DOT___ ');
-  
-  // Now split by period followed by space or newline
-  const sentences = protectedText.split(/\.\s+/);
-  
-  // Restore the protected dots
-  const restoredSentences = sentences.map(sentence => {
-    let restored = sentence;
-    restored = restored.replace(/___DOT___/g, '.');
-    return restored.trim();
-  });
-  
-  return restoredSentences
-    .filter(sentence => sentence.length > 0)
-    .map(sentence => {
-      let cleaned = sentence.trim();
-      // Add period back if missing and not already ending with punctuation
-      if (!cleaned.endsWith('.') && !cleaned.endsWith('!') && !cleaned.endsWith('?') && cleaned.length > 5) {
-        cleaned = cleaned + '.';
-      }
-      // Capitalize first letter
-      return cleaned.charAt(0).toUpperCase() + cleaned.slice(1);
-    });
+  const sentences = text.split(/[.!?]\s*|\n/).filter(s => s.trim().length > 0);
+  return sentences.map(s => s.trim() + '.');
 };
 
-// Fixed: Extract key responsibilities properly
-const extractKeyResponsibilities = (text: string) => {
+// Format qualifications into bullet points with proper punctuation
+const formatQualifications = (text: string): string[] => {
   if (!text) return [];
-  
-  // First, try to split by numbered points (1., 2., etc.) or bullet points
-  const bulletMatch = text.match(/(?:•|\d+\.)\s*([^•\d]+?)(?=(?:•|\d+\.|$))/g);
-  if (bulletMatch) {
-    return bulletMatch.map(item => item.replace(/^[•\d\.\s]+/, '').trim()).filter(s => s.length > 10);
-  }
-  
-  // Then try to split by periods that start with capital letter
-  const sentences = text.split(/(?<=[.!?])\s+(?=[A-Z])/);
-  if (sentences.length > 1) {
-    return sentences.filter(s => s.trim().length > 20).map(s => s.trim());
-  }
-  
-  // Finally, split by period and space
-  const periodSplit = text.split(/\.\s+/);
-  return periodSplit
-    .filter(s => s.trim().length > 20)
-    .map(s => s.trim() + '.')
-    .slice(0, 8);
+  const sentences = text.split(/[.!?]\s*|\n/).filter(s => s.trim().length > 0);
+  return sentences.map(s => s.trim() + '.');
 };
 
-// Helper function to check if a skill is actually a degree term
-const isDegreeTerm = (skill: string): boolean => {
-  const degreeTerms = [
-    'bachelor', 'master', 'mba', 'b.com', 'bba', 'mms', 'cfa', 'chartered', 
-    'ca', 'acca', 'graduate', 'post graduate', 'baf', 'bfm', 'bms', 'bbi',
-    'bcom', 'bachelor\'s', 'bachelors', 'masters', 'phd', 'doctorate',
-    'ba', 'bs', 'bsc', 'ma', 'ms', 'msc', 'mcom', 'mba finance'
-  ];
-  const lowerSkill = skill.toLowerCase();
-  return degreeTerms.some(term => lowerSkill.includes(term));
-};
-
-const companyColors = [
-  "from-blue-600 to-blue-800",
-  "from-emerald-600 to-teal-600",
-  "from-purple-600 to-indigo-600",
-  "from-rose-600 to-red-600",
-  "from-amber-600 to-orange-600",
-  "from-cyan-600 to-sky-600",
-];
-
-export default function JobDetailClient({ opportunity, relatedJobs }: { opportunity: any; relatedJobs: any[] }) {
-  const [saved, setSaved] = useState(false);
-  const [showShareSuccess, setShowShareSuccess] = useState(false);
-  const [logoError, setLogoError] = useState(false);
-  const [showFullQualifications, setShowFullQualifications] = useState(false);
-  const [showReportModal, setShowReportModal] = useState(false);
-
-  // Track job view when component mounts
-  useEffect(() => {
-    if (opportunity?.id) {
-      trackJobView(opportunity.id);
-    }
-  }, [opportunity?.id]);
-
-  useEffect(() => {
-    if (opportunity?.id) {
-      const savedItems = JSON.parse(localStorage.getItem("saved_jobs") || "[]");
-      setSaved(savedItems.includes(opportunity.id));
-    }
-  }, [opportunity?.id]);
-
-  const handleSave = () => {
-    if (!opportunity?.id) return;
-    const savedItems = JSON.parse(localStorage.getItem("saved_jobs") || "[]");
-    if (!saved) {
-      savedItems.push(opportunity.id);
-      localStorage.setItem("saved_jobs", JSON.stringify(savedItems));
-      setSaved(true);
-    } else {
-      const filtered = savedItems.filter((id: string) => id !== opportunity.id);
-      localStorage.setItem("saved_jobs", JSON.stringify(filtered));
-      setSaved(false);
-    }
-  };
-
-  const handleShare = async (platform?: string) => {
-    const url = window.location.href;
-    const text = `${opportunity.title} at ${opportunity.company} - Apply now on Finlysta`;
-    
-    if (platform === "linkedin") {
-      window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`, "_blank");
-    } else if (platform === "whatsapp") {
-      window.open(`https://wa.me/?text=${encodeURIComponent(text + " " + url)}`, "_blank");
-    } else {
-      await navigator.clipboard.writeText(url);
-      setShowShareSuccess(true);
-      setTimeout(() => setShowShareSuccess(false), 2000);
-    }
-  };
-
-  const handleApplyClick = async (e: React.MouseEvent) => {
-    e.preventDefault();
-    if (opportunity?.id) {
-      await trackApplyClick(opportunity.id);
-      // Open the apply link
-      window.open(opportunity.applyLink, '_blank');
-    }
-  };
-
-  const timeAgo = getTimeAgo(opportunity.postedAt);
-  const locationDisplay = getLocationDisplay(opportunity.location, opportunity.workMode);
-  const companyInitials = getCompanyInitials(opportunity.company);
-  const companyColor = companyColors[(opportunity.company?.length || 0) % companyColors.length];
-
-  // Get cleaned responsibilities and qualifications
-  let responsibilitiesPoints = extractKeyResponsibilities(opportunity.responsibilities);
-  let qualificationsPoints = formatBulletPoints(opportunity.qualifications);
-  const benefitsPoints = formatBulletPoints(opportunity.benefits);
-
-  // Split qualifications into Educational and Requirements
-  const educationalKeywords = ['bachelor', 'master', 'mba', 'degree', 'b.com', 'bba', 'mms', 'cfa', 'chartered', 'ca', 'acca', 'graduate', 'post graduate', 'baf', 'bfm', 'bms', 'bbi', 'phd', 'doctorate'];
-  const educationalQuals = qualificationsPoints.filter((point: string) => 
-    educationalKeywords.some(keyword => point.toLowerCase().includes(keyword))
-  );
-  const otherRequirements = qualificationsPoints.filter((point: string) => 
-    !educationalKeywords.some(keyword => point.toLowerCase().includes(keyword))
-  );
-
-  const importantNotes = otherRequirements.filter((point: string) => 
-    point.toLowerCase().includes("notice") || 
-    point.toLowerCase().includes("eligible") ||
-    point.toLowerCase().includes("not apply") ||
-    point.toLowerCase().includes("note:")
-  );
-  const mainRequirements = otherRequirements.filter((point: string) => 
-    !importantNotes.includes(point)
-  );
-
-  // Type-safe skills filtering - EXCLUDING degree terms
-  const uniqueSkills: string[] = [...new Set(opportunity.skills || [])] as string[];
+export default function JobDetailClient({ opportunity, relatedJobs = [] }: JobDetailClientProps) {
+  const router = useRouter();
+  const [isSaved, setIsSaved] = useState(false);
+  const [email, setEmail] = useState('');
+  const [emailStatus, setEmailStatus] = useState<'idle' | 'sending' | 'success' | 'error'>('idle');
   
-  const financeSkills = uniqueSkills.filter((s: string) => 
-    !isDegreeTerm(s) && ['financial', 'analysis', 'statements', 'loan', 'valuation', 'reporting', 'budgeting', 'forecasting', 'accounting', 'audit', 'tax', 'reconciliation', 'finance'].some(keyword => s.toLowerCase().includes(keyword))
-  );
-  const technicalSkills = uniqueSkills.filter((s: string) =>
-    !isDegreeTerm(s) && ['excel', 'erp', 'database', 'sql', 'power bi', 'tableau', 'software', 'system', 'data', 'quickbooks', 'zoho', 'netsuite', 'tool'].some(keyword => s.toLowerCase().includes(keyword))
-  );
-  const softSkills = uniqueSkills.filter((s: string) =>
-    !isDegreeTerm(s) && ['communication', 'attention', 'detail', 'time management', 'team', 'problem solving', 'judgment', 'curiosity', 'self management', 'dedication', 'responsive', 'customer support', 'interpersonal', 'organizational'].some(keyword => s.toLowerCase().includes(keyword))
-  );
-  const otherSkills = uniqueSkills.filter((s: string) => 
-    !isDegreeTerm(s) && !financeSkills.includes(s) && !technicalSkills.includes(s) && !softSkills.includes(s)
-  );
-
-  const getSalaryInsight = () => {
-    if (!opportunity.salary) return null;
-    const salary = opportunity.salary;
-    if (salary.includes('3.5') || salary.includes('3.50')) {
-      return "₹3.5 – 6 LPA is competitive for entry-level financial analyst roles in India, especially for candidates building experience in financial analysis and mortgage operations.";
-    }
-    return null;
-  };
-
-  const salaryInsight = getSalaryInsight();
-
-  let cleanSalary = null;
-  if (opportunity.salary) {
-    let salary = opportunity.salary.replace(/[₹$]/g, '').trim();
-    if (salary.includes('Competitive') || salary.includes('competitive')) {
-      cleanSalary = "Competitive";
-    } else if (salary.includes('Not disclosed') || salary.includes('not disclosed')) {
-      cleanSalary = "Not disclosed";
-    } else {
-      cleanSalary = salary;
-    }
-  }
-
-  let overviewText = opportunity.overview || "";
-  if (overviewText.includes("PAN India location flexibility")) {
-    overviewText = "This role is open to candidates across multiple locations in India. " + overviewText.replace("PAN India location flexibility", "");
-  } else if (overviewText.includes("PAN India")) {
-    overviewText = overviewText.replace(/PAN India/g, "multiple locations across India");
-  }
-
   if (!opportunity) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="text-4xl mb-4">🔍</div>
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">Job Not Found</h1>
-          <p className="text-gray-600">The job you're looking for doesn't exist.</p>
-          <Link href="/jobs" className="inline-block mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg">Back to Jobs</Link>
+        <div className="text-center bg-white p-8 rounded-xl shadow-md">
+          <div className="text-red-500 text-5xl mb-4">⚠️</div>
+          <h2 className="text-xl font-bold text-gray-800 mb-2">Something went wrong</h2>
+          <p className="text-gray-600">Job not found</p>
+          <button 
+            onClick={() => window.history.back()} 
+            className="mt-4 px-6 py-2 bg-[#0052FF] text-white rounded-lg hover:bg-[#0041CC] transition"
+          >
+            Go Back
+          </button>
         </div>
       </div>
     );
   }
 
+  const handleEmailSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!email) return;
+    
+    setEmailStatus('sending');
+    try {
+      const response = await fetch('https://formspree.io/f/xvzjrzao', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email }),
+      });
+      
+      if (response.ok) {
+        setEmailStatus('success');
+        setEmail('');
+        setTimeout(() => setEmailStatus('idle'), 3000);
+      } else {
+        setEmailStatus('error');
+        setTimeout(() => setEmailStatus('idle'), 3000);
+      }
+    } catch (error) {
+      setEmailStatus('error');
+      setTimeout(() => setEmailStatus('idle'), 3000);
+    }
+  };
+
+  const job: Job = {
+    id: opportunity.id,
+    slug: opportunity.slug,
+    title: opportunity.title || 'Financial Analyst',
+    company: opportunity.company || 'Company',
+    companyLogo: opportunity.companyLogo,
+    type: opportunity.type === 'job' ? 'Full-time' : 'Internship',
+    workMode: opportunity.workMode || 'On-site',
+    location: opportunity.city && opportunity.country ? `${opportunity.city}, ${opportunity.country}` : opportunity.location || 'India',
+    city: opportunity.city || opportunity.location?.split(',')[0]?.trim() || 'India',
+    state: opportunity.state,
+    country: opportunity.country || 'India',
+    experience: opportunity.experience || '0 - 1 Yrs',
+    duration: opportunity.duration,
+    salary: opportunity.salary || 'Not Disclosed',
+    skills: opportunity.skills || ['Excel', 'Financial Analysis', 'Reporting', 'PowerPoint'],
+    overview: opportunity.overview || '',
+    shortDescription: opportunity.shortDescription || opportunity.overview?.substring(0, 200) || 'No description available',
+    isNew: opportunity.isNew || false,
+    isVerified: opportunity.isVerified || false,
+    isTrending: opportunity.isTrending || false,
+    isActivelyHiring: opportunity.isActivelyHiring || true,
+    postedAt: opportunity.postedAt || new Date().toISOString(),
+    postedTime: opportunity.postedTime || formatPostedTime(opportunity.postedAt || new Date().toISOString()),
+    views: opportunity.views || 0,
+    applyClicks: opportunity.applyClicks || 0,
+    logoBg: getCompanyColor(opportunity.company || ''),
+    timeAgo: formatPostedTime(opportunity.postedAt || new Date().toISOString()),
+    description: opportunity.shortDescription || opportunity.overview?.substring(0, 200) || 'No description available',
+    aboutCompany: opportunity.aboutCompany || '',
+    responsibilities: opportunity.responsibilities || '',
+    qualifications: opportunity.qualifications || '',
+    benefits: opportunity.benefits || '',
+    applyLink: opportunity.applyLink || '#',
+  };
+
+  const responsibilitiesList = formatResponsibilities(job.responsibilities);
+  const qualificationsList = formatQualifications(job.qualifications);
+
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Breadcrumb */}
-      <div className="bg-white border-b border-gray-100 py-3">
+      {/* Header */}
+      <header className="bg-white border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center gap-2 text-sm text-gray-500">
-            <Link href="/" className="hover:text-blue-600">Home</Link>
-            <ChevronRight size={14} className="text-gray-400" />
-            <Link href="/jobs" className="hover:text-blue-600">Jobs</Link>
-            <ChevronRight size={14} className="text-gray-400" />
-            <span className="text-gray-900">{opportunity.title}</span>
+          <div className="flex items-center justify-between h-16">
+            <div className="flex items-center gap-8">
+              <div className="flex items-center">
+                <img src="/finlysta.png" alt="Finlysta" className="h-10 w-auto" />
+              </div>
+              <nav className="hidden md:flex gap-8">
+                <a href="#" className="text-gray-900 font-bold hover:text-blue-600">Home</a>
+                <a href="#" className="text-blue-600 font-bold border-b-2 border-blue-600 pb-1">Jobs</a>
+                <a href="#" className="text-gray-900 font-bold hover:text-blue-600">Internships</a>
+                <a href="#" className="text-gray-900 font-bold hover:text-blue-600">Learning Hub</a>
+                <a href="#" className="text-gray-900 font-bold hover:text-blue-600">Interview Prep</a>
+                <a href="#" className="text-gray-900 font-bold hover:text-blue-600">Blogs</a>
+                <a href="#" className="text-gray-900 font-bold hover:text-blue-600">Roadmap</a>
+              </nav>
+            </div>
+            <div className="flex items-center gap-4">
+              <div className="flex items-center gap-2 border border-gray-300 rounded-lg px-4 py-2 hover:border-blue-600 transition-colors cursor-pointer">
+                <Bell className="w-5 h-5 text-gray-600" />
+                <span className="text-sm font-medium text-gray-700">Job Alerts</span>
+              </div>
+              <button className="bg-blue-600 text-white px-6 py-2 rounded-lg font-medium hover:bg-blue-700">
+                Find My First Job
+              </button>
+            </div>
           </div>
         </div>
-      </div>
+      </header>
 
-      {/* Hero Section */}
-      <div className="bg-white border-b border-gray-100">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-8">
-          <div className="flex flex-wrap items-start justify-between gap-4">
-            <div className="flex items-start gap-5">
-              <div className="flex-shrink-0">
-                {!logoError && opportunity.companyLogo ? (
-                  <div className="w-20 h-20 bg-white border border-gray-200 rounded-2xl shadow-sm flex items-center justify-center p-3">
-                    <img src={opportunity.companyLogo} alt={opportunity.company} className="max-w-full max-h-full object-contain" onError={() => setLogoError(true)} />
-                  </div>
-                ) : (
-                  <div className={`w-20 h-20 bg-gradient-to-br ${companyColor} rounded-2xl shadow-sm flex items-center justify-center`}>
-                    <span className="text-white font-bold text-2xl">{companyInitials}</span>
-                  </div>
-                )}
-              </div>
-              <div>
-                <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-1">{opportunity.title}</h1>
-                <p className="text-lg text-gray-600">{opportunity.company}</p>
-                <div className="flex flex-wrap items-center gap-2 mt-2">
-                  {opportunity.isVerified && (
-                    <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-green-50 text-green-700 text-xs font-medium rounded-full">
-                      <CheckCircle size={12} /> Verified
-                    </span>
-                  )}
-                  {opportunity.isActivelyHiring && (
-                    <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-orange-50 text-orange-700 text-xs font-medium rounded-full">
-                      <Zap size={12} /> Actively Hiring
-                    </span>
-                  )}
-                  {opportunity.isNew && (
-                    <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-blue-50 text-blue-700 text-xs font-medium rounded-full">
-                      <Sparkles size={12} /> New
-                    </span>
-                  )}
-                  <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-gray-100 text-gray-600 text-xs rounded-full">
-                    <Clock size={10} /> {timeAgo}
-                  </span>
-                </div>
-              </div>
+      {/* Breadcrumb */}
+      <div className="border-b border-gray-200">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <a href="/" className="text-blue-600 font-bold hover:underline text-sm">Home</a>
+              <svg className="w-4 h-4 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5l7 7-7 7" />
+              </svg>
+              <a href="/jobs" className="text-blue-600 font-bold hover:underline text-sm">Jobs</a>
+              <svg className="w-4 h-4 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5l7 7-7 7" />
+              </svg>
+              <span className="text-gray-600 font-bold text-sm">{job.title}</span>
             </div>
-            <button onClick={handleSave} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition ${saved ? "bg-blue-50 text-blue-600" : "bg-gray-100 text-gray-600 hover:bg-gray-200"}`}>
-              <Bookmark size={16} fill={saved ? "currentColor" : "none"} />
-              <span className="text-sm">{saved ? "Saved" : "Save Job"}</span>
+            <button onClick={() => window.history.back()} className="flex items-center gap-2 text-blue-600 hover:text-blue-700 font-medium">
+              <ArrowLeft className="w-4 h-4" />
+              Back to Jobs
             </button>
           </div>
         </div>
       </div>
 
       {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* MAIN JOB INFO BOX */}
+        <div className="bg-white rounded-lg p-8 mb-8">
+          <div className="flex items-start justify-between">
+            <div className="flex items-start gap-6 flex-1">
+              <div className={`w-24 h-24 ${job.logoBg || 'bg-blue-600'} rounded-lg flex items-center justify-center flex-shrink-0`}>
+                {job.companyLogo ? (
+                  <img src={job.companyLogo} alt={job.company} className="w-16 h-16 object-contain" />
+                ) : (
+                  <span className="text-white font-bold text-3xl">{job.company?.substring(0, 2).toUpperCase() || 'CO'}</span>
+                )}
+              </div>
+
+              <div className="flex-1">
+                <div className="flex items-center gap-3 mb-2">
+                  <h1 className="text-4xl font-bold text-gray-900">{job.title}</h1>
+                  {job.isNew && <span className="bg-green-100 text-green-800 text-xs font-semibold px-3 py-1 rounded-full">New</span>}
+                </div>
+                
+                <p className="text-blue-600 text-lg font-bold mb-4">{job.company}</p>
+
+                <div className="flex flex-wrap items-center gap-6 mb-4">
+                  <div className="flex items-center gap-2">
+                    <MapPin className="w-5 h-5 text-gray-500" />
+                    <span className="text-gray-700">{job.location}</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Briefcase className="w-5 h-5 text-gray-500" />
+                    <span className="text-gray-700">{job.type}</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Clock className="w-5 h-5 text-gray-500" />
+                    <span className="text-gray-700">{job.experience}</span>
+                  </div>
+                </div>
+
+                <p className="text-sm text-gray-600 font-medium">Posted {job.timeAgo || 'Recently'} • {job.views || 0} views</p>
+              </div>
+            </div>
+
+            <div className="flex flex-col gap-3 min-w-[200px] ml-6">
+              <button
+                onClick={() => setIsSaved(!isSaved)}
+                className={`w-full py-3 px-4 rounded-lg font-bold text-base transition-all flex items-center justify-center gap-2 border-2 ${
+                  isSaved
+                    ? 'border-blue-600 text-blue-600 bg-blue-50'
+                    : 'border-blue-600 text-blue-600 hover:bg-blue-50'
+                }`}
+              >
+                <Bookmark className={`w-5 h-5 ${isSaved ? 'fill-current' : ''}`} />
+                {isSaved ? 'Saved' : 'Save Job'}
+              </button>
+              <a href={job.applyLink || '#'} target="_blank" rel="noopener noreferrer">
+                <button className="w-full bg-blue-600 text-white py-3 px-4 rounded-lg font-bold text-base hover:bg-blue-700 transition-colors flex items-center justify-center gap-2">
+                  Apply Now
+                  <ArrowUpRight className="w-5 h-5" />
+                </button>
+              </a>
+              <div className="flex items-center justify-center gap-2 text-sm text-gray-600 font-medium">
+                <Hourglass className="w-4 h-4" />
+                <span>Applications closing soon</span>
+              </div>
+            </div>
+          </div>
+
+          <hr className="border-gray-300 my-6" />
+
+          <div className="flex flex-wrap gap-2">
+            {job.skills?.slice(0, 10).map((skill) => (
+              <span key={skill} className="bg-blue-100 text-blue-700 text-sm font-semibold px-4 py-2 rounded-full">
+                {skill}
+              </span>
+            ))}
+          </div>
+        </div>
+
+        {/* CONTENT GRID */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Left Column */}
-          <div className="lg:col-span-2 space-y-6">
-            {/* Job Highlights */}
-            <div className="bg-white rounded-xl border border-gray-100 p-5 shadow-sm">
-              <h2 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
-                <Zap size={18} className="text-amber-500" />
-                Job Highlights
+          <div className="lg:col-span-2 space-y-8">
+            {/* Job Description */}
+            <div className="bg-white rounded-lg p-8">
+              <h2 className="text-2xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+                <Briefcase className="w-6 h-6 text-blue-600" />
+                Job Description
               </h2>
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                {opportunity.type && (
-                  <div className="flex items-center gap-2 text-sm">
-                    <Briefcase size={14} className="text-gray-400" />
-                    <span className="capitalize text-gray-700">{opportunity.type === "job" ? "Full-Time" : "Internship"}</span>
-                  </div>
-                )}
-                {opportunity.experience && (
-                  <div className="flex items-center gap-2 text-sm">
-                    <Clock size={14} className="text-gray-400" />
-                    <span className="text-gray-700">{opportunity.experience}</span>
-                  </div>
-                )}
-                {cleanSalary && (
-                  <div className="flex items-center gap-2 text-sm">
-                    <span className="font-semibold text-green-600">{cleanSalary === "Competitive" ? "💰 Competitive" : `₹${cleanSalary}`}</span>
-                  </div>
-                )}
-                {locationDisplay && (
-                  <div className="flex items-center gap-2 text-sm">
-                    <MapPin size={14} className="text-gray-400" />
-                    <span className="text-gray-700">{locationDisplay}</span>
-                  </div>
-                )}
+              <p className="text-gray-700 mb-6 leading-relaxed text-base">
+                {job.overview || job.shortDescription || 'No description available'}
+              </p>
+
+              <h3 className="text-xl font-bold text-gray-900 mb-4">Key Responsibilities</h3>
+              {responsibilitiesList.length > 0 ? (
+                <ul className="space-y-3 text-gray-700 mb-8">
+                  {responsibilitiesList.map((item, index) => (
+                    <li key={index} className="flex gap-3">
+                      <span className="text-blue-600 font-bold text-2xl leading-none mt-0.5">•</span>
+                      <span className="text-base leading-relaxed">{item}</span>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <ul className="space-y-3 text-gray-700 mb-8">
+                  <li className="flex gap-3">
+                    <span className="text-blue-600 font-bold text-2xl leading-none mt-0.5">•</span>
+                    <span className="text-base leading-relaxed">No specific responsibilities listed for this role.</span>
+                  </li>
+                </ul>
+              )}
+
+              <h3 className="text-xl font-bold text-gray-900 mb-4">Eligibility Criteria</h3>
+              {qualificationsList.length > 0 ? (
+                <ul className="space-y-3 text-gray-700">
+                  {qualificationsList.map((item, index) => (
+                    <li key={index} className="flex gap-3">
+                      <span className="text-blue-600 font-bold text-2xl leading-none mt-0.5">•</span>
+                      <span className="text-base leading-relaxed">{item}</span>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <ul className="space-y-3 text-gray-700">
+                  <li className="flex gap-3">
+                    <span className="text-blue-600 font-bold text-2xl leading-none mt-0.5">•</span>
+                    <span className="text-base leading-relaxed">No specific qualifications listed for this role.</span>
+                  </li>
+                </ul>
+              )}
+            </div>
+
+            {/* Skills Required */}
+            <div className="bg-white rounded-lg p-8">
+              <h2 className="text-2xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+                <Building2 className="w-6 h-6 text-blue-600" />
+                Skills Required
+              </h2>
+              <div className="flex flex-wrap gap-2">
+                {job.skills?.map((skill) => (
+                  <span key={skill} className="bg-blue-50 text-blue-700 text-sm font-semibold px-4 py-2 rounded-full border border-blue-200">
+                    {skill}
+                  </span>
+                ))}
               </div>
             </div>
 
             {/* About Company */}
-            {opportunity.aboutCompany && (
-              <div className="bg-white rounded-xl border border-gray-100 p-5 shadow-sm">
-                <div className="flex items-center gap-2 mb-3">
-                  <Building2 size={18} className="text-blue-600" />
-                  <h2 className="text-lg font-bold text-gray-900">About {opportunity.company}</h2>
-                </div>
-                <p className="text-gray-600 text-sm leading-relaxed">{opportunity.aboutCompany}</p>
-              </div>
-            )}
-
-            {/* Role Overview */}
-            {overviewText && (
-              <div className="bg-white rounded-xl border border-gray-100 p-5 shadow-sm">
-                <div className="flex items-center gap-2 mb-3">
-                  <Target size={18} className="text-indigo-600" />
-                  <h2 className="text-lg font-bold text-gray-900">Role Overview</h2>
-                </div>
-                <p className="text-gray-600 text-sm leading-relaxed">{overviewText}</p>
-              </div>
-            )}
-
-            {/* Key Responsibilities */}
-            {responsibilitiesPoints.length > 0 && (
-              <div className="bg-white rounded-xl border border-gray-100 p-5 shadow-sm">
-                <div className="flex items-center gap-2 mb-3">
-                  <CheckCircle size={18} className="text-green-600" />
-                  <h2 className="text-lg font-bold text-gray-900">Key Responsibilities</h2>
-                </div>
-                <ul className="space-y-2">
-                  {responsibilitiesPoints.map((point, idx) => (
-                    <li key={idx} className="flex items-start gap-2">
-                      <span className="text-green-500 mt-0.5">•</span>
-                      <span className="text-gray-600 text-sm leading-relaxed">{point}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
-
-            {/* Skills - Cleaned, no degree terms */}
-            {uniqueSkills.length > 0 && (
-              <div className="bg-white rounded-xl border border-gray-100 p-5 shadow-sm">
-                <div className="flex items-center gap-2 mb-4">
-                  <Award size={18} className="text-amber-600" />
-                  <h2 className="text-lg font-bold text-gray-900">Skills You'll Need</h2>
-                </div>
-                
-                {financeSkills.length > 0 && (
-                  <div className="mb-4">
-                    <h3 className="text-sm font-semibold text-gray-700 mb-2">Finance & Accounting</h3>
-                    <div className="flex flex-wrap gap-2">
-                      {financeSkills.map((skill, idx) => (
-                        <span key={idx} className="px-2.5 py-1 bg-blue-50 text-blue-700 rounded-full text-xs font-medium border border-blue-100">{skill}</span>
-                      ))}
-                    </div>
-                  </div>
-                )}
-                
-                {technicalSkills.length > 0 && (
-                  <div className="mb-4">
-                    <h3 className="text-sm font-semibold text-gray-700 mb-2">Technical & Tools</h3>
-                    <div className="flex flex-wrap gap-2">
-                      {technicalSkills.map((skill, idx) => (
-                        <span key={idx} className="px-2.5 py-1 bg-gray-100 text-gray-700 rounded-full text-xs font-medium border border-gray-200">{skill}</span>
-                      ))}
-                    </div>
-                  </div>
-                )}
-                
-                {softSkills.length > 0 && (
-                  <div className="mb-4">
-                    <h3 className="text-sm font-semibold text-gray-700 mb-2">Soft Skills</h3>
-                    <div className="flex flex-wrap gap-2">
-                      {softSkills.map((skill, idx) => (
-                        <span key={idx} className="px-2.5 py-1 bg-green-50 text-green-700 rounded-full text-xs font-medium border border-green-100">{skill}</span>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {otherSkills.length > 0 && (
-                  <div className="mb-4">
-                    <h3 className="text-sm font-semibold text-gray-700 mb-2">Other Skills</h3>
-                    <div className="flex flex-wrap gap-2">
-                      {otherSkills.map((skill, idx) => (
-                        <span key={idx} className="px-2.5 py-1 bg-gray-100 text-gray-700 rounded-full text-xs font-medium border border-gray-200">{skill}</span>
-                      ))}
-                    </div>
-                  </div>
-                )}
-              </div>
-            )}
-
-            {/* Educational Qualifications */}
-            {educationalQuals.length > 0 && (
-              <div className="bg-white rounded-xl border border-gray-100 p-5 shadow-sm">
-                <div className="flex items-center gap-2 mb-3">
-                  <GraduationCap size={18} className="text-purple-600" />
-                  <h2 className="text-lg font-bold text-gray-900">Educational Qualifications</h2>
-                </div>
-                <ul className="space-y-2">
-                  {educationalQuals.map((point, idx) => (
-                    <li key={idx} className="flex items-start gap-2">
-                      <span className="text-purple-500 mt-0.5">•</span>
-                      <span className="text-gray-600 text-sm leading-relaxed">{point}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
-
-            {/* Requirements */}
-            {mainRequirements.length > 0 && (
-              <div className="bg-white rounded-xl border border-gray-100 p-5 shadow-sm">
-                <div className="flex items-center gap-2 mb-3">
-                  <CheckCircle size={18} className="text-blue-600" />
-                  <h2 className="text-lg font-bold text-gray-900">Requirements</h2>
-                </div>
-                <ul className="space-y-2">
-                  {(showFullQualifications ? mainRequirements : mainRequirements.slice(0, 6)).map((point, idx) => (
-                    <li key={idx} className="flex items-start gap-2">
-                      <span className="text-blue-500 mt-0.5">•</span>
-                      <span className="text-gray-600 text-sm leading-relaxed">{point}</span>
-                    </li>
-                  ))}
-                </ul>
-                {mainRequirements.length > 6 && (
-                  <button onClick={() => setShowFullQualifications(!showFullQualifications)} className="mt-3 text-sm text-blue-600 hover:text-blue-700 flex items-center gap-1">
-                    {showFullQualifications ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
-                    {showFullQualifications ? "Show less" : `View all ${mainRequirements.length} requirements`}
-                  </button>
-                )}
-              </div>
-            )}
-
-            {/* Important Notes */}
-            {importantNotes.length > 0 && (
-              <div className="bg-amber-50 rounded-xl border border-amber-200 p-5">
-                <div className="flex items-center gap-2 mb-3">
-                  <AlertCircle size={18} className="text-amber-600" />
-                  <h2 className="text-lg font-bold text-gray-900">Important Notes</h2>
-                </div>
-                <ul className="space-y-2">
-                  {importantNotes.map((point, idx) => (
-                    <li key={idx} className="flex items-start gap-2">
-                      <span className="text-amber-500 mt-0.5">•</span>
-                      <span className="text-gray-700 text-sm leading-relaxed">{point}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
-
-            {/* Benefits */}
-            {benefitsPoints.length > 0 && !opportunity.benefits?.includes("not provided") && (
-              <div className="bg-white rounded-xl border border-gray-100 p-5 shadow-sm">
-                <div className="flex items-center gap-2 mb-3">
-                  <Heart size={18} className="text-rose-600" />
-                  <h2 className="text-lg font-bold text-gray-900">Benefits & Perks</h2>
-                </div>
-                <ul className="space-y-2">
-                  {benefitsPoints.map((point, idx) => (
-                    <li key={idx} className="flex items-start gap-2">
-                      <span className="text-rose-500 mt-0.5">•</span>
-                      <span className="text-gray-600 text-sm leading-relaxed">{point}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
-
-            {/* Report Job */}
-            <div className="flex justify-end">
-              <button onClick={() => setShowReportModal(true)} className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-red-50 text-red-600 text-xs font-medium rounded-lg hover:bg-red-100 transition">
-                <AlertCircle size={12} />
-                Report Job
+            <div className="bg-white rounded-lg p-8">
+              <h2 className="text-2xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+                <Building2 className="w-6 h-6 text-blue-600" />
+                About {job.company}
+              </h2>
+              <p className="text-gray-700 leading-relaxed text-base">
+                {job.aboutCompany || 'No company information available.'}
+              </p>
+              <button className="mt-4 flex items-center gap-2 text-blue-600 hover:text-blue-700 font-bold">
+                View Company Profile
+                <ChevronRight className="w-4 h-4" />
               </button>
             </div>
           </div>
 
-          {/* Right Column - Sidebar */}
-          <div className="space-y-6">
-            <div className="sticky top-24">
-              {/* Apply Card */}
-              <div className="bg-white rounded-xl border border-gray-200 p-5 shadow-md">
-                <div className="text-center mb-4">
-                  <div className="text-3xl mb-2">💼</div>
-                  <h3 className="text-xl font-bold text-gray-900">Apply for This Role</h3>
-                  <p className="text-xs text-gray-500 mt-1">Start your finance career today</p>
+          {/* Right Column */}
+          <div className="lg:col-span-1 space-y-6">
+            {/* Job Overview */}
+            <div className="bg-white rounded-lg p-6">
+              <h3 className="text-lg font-bold text-gray-900 mb-6 flex items-center gap-2">
+                <Briefcase className="w-5 h-5 text-blue-600" />
+                Job Overview
+              </h3>
+              <div className="space-y-4">
+                <div className="flex justify-between items-center border-b border-gray-100 pb-3">
+                  <p className="text-xs text-gray-500 uppercase tracking-wider font-bold">Posted On</p>
+                  <p className="text-gray-900 font-bold text-sm">{job.timeAgo || 'Recently'}</p>
                 </div>
-
-                <button 
-                  onClick={handleApplyClick}
-                  className="w-full py-3.5 bg-blue-600 hover:bg-blue-700 text-white font-semibold text-base rounded-xl transition text-center flex items-center justify-center gap-2 shadow-md hover:shadow-lg"
-                >
-                  <ExternalLink size={18} /> Apply Now →
-                </button>
-
-                <div className="mt-4 pt-3 border-t border-gray-100 space-y-2 text-xs">
-                  <div className="flex justify-between"><span className="text-gray-500">Posted</span><span className="font-medium text-gray-700">{timeAgo}</span></div>
-                  {cleanSalary && <div className="flex justify-between"><span className="text-gray-500">Salary</span><span className="font-semibold text-green-600">{cleanSalary === "Competitive" ? "💰 Competitive" : `₹${cleanSalary}`}</span></div>}
-                  {opportunity.experience && <div className="flex justify-between"><span className="text-gray-500">Experience</span><span className="font-medium text-gray-700">{opportunity.experience}</span></div>}
+                <div className="flex justify-between items-center border-b border-gray-100 pb-3">
+                  <p className="text-xs text-gray-500 uppercase tracking-wider font-bold">Job Type</p>
+                  <p className="text-gray-900 font-bold text-sm">{job.type}</p>
                 </div>
-
-                {/* Share buttons */}
-                <div className="mt-4 pt-3 border-t border-gray-100">
-                  <p className="text-xs text-gray-500 mb-2">📢 Share this job:</p>
-                  <div className="flex gap-2">
-                    <button onClick={() => handleShare("linkedin")} className="flex-1 py-2 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 text-sm font-medium">LinkedIn</button>
-                    <button onClick={() => handleShare("whatsapp")} className="flex-1 py-2 bg-green-50 text-green-600 rounded-lg hover:bg-green-100 text-sm font-medium">WhatsApp</button>
-                    <button onClick={() => handleShare()} className="flex-1 py-2 bg-gray-100 text-gray-600 rounded-lg hover:bg-gray-200 text-sm font-medium">Copy Link</button>
-                  </div>
+                <div className="flex justify-between items-center border-b border-gray-100 pb-3">
+                  <p className="text-xs text-gray-500 uppercase tracking-wider font-bold">Experience</p>
+                  <p className="text-gray-900 font-bold text-sm">{job.experience}</p>
+                </div>
+                <div className="flex justify-between items-center border-b border-gray-100 pb-3">
+                  <p className="text-xs text-gray-500 uppercase tracking-wider font-bold">Location</p>
+                  <p className="text-gray-900 font-bold text-sm">{job.location}</p>
+                </div>
+                <div className="flex justify-between items-center border-b border-gray-100 pb-3">
+                  <p className="text-xs text-gray-500 uppercase tracking-wider font-bold">Salary</p>
+                  <p className="text-green-600 font-bold text-sm">{job.salary || 'Not Disclosed'}</p>
+                </div>
+                <div className="flex justify-between items-center border-b border-gray-100 pb-3">
+                  <p className="text-xs text-gray-500 uppercase tracking-wider font-bold">Work Mode</p>
+                  <p className="text-gray-900 font-bold text-sm">{job.workMode}</p>
+                </div>
+                <div className="flex justify-between items-center">
+                  <p className="text-xs text-gray-500 uppercase tracking-wider font-bold">Views</p>
+                  <p className="text-gray-900 font-bold text-sm">{job.views || 0}</p>
                 </div>
               </div>
+            </div>
 
-              {/* Salary Insight */}
-              {salaryInsight && (
-                <div className="bg-gradient-to-r from-green-50 to-teal-50 rounded-xl border border-green-100 p-4 shadow-sm mt-4">
-                  <h4 className="font-semibold text-gray-900 mb-1">💡 Salary Insight</h4>
-                  <p className="text-xs text-gray-600">{salaryInsight}</p>
+            {/* Share Section - 5 icons only */}
+            <div className="bg-white rounded-lg p-6">
+              <h3 className="text-lg font-bold text-gray-900 mb-4">Share this job</h3>
+              <div className="flex gap-2 flex-wrap">
+                <button className="w-10 h-10 rounded-full bg-blue-600 text-white flex items-center justify-center hover:bg-blue-700 transition">
+                  <Linkedin className="w-5 h-5" />
+                </button>
+                <button className="w-10 h-10 rounded-full bg-black text-white flex items-center justify-center hover:bg-gray-800 transition">
+                  <X className="w-5 h-5" />
+                </button>
+                <button className="w-10 h-10 rounded-full bg-green-500 text-white flex items-center justify-center hover:bg-green-600 transition">
+                  <MessageCircle className="w-5 h-5" />
+                </button>
+                <button className="w-10 h-10 rounded-full bg-white border-2 border-gray-300 text-gray-700 flex items-center justify-center hover:bg-gray-50 transition">
+                  <Mail className="w-5 h-5" />
+                </button>
+                <button className="w-10 h-10 rounded-full bg-white border-2 border-gray-300 text-gray-700 flex items-center justify-center hover:bg-gray-50 transition">
+                  <LinkIcon className="w-5 h-5" />
+                </button>
+              </div>
+            </div>
+
+            {/* Similar Jobs */}
+            {relatedJobs && relatedJobs.length > 0 && (
+              <div className="bg-white rounded-lg p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-lg font-bold text-gray-900 flex items-center gap-2">
+                    <Briefcase className="w-5 h-5 text-blue-600" />
+                    Similar Jobs
+                  </h3>
+                  <a href="/jobs" className="text-blue-600 hover:text-blue-700 font-bold text-sm">View All</a>
                 </div>
-              )}
-            </div>
+                <div className="space-y-4">
+                  {relatedJobs.map((relatedJob) => {
+                    const relatedLogoBg = getCompanyColor(relatedJob.company || '');
+                    return (
+                      <Link 
+                        key={relatedJob.id} 
+                        href={`/jobs/${relatedJob.slug}`}
+                        className="block border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow hover:border-blue-400"
+                      >
+                        <div className="flex items-center gap-3 mb-2">
+                          <div className={`w-12 h-12 ${relatedLogoBg} rounded-lg flex items-center justify-center flex-shrink-0`}>
+                            {relatedJob.companyLogo ? (
+                              <img src={relatedJob.companyLogo} alt={relatedJob.company} className="w-8 h-8 object-contain" />
+                            ) : (
+                              <span className="text-white font-bold text-base">{relatedJob.company?.substring(0, 2).toUpperCase() || 'CO'}</span>
+                            )}
+                          </div>
+                          <div>
+                            <h4 className="font-bold text-gray-900 text-base hover:text-blue-600 transition-colors">{relatedJob.title}</h4>
+                            <p className="text-blue-600 text-sm font-medium">{relatedJob.company}</p>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-2 text-gray-900 text-sm font-medium mt-1">
+                          <MapPin className="w-4 h-4 text-gray-500" />
+                          <span>{relatedJob.city && relatedJob.country ? `${relatedJob.city}, ${relatedJob.country}` : relatedJob.location || 'India'}</span>
+                        </div>
+                        <div className="flex items-center gap-2 text-gray-900 text-sm font-medium mt-1">
+                          <Clock className="w-4 h-4 text-gray-500" />
+                          <span>{relatedJob.experience || '0 - 1 Yrs'}</span>
+                        </div>
+                        {relatedJob.skills && relatedJob.skills.length > 0 && (
+                          <div className="flex flex-wrap gap-1.5 mt-3">
+                            {relatedJob.skills.slice(0, 3).map((skill: string) => (
+                              <span key={skill} className="bg-blue-50 text-blue-700 text-xs font-semibold px-2.5 py-1 rounded-full border border-blue-100">
+                                {skill}
+                              </span>
+                            ))}
+                          </div>
+                        )}
+                      </Link>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
           </div>
         </div>
 
-        {/* Similar Jobs */}
-        {relatedJobs && relatedJobs.length > 0 && (
-          <div className="mt-10 pt-6 border-t border-gray-200">
-            <div className="flex items-center gap-2 mb-5">
-              <TrendingUp size={18} className="text-blue-600" />
-              <h2 className="text-xl font-bold text-gray-900">Similar Entry-Level Finance Jobs</h2>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {relatedJobs.map((job) => (
-                <Link key={job.id} href={`/jobs/${job.slug}`} className="group block bg-white rounded-lg border border-gray-100 p-4 hover:shadow-md hover:border-blue-200 transition">
-                  <div className="flex items-start gap-3">
-                    <div className="flex-shrink-0">
-                      {job.companyLogo ? <div className="w-10 h-10 bg-gray-50 rounded-lg flex items-center justify-center p-1.5"><img src={job.companyLogo} alt={job.company} className="max-w-full max-h-full object-contain" /></div>
-                      : <div className="w-10 h-10 bg-gradient-to-br from-gray-600 to-gray-800 rounded-lg flex items-center justify-center"><span className="text-white font-bold text-xs">{getCompanyInitials(job.company)}</span></div>}
-                    </div>
-                    <div className="flex-1">
-                      <h3 className="font-semibold text-gray-900 group-hover:text-blue-600 text-sm line-clamp-1">{job.title}</h3>
-                      <p className="text-xs text-gray-500">{job.company}</p>
-                      <div className="flex items-center gap-2 mt-1 text-xs text-gray-400">
-                        <MapPin size={10} />{job.location?.split(',')[0]}
-                        {job.experience && <span className="text-gray-400">{job.experience}</span>}
-                      </div>
-                    </div>
-                  </div>
-                </Link>
-              ))}
+        {/* NEWSLETTER SECTION - Get Job Alerts button white text on blue bg */}
+        <section style={{ background: 'linear-gradient(to right, #f0f8ff, #f3f0ff)', paddingTop: '40px', paddingBottom: '40px', borderTop: '1px solid #e5e7eb', borderRadius: '12px', marginTop: '32px' }}>
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div style={{ display: 'flex', alignItems: 'center', gap: '24px', flexWrap: 'wrap' }}>
+              <div style={{ flexShrink: 0 }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '52px', height: '52px', background: '#0052FF', color: 'white', borderRadius: '12px' }}>
+                  <Bell style={{ width: '26px', height: '26px' }} />
+                </div>
+              </div>
+              <div style={{ flex: 1, minWidth: '200px' }}>
+                <h3 style={{ fontSize: '20px', fontWeight: 'bold', color: '#1a1a1a', marginBottom: '2px' }}>Don't miss new opportunities!</h3>
+                <p style={{ color: '#000000', fontSize: '16px' }}>Get daily alerts for the latest entry-level finance jobs.</p>
+              </div>
+              <form onSubmit={handleEmailSubmit} style={{ display: 'flex', alignItems: 'flex-start', gap: '18px', flexShrink: 0, flexWrap: 'wrap' }}>
+                <div style={{ display: 'flex', flexDirection: 'column' }}>
+                  <input
+                    type="email"
+                    placeholder="Enter your email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    required
+                    style={{
+                      width: '240px',
+                      paddingLeft: '14px',
+                      paddingRight: '14px',
+                      paddingTop: '9px',
+                      paddingBottom: '9px',
+                      background: 'white',
+                      border: '1px solid #ddd',
+                      borderRadius: '8px',
+                      fontSize: '17px',
+                      color: '#000000',
+                      outline: 'none',
+                    }}
+                  />
+                  {emailStatus === 'success' && (
+                    <p style={{ marginTop: '8px', fontSize: '16px', color: '#16a34a' }}>✓ Subscribed successfully!</p>
+                  )}
+                  {emailStatus === 'error' && (
+                    <p style={{ marginTop: '8px', fontSize: '16px', color: '#dc2626' }}>✗ Failed to subscribe. Please try again.</p>
+                  )}
+                  {emailStatus === 'idle' && (
+                    <p style={{ marginTop: '8px', fontSize: '16px', color: '#000000' }}>No spam. Unsubscribe anytime.</p>
+                  )}
+                  {emailStatus === 'sending' && (
+                    <p style={{ marginTop: '8px', fontSize: '16px', color: '#666' }}>Sending...</p>
+                  )}
+                </div>
+                <button
+                  type="submit"
+                  disabled={emailStatus === 'sending'}
+                  style={{
+                    whiteSpace: 'nowrap',
+                    padding: '10px 24px',
+                    background: '#0052FF',
+                    color: 'white',
+                    borderRadius: '8px',
+                    fontWeight: '600',
+                    fontSize: '15px',
+                    border: 'none',
+                    cursor: emailStatus === 'sending' ? 'not-allowed' : 'pointer',
+                    opacity: emailStatus === 'sending' ? 0.7 : 1,
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '6px',
+                    height: '44px',
+                    transition: 'background 0.3s',
+                  }}
+                  onMouseEnter={(e) => {
+                    if (emailStatus !== 'sending') {
+                      e.currentTarget.style.background = '#0041CC';
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    if (emailStatus !== 'sending') {
+                      e.currentTarget.style.background = '#0052FF';
+                    }
+                  }}
+                >
+                  <Send style={{ width: '16px', height: '16px' }} />
+                  Get Job Alerts
+                </button>
+              </form>
             </div>
           </div>
-        )}
+        </section>
       </div>
-
-      {/* Mobile Sticky Apply Button */}
-      <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4 shadow-lg z-50">
-        <button 
-          onClick={handleApplyClick}
-          className="w-full py-3.5 bg-blue-600 hover:bg-blue-700 text-white font-semibold text-base rounded-xl transition text-center flex items-center justify-center gap-2 shadow-md"
-        >
-          <ExternalLink size={18} /> Apply for This Job →
-        </button>
-      </div>
-
-      {/* Footer */}
-      <div className="bg-gray-100 mt-10 py-8">
-        <div className="max-w-4xl mx-auto text-center px-4">
-          <h3 className="text-lg font-bold text-gray-900 mb-1">Start Your Finance Career Today</h3>
-          <p className="text-gray-600 text-sm mb-4">Browse more entry-level financial analyst jobs and internships</p>
-          <div className="flex flex-wrap gap-3 justify-center">
-            <Link href="/jobs" className="px-5 py-2 bg-blue-600 text-white text-sm font-semibold rounded-lg hover:bg-blue-700">Browse All Jobs</Link>
-            <Link href="/internships" className="px-5 py-2 bg-white text-gray-700 text-sm font-semibold rounded-lg border border-gray-300 hover:bg-gray-50">Find Internships</Link>
-          </div>
-        </div>
-      </div>
-
-      {/* Report Modal */}
-      {showReportModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-xl max-w-md w-full p-6">
-            <h3 className="text-lg font-bold mb-2">Report Job</h3>
-            <p className="text-sm text-gray-600 mb-4">Help us keep Finlysta safe by reporting this job if it's inappropriate or spam.</p>
-            <div className="flex gap-3">
-              <button onClick={() => setShowReportModal(false)} className="flex-1 px-4 py-2 border border-gray-300 rounded-lg text-gray-700">Cancel</button>
-              <button onClick={() => { setShowReportModal(false); alert("Thank you for reporting. We'll review this job."); }} className="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg">Report</button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }
