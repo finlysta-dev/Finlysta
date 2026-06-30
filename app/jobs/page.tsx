@@ -1183,7 +1183,7 @@ export default function FinlystaUI() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           <div className="flex items-center">
             <Link href="/" className="flex items-center focus:outline-none focus:ring-2 focus:ring-blue-500 rounded-lg group">
-              <Image src="/finlysta.png" alt="Finlysta Logo" width={160} height={36} priority className="object-contain transition-opacity duration-300 group-hover:opacity-90" />
+              <Image src="/Finlysta.png" alt="Finlysta Logo" width={160} height={36} priority className="object-contain transition-opacity duration-300 group-hover:opacity-90" />
             </Link>
           </div>
 
