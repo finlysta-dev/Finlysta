@@ -63,6 +63,7 @@ export default function FinlystaUI() {
   const [skillsSearch, setSkillsSearch] = useState('')
   const [activeFilters, setActiveFilters] = useState<string[]>([])
   const [sortBy, setSortBy] = useState('newest')
+  const [allJobs, setAllJobs] = useState<Job[]>([])
   const [jobs, setJobs] = useState<Job[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -92,7 +93,6 @@ export default function FinlystaUI() {
 
   const popularSearches = ['Financial Analyst', 'Finance Intern', 'Accounts Executive', 'Audit Associate', 'FP&A Analyst']
 
-  // Load saved jobs from localStorage
   useEffect(() => {
     const saved = JSON.parse(localStorage.getItem('saved_blogs') || '[]')
     setSavedJobs(saved)
@@ -121,6 +121,29 @@ export default function FinlystaUI() {
     fetchJobs()
   }, [])
 
+  const formatPostedTime = (date: string): string => {
+    if (!date) return 'Recently'
+    
+    const now = new Date()
+    const postedDate = new Date(date)
+    
+    if (isNaN(postedDate.getTime())) return 'Recently'
+    
+    const diffMs = now.getTime() - postedDate.getTime()
+    const diffMins = Math.floor(diffMs / 60000)
+    const diffHours = Math.floor(diffMs / 3600000)
+    const diffDays = Math.floor(diffMs / 86400000)
+    
+    if (diffMins < 1) return 'Just now'
+    if (diffMins < 60) return `${diffMins}m ago`
+    if (diffHours < 24) return `${diffHours}h ago`
+    if (diffDays === 1) return 'Yesterday'
+    if (diffDays < 7) return `${diffDays}d ago`
+    if (diffDays < 30) return `${Math.floor(diffDays / 7)}w ago`
+    if (diffDays < 365) return `${Math.floor(diffDays / 30)}mo ago`
+    return `${Math.floor(diffDays / 365)}y ago`
+  }
+
   const fetchJobs = async () => {
     try {
       setLoading(true)
@@ -134,24 +157,22 @@ export default function FinlystaUI() {
       
       const data = await response.json()
       
-      // Filter for jobs and internships
       const jobData = Array.isArray(data) 
-        ? data.filter((item: any) => item.type === 'job' || item.type === 'internship')
+        ? data.filter((item: any) => item.type === 'job')
         : []
       
       const formattedJobs = jobData.map((job: any) => {
-        // Format location: city + country
         const formattedLocation = job.city && job.country 
           ? `${job.city}, ${job.country}`
           : job.location || 'India'
         
-        // Determine job type display
         let jobTypeDisplay = job.type || 'Full-time'
         if (job.type === 'job') jobTypeDisplay = 'Full-time'
         if (job.type === 'internship') jobTypeDisplay = 'Internship'
         
-        // Format experience - keep as is from database
         let experienceDisplay = job.experience || '0 - 1 Yrs'
+        
+        const timeAgo = formatPostedTime(job.postedAt || new Date().toISOString())
         
         return {
           id: job.id,
@@ -176,15 +197,16 @@ export default function FinlystaUI() {
           isTrending: job.isTrending || false,
           isActivelyHiring: job.isActivelyHiring || true,
           postedAt: job.postedAt || new Date().toISOString(),
-          postedTime: job.postedTime || formatPostedTime(job.postedAt || new Date().toISOString()),
+          postedTime: job.postedTime || timeAgo,
           views: job.views || 0,
           applyClicks: job.applyClicks || 0,
           logoBg: getCompanyColor(job.company || ''),
-          timeAgo: formatPostedTime(job.postedAt || new Date().toISOString()),
+          timeAgo: timeAgo,
           description: job.shortDescription || job.overview?.substring(0, 200) || 'No description available',
         }
       })
       
+      setAllJobs(formattedJobs)
       setJobs(formattedJobs)
       
     } catch (err) {
@@ -254,27 +276,8 @@ export default function FinlystaUI() {
     return colors[index]
   }
 
-  const formatPostedTime = (date: string): string => {
-    if (!date) return 'Recently'
-    const postedDate = new Date(date)
-    const now = new Date()
-    const diffMs = now.getTime() - postedDate.getTime()
-    const diffMins = Math.floor(diffMs / 60000)
-    const diffHours = Math.floor(diffMs / 3600000)
-    const diffDays = Math.floor(diffMs / 86400000)
-    
-    if (diffMins < 1) return 'Just now'
-    if (diffMins < 60) return `${diffMins}m ago`
-    if (diffHours < 24) return `${diffHours}h ago`
-    if (diffDays === 1) return 'Yesterday'
-    if (diffDays < 7) return `${diffDays}d ago`
-    if (diffDays < 30) return `${Math.floor(diffDays / 7)}w ago`
-    if (diffDays < 365) return `${Math.floor(diffDays / 30)}mo ago`
-    return `${Math.floor(diffDays / 365)}y ago`
-  }
-
   const getJobTypeCount = (type: string) => {
-    return jobs.filter(job => {
+    return allJobs.filter(job => {
       if (type === 'full-time') return job.type === 'Full-time'
       if (type === 'internship') return job.type === 'Internship'
       if (type === 'trainee') return job.type?.toLowerCase().includes('trainee') || job.type?.toLowerCase().includes('graduate')
@@ -284,7 +287,7 @@ export default function FinlystaUI() {
   }
 
   const getLocationCount = (location: string) => {
-    return jobs.filter(job => {
+    return allJobs.filter(job => {
       if (location === 'all-india') return true
       if (location === 'remote') return job.workMode?.toLowerCase().includes('remote')
       return job.city?.toLowerCase().includes(location) || job.location?.toLowerCase().includes(location)
@@ -292,7 +295,7 @@ export default function FinlystaUI() {
   }
 
   const getExperienceCount = (exp: string) => {
-    return jobs.filter(job => {
+    return allJobs.filter(job => {
       if (exp === '0-1') return job.experience === '0 - 1 Yrs'
       if (exp === '1-2') return job.experience === '1 - 2 Yrs'
       return false
@@ -300,15 +303,15 @@ export default function FinlystaUI() {
   }
 
   const getSkillsCount = (skill: string) => {
-    return jobs.filter(job => job.skills?.some(s => s.toLowerCase() === skill.toLowerCase())).length
+    return allJobs.filter(job => job.skills?.some(s => s.toLowerCase() === skill.toLowerCase())).length
   }
 
   const getUniqueCities = () => {
-    const cities = jobs.map(job => job.city).filter(Boolean)
+    const cities = allJobs.map(job => job.city).filter(Boolean)
     const uniqueCities = [...new Set(cities)]
     return uniqueCities.map(city => ({
       label: city || 'Other',
-      count: jobs.filter(job => job.city === city).length,
+      count: allJobs.filter(job => job.city === city).length,
       value: city?.toLowerCase().replace(/\s+/g, '-') || 'other'
     }))
   }
@@ -321,7 +324,7 @@ export default function FinlystaUI() {
   ]
 
   const locationOptions = [
-    { label: 'All India', count: jobs.length, value: 'all-india' },
+    { label: 'All India', count: allJobs.length, value: 'all-india' },
     { label: 'Remote (India)', count: getLocationCount('remote'), value: 'remote' },
     ...getUniqueCities().map(city => ({
       label: city.label,
@@ -360,56 +363,46 @@ export default function FinlystaUI() {
     } else {
       setActiveFilters([...activeFilters, filterKey])
     }
+    applyFilters()
+  }
+
+  const applyFilters = () => {
+    let filtered = [...allJobs]
+    
+    activeFilters.forEach(filter => {
+      const [type, value] = filter.split('-')
+      
+      if (type === 'jobType') {
+        if (value === 'full-time') filtered = filtered.filter(job => job.type === 'Full-time')
+        if (value === 'internship') filtered = filtered.filter(job => job.type === 'Internship')
+      }
+      
+      if (type === 'location') {
+        if (value === 'all-india') return
+        if (value === 'remote') filtered = filtered.filter(job => job.workMode?.toLowerCase().includes('remote'))
+        filtered = filtered.filter(job => job.city?.toLowerCase().includes(value) || job.location?.toLowerCase().includes(value))
+      }
+      
+      if (type === 'experience') {
+        if (value === '0-1') filtered = filtered.filter(job => job.experience === '0 - 1 Yrs')
+        if (value === '1-2') filtered = filtered.filter(job => job.experience === '1 - 2 Yrs')
+      }
+      
+      if (type === 'skills') {
+        const skillLabel = skillsOptions.find(opt => opt.value === value)?.label.toLowerCase()
+        filtered = filtered.filter(job => job.skills?.some(s => s.toLowerCase() === skillLabel))
+      }
+    })
+    
+    setJobs(filtered)
   }
 
   const clearAllFilters = () => {
     setActiveFilters([])
+    setJobs(allJobs)
   }
 
-  const filteredJobs = jobs.filter(job => {
-    if (activeFilters.length === 0) return true
-    
-    const jobTypeFilters = activeFilters.filter(f => f.startsWith('jobType-'))
-    if (jobTypeFilters.length > 0) {
-      const jobTypeValues = jobTypeFilters.map(f => f.replace('jobType-', ''))
-      if (!jobTypeValues.some(v => {
-        if (v === 'full-time') return job.type === 'Full-time'
-        if (v === 'internship') return job.type === 'Internship'
-        return false
-      })) return false
-    }
-    
-    const locationFilters = activeFilters.filter(f => f.startsWith('location-'))
-    if (locationFilters.length > 0) {
-      const locationValues = locationFilters.map(f => f.replace('location-', ''))
-      if (!locationValues.some(v => {
-        if (v === 'all-india') return true
-        if (v === 'remote') return job.workMode?.toLowerCase().includes('remote')
-        return job.city?.toLowerCase().includes(v) || job.location?.toLowerCase().includes(v)
-      })) return false
-    }
-    
-    const experienceFilters = activeFilters.filter(f => f.startsWith('experience-'))
-    if (experienceFilters.length > 0) {
-      const expValues = experienceFilters.map(f => f.replace('experience-', ''))
-      if (!expValues.some(v => {
-        if (v === '0-1') return job.experience === '0 - 1 Yrs'
-        if (v === '1-2') return job.experience === '1 - 2 Yrs'
-        return false
-      })) return false
-    }
-    
-    const skillsFilters = activeFilters.filter(f => f.startsWith('skills-'))
-    if (skillsFilters.length > 0) {
-      const skillValues = skillsFilters.map(f => f.replace('skills-', ''))
-      if (!skillValues.some(v => {
-        const label = skillsOptions.find(opt => opt.value === v)?.label.toLowerCase()
-        return job.skills?.some(s => s.toLowerCase() === label)
-      })) return false
-    }
-    
-    return true
-  })
+  const filteredJobs = jobs
 
   const sortedJobs = [...filteredJobs].sort((a, b) => {
     if (sortBy === 'newest') {
@@ -975,7 +968,6 @@ export default function FinlystaUI() {
             opacity: 1;
           }
         }
-        /* Grid View Styles - Clean */
         .grid-job-card {
           display: flex;
           flex-direction: column;
@@ -1186,10 +1178,8 @@ export default function FinlystaUI() {
         </div>
       )}
 
-      {/* NAVIGATION - SHARED HEADER */}
-      <header className={`sticky top-0 z-50 transition-all duration-300 ${
-        scrolled ? "bg-white/95 backdrop-blur-md shadow-lg" : "bg-white shadow-sm"
-      }`}>
+      {/* NAVIGATION - FIXED HEADER */}
+      <header className="sticky top-0 z-50 bg-white shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           <div className="flex items-center">
             <Link href="/" className="flex items-center focus:outline-none focus:ring-2 focus:ring-blue-500 rounded-lg group">
@@ -1304,7 +1294,7 @@ export default function FinlystaUI() {
                     <BadgeCheck style={{ color: '#16a34a', width: '28px', height: '28px' }} strokeWidth={2} />
                   </div>
                   <div>
-                    <p style={{ fontSize: '24px', fontWeight: 'bold', color: '#1a1a1a' }}>{jobs.length}+</p>
+                    <p style={{ fontSize: '24px', fontWeight: 'bold', color: '#1a1a1a' }}>{allJobs.length}+</p>
                     <p style={{ fontSize: '15px', color: '#666', whiteSpace: 'nowrap', margin: 0 }}>Active Jobs</p>
                   </div>
                 </div>
@@ -1324,7 +1314,7 @@ export default function FinlystaUI() {
                   </div>
                   <div>
                     <p style={{ fontSize: '24px', fontWeight: 'bold', color: '#1a1a1a' }}>
-                      {new Set(jobs.map(j => j.company)).size}+
+                      {new Set(allJobs.map(j => j.company)).size}+
                     </p>
                     <p style={{ fontSize: '15px', color: '#666', whiteSpace: 'nowrap', margin: 0 }}>Companies Hiring</p>
                   </div>
@@ -1390,6 +1380,15 @@ export default function FinlystaUI() {
                     type="text"
                     placeholder="Job title, skills or company"
                     className="search-input-box"
+                    onChange={(e) => {
+                      const value = e.target.value.toLowerCase()
+                      const filtered = allJobs.filter(job => 
+                        job.title.toLowerCase().includes(value) ||
+                        job.company.toLowerCase().includes(value) ||
+                        job.skills.some(s => s.toLowerCase().includes(value))
+                      )
+                      setJobs(filtered)
+                    }}
                   />
                   <Search size={18} style={{ position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)', color: '#000000' }} />
                 </div>
@@ -1402,6 +1401,14 @@ export default function FinlystaUI() {
                     type="text"
                     placeholder="Any location"
                     className="search-input-box"
+                    onChange={(e) => {
+                      const value = e.target.value.toLowerCase()
+                      const filtered = allJobs.filter(job => 
+                        job.location.toLowerCase().includes(value) ||
+                        job.city?.toLowerCase().includes(value)
+                      )
+                      setJobs(filtered)
+                    }}
                   />
                   <MapPin size={18} style={{ position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)', color: '#000000' }} />
                 </div>
@@ -1410,17 +1417,33 @@ export default function FinlystaUI() {
               <div>
                 <label className="search-input-label">Experience Level</label>
                 <div style={{ position: 'relative' }}>
-                  <select className="search-input-box" style={{ appearance: 'none', cursor: 'pointer' }}>
-                    <option>0 - 1 Yrs</option>
-                    <option>1 - 2 Yrs</option>
-                    <option>2 - 3 Yrs</option>
+                  <select 
+                    className="search-input-box" 
+                    style={{ appearance: 'none', cursor: 'pointer' }}
+                    onChange={(e) => {
+                      const value = e.target.value
+                      if (value === 'all') {
+                        setJobs(allJobs)
+                      } else {
+                        const filtered = allJobs.filter(job => job.experience === value)
+                        setJobs(filtered)
+                      }
+                    }}
+                  >
+                    <option value="all">All Experience</option>
+                    <option value="0 - 1 Yrs">0 - 1 Yrs</option>
+                    <option value="1 - 2 Yrs">1 - 2 Yrs</option>
+                    <option value="2 - 3 Yrs">2 - 3 Yrs</option>
                   </select>
                   <ChevronDown size={18} style={{ position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)', color: '#000000', pointerEvents: 'none' }} />
                 </div>
               </div>
 
               <div style={{ display: 'flex', alignItems: 'flex-end' }}>
-                <button style={{ height: '52px', borderRadius: '6px', background: '#2563EB', color: 'white', fontWeight: '700', fontSize: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', border: 'none', cursor: 'pointer', transition: 'background 0.3s', boxShadow: '0 2px 4px rgba(37, 99, 235, 0.2)', whiteSpace: 'nowrap', width: '100%' }}>
+                <button 
+                  style={{ height: '52px', borderRadius: '6px', background: '#2563EB', color: 'white', fontWeight: '700', fontSize: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', border: 'none', cursor: 'pointer', transition: 'background 0.3s', boxShadow: '0 2px 4px rgba(37, 99, 235, 0.2)', whiteSpace: 'nowrap', width: '100%' }}
+                  onClick={() => setJobs(allJobs)}
+                >
                   <Search size={18} /> Search
                 </button>
               </div>
@@ -1429,12 +1452,25 @@ export default function FinlystaUI() {
               <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '10px' }}>
                 <span style={{ fontWeight: '600', color: '#111827', fontSize: '16px', whiteSpace: 'nowrap' }}>Popular Searches:</span>
                 {popularSearches.map((search) => (
-                  <button key={search} style={{ paddingLeft: '10px', paddingRight: '10px', paddingTop: '3px', paddingBottom: '3px', borderRadius: '9999px', background: '#EBF0FF', color: '#2563EB', fontSize: '16px', fontWeight: '600', border: 'none', cursor: 'pointer' }}>
+                  <button 
+                    key={search} 
+                    style={{ paddingLeft: '10px', paddingRight: '10px', paddingTop: '3px', paddingBottom: '3px', borderRadius: '9999px', background: '#EBF0FF', color: '#2563EB', fontSize: '16px', fontWeight: '600', border: 'none', cursor: 'pointer' }}
+                    onClick={() => {
+                      const filtered = allJobs.filter(job => 
+                        job.title.toLowerCase().includes(search.toLowerCase()) ||
+                        job.company.toLowerCase().includes(search.toLowerCase())
+                      )
+                      setJobs(filtered)
+                    }}
+                  >
                     {search}
                   </button>
                 ))}
               </div>
-              <button style={{ display: 'flex', alignItems: 'center', gap: '4px', color: '#2563EB', fontSize: '18px', fontWeight: '600', background: 'none', border: 'none', cursor: 'pointer' }}>
+              <button 
+                style={{ display: 'flex', alignItems: 'center', gap: '4px', color: '#2563EB', fontSize: '18px', fontWeight: '600', background: 'none', border: 'none', cursor: 'pointer' }}
+                onClick={() => setJobs(allJobs)}
+              >
                 <RotateCcw size={17} /> Clear All
               </button>
             </div>
@@ -1461,7 +1497,10 @@ export default function FinlystaUI() {
                       {activeFilters.map(filter => (
                         <span key={filter} style={{ background: '#EBF0FF', color: '#0052FF', padding: '2px 8px', borderRadius: '4px', fontSize: '12px', display: 'flex', alignItems: 'center', gap: '4px' }}>
                           {filter.split('-').slice(1).join(' ')}
-                          <button onClick={() => setActiveFilters(activeFilters.filter(f => f !== filter))} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '0', display: 'flex', alignItems: 'center' }}>
+                          <button onClick={() => {
+                            setActiveFilters(activeFilters.filter(f => f !== filter))
+                            applyFilters()
+                          }} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '0', display: 'flex', alignItems: 'center' }}>
                             <X size={12} />
                           </button>
                         </span>
@@ -1608,7 +1647,7 @@ export default function FinlystaUI() {
             {/* JOB LISTINGS */}
             <div className="jobs-container">
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', background: 'white', padding: '18px 24px', borderRadius: '12px', border: '1px solid #e5e7eb' }}>
-                <h2 style={{ fontWeight: 'bold', color: '#1a1a1a', fontSize: '18px' }}>{sortedJobs.length}+ Active Jobs</h2>
+                <h2 style={{ fontWeight: 'bold', color: '#1a1a1a', fontSize: '18px' }}>{jobs.length}+ Active Jobs</h2>
                 <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                     <span style={{ fontSize: '16px', fontWeight: 600, color: '#111827' }}>Sort by:</span>
@@ -1651,7 +1690,6 @@ export default function FinlystaUI() {
                     <div key={job.id} style={{ background: 'white', border: '1px solid #e5e7eb', borderRadius: '12px', padding: '20px 24px', transition: 'box-shadow 0.3s' }}>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                         <div style={{ display: 'flex', gap: '16px', flex: 1 }}>
-                          {/* Company Logo */}
                           <div style={{ width: '52px', height: '52px', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontWeight: 'bold', fontSize: '16px', flexShrink: 0 }} className={job.logoBg || 'bg-gray-600'}>
                             {job.companyLogo ? (
                               <img src={job.companyLogo} alt={job.company} style={{ width: '40px', height: '40px', objectFit: 'contain', borderRadius: '4px' }} />
@@ -1719,7 +1757,6 @@ export default function FinlystaUI() {
                   ))}
                 </div>
               ) : (
-                /* Grid View */
                 <div className="jobs-list" style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '20px' }}>
                   {currentJobs.map((job) => (
                     <div key={job.id} className="grid-job-card">
@@ -1793,7 +1830,6 @@ export default function FinlystaUI() {
                 </div>
               )}
 
-              {/* Pagination */}
               <div style={{ display: 'flex', justifyContent: 'center', gap: '8px', marginTop: '40px' }}>
                 {[...Array(totalPages)].map((_, index) => {
                   const pageNumber = index + 1
