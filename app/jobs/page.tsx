@@ -72,6 +72,12 @@ export default function FinlystaUI() {
   const [email, setEmail] = useState('')
   const [emailStatus, setEmailStatus] = useState<'idle' | 'sending' | 'success' | 'error'>('idle')
 
+  // Autosuggest state for the top "Search Jobs" and "Location" inputs
+  const [searchQuery, setSearchQuery] = useState('')
+  const [showSearchSuggestions, setShowSearchSuggestions] = useState(false)
+  const [locationQuery, setLocationQuery] = useState('')
+  const [showLocationSuggestions, setShowLocationSuggestions] = useState(false)
+
   const navLinks = [
     { href: "/", label: "Home" },
     { href: "/jobs", label: "Jobs" },
@@ -91,7 +97,22 @@ export default function FinlystaUI() {
 
   const noPrefetch = ["/blogs", "/learning-hub", "/interview-prep", "/career-paths"]
 
-  const popularSearches = ['Financial Analyst', 'Finance Intern', 'Accounts Executive', 'Audit Associate', 'FP&A Analyst']
+  const popularSearches = ['Financial Analyst', 'Finance Intern', 'Accounts Executive', 'Audit Associate', 'Finance Associate']
+
+  // Maps older/raw skill names to their modern display name.
+  const skillAliasMap: Record<string, string> = {
+    'excel': 'Advanced Excel',
+    'ms excel': 'Advanced Excel',
+    'microsoft excel': 'Advanced Excel',
+    'advanced excel': 'Advanced Excel',
+    'adv excel': 'Advanced Excel',
+  }
+
+  const normalizeSkill = (skill: string): string => {
+    if (!skill) return skill
+    const key = skill.trim().toLowerCase()
+    return skillAliasMap[key] || skill
+  }
 
   useEffect(() => {
     const saved = JSON.parse(localStorage.getItem('saved_blogs') || '[]')
@@ -144,6 +165,14 @@ export default function FinlystaUI() {
     return `${Math.floor(diffDays / 365)}y ago`
   }
 
+  const isJobNew = (postedAt: string): boolean => {
+    if (!postedAt) return false
+    const now = new Date()
+    const postedDate = new Date(postedAt)
+    const diffDays = Math.floor((now.getTime() - postedDate.getTime()) / 86400000)
+    return diffDays < 1
+  }
+
   const fetchJobs = async () => {
     try {
       setLoading(true)
@@ -173,6 +202,7 @@ export default function FinlystaUI() {
         let experienceDisplay = job.experience || '0 - 1 Yrs'
         
         const timeAgo = formatPostedTime(job.postedAt || new Date().toISOString())
+        const isNew = isJobNew(job.postedAt || new Date().toISOString())
         
         return {
           id: job.id,
@@ -192,7 +222,7 @@ export default function FinlystaUI() {
           skills: job.skills || [],
           overview: job.overview || '',
           shortDescription: job.shortDescription || job.overview?.substring(0, 200) || 'No description available',
-          isNew: job.isNew || false,
+          isNew: isNew,
           isVerified: job.isVerified || false,
           isTrending: job.isTrending || false,
           isActivelyHiring: job.isActivelyHiring || true,
@@ -279,7 +309,7 @@ export default function FinlystaUI() {
   const getJobTypeCount = (type: string) => {
     return allJobs.filter(job => {
       if (type === 'full-time') return job.type === 'Full-time'
-      if (type === 'internship') return job.type === 'Internship'
+      if (type === 'apprentice') return job.type?.toLowerCase().includes('trainee') || job.type?.toLowerCase().includes('apprentice')
       if (type === 'trainee') return job.type?.toLowerCase().includes('trainee') || job.type?.toLowerCase().includes('graduate')
       if (type === 'contract') return job.type?.toLowerCase().includes('contract')
       return false
@@ -303,7 +333,7 @@ export default function FinlystaUI() {
   }
 
   const getSkillsCount = (skill: string) => {
-    return allJobs.filter(job => job.skills?.some(s => s.toLowerCase() === skill.toLowerCase())).length
+    return allJobs.filter(job => job.skills?.some(s => normalizeSkill(s).toLowerCase() === skill.toLowerCase())).length
   }
 
   const getUniqueCities = () => {
@@ -318,7 +348,7 @@ export default function FinlystaUI() {
 
   const jobTypeOptions = [
     { label: 'Full-time Jobs', count: getJobTypeCount('full-time'), value: 'full-time' },
-    { label: 'Internships', count: getJobTypeCount('internship'), value: 'internship' },
+    { label: 'Apprentice', count: getJobTypeCount('apprentice'), value: 'apprentice' },
     { label: 'Trainee / Graduate Program', count: getJobTypeCount('trainee'), value: 'trainee' },
     { label: 'Contract', count: getJobTypeCount('contract'), value: 'contract' },
   ]
@@ -346,7 +376,7 @@ export default function FinlystaUI() {
     { label: 'Tally', count: getSkillsCount('tally'), value: 'tally' },
     { label: 'MIS', count: getSkillsCount('mis'), value: 'mis' },
     { label: 'Communication', count: getSkillsCount('communication'), value: 'communication' },
-    { label: 'Data Analysis', count: getSkillsCount('data analysis'), value: 'data-analysis' },
+    { label: 'Data Analysis', count: getSkillsCount('data-analysis'), value: 'data-analysis' },
   ]
 
   const toggleSection = (section: 'jobType' | 'location' | 'experience' | 'skills') => {
@@ -374,7 +404,9 @@ export default function FinlystaUI() {
       
       if (type === 'jobType') {
         if (value === 'full-time') filtered = filtered.filter(job => job.type === 'Full-time')
-        if (value === 'internship') filtered = filtered.filter(job => job.type === 'Internship')
+        if (value === 'apprentice') filtered = filtered.filter(job => job.type?.toLowerCase().includes('trainee') || job.type?.toLowerCase().includes('apprentice'))
+        if (value === 'trainee') filtered = filtered.filter(job => job.type?.toLowerCase().includes('trainee') || job.type?.toLowerCase().includes('graduate'))
+        if (value === 'contract') filtered = filtered.filter(job => job.type?.toLowerCase().includes('contract'))
       }
       
       if (type === 'location') {
@@ -402,11 +434,68 @@ export default function FinlystaUI() {
     setJobs(allJobs)
   }
 
+  // Suggestions for the "Search Jobs" box: matches from job titles,
+  // companies, and skills only (no locations). Skill names are normalized
+  // to their modern display name (e.g. "MS Excel" -> "Advanced Excel").
+  const getSearchSuggestions = () => {
+    if (!searchQuery.trim()) return []
+    const query = searchQuery.toLowerCase()
+    const suggestions = new Set<string>()
+
+    allJobs.forEach(job => {
+      if (job.title?.toLowerCase().includes(query)) suggestions.add(job.title)
+      if (job.company?.toLowerCase().includes(query)) suggestions.add(job.company)
+      job.skills?.forEach(skill => {
+        const normalized = normalizeSkill(skill)
+        if (normalized.toLowerCase().includes(query) || skill.toLowerCase().includes(query)) {
+          suggestions.add(normalized)
+        }
+      })
+    })
+
+    return Array.from(suggestions).slice(0, 8)
+  }
+
+  // Suggestions for the "Location" box: cities / locations only.
+  const getLocationSuggestions = () => {
+    if (!locationQuery.trim()) return []
+    const query = locationQuery.toLowerCase()
+    const suggestions = new Set<string>()
+
+    allJobs.forEach(job => {
+      if (job.city?.toLowerCase().includes(query)) suggestions.add(job.city)
+      if (job.location?.toLowerCase().includes(query)) suggestions.add(job.location)
+    })
+
+    return Array.from(suggestions).slice(0, 8)
+  }
+
+  const runSearchQuery = (value: string) => {
+    const lower = value.toLowerCase()
+    const filtered = allJobs.filter(job => 
+      job.title.toLowerCase().includes(lower) ||
+      job.company.toLowerCase().includes(lower) ||
+      job.skills.some(s => normalizeSkill(s).toLowerCase().includes(lower) || s.toLowerCase().includes(lower))
+    )
+    setJobs(filtered)
+  }
+
+  const runLocationQuery = (value: string) => {
+    const lower = value.toLowerCase()
+    const filtered = allJobs.filter(job => 
+      job.location.toLowerCase().includes(lower) ||
+      job.city?.toLowerCase().includes(lower)
+    )
+    setJobs(filtered)
+  }
+
   const filteredJobs = jobs
 
   const sortedJobs = [...filteredJobs].sort((a, b) => {
     if (sortBy === 'newest') {
       return new Date(b.postedAt).getTime() - new Date(a.postedAt).getTime()
+    } else if (sortBy === 'oldest') {
+      return new Date(a.postedAt).getTime() - new Date(b.postedAt).getTime()
     }
     return 0
   })
@@ -1046,9 +1135,8 @@ export default function FinlystaUI() {
         }
         .grid-job-type-text {
           display: flex;
-          flex-wrap: wrap;
-          align-items: center;
-          gap: 16px;
+          flex-direction: column;
+          gap: 4px;
           font-size: 15px;
           color: #000000;
         }
@@ -1168,6 +1256,33 @@ export default function FinlystaUI() {
         .filter-item .count {
           font-size: 16px !important;
         }
+        .autosuggest-dropdown {
+          position: absolute;
+          top: calc(100% + 6px);
+          left: 0;
+          right: 0;
+          background: white;
+          border: 1px solid #e5e7eb;
+          border-radius: 8px;
+          box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+          max-height: 260px;
+          overflow-y: auto;
+          z-index: 200;
+        }
+        .autosuggest-item {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          padding: 10px 14px;
+          font-size: 15px;
+          color: #111827;
+          cursor: pointer;
+          transition: background 0.15s;
+        }
+        .autosuggest-item:hover {
+          background: #f5f8ff;
+          color: #0052FF;
+        }
       `}</style>
 
       {/* Save Message Toast */}
@@ -1178,40 +1293,92 @@ export default function FinlystaUI() {
         </div>
       )}
 
-      {/* NAVIGATION - FIXED HEADER */}
-      <header className="sticky top-0 z-50 bg-white shadow-sm">
+      {/* NAVIGATION */}
+      <header
+        className={`sticky top-0 z-50 transition-all duration-300 font-sans antialiased ${
+          scrolled
+            ? "bg-white/95 backdrop-blur-md shadow-lg"
+            : "bg-white shadow-sm"
+        }`}
+      >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+          {/* Logo */}
           <div className="flex items-center">
-            <Link href="/" className="flex items-center focus:outline-none focus:ring-2 focus:ring-blue-500 rounded-lg group">
-              <Image src="/Finlysta.png" alt="Finlysta Logo" width={160} height={36} priority className="object-contain transition-opacity duration-300 group-hover:opacity-90" />
+            <Link
+              href="/"
+              className="flex items-center focus:outline-none focus:ring-2 focus:ring-blue-500 rounded-lg group"
+              aria-label="Finlysta - Finance Jobs and Internships for Freshers"
+            >
+              <Image
+                src="/Finlysta.png"
+                alt="Finlysta Logo"
+                width={160}
+                height={36}
+                priority
+                className="object-contain transition-opacity duration-300 group-hover:opacity-90"
+              />
             </Link>
           </div>
 
-          <nav className="hidden md:flex items-center justify-center gap-6 lg:gap-8 absolute left-1/2 transform -translate-x-1/2">
+          {/* Navigation - Centered (desktop) */}
+          <nav
+            aria-label="Main navigation"
+            className="hidden md:flex items-center justify-center gap-10 lg:gap-12 absolute left-1/2 transform -translate-x-1/2"
+          >
             {navLinks.map((link) => {
               const isActive = pathname === link.href
               return (
-                <div key={link.href} className="relative flex flex-col items-center">
-                  <Link href={link.href} prefetch={!noPrefetch.includes(link.href)} className={`nav-link ${isActive ? 'nav-link-active' : ''}`}>
+                <div key={link.href} className="relative">
+                  <Link
+                    href={link.href}
+                    prefetch={!noPrefetch.includes(link.href)}
+                    className={`text-base font-medium transition-colors duration-200 ${
+                      isActive ? "text-blue-600" : "text-black hover:text-blue-600"
+                    }`}
+                  >
                     {link.label}
                   </Link>
-                  {isActive && <div className="h-0.5 bg-[#0052FF] rounded-full w-full mt-1" />}
+                  {isActive && (
+                    <div className="absolute top-full mt-1 left-0 right-0">
+                      <div className="h-1 bg-gradient-to-r from-blue-500 via-blue-600 to-blue-500 rounded-full"></div>
+                    </div>
+                  )}
                 </div>
               )
             })}
 
-            <div className="relative resources-dropdown flex flex-col items-center">
+            {/* Resources Dropdown */}
+            <div className="relative resources-dropdown">
               <button
-                onClick={(e) => { e.stopPropagation(); setResourcesDropdownOpen(!resourcesDropdownOpen) }}
-                className={`flex items-center gap-1 nav-link ${resourcesDropdownOpen || pathname?.startsWith("/resources") ? 'nav-link-active' : ''}`}
+                onClick={(e) => {
+                  e.stopPropagation()
+                  setResourcesDropdownOpen(!resourcesDropdownOpen)
+                }}
+                className={`flex items-center gap-1 text-base transition-colors duration-200 font-medium ${
+                  resourcesDropdownOpen || pathname?.startsWith("/resources")
+                    ? "text-black"
+                    : "text-black hover:text-blue-600"
+                }`}
               >
                 Resources
-                <ChevronDown size={16} className={`transition-transform duration-200 ${resourcesDropdownOpen ? "rotate-180" : ""}`} />
+                <ChevronDown
+                  size={16}
+                  className={`transition-transform duration-200 ${resourcesDropdownOpen ? "rotate-180" : ""}`}
+                />
               </button>
               {resourcesDropdownOpen && (
-                <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 min-w-[180px] bg-white rounded-xl shadow-lg border border-gray-100 py-2 z-50">
+                <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-100 py-2 z-50">
                   {resourcesItems.map((item) => (
-                    <Link key={item.href} href={item.href} onClick={() => setResourcesDropdownOpen(false)} className={`block px-4 py-2.5 text-sm transition-colors duration-200 ${pathname === item.href ? 'text-[#0052FF] bg-blue-50' : 'text-gray-700 hover:text-[#0052FF] hover:bg-gray-50'}`}>
+                    <Link
+                      key={item.href}
+                      href={item.href}
+                      onClick={() => setResourcesDropdownOpen(false)}
+                      className={`block px-4 py-2 text-sm transition-colors duration-200 ${
+                        pathname === item.href
+                          ? "text-blue-600 bg-blue-50"
+                          : "text-gray-700 hover:text-blue-600 hover:bg-gray-50"
+                      }`}
+                    >
                       {item.label}
                     </Link>
                   ))}
@@ -1220,8 +1387,11 @@ export default function FinlystaUI() {
             </div>
           </nav>
 
-          <div className="hidden md:block">
-            <button className="btn-primary">Find My First Job</button>
+          {/* Right Side */}
+          <div className="hidden md:flex items-center gap-4">
+            <button className="inline-flex items-center px-5 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 font-medium">
+              Find My First Job
+            </button>
           </div>
 
           <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)} className="md:hidden p-2 rounded-lg hover:bg-gray-100 transition">
@@ -1235,7 +1405,7 @@ export default function FinlystaUI() {
               {navLinks.map((link) => {
                 const isActive = pathname === link.href
                 return (
-                  <Link key={link.href} href={link.href} onClick={() => setMobileMenuOpen(false)} className={`px-3 py-2 rounded-lg transition text-base ${isActive ? 'text-[#0052FF] bg-blue-50 font-semibold' : 'text-gray-700 hover:bg-gray-50'}`}>
+                  <Link key={link.href} href={link.href} onClick={() => setMobileMenuOpen(false)} className={`px-3 py-2 rounded-lg transition text-base ${isActive ? 'text-blue-600 bg-blue-50 font-semibold' : 'text-gray-700 hover:bg-gray-50'}`}>
                     {link.label}
                   </Link>
                 )
@@ -1243,12 +1413,14 @@ export default function FinlystaUI() {
               <div className="border-t border-gray-100 pt-3 mt-2">
                 <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider px-3 mb-2">Resources</p>
                 {resourcesItems.map((item) => (
-                  <Link key={item.href} href={item.href} onClick={() => setMobileMenuOpen(false)} className={`block px-3 py-2 rounded-lg transition text-sm ${pathname === item.href ? 'text-[#0052FF] bg-blue-50 font-medium' : 'text-gray-600 hover:bg-gray-50'}`}>
+                  <Link key={item.href} href={item.href} onClick={() => setMobileMenuOpen(false)} className={`block px-3 py-2 rounded-lg transition text-sm ${pathname === item.href ? 'text-blue-600 bg-blue-50 font-medium' : 'text-gray-600 hover:bg-gray-50'}`}>
                     {item.label}
                   </Link>
                 ))}
               </div>
-              <button className="btn-primary w-full mt-3">Find My First Job</button>
+              <button className="inline-flex items-center justify-center w-full px-5 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all duration-200 font-medium mt-3">
+                Find My First Job
+              </button>
             </div>
           </div>
         )}
@@ -1373,44 +1545,81 @@ export default function FinlystaUI() {
         <div className="container-custom">
           <div style={{ background: 'white', borderRadius: '10px', border: '1px solid #e5e7eb', boxShadow: '0 1px 3px rgba(0,0,0,0.06)', padding: '24px' }}>
             <div style={{ display: 'grid', gridTemplateColumns: '1.3fr 0.9fr 0.9fr 0.7fr', gap: '10px', marginBottom: '10px' }}>
-              <div>
+              <div style={{ position: 'relative' }}>
                 <label className="search-input-label">Search Jobs</label>
                 <div style={{ position: 'relative' }}>
                   <input
                     type="text"
                     placeholder="Job title, skills or company"
                     className="search-input-box"
+                    value={searchQuery}
                     onChange={(e) => {
-                      const value = e.target.value.toLowerCase()
-                      const filtered = allJobs.filter(job => 
-                        job.title.toLowerCase().includes(value) ||
-                        job.company.toLowerCase().includes(value) ||
-                        job.skills.some(s => s.toLowerCase().includes(value))
-                      )
-                      setJobs(filtered)
+                      const value = e.target.value
+                      setSearchQuery(value)
+                      setShowSearchSuggestions(true)
+                      runSearchQuery(value)
                     }}
+                    onFocus={() => { if (searchQuery.trim()) setShowSearchSuggestions(true) }}
+                    onBlur={() => setTimeout(() => setShowSearchSuggestions(false), 150)}
                   />
                   <Search size={18} style={{ position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)', color: '#000000' }} />
+                  {showSearchSuggestions && getSearchSuggestions().length > 0 && (
+                    <div className="autosuggest-dropdown">
+                      {getSearchSuggestions().map((suggestion, idx) => (
+                        <div
+                          key={`${suggestion}-${idx}`}
+                          className="autosuggest-item"
+                          onMouseDown={() => {
+                            setSearchQuery(suggestion)
+                            runSearchQuery(suggestion)
+                            setShowSearchSuggestions(false)
+                          }}
+                        >
+                          <Search size={14} style={{ color: '#999', flexShrink: 0 }} />
+                          <span>{suggestion}</span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
               </div>
 
-              <div>
+              <div style={{ position: 'relative' }}>
                 <label className="search-input-label">Location</label>
                 <div style={{ position: 'relative' }}>
                   <input
                     type="text"
                     placeholder="Any location"
                     className="search-input-box"
+                    value={locationQuery}
                     onChange={(e) => {
-                      const value = e.target.value.toLowerCase()
-                      const filtered = allJobs.filter(job => 
-                        job.location.toLowerCase().includes(value) ||
-                        job.city?.toLowerCase().includes(value)
-                      )
-                      setJobs(filtered)
+                      const value = e.target.value
+                      setLocationQuery(value)
+                      setShowLocationSuggestions(true)
+                      runLocationQuery(value)
                     }}
+                    onFocus={() => { if (locationQuery.trim()) setShowLocationSuggestions(true) }}
+                    onBlur={() => setTimeout(() => setShowLocationSuggestions(false), 150)}
                   />
                   <MapPin size={18} style={{ position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)', color: '#000000' }} />
+                  {showLocationSuggestions && getLocationSuggestions().length > 0 && (
+                    <div className="autosuggest-dropdown">
+                      {getLocationSuggestions().map((suggestion, idx) => (
+                        <div
+                          key={`${suggestion}-${idx}`}
+                          className="autosuggest-item"
+                          onMouseDown={() => {
+                            setLocationQuery(suggestion)
+                            runLocationQuery(suggestion)
+                            setShowLocationSuggestions(false)
+                          }}
+                        >
+                          <MapPin size={14} style={{ color: '#999', flexShrink: 0 }} />
+                          <span>{suggestion}</span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
               </div>
 
@@ -1469,7 +1678,11 @@ export default function FinlystaUI() {
               </div>
               <button 
                 style={{ display: 'flex', alignItems: 'center', gap: '4px', color: '#2563EB', fontSize: '18px', fontWeight: '600', background: 'none', border: 'none', cursor: 'pointer' }}
-                onClick={() => setJobs(allJobs)}
+                onClick={() => {
+                  setSearchQuery('')
+                  setLocationQuery('')
+                  setJobs(allJobs)
+                }}
               >
                 <RotateCcw size={17} /> Clear All
               </button>
@@ -1646,11 +1859,11 @@ export default function FinlystaUI() {
 
             {/* JOB LISTINGS */}
             <div className="jobs-container">
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', background: 'white', padding: '18px 24px', borderRadius: '12px', border: '1px solid #e5e7eb' }}>
-                <h2 style={{ fontWeight: 'bold', color: '#1a1a1a', fontSize: '18px' }}>{jobs.length}+ Active Jobs</h2>
-                <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', background: 'white', padding: '18px 24px', borderRadius: '12px', border: '1px solid #e5e7eb', gap: '16px', flexWrap: 'nowrap' }}>
+                <h2 style={{ fontWeight: 'bold', color: '#1a1a1a', fontSize: '18px', whiteSpace: 'nowrap', flexShrink: 0 }}>{jobs.length}+ Active Jobs</h2>
+                <div style={{ display: 'flex', gap: '12px', alignItems: 'center', flexShrink: 0 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <span style={{ fontSize: '16px', fontWeight: 600, color: '#111827' }}>Sort by:</span>
+                    <span style={{ fontSize: '16px', fontWeight: 600, color: '#111827', whiteSpace: 'nowrap' }}>Sort by:</span>
                     <select 
                       value={sortBy}
                       onChange={(e) => setSortBy(e.target.value)}
@@ -1728,7 +1941,7 @@ export default function FinlystaUI() {
                             <div style={{ display: 'flex', alignItems: 'center', marginTop: '14px', width: '100%' }}>
                               <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', flex: 1 }}>
                                 {job.skills?.slice(0, 4).map((skill) => (
-                                  <span key={skill} className="skill-badge">{skill}</span>
+                                  <span key={skill} className="skill-badge">{normalizeSkill(skill)}</span>
                                 ))}
                                 {job.skills?.length > 4 && (
                                   <span style={{ fontSize: '12px', color: '#666', display: 'flex', alignItems: 'center' }}>+{job.skills.length - 4}</span>
@@ -1812,7 +2025,7 @@ export default function FinlystaUI() {
                       <div className="grid-job-footer">
                         <div className="grid-job-skills">
                           {job.skills?.slice(0, 3).map((skill) => (
-                            <span key={skill} className="grid-job-skill">{skill}</span>
+                            <span key={skill} className="grid-job-skill">{normalizeSkill(skill)}</span>
                           ))}
                           {job.skills?.length > 3 && (
                             <span className="grid-job-skill-count">+{job.skills.length - 3}</span>
