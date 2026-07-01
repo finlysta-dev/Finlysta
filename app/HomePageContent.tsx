@@ -57,7 +57,7 @@ const SkillsSection = () => {
             <div className="text-left mb-6">
               <p className="text-sm font-semibold text-[#2563EB] mb-2">Skills That Get You Hired</p>
               <h2 className="text-2xl md:text-3xl font-bold text-[#081B4B]">Master In-Demand Finance Skills</h2>
-              <p className="mt-2 text-md text-black-600">Top skills recruiters look for in entry-level finance roles</p>
+              <p className="mt-2 text-md text-slate-700">Top skills recruiters look for in entry-level finance roles</p>
             </div>
            <div className="overflow-hidden">
             <div className="w-full">
@@ -209,7 +209,7 @@ const StatsSection = () => {
                     <p className="font-semibold text-black text-lg">
                       {stat.label}
                     </p>
-                    <p className="text-md text-black-500 mt-0.5">
+                    <p className="text-md text-slate-700 mt-0.5">
                       {stat.description}
                     </p>
                   </div>
@@ -641,6 +641,24 @@ const FAQCTASection = () => {
 
   return (
     <section className="py-16 bg-[#F8FAFC]">
+      {/* FAQPage structured data helps FAQ answers surface directly in search results */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "FAQPage",
+            mainEntity: faqs.map((faq) => ({
+              "@type": "Question",
+              name: faq.q,
+              acceptedAnswer: {
+                "@type": "Answer",
+                text: faq.a,
+              },
+            })),
+          }),
+        }}
+      />
       <div className="max-w-7xl mx-auto px-6">
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -652,9 +670,14 @@ const FAQCTASection = () => {
             <div className="space-y-3">
               {faqs.map((faq, idx) => {
                 const isOpen = openIndex === idx;
+                const questionId = `faq-question-${idx}`;
+                const answerId = `faq-answer-${idx}`;
                 return (
                   <div key={idx} className="border border-slate-200 rounded-lg bg-white overflow-hidden">
                     <button
+                      id={questionId}
+                      aria-expanded={isOpen}
+                      aria-controls={answerId}
                       onClick={() => {
                         const newState = isOpen ? null : idx;
                         setOpenIndex(newState);
@@ -671,7 +694,7 @@ const FAQCTASection = () => {
                       </span>
                     </button>
                     {isOpen && (
-                      <div className="px-4 pb-3">
+                      <div id={answerId} role="region" aria-labelledby={questionId} className="px-4 pb-3">
                         <p className="text-xs text-[#081B4B] leading-relaxed">{faq.a}</p>
                       </div>
                     )}
@@ -762,6 +785,27 @@ export default function HomePageContent() {
 
   return (
     <div className="min-h-screen font-sans">
+      {/* Organization structured data: helps search engines associate the
+          site with the Finlysta brand, logo, and official social profiles */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "Organization",
+            name: "Finlysta",
+            url: "https://www.finlysta.com",
+            logo: "https://www.finlysta.com/Finlysta.png",
+            description:
+              "The job board built exclusively for entry-level financial roles and internships in India.",
+            sameAs: [
+              "https://www.linkedin.com/company/finlysta",
+              "https://twitter.com/Finlysta",
+              "https://instagram.com/finlysta.in",
+            ],
+          }),
+        }}
+      />
       <Header />
 
       <main>
@@ -855,6 +899,7 @@ export default function HomePageContent() {
             </div>
             <button 
               className="w-7 h-7 rounded-full bg-[#EEF4FF] flex items-center justify-center flex-shrink-0 hover:bg-blue-100 transition-colors"
+              aria-label="View more popular roles"
               onClick={() => {
                 track('Popular Roles Scroll Clicked', {
                   location: 'homepage_popular_roles',
@@ -911,6 +956,7 @@ export default function HomePageContent() {
                     target="_blank" 
                     rel="noopener noreferrer" 
                     className="w-9 h-9 bg-slate-100 text-slate-600 hover:bg-[#0077B5] hover:text-white rounded-lg flex items-center justify-center transition-all"
+                    aria-label="Finlysta on LinkedIn"
                     onClick={() => handleSocialClick('linkedin')}
                   >
                     <Linkedin size={16} />
@@ -920,6 +966,7 @@ export default function HomePageContent() {
                     target="_blank" 
                     rel="noopener noreferrer" 
                     className="w-9 h-9 bg-slate-100 text-slate-600 hover:bg-[#1DA1F2] hover:text-white rounded-lg flex items-center justify-center transition-all"
+                    aria-label="Finlysta on Twitter"
                     onClick={() => handleSocialClick('twitter')}
                   >
                     <Twitter size={16} />
@@ -929,6 +976,7 @@ export default function HomePageContent() {
                     target="_blank" 
                     rel="noopener noreferrer" 
                     className="w-9 h-9 bg-slate-100 text-slate-600 hover:bg-[#E4405F] hover:text-white rounded-lg flex items-center justify-center transition-all"
+                    aria-label="Finlysta on Instagram"
                     onClick={() => handleSocialClick('instagram')}
                   >
                     <Instagram size={16} />
@@ -1037,11 +1085,11 @@ export default function HomePageContent() {
             </div>
 
             <div className="border-t border-slate-200 pt-6 pb-8 mt-8">
-              <div className="flex flex-col items-center justify-center gap-2 text-xs text-slate-600 text-center">
+              <div className="flex flex-col items-center justify-center gap-2 text-sm text-slate-700 text-center">
                 <span>© {new Date().getFullYear()} Finlysta Pvt. Ltd. All rights reserved.</span>
                 <div className="flex items-center gap-1.5">
                   <span>Made with</span>
-                  <Heart size={10} className="text-red-500 fill-red-500" />
+                  <Heart size={12} className="text-red-500 fill-red-500" />
                   <span>in India 🇮🇳</span>
                 </div>
               </div>
