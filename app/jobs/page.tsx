@@ -9,7 +9,7 @@ import {
   Send, BarChart3, Briefcase, BadgeCheck, Building2, AlarmClock, 
   Sparkles, RotateCcw, LayoutGrid, List, Filter, CalendarDays,
   Building, Users, TrendingUp, Plus, ChevronUp, RotateCw, CheckCircle,
-  GraduationCap, BriefcaseBusiness, Timer
+  GraduationCap, BriefcaseBusiness, Timer, Trash2
 } from 'lucide-react'
 
 interface Job {
@@ -67,7 +67,8 @@ export default function FinlystaUI() {
   const [jobs, setJobs] = useState<Job[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const [savedJobs, setSavedJobs] = useState<string[]>([])
+  const [savedJobs, setSavedJobs] = useState<any[]>([])
+  const [showSavedJobs, setShowSavedJobs] = useState(false)
   const [saveMessage, setSaveMessage] = useState<string | null>(null)
   const [email, setEmail] = useState('')
   const [emailStatus, setEmailStatus] = useState<'idle' | 'sending' | 'success' | 'error'>('idle')
@@ -114,6 +115,7 @@ export default function FinlystaUI() {
     return skillAliasMap[key] || skill
   }
 
+  // Load saved jobs from localStorage
   useEffect(() => {
     const saved = JSON.parse(localStorage.getItem('saved_blogs') || '[]')
     setSavedJobs(saved)
@@ -248,19 +250,46 @@ export default function FinlystaUI() {
   }
 
   const toggleSaveJob = (jobId: string) => {
-    let updatedSavedJobs: string[]
+    const jobToSave = allJobs.find(job => job.id === jobId)
+    if (!jobToSave) return
+    
+    let updatedSavedJobs: any[]
     let message: string
-    if (savedJobs.includes(jobId)) {
-      updatedSavedJobs = savedJobs.filter(id => id !== jobId)
+    const isSaved = savedJobs.some(job => job.id === jobId)
+    
+    if (isSaved) {
+      updatedSavedJobs = savedJobs.filter(job => job.id !== jobId)
       message = 'Job removed from saved!'
     } else {
-      updatedSavedJobs = [...savedJobs, jobId]
+      const newJob = {
+        id: jobToSave.id,
+        slug: jobToSave.slug,
+        title: jobToSave.title,
+        company: jobToSave.company,
+        companyLogo: jobToSave.companyLogo,
+        location: jobToSave.location,
+        type: jobToSave.type,
+        experience: jobToSave.experience,
+        applyLink: jobToSave.applyLink,
+      }
+      updatedSavedJobs = [...savedJobs, newJob]
       message = 'Job saved successfully!'
     }
     setSavedJobs(updatedSavedJobs)
     localStorage.setItem('saved_blogs', JSON.stringify(updatedSavedJobs))
     setSaveMessage(message)
     setTimeout(() => setSaveMessage(null), 3000)
+  }
+
+  const removeSavedJob = (jobId: string) => {
+    const updatedSavedJobs = savedJobs.filter((job: any) => job.id !== jobId)
+    setSavedJobs(updatedSavedJobs)
+    localStorage.setItem('saved_blogs', JSON.stringify(updatedSavedJobs))
+  }
+
+  const clearAllSavedJobs = () => {
+    setSavedJobs([])
+    localStorage.setItem('saved_blogs', JSON.stringify([]))
   }
 
   const handleViewDetails = (slug: string) => {
@@ -1283,6 +1312,37 @@ export default function FinlystaUI() {
           background: #f5f8ff;
           color: #0052FF;
         }
+        /* Saved Jobs Panel */
+        .saved-jobs-panel {
+          position: fixed;
+          top: 0;
+          right: 0;
+          height: 100%;
+          width: 100%;
+          max-width: 420px;
+          background: white;
+          z-index: 999;
+          box-shadow: -4px 0 30px rgba(0,0,0,0.15);
+          transform: translateX(100%);
+          transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+          overflow-y: auto;
+        }
+        .saved-jobs-panel.open {
+          transform: translateX(0);
+        }
+        .panel-backdrop {
+          position: fixed;
+          inset: 0;
+          background: rgba(0,0,0,0.4);
+          z-index: 998;
+          opacity: 0;
+          transition: opacity 0.35s ease;
+          pointer-events: none;
+        }
+        .panel-backdrop.open {
+          opacity: 1;
+          pointer-events: auto;
+        }
       `}</style>
 
       {/* Save Message Toast */}
@@ -1292,6 +1352,112 @@ export default function FinlystaUI() {
           {saveMessage}
         </div>
       )}
+
+      {/* Saved Jobs Panel Backdrop */}
+      <div 
+        className={`panel-backdrop ${showSavedJobs ? 'open' : ''}`}
+        onClick={() => setShowSavedJobs(false)}
+      />
+
+      {/* Saved Jobs Panel */}
+      <div className={`saved-jobs-panel ${showSavedJobs ? 'open' : ''}`}>
+        <div className="flex flex-col h-full">
+          {/* Header */}
+          <div className="flex items-center justify-between p-6 border-b border-gray-200 sticky top-0 bg-white z-10">
+            <h3 className="text-xl font-bold text-gray-900">Saved Jobs</h3>
+            <div className="flex items-center gap-3">
+              {savedJobs.length > 0 && (
+                <button
+                  onClick={clearAllSavedJobs}
+                  className="text-red-500 text-sm font-medium hover:text-red-600 flex items-center gap-1"
+                >
+                  <Trash2 className="w-4 h-4" />
+                  Clear All
+                </button>
+              )}
+              <button
+                onClick={() => setShowSavedJobs(false)}
+                className="text-gray-400 hover:text-gray-600 transition p-2 hover:bg-gray-100 rounded-lg"
+              >
+                <X className="w-6 h-6" />
+              </button>
+            </div>
+          </div>
+
+          {/* Content */}
+          <div className="flex-1 overflow-y-auto p-4">
+            {savedJobs.length === 0 ? (
+              <div className="flex flex-col items-center justify-center h-full text-center p-8">
+                <Bookmark className="w-20 h-20 text-gray-300 mb-4" />
+                <p className="text-xl font-medium text-gray-700">No saved jobs yet</p>
+                <p className="text-gray-500 mt-2">Start saving jobs you're interested in!</p>
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {savedJobs.map((savedJob: any) => (
+                  <div key={savedJob.id} className="bg-white border border-gray-200 rounded-xl p-4 hover:shadow-md transition-shadow">
+                    <div className="flex items-start gap-3">
+                      <div className="flex-1 min-w-0">
+                        <Link 
+                          href={`/jobs/${savedJob.slug}`}
+                          onClick={() => setShowSavedJobs(false)}
+                          className="font-semibold text-gray-900 hover:text-blue-600 text-base block truncate"
+                        >
+                          {savedJob.title}
+                        </Link>
+                        <p className="text-sm text-gray-600 truncate font-medium">{savedJob.company}</p>
+                        <div className="flex items-center gap-2 mt-2 text-sm text-gray-500">
+                          <MapPin className="w-4 h-4 flex-shrink-0" />
+                          <span className="truncate">{savedJob.location}</span>
+                        </div>
+                        <div className="flex items-center gap-2 mt-1 text-sm text-gray-500">
+                          <Briefcase className="w-4 h-4 flex-shrink-0" />
+                          <span>{savedJob.type}</span>
+                          <span className="text-gray-300">|</span>
+                          <Clock className="w-4 h-4 flex-shrink-0" />
+                          <span>{savedJob.experience}</span>
+                        </div>
+                      </div>
+                      <button
+                        onClick={() => removeSavedJob(savedJob.id)}
+                        className="text-gray-400 hover:text-red-500 transition p-2 hover:bg-red-50 rounded-lg flex-shrink-0"
+                      >
+                        <X className="w-5 h-5" />
+                      </button>
+                    </div>
+                    <div className="mt-4 flex gap-3">
+                      <Link 
+                        href={`/jobs/${savedJob.slug}`}
+                        onClick={() => setShowSavedJobs(false)}
+                        className="flex-1 text-center text-sm bg-blue-50 text-blue-600 hover:bg-blue-100 font-medium px-4 py-2 rounded-lg transition"
+                      >
+                        View Details
+                      </Link>
+                      <a 
+                        href={savedJob.applyLink} 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="flex-1 text-center text-sm bg-green-50 text-green-600 hover:bg-green-100 font-medium px-4 py-2 rounded-lg transition"
+                      >
+                        Apply Now
+                      </a>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Footer */}
+          {savedJobs.length > 0 && (
+            <div className="p-4 border-t border-gray-200 bg-gray-50 sticky bottom-0">
+              <p className="text-sm text-gray-500 text-center">
+                {savedJobs.length} job{savedJobs.length > 1 ? 's' : ''} saved
+              </p>
+            </div>
+          )}
+        </div>
+      </div>
 
       {/* NAVIGATION */}
       <header
@@ -1387,10 +1553,19 @@ export default function FinlystaUI() {
             </div>
           </nav>
 
-          {/* Right Side */}
+          {/* Right Side - Saved Jobs Button */}
           <div className="hidden md:flex items-center gap-4">
-            <button className="inline-flex items-center px-5 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 font-medium">
-              Find My First Job
+            <button
+              onClick={() => setShowSavedJobs(!showSavedJobs)}
+              className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-blue-700 transition-colors relative"
+            >
+              <Bookmark className="w-5 h-5" />
+              <span className="text-sm font-medium">Saved Jobs</span>
+              {savedJobs.length > 0 && (
+                <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                  {savedJobs.length}
+                </span>
+              )}
             </button>
           </div>
 
@@ -1418,8 +1593,17 @@ export default function FinlystaUI() {
                   </Link>
                 ))}
               </div>
-              <button className="inline-flex items-center justify-center w-full px-5 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all duration-200 font-medium mt-3">
-                Find My First Job
+              <button 
+                onClick={() => setShowSavedJobs(!showSavedJobs)}
+                className="flex items-center justify-center gap-2 w-full px-5 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all duration-200 font-medium mt-3"
+              >
+                <Bookmark className="w-4 h-4" />
+                Saved Jobs
+                {savedJobs.length > 0 && (
+                  <span className="bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                    {savedJobs.length}
+                  </span>
+                )}
               </button>
             </div>
           </div>
@@ -1962,7 +2146,7 @@ export default function FinlystaUI() {
                             onClick={() => toggleSaveJob(job.id)}
                             style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '4px' }}
                           >
-                            <Bookmark className={`bookmark-icon ${savedJobs.includes(job.id) ? 'saved' : ''}`} />
+                            <Bookmark className={`bookmark-icon ${savedJobs.some(j => j.id === job.id) ? 'saved' : ''}`} />
                           </button>
                         </div>
                       </div>
@@ -1993,7 +2177,7 @@ export default function FinlystaUI() {
                         <div className="grid-job-actions">
                           <button 
                             onClick={() => toggleSaveJob(job.id)}
-                            className={`grid-job-bookmark ${savedJobs.includes(job.id) ? 'saved' : ''}`}
+                            className={`grid-job-bookmark ${savedJobs.some(j => j.id === job.id) ? 'saved' : ''}`}
                           >
                             <Bookmark style={{ width: '18px', height: '18px' }} />
                           </button>
