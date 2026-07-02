@@ -192,7 +192,7 @@ export default function JobDetailClient({ opportunity, relatedJobs = [] }: JobDe
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center gap-8">
               <div className="flex items-center">
-                <img src="/finlysta.png" alt="Finlysta" className="h-10 w-auto" />
+                <img src="/Finlysta.png" alt="Finlysta" className="h-10 w-auto" />
               </div>
               <nav className="hidden md:flex gap-8">
                 <a href="#" className="text-gray-900 font-bold hover:text-blue-600">Home</a>
