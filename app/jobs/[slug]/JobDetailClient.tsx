@@ -1,7 +1,7 @@
 'use client';
 
-import React, { useState } from 'react';
-import { ArrowLeft, MapPin, Calendar, Clock, Briefcase, DollarSign, Building2, Share2, Heart, Linkedin, Twitter, MessageCircle, Mail, Link as LinkIcon, ChevronRight, Bell, Bookmark, ArrowUpRight, X, Hourglass, Send } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { ArrowLeft, MapPin, Calendar, Clock, Briefcase, DollarSign, Building2, Share2, Heart, Linkedin, Twitter, MessageCircle, Mail, Link as LinkIcon, ChevronRight, Bell, Bookmark, ArrowUpRight, X, Hourglass, Send, Trash2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -95,9 +95,94 @@ const formatQualifications = (text: string | undefined): string[] => {
 export default function JobDetailClient({ opportunity, relatedJobs = [] }: JobDetailClientProps) {
   const router = useRouter();
   const [isSaved, setIsSaved] = useState(false);
+  const [savedJobs, setSavedJobs] = useState<any[]>([]);
+  const [showSavedJobs, setShowSavedJobs] = useState(false);
   const [email, setEmail] = useState('');
   const [emailStatus, setEmailStatus] = useState<'idle' | 'sending' | 'success' | 'error'>('idle');
   
+  // Load saved jobs from localStorage
+  useEffect(() => {
+    const saved = JSON.parse(localStorage.getItem('saved_blogs') || '[]');
+    setSavedJobs(saved);
+    // Check if current job is saved
+    if (opportunity && saved.some((job: any) => job.id === opportunity.id)) {
+      setIsSaved(true);
+    }
+  }, [opportunity]);
+
+  const toggleSaveJob = () => {
+    let updatedSavedJobs: any[];
+    if (isSaved) {
+      updatedSavedJobs = savedJobs.filter((job: any) => job.id !== opportunity.id);
+      setIsSaved(false);
+    } else {
+      const jobToSave = {
+        id: opportunity.id,
+        slug: opportunity.slug,
+        title: opportunity.title,
+        company: opportunity.company,
+        companyLogo: opportunity.companyLogo,
+        location: opportunity.city && opportunity.country ? `${opportunity.city}, ${opportunity.country}` : opportunity.location || 'India',
+        type: opportunity.type === 'job' ? 'Full-time' : 'Internship',
+        experience: opportunity.experience || '0 - 1 Yrs',
+        applyLink: opportunity.applyLink || '#',
+      };
+      updatedSavedJobs = [...savedJobs, jobToSave];
+      setIsSaved(true);
+    }
+    setSavedJobs(updatedSavedJobs);
+    localStorage.setItem('saved_blogs', JSON.stringify(updatedSavedJobs));
+  };
+
+  const removeSavedJob = (jobId: string) => {
+    const updatedSavedJobs = savedJobs.filter((job: any) => job.id !== jobId);
+    setSavedJobs(updatedSavedJobs);
+    localStorage.setItem('saved_blogs', JSON.stringify(updatedSavedJobs));
+    if (jobId === opportunity.id) {
+      setIsSaved(false);
+    }
+  };
+
+  const clearAllSavedJobs = () => {
+    setSavedJobs([]);
+    localStorage.setItem('saved_blogs', JSON.stringify([]));
+    setIsSaved(false);
+  };
+
+  const shareJob = (platform: string) => {
+    if (typeof window === 'undefined') return;
+    const url = window.location.href;
+    const title = `${opportunity?.title || 'Job'} at ${opportunity?.company || 'Company'}`;
+    const text = `Check out this job: ${title}`;
+    
+    const shareUrls: { [key: string]: string } = {
+      linkedin: `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`,
+      twitter: `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`,
+      whatsapp: `https://api.whatsapp.com/send?text=${encodeURIComponent(text + ' ' + url)}`,
+      email: `mailto:?subject=${encodeURIComponent(title)}&body=${encodeURIComponent(text + '\n\n' + url)}`,
+      copy: '',
+    };
+    
+    if (platform === 'copy') {
+      navigator.clipboard.writeText(url).then(() => {
+        alert('Link copied to clipboard!');
+      }).catch(() => {
+        const textArea = document.createElement('textarea');
+        textArea.value = url;
+        document.body.appendChild(textArea);
+        textArea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textArea);
+        alert('Link copied to clipboard!');
+      });
+      return;
+    }
+    
+    if (shareUrls[platform]) {
+      window.open(shareUrls[platform], '_blank', 'width=600,height=500');
+    }
+  };
+
   if (!opportunity) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
@@ -180,14 +265,13 @@ export default function JobDetailClient({ opportunity, relatedJobs = [] }: JobDe
     applyLink: opportunity.applyLink || '#',
   };
 
-  // Fixed: Pass the values with proper handling
   const responsibilitiesList = formatResponsibilities(job.responsibilities || '');
   const qualificationsList = formatQualifications(job.qualifications || '');
 
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <header className="bg-white border-b border-gray-200">
+      <header className="bg-white border-b border-gray-200 sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center gap-8">
@@ -205,17 +289,134 @@ export default function JobDetailClient({ opportunity, relatedJobs = [] }: JobDe
               </nav>
             </div>
             <div className="flex items-center gap-4">
-              <div className="flex items-center gap-2 border border-gray-300 rounded-lg px-4 py-2 hover:border-blue-600 transition-colors cursor-pointer">
-                <Bell className="w-5 h-5 text-gray-600" />
-                <span className="text-sm font-medium text-gray-700">Job Alerts</span>
-              </div>
-              <button className="bg-blue-600 text-white px-6 py-2 rounded-lg font-medium hover:bg-blue-700">
-                Find My First Job
+              {/* Saved Jobs Button */}
+              <button
+                onClick={() => setShowSavedJobs(!showSavedJobs)}
+                className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-blue-700 transition-colors relative"
+              >
+                <Bookmark className="w-5 h-5" />
+                <span className="text-sm font-medium">Saved Jobs</span>
+                {savedJobs.length > 0 && (
+                  <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                    {savedJobs.length}
+                  </span>
+                )}
               </button>
             </div>
           </div>
         </div>
       </header>
+
+      {/* Saved Jobs Slide-in Panel */}
+      {showSavedJobs && (
+        <div className="fixed inset-0 z-50 overflow-hidden">
+          {/* Backdrop */}
+          <div 
+            className="absolute inset-0 bg-black/50 transition-opacity"
+            onClick={() => setShowSavedJobs(false)}
+          />
+          
+          {/* Panel - slides in from right */}
+          <div className="absolute right-0 top-0 h-full w-full max-w-md bg-white shadow-xl transform translate-x-0 transition-transform duration-300 ease-in-out overflow-y-auto">
+            <div className="flex flex-col h-full">
+              {/* Header */}
+              <div className="flex items-center justify-between p-6 border-b border-gray-200 sticky top-0 bg-white z-10">
+                <h3 className="text-xl font-bold text-gray-900">Saved Jobs</h3>
+                <div className="flex items-center gap-3">
+                  {savedJobs.length > 0 && (
+                    <button
+                      onClick={clearAllSavedJobs}
+                      className="text-red-500 text-sm font-medium hover:text-red-600 flex items-center gap-1"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                      Clear All
+                    </button>
+                  )}
+                  <button
+                    onClick={() => setShowSavedJobs(false)}
+                    className="text-gray-400 hover:text-gray-600 transition p-2 hover:bg-gray-100 rounded-lg"
+                  >
+                    <X className="w-6 h-6" />
+                  </button>
+                </div>
+              </div>
+
+              {/* Content */}
+              <div className="flex-1 overflow-y-auto p-4">
+                {savedJobs.length === 0 ? (
+                  <div className="flex flex-col items-center justify-center h-full text-center p-8">
+                    <Bookmark className="w-20 h-20 text-gray-300 mb-4" />
+                    <p className="text-xl font-medium text-gray-700">No saved jobs yet</p>
+                    <p className="text-gray-500 mt-2">Start saving jobs you're interested in!</p>
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                    {savedJobs.map((savedJob: any) => (
+                      <div key={savedJob.id} className="bg-white border border-gray-200 rounded-xl p-4 hover:shadow-md transition-shadow">
+                        <div className="flex items-start gap-3">
+                          <div className="flex-1 min-w-0">
+                            <Link 
+                              href={`/jobs/${savedJob.slug}`}
+                              onClick={() => setShowSavedJobs(false)}
+                              className="font-semibold text-gray-900 hover:text-blue-600 text-base block truncate"
+                            >
+                              {savedJob.title}
+                            </Link>
+                            <p className="text-sm text-gray-600 truncate font-medium">{savedJob.company}</p>
+                            <div className="flex items-center gap-2 mt-2 text-sm text-gray-500">
+                              <MapPin className="w-4 h-4 flex-shrink-0" />
+                              <span className="truncate">{savedJob.location}</span>
+                            </div>
+                            <div className="flex items-center gap-2 mt-1 text-sm text-gray-500">
+                              <Briefcase className="w-4 h-4 flex-shrink-0" />
+                              <span>{savedJob.type}</span>
+                              <span className="text-gray-300">|</span>
+                              <Clock className="w-4 h-4 flex-shrink-0" />
+                              <span>{savedJob.experience}</span>
+                            </div>
+                          </div>
+                          <button
+                            onClick={() => removeSavedJob(savedJob.id)}
+                            className="text-gray-400 hover:text-red-500 transition p-2 hover:bg-red-50 rounded-lg flex-shrink-0"
+                          >
+                            <X className="w-5 h-5" />
+                          </button>
+                        </div>
+                        <div className="mt-4 flex gap-3">
+                          <Link 
+                            href={`/jobs/${savedJob.slug}`}
+                            onClick={() => setShowSavedJobs(false)}
+                            className="flex-1 text-center text-sm bg-blue-50 text-blue-600 hover:bg-blue-100 font-medium px-4 py-2 rounded-lg transition"
+                          >
+                            View Details
+                          </Link>
+                          <a 
+                            href={savedJob.applyLink} 
+                            target="_blank" 
+                            rel="noopener noreferrer"
+                            className="flex-1 text-center text-sm bg-green-50 text-green-600 hover:bg-green-100 font-medium px-4 py-2 rounded-lg transition"
+                          >
+                            Apply Now
+                          </a>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Footer */}
+              {savedJobs.length > 0 && (
+                <div className="p-4 border-t border-gray-200 bg-gray-50 sticky bottom-0">
+                  <p className="text-sm text-gray-500 text-center">
+                    {savedJobs.length} job{savedJobs.length > 1 ? 's' : ''} saved
+                  </p>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Breadcrumb */}
       <div className="border-b border-gray-200">
@@ -283,7 +484,7 @@ export default function JobDetailClient({ opportunity, relatedJobs = [] }: JobDe
 
             <div className="flex flex-col gap-3 min-w-[200px] ml-6">
               <button
-                onClick={() => setIsSaved(!isSaved)}
+                onClick={toggleSaveJob}
                 className={`w-full py-3 px-4 rounded-lg font-bold text-base transition-all flex items-center justify-center gap-2 border-2 ${
                   isSaved
                     ? 'border-blue-600 text-blue-600 bg-blue-50'
@@ -352,11 +553,11 @@ export default function JobDetailClient({ opportunity, relatedJobs = [] }: JobDe
 
               <h3 className="text-xl font-bold text-gray-900 mb-4">Eligibility Criteria</h3>
               {qualificationsList.length > 0 ? (
-                <ul className="space-y-3 text-gray-700">
+                <ul className="space-y-3 text-gray-700 whitespace-normal">
                   {qualificationsList.map((item, index) => (
                     <li key={index} className="flex gap-3">
                       <span className="text-blue-600 font-bold text-2xl leading-none mt-0.5">•</span>
-                      <span className="text-base leading-relaxed">{item}</span>
+                      <span className="text-base leading-relaxed break-words">{item}</span>
                     </li>
                   ))}
                 </ul>
@@ -441,23 +642,38 @@ export default function JobDetailClient({ opportunity, relatedJobs = [] }: JobDe
               </div>
             </div>
 
-            {/* Share Section - 5 icons only */}
+            {/* Share Section */}
             <div className="bg-white rounded-lg p-6">
               <h3 className="text-lg font-bold text-gray-900 mb-4">Share this job</h3>
               <div className="flex gap-2 flex-wrap">
-                <button className="w-10 h-10 rounded-full bg-blue-600 text-white flex items-center justify-center hover:bg-blue-700 transition">
+                <button 
+                  onClick={() => shareJob('linkedin')}
+                  className="w-10 h-10 rounded-full bg-blue-600 text-white flex items-center justify-center hover:bg-blue-700 transition"
+                >
                   <Linkedin className="w-5 h-5" />
                 </button>
-                <button className="w-10 h-10 rounded-full bg-black text-white flex items-center justify-center hover:bg-gray-800 transition">
+                <button 
+                  onClick={() => shareJob('twitter')}
+                  className="w-10 h-10 rounded-full bg-black text-white flex items-center justify-center hover:bg-gray-800 transition"
+                >
                   <X className="w-5 h-5" />
                 </button>
-                <button className="w-10 h-10 rounded-full bg-green-500 text-white flex items-center justify-center hover:bg-green-600 transition">
+                <button 
+                  onClick={() => shareJob('whatsapp')}
+                  className="w-10 h-10 rounded-full bg-green-500 text-white flex items-center justify-center hover:bg-green-600 transition"
+                >
                   <MessageCircle className="w-5 h-5" />
                 </button>
-                <button className="w-10 h-10 rounded-full bg-white border-2 border-gray-300 text-gray-700 flex items-center justify-center hover:bg-gray-50 transition">
+                <button 
+                  onClick={() => shareJob('email')}
+                  className="w-10 h-10 rounded-full bg-white border-2 border-gray-300 text-gray-700 flex items-center justify-center hover:bg-gray-50 transition"
+                >
                   <Mail className="w-5 h-5" />
                 </button>
-                <button className="w-10 h-10 rounded-full bg-white border-2 border-gray-300 text-gray-700 flex items-center justify-center hover:bg-gray-50 transition">
+                <button 
+                  onClick={() => shareJob('copy')}
+                  className="w-10 h-10 rounded-full bg-white border-2 border-gray-300 text-gray-700 flex items-center justify-center hover:bg-gray-50 transition"
+                >
                   <LinkIcon className="w-5 h-5" />
                 </button>
               </div>
