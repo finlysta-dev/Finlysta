@@ -41,6 +41,7 @@ interface Job {
   logoBg?: string
   timeAgo?: string
   description?: string
+  applyLink?: string  // Added applyLink
 }
 
 export default function FinlystaUI() {
@@ -235,6 +236,7 @@ export default function FinlystaUI() {
           logoBg: getCompanyColor(job.company || ''),
           timeAgo: timeAgo,
           description: job.shortDescription || job.overview?.substring(0, 200) || 'No description available',
+          applyLink: job.applyLink || '#', // Added applyLink
         }
       })
       
@@ -270,7 +272,7 @@ export default function FinlystaUI() {
         location: jobToSave.location,
         type: jobToSave.type,
         experience: jobToSave.experience,
-        applyLink: jobToSave.applyLink,
+        applyLink: jobToSave.applyLink || '#',
       }
       updatedSavedJobs = [...savedJobs, newJob]
       message = 'Job saved successfully!'
