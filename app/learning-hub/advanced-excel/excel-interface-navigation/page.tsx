@@ -11,6 +11,42 @@ import {
 } from "lucide-react";
 
 // ============================================
+// HEADER WITH FINLYSTA LOGO
+// ============================================
+const Header = () => {
+  return (
+    <header className="border-b border-gray-200 bg-white sticky top-0 z-50">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+        {/* Logo */}
+        <Link href="/" className="flex items-center focus:outline-none focus:ring-2 focus:ring-blue-500 rounded-lg group">
+          <Image
+            src="/Finlysta.png"
+            alt="Finlysta Logo"
+            width={160}
+            height={36}
+            priority
+            className="object-contain transition-opacity duration-300 group-hover:opacity-90"
+          />
+        </Link>
+
+        {/* Navigation */}
+        <nav className="hidden md:flex items-center gap-8">
+          <Link href="/" className="text-sm font-medium text-gray-600 hover:text-blue-600 transition">Home</Link>
+          <Link href="/jobs" className="text-sm font-medium text-gray-600 hover:text-blue-600 transition">Jobs</Link>
+          <Link href="/internships" className="text-sm font-medium text-gray-600 hover:text-blue-600 transition">Internships</Link>
+          <Link href="/learning-hub" className="text-sm font-medium text-blue-600 transition">Learning Hub</Link>
+          <Link href="/career-paths" className="text-sm font-medium text-gray-600 hover:text-blue-600 transition">Career Paths</Link>
+          <Link href="/interview-prep" className="text-sm font-medium text-gray-600 hover:text-blue-600 transition">Interview Prep</Link>
+        </nav>
+
+        {/* Right side - empty for spacing */}
+        <div className="w-[160px] hidden md:block"></div>
+      </div>
+    </header>
+  );
+};
+
+// ============================================
 // BREADCRUMB
 // ============================================
 const Breadcrumb = () => {
@@ -779,14 +815,17 @@ const FooterSection = () => {
 // ============================================
 export default function ExcelInterfaceNavigationPage() {
   return (
-    <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-8">
-      <Breadcrumb />
-      <HeroSection />
-      <WhatIsExcel />
-      <ExcelInterfaceElements />
-      <ShortcutsAndFinanceSection />
-      <FinanceUseCases />
-      <FooterSection />
-    </main>
+    <>
+      <Header />
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-8">
+        <Breadcrumb />
+        <HeroSection />
+        <WhatIsExcel />
+        <ExcelInterfaceElements />
+        <ShortcutsAndFinanceSection />
+        <FinanceUseCases />
+        <FooterSection />
+      </main>
+    </>
   );
 }

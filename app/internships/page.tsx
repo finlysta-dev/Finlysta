@@ -9,7 +9,7 @@ import {
   Send, BarChart3, Briefcase, BadgeCheck, Building2, AlarmClock, 
   Sparkles, RotateCcw, LayoutGrid, List, Filter, CalendarDays,
   Building, Users, TrendingUp, Plus, ChevronUp, RotateCw, CheckCircle,
-  GraduationCap, BriefcaseBusiness, Timer
+  GraduationCap, BriefcaseBusiness, Timer, Trash2
 } from 'lucide-react'
 
 interface Job {
@@ -41,6 +41,7 @@ interface Job {
   logoBg?: string
   timeAgo?: string
   description?: string
+  applyLink?: string
 }
 
 export default function FinlystaUI() {
@@ -63,13 +64,21 @@ export default function FinlystaUI() {
   const [skillsSearch, setSkillsSearch] = useState('')
   const [activeFilters, setActiveFilters] = useState<string[]>([])
   const [sortBy, setSortBy] = useState('newest')
+  const [allJobs, setAllJobs] = useState<Job[]>([])
   const [jobs, setJobs] = useState<Job[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const [savedJobs, setSavedJobs] = useState<string[]>([])
+  const [savedJobs, setSavedJobs] = useState<any[]>([])
+  const [showSavedJobs, setShowSavedJobs] = useState(false)
   const [saveMessage, setSaveMessage] = useState<string | null>(null)
   const [email, setEmail] = useState('')
   const [emailStatus, setEmailStatus] = useState<'idle' | 'sending' | 'success' | 'error'>('idle')
+
+  // Autosuggest state for the top "Search Jobs" and "Location" inputs
+  const [searchQuery, setSearchQuery] = useState('')
+  const [showSearchSuggestions, setShowSearchSuggestions] = useState(false)
+  const [locationQuery, setLocationQuery] = useState('')
+  const [showLocationSuggestions, setShowLocationSuggestions] = useState(false)
 
   const navLinks = [
     { href: "/", label: "Home" },
@@ -90,7 +99,22 @@ export default function FinlystaUI() {
 
   const noPrefetch = ["/blogs", "/learning-hub", "/interview-prep", "/career-paths"]
 
-  const popularSearches = ['Financial Analyst', 'Finance Intern', 'Accounts Executive', 'Audit Associate', 'FP&A Analyst']
+  const popularSearches = ['Financial Analyst', 'Finance Intern', 'Accounts Executive', 'Audit Associate', 'Finance Associate', 'Intern']
+
+  // Maps older/raw skill names to their modern display name.
+  const skillAliasMap: Record<string, string> = {
+    'excel': 'Advanced Excel',
+    'ms excel': 'Advanced Excel',
+    'microsoft excel': 'Advanced Excel',
+    'advanced excel': 'Advanced Excel',
+    'adv excel': 'Advanced Excel',
+  }
+
+  const normalizeSkill = (skill: string): string => {
+    if (!skill) return skill
+    const key = skill.trim().toLowerCase()
+    return skillAliasMap[key] || skill
+  }
 
   // Load saved jobs from localStorage
   useEffect(() => {
@@ -121,6 +145,37 @@ export default function FinlystaUI() {
     fetchJobs()
   }, [])
 
+  const formatPostedTime = (date: string): string => {
+    if (!date) return 'Recently'
+    
+    const now = new Date()
+    const postedDate = new Date(date)
+    
+    if (isNaN(postedDate.getTime())) return 'Recently'
+    
+    const diffMs = now.getTime() - postedDate.getTime()
+    const diffMins = Math.floor(diffMs / 60000)
+    const diffHours = Math.floor(diffMs / 3600000)
+    const diffDays = Math.floor(diffMs / 86400000)
+    
+    if (diffMins < 1) return 'Just now'
+    if (diffMins < 60) return `${diffMins}m ago`
+    if (diffHours < 24) return `${diffHours}h ago`
+    if (diffDays === 1) return 'Yesterday'
+    if (diffDays < 7) return `${diffDays}d ago`
+    if (diffDays < 30) return `${Math.floor(diffDays / 7)}w ago`
+    if (diffDays < 365) return `${Math.floor(diffDays / 30)}mo ago`
+    return `${Math.floor(diffDays / 365)}y ago`
+  }
+
+  const isJobNew = (postedAt: string): boolean => {
+    if (!postedAt) return false
+    const now = new Date()
+    const postedDate = new Date(postedAt)
+    const diffDays = Math.floor((now.getTime() - postedDate.getTime()) / 86400000)
+    return diffDays < 1
+  }
+
   const fetchJobs = async () => {
     try {
       setLoading(true)
@@ -134,24 +189,23 @@ export default function FinlystaUI() {
       
       const data = await response.json()
       
-      // Filter for jobs and internships
+      // Filter ONLY for internships (type === 'internship')
       const jobData = Array.isArray(data) 
-        ? data.filter((item: any) => item.type === 'job' || item.type === 'internship')
+        ? data.filter((item: any) => item.type === 'internship')
         : []
       
       const formattedJobs = jobData.map((job: any) => {
-        // Format location: city + country
         const formattedLocation = job.city && job.country 
           ? `${job.city}, ${job.country}`
           : job.location || 'India'
         
-        // Determine job type display
-        let jobTypeDisplay = job.type || 'Full-time'
-        if (job.type === 'job') jobTypeDisplay = 'Full-time'
+        let jobTypeDisplay = job.type || 'Internship'
         if (job.type === 'internship') jobTypeDisplay = 'Internship'
         
-        // Format experience - keep as is from database
         let experienceDisplay = job.experience || '0 - 1 Yrs'
+        
+        const timeAgo = formatPostedTime(job.postedAt || new Date().toISOString())
+        const isNew = isJobNew(job.postedAt || new Date().toISOString())
         
         return {
           id: job.id,
@@ -171,20 +225,22 @@ export default function FinlystaUI() {
           skills: job.skills || [],
           overview: job.overview || '',
           shortDescription: job.shortDescription || job.overview?.substring(0, 200) || 'No description available',
-          isNew: job.isNew || false,
+          isNew: isNew,
           isVerified: job.isVerified || false,
           isTrending: job.isTrending || false,
           isActivelyHiring: job.isActivelyHiring || true,
           postedAt: job.postedAt || new Date().toISOString(),
-          postedTime: job.postedTime || formatPostedTime(job.postedAt || new Date().toISOString()),
+          postedTime: job.postedTime || timeAgo,
           views: job.views || 0,
           applyClicks: job.applyClicks || 0,
           logoBg: getCompanyColor(job.company || ''),
-          timeAgo: formatPostedTime(job.postedAt || new Date().toISOString()),
+          timeAgo: timeAgo,
           description: job.shortDescription || job.overview?.substring(0, 200) || 'No description available',
+          applyLink: job.applyLink || '#',
         }
       })
       
+      setAllJobs(formattedJobs)
       setJobs(formattedJobs)
       
     } catch (err) {
@@ -196,19 +252,46 @@ export default function FinlystaUI() {
   }
 
   const toggleSaveJob = (jobId: string) => {
-    let updatedSavedJobs: string[]
+    const jobToSave = allJobs.find(job => job.id === jobId)
+    if (!jobToSave) return
+    
+    let updatedSavedJobs: any[]
     let message: string
-    if (savedJobs.includes(jobId)) {
-      updatedSavedJobs = savedJobs.filter(id => id !== jobId)
+    const isSaved = savedJobs.some(job => job.id === jobId)
+    
+    if (isSaved) {
+      updatedSavedJobs = savedJobs.filter(job => job.id !== jobId)
       message = 'Job removed from saved!'
     } else {
-      updatedSavedJobs = [...savedJobs, jobId]
+      const newJob = {
+        id: jobToSave.id,
+        slug: jobToSave.slug,
+        title: jobToSave.title,
+        company: jobToSave.company,
+        companyLogo: jobToSave.companyLogo,
+        location: jobToSave.location,
+        type: jobToSave.type,
+        experience: jobToSave.experience,
+        applyLink: jobToSave.applyLink || '#',
+      }
+      updatedSavedJobs = [...savedJobs, newJob]
       message = 'Job saved successfully!'
     }
     setSavedJobs(updatedSavedJobs)
     localStorage.setItem('saved_blogs', JSON.stringify(updatedSavedJobs))
     setSaveMessage(message)
     setTimeout(() => setSaveMessage(null), 3000)
+  }
+
+  const removeSavedJob = (jobId: string) => {
+    const updatedSavedJobs = savedJobs.filter((job: any) => job.id !== jobId)
+    setSavedJobs(updatedSavedJobs)
+    localStorage.setItem('saved_blogs', JSON.stringify(updatedSavedJobs))
+  }
+
+  const clearAllSavedJobs = () => {
+    setSavedJobs([])
+    localStorage.setItem('saved_blogs', JSON.stringify([]))
   }
 
   const handleViewDetails = (slug: string) => {
@@ -254,37 +337,18 @@ export default function FinlystaUI() {
     return colors[index]
   }
 
-  const formatPostedTime = (date: string): string => {
-    if (!date) return 'Recently'
-    const postedDate = new Date(date)
-    const now = new Date()
-    const diffMs = now.getTime() - postedDate.getTime()
-    const diffMins = Math.floor(diffMs / 60000)
-    const diffHours = Math.floor(diffMs / 3600000)
-    const diffDays = Math.floor(diffMs / 86400000)
-    
-    if (diffMins < 1) return 'Just now'
-    if (diffMins < 60) return `${diffMins}m ago`
-    if (diffHours < 24) return `${diffHours}h ago`
-    if (diffDays === 1) return 'Yesterday'
-    if (diffDays < 7) return `${diffDays}d ago`
-    if (diffDays < 30) return `${Math.floor(diffDays / 7)}w ago`
-    if (diffDays < 365) return `${Math.floor(diffDays / 30)}mo ago`
-    return `${Math.floor(diffDays / 365)}y ago`
-  }
-
   const getJobTypeCount = (type: string) => {
-    return jobs.filter(job => {
+    return allJobs.filter(job => {
       if (type === 'full-time') return job.type === 'Full-time'
       if (type === 'internship') return job.type === 'Internship'
-      if (type === 'trainee') return job.type?.toLowerCase().includes('trainee') || job.type?.toLowerCase().includes('graduate')
+      if (type === 'apprentice') return job.type?.toLowerCase().includes('trainee') || job.type?.toLowerCase().includes('apprentice')
       if (type === 'contract') return job.type?.toLowerCase().includes('contract')
       return false
     }).length
   }
 
   const getLocationCount = (location: string) => {
-    return jobs.filter(job => {
+    return allJobs.filter(job => {
       if (location === 'all-india') return true
       if (location === 'remote') return job.workMode?.toLowerCase().includes('remote')
       return job.city?.toLowerCase().includes(location) || job.location?.toLowerCase().includes(location)
@@ -292,7 +356,7 @@ export default function FinlystaUI() {
   }
 
   const getExperienceCount = (exp: string) => {
-    return jobs.filter(job => {
+    return allJobs.filter(job => {
       if (exp === '0-1') return job.experience === '0 - 1 Yrs'
       if (exp === '1-2') return job.experience === '1 - 2 Yrs'
       return false
@@ -300,15 +364,15 @@ export default function FinlystaUI() {
   }
 
   const getSkillsCount = (skill: string) => {
-    return jobs.filter(job => job.skills?.some(s => s.toLowerCase() === skill.toLowerCase())).length
+    return allJobs.filter(job => job.skills?.some(s => normalizeSkill(s).toLowerCase() === skill.toLowerCase())).length
   }
 
   const getUniqueCities = () => {
-    const cities = jobs.map(job => job.city).filter(Boolean)
+    const cities = allJobs.map(job => job.city).filter(Boolean)
     const uniqueCities = [...new Set(cities)]
     return uniqueCities.map(city => ({
       label: city || 'Other',
-      count: jobs.filter(job => job.city === city).length,
+      count: allJobs.filter(job => job.city === city).length,
       value: city?.toLowerCase().replace(/\s+/g, '-') || 'other'
     }))
   }
@@ -316,12 +380,12 @@ export default function FinlystaUI() {
   const jobTypeOptions = [
     { label: 'Full-time Jobs', count: getJobTypeCount('full-time'), value: 'full-time' },
     { label: 'Internships', count: getJobTypeCount('internship'), value: 'internship' },
-    { label: 'Trainee / Graduate Program', count: getJobTypeCount('trainee'), value: 'trainee' },
+    { label: 'Apprentice', count: getJobTypeCount('apprentice'), value: 'apprentice' },
     { label: 'Contract', count: getJobTypeCount('contract'), value: 'contract' },
   ]
 
   const locationOptions = [
-    { label: 'All India', count: jobs.length, value: 'all-india' },
+    { label: 'All India', count: allJobs.length, value: 'all-india' },
     { label: 'Remote (India)', count: getLocationCount('remote'), value: 'remote' },
     ...getUniqueCities().map(city => ({
       label: city.label,
@@ -343,7 +407,7 @@ export default function FinlystaUI() {
     { label: 'Tally', count: getSkillsCount('tally'), value: 'tally' },
     { label: 'MIS', count: getSkillsCount('mis'), value: 'mis' },
     { label: 'Communication', count: getSkillsCount('communication'), value: 'communication' },
-    { label: 'Data Analysis', count: getSkillsCount('data analysis'), value: 'data-analysis' },
+    { label: 'Data Analysis', count: getSkillsCount('data-analysis'), value: 'data-analysis' },
   ]
 
   const toggleSection = (section: 'jobType' | 'location' | 'experience' | 'skills') => {
@@ -360,60 +424,109 @@ export default function FinlystaUI() {
     } else {
       setActiveFilters([...activeFilters, filterKey])
     }
+    applyFilters()
+  }
+
+  const applyFilters = () => {
+    let filtered = [...allJobs]
+    
+    activeFilters.forEach(filter => {
+      const [type, value] = filter.split('-')
+      
+      if (type === 'jobType') {
+        if (value === 'full-time') filtered = filtered.filter(job => job.type === 'Full-time')
+        if (value === 'internship') filtered = filtered.filter(job => job.type === 'Internship')
+        if (value === 'apprentice') filtered = filtered.filter(job => job.type?.toLowerCase().includes('trainee') || job.type?.toLowerCase().includes('apprentice'))
+        if (value === 'contract') filtered = filtered.filter(job => job.type?.toLowerCase().includes('contract'))
+      }
+      
+      if (type === 'location') {
+        if (value === 'all-india') return
+        if (value === 'remote') filtered = filtered.filter(job => job.workMode?.toLowerCase().includes('remote'))
+        filtered = filtered.filter(job => job.city?.toLowerCase().includes(value) || job.location?.toLowerCase().includes(value))
+      }
+      
+      if (type === 'experience') {
+        if (value === '0-1') filtered = filtered.filter(job => job.experience === '0 - 1 Yrs')
+        if (value === '1-2') filtered = filtered.filter(job => job.experience === '1 - 2 Yrs')
+      }
+      
+      if (type === 'skills') {
+        const skillLabel = skillsOptions.find(opt => opt.value === value)?.label.toLowerCase()
+        filtered = filtered.filter(job => job.skills?.some(s => s.toLowerCase() === skillLabel))
+      }
+    })
+    
+    setJobs(filtered)
   }
 
   const clearAllFilters = () => {
     setActiveFilters([])
+    setJobs(allJobs)
   }
 
-  const filteredJobs = jobs.filter(job => {
-    if (activeFilters.length === 0) return true
-    
-    const jobTypeFilters = activeFilters.filter(f => f.startsWith('jobType-'))
-    if (jobTypeFilters.length > 0) {
-      const jobTypeValues = jobTypeFilters.map(f => f.replace('jobType-', ''))
-      if (!jobTypeValues.some(v => {
-        if (v === 'full-time') return job.type === 'Full-time'
-        if (v === 'internship') return job.type === 'Internship'
-        return false
-      })) return false
-    }
-    
-    const locationFilters = activeFilters.filter(f => f.startsWith('location-'))
-    if (locationFilters.length > 0) {
-      const locationValues = locationFilters.map(f => f.replace('location-', ''))
-      if (!locationValues.some(v => {
-        if (v === 'all-india') return true
-        if (v === 'remote') return job.workMode?.toLowerCase().includes('remote')
-        return job.city?.toLowerCase().includes(v) || job.location?.toLowerCase().includes(v)
-      })) return false
-    }
-    
-    const experienceFilters = activeFilters.filter(f => f.startsWith('experience-'))
-    if (experienceFilters.length > 0) {
-      const expValues = experienceFilters.map(f => f.replace('experience-', ''))
-      if (!expValues.some(v => {
-        if (v === '0-1') return job.experience === '0 - 1 Yrs'
-        if (v === '1-2') return job.experience === '1 - 2 Yrs'
-        return false
-      })) return false
-    }
-    
-    const skillsFilters = activeFilters.filter(f => f.startsWith('skills-'))
-    if (skillsFilters.length > 0) {
-      const skillValues = skillsFilters.map(f => f.replace('skills-', ''))
-      if (!skillValues.some(v => {
-        const label = skillsOptions.find(opt => opt.value === v)?.label.toLowerCase()
-        return job.skills?.some(s => s.toLowerCase() === label)
-      })) return false
-    }
-    
-    return true
-  })
+  // Suggestions for the "Search Jobs" box: matches from job titles,
+  // companies, and skills only (no locations). Skill names are normalized
+  // to their modern display name (e.g. "MS Excel" -> "Advanced Excel").
+  const getSearchSuggestions = () => {
+    if (!searchQuery.trim()) return []
+    const query = searchQuery.toLowerCase()
+    const suggestions = new Set<string>()
+
+    allJobs.forEach(job => {
+      if (job.title?.toLowerCase().includes(query)) suggestions.add(job.title)
+      if (job.company?.toLowerCase().includes(query)) suggestions.add(job.company)
+      job.skills?.forEach(skill => {
+        const normalized = normalizeSkill(skill)
+        if (normalized.toLowerCase().includes(query) || skill.toLowerCase().includes(query)) {
+          suggestions.add(normalized)
+        }
+      })
+    })
+
+    return Array.from(suggestions).slice(0, 8)
+  }
+
+  // Suggestions for the "Location" box: cities / locations only.
+  const getLocationSuggestions = () => {
+    if (!locationQuery.trim()) return []
+    const query = locationQuery.toLowerCase()
+    const suggestions = new Set<string>()
+
+    allJobs.forEach(job => {
+      if (job.city?.toLowerCase().includes(query)) suggestions.add(job.city)
+      if (job.location?.toLowerCase().includes(query)) suggestions.add(job.location)
+    })
+
+    return Array.from(suggestions).slice(0, 8)
+  }
+
+  const runSearchQuery = (value: string) => {
+    const lower = value.toLowerCase()
+    const filtered = allJobs.filter(job => 
+      job.title.toLowerCase().includes(lower) ||
+      job.company.toLowerCase().includes(lower) ||
+      job.skills.some(s => normalizeSkill(s).toLowerCase().includes(lower) || s.toLowerCase().includes(lower))
+    )
+    setJobs(filtered)
+  }
+
+  const runLocationQuery = (value: string) => {
+    const lower = value.toLowerCase()
+    const filtered = allJobs.filter(job => 
+      job.location.toLowerCase().includes(lower) ||
+      job.city?.toLowerCase().includes(lower)
+    )
+    setJobs(filtered)
+  }
+
+  const filteredJobs = jobs
 
   const sortedJobs = [...filteredJobs].sort((a, b) => {
     if (sortBy === 'newest') {
       return new Date(b.postedAt).getTime() - new Date(a.postedAt).getTime()
+    } else if (sortBy === 'oldest') {
+      return new Date(a.postedAt).getTime() - new Date(b.postedAt).getTime()
     }
     return 0
   })
@@ -975,7 +1088,6 @@ export default function FinlystaUI() {
             opacity: 1;
           }
         }
-        /* Grid View Styles - Clean */
         .grid-job-card {
           display: flex;
           flex-direction: column;
@@ -1054,9 +1166,8 @@ export default function FinlystaUI() {
         }
         .grid-job-type-text {
           display: flex;
-          flex-wrap: wrap;
-          align-items: center;
-          gap: 16px;
+          flex-direction: column;
+          gap: 4px;
           font-size: 15px;
           color: #000000;
         }
@@ -1176,6 +1287,64 @@ export default function FinlystaUI() {
         .filter-item .count {
           font-size: 16px !important;
         }
+        .autosuggest-dropdown {
+          position: absolute;
+          top: calc(100% + 6px);
+          left: 0;
+          right: 0;
+          background: white;
+          border: 1px solid #e5e7eb;
+          border-radius: 8px;
+          box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+          max-height: 260px;
+          overflow-y: auto;
+          z-index: 200;
+        }
+        .autosuggest-item {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          padding: 10px 14px;
+          font-size: 15px;
+          color: #111827;
+          cursor: pointer;
+          transition: background 0.15s;
+        }
+        .autosuggest-item:hover {
+          background: #f5f8ff;
+          color: #0052FF;
+        }
+        /* Saved Internships Panel */
+        .saved-jobs-panel {
+          position: fixed;
+          top: 0;
+          right: 0;
+          height: 100%;
+          width: 100%;
+          max-width: 420px;
+          background: white;
+          z-index: 999;
+          box-shadow: -4px 0 30px rgba(0,0,0,0.15);
+          transform: translateX(100%);
+          transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+          overflow-y: auto;
+        }
+        .saved-jobs-panel.open {
+          transform: translateX(0);
+        }
+        .panel-backdrop {
+          position: fixed;
+          inset: 0;
+          background: rgba(0,0,0,0.4);
+          z-index: 998;
+          opacity: 0;
+          transition: opacity 0.35s ease;
+          pointer-events: none;
+        }
+        .panel-backdrop.open {
+          opacity: 1;
+          pointer-events: auto;
+        }
       `}</style>
 
       {/* Save Message Toast */}
@@ -1186,42 +1355,198 @@ export default function FinlystaUI() {
         </div>
       )}
 
-      {/* NAVIGATION - SHARED HEADER */}
-      <header className={`sticky top-0 z-50 transition-all duration-300 ${
-        scrolled ? "bg-white/95 backdrop-blur-md shadow-lg" : "bg-white shadow-sm"
-      }`}>
+      {/* Saved Internships Panel Backdrop */}
+      <div 
+        className={`panel-backdrop ${showSavedJobs ? 'open' : ''}`}
+        onClick={() => setShowSavedJobs(false)}
+      />
+
+      {/* Saved Internships Panel */}
+      <div className={`saved-jobs-panel ${showSavedJobs ? 'open' : ''}`}>
+        <div className="flex flex-col h-full">
+          {/* Header */}
+          <div className="flex items-center justify-between p-6 border-b border-gray-200 sticky top-0 bg-white z-10">
+            <h3 className="text-xl font-bold text-gray-900">Saved Internships</h3>
+            <div className="flex items-center gap-3">
+              {savedJobs.length > 0 && (
+                <button
+                  onClick={clearAllSavedJobs}
+                  className="text-red-500 text-sm font-medium hover:text-red-600 flex items-center gap-1"
+                >
+                  <Trash2 className="w-4 h-4" />
+                  Clear All
+                </button>
+              )}
+              <button
+                onClick={() => setShowSavedJobs(false)}
+                className="text-gray-400 hover:text-gray-600 transition p-2 hover:bg-gray-100 rounded-lg"
+              >
+                <X className="w-6 h-6" />
+              </button>
+            </div>
+          </div>
+
+          {/* Content */}
+          <div className="flex-1 overflow-y-auto p-4">
+            {savedJobs.length === 0 ? (
+              <div className="flex flex-col items-center justify-center h-full text-center p-8">
+                <Bookmark className="w-20 h-20 text-gray-300 mb-4" />
+                <p className="text-xl font-medium text-gray-700">No saved internships yet</p>
+                <p className="text-gray-500 mt-2">Start saving internships you're interested in!</p>
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {savedJobs.map((savedJob: any) => (
+                  <div key={savedJob.id} className="bg-white border border-gray-200 rounded-xl p-4 hover:shadow-md transition-shadow">
+                    <div className="flex items-start gap-3">
+                      <div className="flex-1 min-w-0">
+                        <Link 
+                          href={`/jobs/${savedJob.slug}`}
+                          onClick={() => setShowSavedJobs(false)}
+                          className="font-semibold text-gray-900 hover:text-blue-600 text-base block truncate"
+                        >
+                          {savedJob.title}
+                        </Link>
+                        <p className="text-sm text-gray-600 truncate font-medium">{savedJob.company}</p>
+                        <div className="flex items-center gap-2 mt-2 text-sm text-gray-500">
+                          <MapPin className="w-4 h-4 flex-shrink-0" />
+                          <span className="truncate">{savedJob.location}</span>
+                        </div>
+                        <div className="flex items-center gap-2 mt-1 text-sm text-gray-500">
+                          <Briefcase className="w-4 h-4 flex-shrink-0" />
+                          <span>{savedJob.type}</span>
+                          <span className="text-gray-300">|</span>
+                          <Clock className="w-4 h-4 flex-shrink-0" />
+                          <span>{savedJob.experience}</span>
+                        </div>
+                      </div>
+                      <button
+                        onClick={() => removeSavedJob(savedJob.id)}
+                        className="text-gray-400 hover:text-red-500 transition p-2 hover:bg-red-50 rounded-lg flex-shrink-0"
+                      >
+                        <X className="w-5 h-5" />
+                      </button>
+                    </div>
+                    <div className="mt-4 flex gap-3">
+                      <Link 
+                        href={`/jobs/${savedJob.slug}`}
+                        onClick={() => setShowSavedJobs(false)}
+                        className="flex-1 text-center text-sm bg-blue-50 text-blue-600 hover:bg-blue-100 font-medium px-4 py-2 rounded-lg transition"
+                      >
+                        View Details
+                      </Link>
+                      <a 
+                        href={savedJob.applyLink} 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="flex-1 text-center text-sm bg-green-50 text-green-600 hover:bg-green-100 font-medium px-4 py-2 rounded-lg transition"
+                      >
+                        Apply Now
+                      </a>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Footer */}
+          {savedJobs.length > 0 && (
+            <div className="p-4 border-t border-gray-200 bg-gray-50 sticky bottom-0">
+              <p className="text-sm text-gray-500 text-center">
+                {savedJobs.length} internship{savedJobs.length > 1 ? 's' : ''} saved
+              </p>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* NAVIGATION */}
+      <header
+        className={`sticky top-0 z-50 transition-all duration-300 font-sans antialiased ${
+          scrolled
+            ? "bg-white/95 backdrop-blur-md shadow-lg"
+            : "bg-white shadow-sm"
+        }`}
+      >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+          {/* Logo */}
           <div className="flex items-center">
-            <Link href="/" className="flex items-center focus:outline-none focus:ring-2 focus:ring-blue-500 rounded-lg group">
-              <Image src="/finlysta.png" alt="Finlysta Logo" width={160} height={36} priority className="object-contain transition-opacity duration-300 group-hover:opacity-90" />
+            <Link
+              href="/"
+              className="flex items-center focus:outline-none focus:ring-2 focus:ring-blue-500 rounded-lg group"
+              aria-label="Finlysta - Finance Jobs and Internships for Freshers"
+            >
+              <Image
+                src="/Finlysta.png"
+                alt="Finlysta Logo"
+                width={160}
+                height={36}
+                priority
+                className="object-contain transition-opacity duration-300 group-hover:opacity-90"
+              />
             </Link>
           </div>
 
-          <nav className="hidden md:flex items-center justify-center gap-6 lg:gap-8 absolute left-1/2 transform -translate-x-1/2">
+          {/* Navigation - Centered (desktop) */}
+          <nav
+            aria-label="Main navigation"
+            className="hidden md:flex items-center justify-center gap-10 lg:gap-12 absolute left-1/2 transform -translate-x-1/2"
+          >
             {navLinks.map((link) => {
               const isActive = pathname === link.href
               return (
-                <div key={link.href} className="relative flex flex-col items-center">
-                  <Link href={link.href} prefetch={!noPrefetch.includes(link.href)} className={`nav-link ${isActive ? 'nav-link-active' : ''}`}>
+                <div key={link.href} className="relative">
+                  <Link
+                    href={link.href}
+                    prefetch={!noPrefetch.includes(link.href)}
+                    className={`text-base font-medium transition-colors duration-200 ${
+                      isActive ? "text-blue-600" : "text-black hover:text-blue-600"
+                    }`}
+                  >
                     {link.label}
                   </Link>
-                  {isActive && <div className="h-0.5 bg-[#0052FF] rounded-full w-full mt-1" />}
+                  {isActive && (
+                    <div className="absolute top-full mt-1 left-0 right-0">
+                      <div className="h-1 bg-gradient-to-r from-blue-500 via-blue-600 to-blue-500 rounded-full"></div>
+                    </div>
+                  )}
                 </div>
               )
             })}
 
-            <div className="relative resources-dropdown flex flex-col items-center">
+            {/* Resources Dropdown */}
+            <div className="relative resources-dropdown">
               <button
-                onClick={(e) => { e.stopPropagation(); setResourcesDropdownOpen(!resourcesDropdownOpen) }}
-                className={`flex items-center gap-1 nav-link ${resourcesDropdownOpen || pathname?.startsWith("/resources") ? 'nav-link-active' : ''}`}
+                onClick={(e) => {
+                  e.stopPropagation()
+                  setResourcesDropdownOpen(!resourcesDropdownOpen)
+                }}
+                className={`flex items-center gap-1 text-base transition-colors duration-200 font-medium ${
+                  resourcesDropdownOpen || pathname?.startsWith("/resources")
+                    ? "text-black"
+                    : "text-black hover:text-blue-600"
+                }`}
               >
                 Resources
-                <ChevronDown size={16} className={`transition-transform duration-200 ${resourcesDropdownOpen ? "rotate-180" : ""}`} />
+                <ChevronDown
+                  size={16}
+                  className={`transition-transform duration-200 ${resourcesDropdownOpen ? "rotate-180" : ""}`}
+                />
               </button>
               {resourcesDropdownOpen && (
-                <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 min-w-[180px] bg-white rounded-xl shadow-lg border border-gray-100 py-2 z-50">
+                <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-100 py-2 z-50">
                   {resourcesItems.map((item) => (
-                    <Link key={item.href} href={item.href} onClick={() => setResourcesDropdownOpen(false)} className={`block px-4 py-2.5 text-sm transition-colors duration-200 ${pathname === item.href ? 'text-[#0052FF] bg-blue-50' : 'text-gray-700 hover:text-[#0052FF] hover:bg-gray-50'}`}>
+                    <Link
+                      key={item.href}
+                      href={item.href}
+                      onClick={() => setResourcesDropdownOpen(false)}
+                      className={`block px-4 py-2 text-sm transition-colors duration-200 ${
+                        pathname === item.href
+                          ? "text-blue-600 bg-blue-50"
+                          : "text-gray-700 hover:text-blue-600 hover:bg-gray-50"
+                      }`}
+                    >
                       {item.label}
                     </Link>
                   ))}
@@ -1230,8 +1555,20 @@ export default function FinlystaUI() {
             </div>
           </nav>
 
-          <div className="hidden md:block">
-            <button className="btn-primary">Find My First Job</button>
+          {/* Right Side - Saved Internships Button */}
+          <div className="hidden md:flex items-center gap-4">
+            <button
+              onClick={() => setShowSavedJobs(!showSavedJobs)}
+              className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-blue-700 transition-colors relative"
+            >
+              <Bookmark className="w-5 h-5" />
+              <span className="text-sm font-medium">Saved Internships</span>
+              {savedJobs.length > 0 && (
+                <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                  {savedJobs.length}
+                </span>
+              )}
+            </button>
           </div>
 
           <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)} className="md:hidden p-2 rounded-lg hover:bg-gray-100 transition">
@@ -1245,7 +1582,7 @@ export default function FinlystaUI() {
               {navLinks.map((link) => {
                 const isActive = pathname === link.href
                 return (
-                  <Link key={link.href} href={link.href} onClick={() => setMobileMenuOpen(false)} className={`px-3 py-2 rounded-lg transition text-base ${isActive ? 'text-[#0052FF] bg-blue-50 font-semibold' : 'text-gray-700 hover:bg-gray-50'}`}>
+                  <Link key={link.href} href={link.href} onClick={() => setMobileMenuOpen(false)} className={`px-3 py-2 rounded-lg transition text-base ${isActive ? 'text-blue-600 bg-blue-50 font-semibold' : 'text-gray-700 hover:bg-gray-50'}`}>
                     {link.label}
                   </Link>
                 )
@@ -1253,12 +1590,23 @@ export default function FinlystaUI() {
               <div className="border-t border-gray-100 pt-3 mt-2">
                 <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider px-3 mb-2">Resources</p>
                 {resourcesItems.map((item) => (
-                  <Link key={item.href} href={item.href} onClick={() => setMobileMenuOpen(false)} className={`block px-3 py-2 rounded-lg transition text-sm ${pathname === item.href ? 'text-[#0052FF] bg-blue-50 font-medium' : 'text-gray-600 hover:bg-gray-50'}`}>
+                  <Link key={item.href} href={item.href} onClick={() => setMobileMenuOpen(false)} className={`block px-3 py-2 rounded-lg transition text-sm ${pathname === item.href ? 'text-blue-600 bg-blue-50 font-medium' : 'text-gray-600 hover:bg-gray-50'}`}>
                     {item.label}
                   </Link>
                 ))}
               </div>
-              <button className="btn-primary w-full mt-3">Find My First Job</button>
+              <button 
+                onClick={() => setShowSavedJobs(!showSavedJobs)}
+                className="flex items-center justify-center gap-2 w-full px-5 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all duration-200 font-medium mt-3"
+              >
+                <Bookmark className="w-4 h-4" />
+                Saved Internships
+                {savedJobs.length > 0 && (
+                  <span className="bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                    {savedJobs.length}
+                  </span>
+                )}
+              </button>
             </div>
           </div>
         )}
@@ -1278,7 +1626,7 @@ export default function FinlystaUI() {
                 marginBottom: '24px', 
                 lineHeight: 1.1 
               }}>
-                Kickstart Your Career with<span style={{ color: '#0052FF' }}>Finance Internships</span>
+                Find Your First<br />Step in <span style={{ color: '#0052FF' }}>Finance</span>
               </h1>
               <p style={{ 
                 fontSize: '22px', 
@@ -1286,7 +1634,7 @@ export default function FinlystaUI() {
                 marginBottom: '40px', 
                 lineHeight: 1.8 
               }}>
-                Explore entry-level finance jobs across India.<br /> Apply to opportunities that match your skills and<br />kickstart your career.
+                Explore entry-level finance internships across India.<br /> Apply to opportunities that match your skills and<br />kickstart your career.
               </p>
               
               <div style={{ display: 'flex', gap: '20px' }}>
@@ -1304,8 +1652,8 @@ export default function FinlystaUI() {
                     <BadgeCheck style={{ color: '#16a34a', width: '28px', height: '28px' }} strokeWidth={2} />
                   </div>
                   <div>
-                    <p style={{ fontSize: '24px', fontWeight: 'bold', color: '#1a1a1a' }}>{jobs.length}+</p>
-                    <p style={{ fontSize: '15px', color: '#666', whiteSpace: 'nowrap', margin: 0 }}>Active Jobs</p>
+                    <p style={{ fontSize: '24px', fontWeight: 'bold', color: '#1a1a1a' }}>{allJobs.length}+</p>
+                    <p style={{ fontSize: '15px', color: '#666', whiteSpace: 'nowrap', margin: 0 }}>Active Internships</p>
                   </div>
                 </div>
 
@@ -1324,7 +1672,7 @@ export default function FinlystaUI() {
                   </div>
                   <div>
                     <p style={{ fontSize: '24px', fontWeight: 'bold', color: '#1a1a1a' }}>
-                      {new Set(jobs.map(j => j.company)).size}+
+                      {new Set(allJobs.map(j => j.company)).size}+
                     </p>
                     <p style={{ fontSize: '15px', color: '#666', whiteSpace: 'nowrap', margin: 0 }}>Companies Hiring</p>
                   </div>
@@ -1383,44 +1731,114 @@ export default function FinlystaUI() {
         <div className="container-custom">
           <div style={{ background: 'white', borderRadius: '10px', border: '1px solid #e5e7eb', boxShadow: '0 1px 3px rgba(0,0,0,0.06)', padding: '24px' }}>
             <div style={{ display: 'grid', gridTemplateColumns: '1.3fr 0.9fr 0.9fr 0.7fr', gap: '10px', marginBottom: '10px' }}>
-              <div>
-                <label className="search-input-label">Search Jobs</label>
+              <div style={{ position: 'relative' }}>
+                <label className="search-input-label">Search Internships</label>
                 <div style={{ position: 'relative' }}>
                   <input
                     type="text"
-                    placeholder="Job title, skills or company"
+                    placeholder="Internship title, skills or company"
                     className="search-input-box"
+                    value={searchQuery}
+                    onChange={(e) => {
+                      const value = e.target.value
+                      setSearchQuery(value)
+                      setShowSearchSuggestions(true)
+                      runSearchQuery(value)
+                    }}
+                    onFocus={() => { if (searchQuery.trim()) setShowSearchSuggestions(true) }}
+                    onBlur={() => setTimeout(() => setShowSearchSuggestions(false), 150)}
                   />
                   <Search size={18} style={{ position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)', color: '#000000' }} />
+                  {showSearchSuggestions && getSearchSuggestions().length > 0 && (
+                    <div className="autosuggest-dropdown">
+                      {getSearchSuggestions().map((suggestion, idx) => (
+                        <div
+                          key={`${suggestion}-${idx}`}
+                          className="autosuggest-item"
+                          onMouseDown={() => {
+                            setSearchQuery(suggestion)
+                            runSearchQuery(suggestion)
+                            setShowSearchSuggestions(false)
+                          }}
+                        >
+                          <Search size={14} style={{ color: '#999', flexShrink: 0 }} />
+                          <span>{suggestion}</span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
               </div>
 
-              <div>
+              <div style={{ position: 'relative' }}>
                 <label className="search-input-label">Location</label>
                 <div style={{ position: 'relative' }}>
                   <input
                     type="text"
                     placeholder="Any location"
                     className="search-input-box"
+                    value={locationQuery}
+                    onChange={(e) => {
+                      const value = e.target.value
+                      setLocationQuery(value)
+                      setShowLocationSuggestions(true)
+                      runLocationQuery(value)
+                    }}
+                    onFocus={() => { if (locationQuery.trim()) setShowLocationSuggestions(true) }}
+                    onBlur={() => setTimeout(() => setShowLocationSuggestions(false), 150)}
                   />
                   <MapPin size={18} style={{ position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)', color: '#000000' }} />
+                  {showLocationSuggestions && getLocationSuggestions().length > 0 && (
+                    <div className="autosuggest-dropdown">
+                      {getLocationSuggestions().map((suggestion, idx) => (
+                        <div
+                          key={`${suggestion}-${idx}`}
+                          className="autosuggest-item"
+                          onMouseDown={() => {
+                            setLocationQuery(suggestion)
+                            runLocationQuery(suggestion)
+                            setShowLocationSuggestions(false)
+                          }}
+                        >
+                          <MapPin size={14} style={{ color: '#999', flexShrink: 0 }} />
+                          <span>{suggestion}</span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
               </div>
 
               <div>
                 <label className="search-input-label">Experience Level</label>
                 <div style={{ position: 'relative' }}>
-                  <select className="search-input-box" style={{ appearance: 'none', cursor: 'pointer' }}>
-                    <option>0 - 1 Yrs</option>
-                    <option>1 - 2 Yrs</option>
-                    <option>2 - 3 Yrs</option>
+                  <select 
+                    className="search-input-box" 
+                    style={{ appearance: 'none', cursor: 'pointer' }}
+                    onChange={(e) => {
+                      const value = e.target.value
+                      if (value === 'all') {
+                        setJobs(allJobs)
+                      } else {
+                        const filtered = allJobs.filter(job => job.experience === value)
+                        setJobs(filtered)
+                      }
+                    }}
+                  >
+                    <option value="all">All Experience</option>
+                    <option value="0 - 1 Yrs">0 - 1 Yrs</option>
+                    <option value="1 - 2 Yrs">1 - 2 Yrs</option>
+                    <option value="2 - 3 Yrs">2 - 3 Yrs</option>
                   </select>
                   <ChevronDown size={18} style={{ position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)', color: '#000000', pointerEvents: 'none' }} />
                 </div>
               </div>
 
               <div style={{ display: 'flex', alignItems: 'flex-end' }}>
-                <button style={{ height: '52px', borderRadius: '6px', background: '#2563EB', color: 'white', fontWeight: '700', fontSize: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', border: 'none', cursor: 'pointer', transition: 'background 0.3s', boxShadow: '0 2px 4px rgba(37, 99, 235, 0.2)', whiteSpace: 'nowrap', width: '100%' }}>
+                <button 
+                  style={{ height: '52px', borderRadius: '6px', background: '#2563EB', color: 'white', fontWeight: '700', fontSize: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', border: 'none', cursor: 'pointer', transition: 'background 0.3s', boxShadow: '0 2px 4px rgba(37, 99, 235, 0.2)', whiteSpace: 'nowrap', width: '100%' }}
+                  onClick={() => setJobs(allJobs)}
+                >
                   <Search size={18} /> Search
                 </button>
               </div>
@@ -1429,12 +1847,29 @@ export default function FinlystaUI() {
               <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '10px' }}>
                 <span style={{ fontWeight: '600', color: '#111827', fontSize: '16px', whiteSpace: 'nowrap' }}>Popular Searches:</span>
                 {popularSearches.map((search) => (
-                  <button key={search} style={{ paddingLeft: '10px', paddingRight: '10px', paddingTop: '3px', paddingBottom: '3px', borderRadius: '9999px', background: '#EBF0FF', color: '#2563EB', fontSize: '16px', fontWeight: '600', border: 'none', cursor: 'pointer' }}>
+                  <button 
+                    key={search} 
+                    style={{ paddingLeft: '10px', paddingRight: '10px', paddingTop: '3px', paddingBottom: '3px', borderRadius: '9999px', background: '#EBF0FF', color: '#2563EB', fontSize: '16px', fontWeight: '600', border: 'none', cursor: 'pointer' }}
+                    onClick={() => {
+                      const filtered = allJobs.filter(job => 
+                        job.title.toLowerCase().includes(search.toLowerCase()) ||
+                        job.company.toLowerCase().includes(search.toLowerCase())
+                      )
+                      setJobs(filtered)
+                    }}
+                  >
                     {search}
                   </button>
                 ))}
               </div>
-              <button style={{ display: 'flex', alignItems: 'center', gap: '4px', color: '#2563EB', fontSize: '18px', fontWeight: '600', background: 'none', border: 'none', cursor: 'pointer' }}>
+              <button 
+                style={{ display: 'flex', alignItems: 'center', gap: '4px', color: '#2563EB', fontSize: '18px', fontWeight: '600', background: 'none', border: 'none', cursor: 'pointer' }}
+                onClick={() => {
+                  setSearchQuery('')
+                  setLocationQuery('')
+                  setJobs(allJobs)
+                }}
+              >
                 <RotateCcw size={17} /> Clear All
               </button>
             </div>
@@ -1442,27 +1877,30 @@ export default function FinlystaUI() {
         </div>
       </section>
 
-      {/* JOBS SECTION */}
+      {/* JOBS SECTION - FIXED: Removed right column gap, reduced box space */}
       <section style={{ backgroundColor: '#f9fafb', paddingTop: '32px', paddingBottom: '48px' }}>
         <div className="container-custom">
-          <div className="filter-wrapper">
+          <div className="filter-wrapper" style={{ gap: '16px' }}>
 
-            {/* SIDEBAR FILTERS */}
-            <div className="filter-sidebar-wrapper">
-              <aside className="filter-sidebar">
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-                  <h3>FILTERS</h3>
-                  <button onClick={clearAllFilters} style={{ color: '#0052FF', fontSize: '15px', fontWeight: '600', background: 'none', border: 'none', cursor: 'pointer' }}>Clear All</button>
+            {/* SIDEBAR FILTERS - Reduced width */}
+            <div className="filter-sidebar-wrapper" style={{ width: '260px' }}>
+              <aside className="filter-sidebar" style={{ padding: '16px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+                  <h3 style={{ fontSize: '18px' }}>FILTERS</h3>
+                  <button onClick={clearAllFilters} style={{ color: '#0052FF', fontSize: '14px', fontWeight: '600', background: 'none', border: 'none', cursor: 'pointer' }}>Clear All</button>
                 </div>
 
                 {activeFilters.length > 0 && (
-                  <div style={{ marginBottom: '14px', paddingBottom: '14px', borderBottom: '1px solid #e5e7eb' }}>
-                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '5px' }}>
+                  <div style={{ marginBottom: '12px', paddingBottom: '12px', borderBottom: '1px solid #e5e7eb' }}>
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px' }}>
                       {activeFilters.map(filter => (
-                        <span key={filter} style={{ background: '#EBF0FF', color: '#0052FF', padding: '2px 8px', borderRadius: '4px', fontSize: '12px', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                        <span key={filter} style={{ background: '#EBF0FF', color: '#0052FF', padding: '2px 6px', borderRadius: '4px', fontSize: '11px', display: 'flex', alignItems: 'center', gap: '3px' }}>
                           {filter.split('-').slice(1).join(' ')}
-                          <button onClick={() => setActiveFilters(activeFilters.filter(f => f !== filter))} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '0', display: 'flex', alignItems: 'center' }}>
-                            <X size={12} />
+                          <button onClick={() => {
+                            setActiveFilters(activeFilters.filter(f => f !== filter))
+                            applyFilters()
+                          }} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '0', display: 'flex', alignItems: 'center' }}>
+                            <X size={11} />
                           </button>
                         </span>
                       ))}
@@ -1471,20 +1909,22 @@ export default function FinlystaUI() {
                 )}
 
                 {/* Job Type */}
-                <div className="filter-section">
-                  <button onClick={() => toggleSection('jobType')} className="filter-header">
-                    <h4>Job Type</h4>
-                    <ChevronDown size={20} style={{ color: '#999', transform: expandedSections.jobType ? 'rotate(180deg)' : 'none', transition: 'transform 0.3s' }} />
+                <div className="filter-section" style={{ marginBottom: '14px', paddingBottom: '12px' }}>
+                  <button onClick={() => toggleSection('jobType')} className="filter-header" style={{ marginBottom: '10px' }}>
+                    <h4 style={{ fontSize: '15px' }}>Job Type</h4>
+                    <ChevronDown size={18} style={{ color: '#999', transform: expandedSections.jobType ? 'rotate(180deg)' : 'none', transition: 'transform 0.3s' }} />
                   </button>
                   {expandedSections.jobType && (
                     <div>
                       {jobTypeOptions.map((option) => (
-                        <label key={option.label} className="filter-item">
+                        <label key={option.label} className="filter-item" style={{ marginBottom: '8px' }}>
                           <input type="checkbox" 
                             checked={activeFilters.includes(`jobType-${option.value}`)}
-                            onChange={() => toggleFilter('jobType', option.value)} />
-                          <span className="label">{option.label}</span>
-                          <span className="count">{option.count}</span>
+                            onChange={() => toggleFilter('jobType', option.value)} 
+                            style={{ width: '14px', height: '14px', marginRight: '10px' }}
+                          />
+                          <span className="label" style={{ fontSize: '14px' }}>{option.label}</span>
+                          <span className="count" style={{ fontSize: '14px', padding: '0 6px', minWidth: '20px' }}>{option.count}</span>
                         </label>
                       ))}
                     </div>
@@ -1492,10 +1932,10 @@ export default function FinlystaUI() {
                 </div>
 
                 {/* Location */}
-                <div className="filter-section">
-                  <button onClick={() => toggleSection('location')} className="filter-header">
-                    <h4>Location</h4>
-                    <ChevronDown size={20} style={{ color: '#999', transform: expandedSections.location ? 'rotate(180deg)' : 'none', transition: 'transform 0.3s' }} />
+                <div className="filter-section" style={{ marginBottom: '14px', paddingBottom: '12px' }}>
+                  <button onClick={() => toggleSection('location')} className="filter-header" style={{ marginBottom: '10px' }}>
+                    <h4 style={{ fontSize: '15px' }}>Location</h4>
+                    <ChevronDown size={18} style={{ color: '#999', transform: expandedSections.location ? 'rotate(180deg)' : 'none', transition: 'transform 0.3s' }} />
                   </button>
                   {expandedSections.location && (
                     <div>
@@ -1503,29 +1943,33 @@ export default function FinlystaUI() {
                         type="text"
                         placeholder="Search locations..."
                         className="search-input-filter"
+                        style={{ height: '34px', fontSize: '13px', marginBottom: '8px', paddingLeft: '10px' }}
                         value={locationSearch}
                         onChange={(e) => setLocationSearch(e.target.value)}
                       />
-                      <div className="filter-scroll-container">
+                      <div className="filter-scroll-container" style={{ maxHeight: '200px' }}>
                         {displayedLocations.map((option) => (
-                          <label key={option.label} className="filter-item">
+                          <label key={option.label} className="filter-item" style={{ marginBottom: '7px' }}>
                             <input type="checkbox" 
                               checked={activeFilters.includes(`location-${option.value}`)}
-                              onChange={() => toggleFilter('location', option.value)} />
-                            <span className="label">{option.label}</span>
-                            <span className="count">{option.count}</span>
+                              onChange={() => toggleFilter('location', option.value)}
+                              style={{ width: '14px', height: '14px', marginRight: '10px' }}
+                            />
+                            <span className="label" style={{ fontSize: '14px' }}>{option.label}</span>
+                            <span className="count" style={{ fontSize: '14px', padding: '0 6px', minWidth: '20px' }}>{option.count}</span>
                           </label>
                         ))}
                       </div>
                       {filteredLocations.length > 5 && (
                         <button 
                           className="show-more-btn"
+                          style={{ fontSize: '12px' }}
                           onClick={() => setShowAllLocations(!showAllLocations)}
                         >
                           {showAllLocations ? (
-                            <>Show Less <ChevronUp size={14} /></>
+                            <>Show Less <ChevronUp size={13} /></>
                           ) : (
-                            <>Show More <Plus size={14} /></>
+                            <>Show More <Plus size={13} /></>
                           )}
                         </button>
                       )}
@@ -1534,20 +1978,22 @@ export default function FinlystaUI() {
                 </div>
 
                 {/* Experience Level */}
-                <div className="filter-section">
-                  <button onClick={() => toggleSection('experience')} className="filter-header">
-                    <h4>Experience Level</h4>
-                    <ChevronDown size={20} style={{ color: '#999', transform: expandedSections.experience ? 'rotate(180deg)' : 'none', transition: 'transform 0.3s' }} />
+                <div className="filter-section" style={{ marginBottom: '14px', paddingBottom: '12px' }}>
+                  <button onClick={() => toggleSection('experience')} className="filter-header" style={{ marginBottom: '10px' }}>
+                    <h4 style={{ fontSize: '15px' }}>Experience Level</h4>
+                    <ChevronDown size={18} style={{ color: '#999', transform: expandedSections.experience ? 'rotate(180deg)' : 'none', transition: 'transform 0.3s' }} />
                   </button>
                   {expandedSections.experience && (
                     <div>
                       {experienceOptions.map((option) => (
-                        <label key={option.label} className="filter-item">
+                        <label key={option.label} className="filter-item" style={{ marginBottom: '8px' }}>
                           <input type="checkbox" 
                             checked={activeFilters.includes(`experience-${option.value}`)}
-                            onChange={() => toggleFilter('experience', option.value)} />
-                          <span className="label">{option.label}</span>
-                          <span className="count">{option.count}</span>
+                            onChange={() => toggleFilter('experience', option.value)}
+                            style={{ width: '14px', height: '14px', marginRight: '10px' }}
+                          />
+                          <span className="label" style={{ fontSize: '14px' }}>{option.label}</span>
+                          <span className="count" style={{ fontSize: '14px', padding: '0 6px', minWidth: '20px' }}>{option.count}</span>
                         </label>
                       ))}
                     </div>
@@ -1556,9 +2002,9 @@ export default function FinlystaUI() {
 
                 {/* Skills */}
                 <div className="filter-section" style={{ borderBottom: 'none', marginBottom: 0, paddingBottom: 0 }}>
-                  <button onClick={() => toggleSection('skills')} className="filter-header">
-                    <h4>Skills</h4>
-                    <ChevronDown size={20} style={{ color: '#999', transform: expandedSections.skills ? 'rotate(180deg)' : 'none', transition: 'transform 0.3s' }} />
+                  <button onClick={() => toggleSection('skills')} className="filter-header" style={{ marginBottom: '10px' }}>
+                    <h4 style={{ fontSize: '15px' }}>Skills</h4>
+                    <ChevronDown size={18} style={{ color: '#999', transform: expandedSections.skills ? 'rotate(180deg)' : 'none', transition: 'transform 0.3s' }} />
                   </button>
                   {expandedSections.skills && (
                     <div>
@@ -1566,29 +2012,33 @@ export default function FinlystaUI() {
                         type="text"
                         placeholder="Search skills..."
                         className="search-input-filter"
+                        style={{ height: '34px', fontSize: '13px', marginBottom: '8px', paddingLeft: '10px' }}
                         value={skillsSearch}
                         onChange={(e) => setSkillsSearch(e.target.value)}
                       />
-                      <div className="filter-scroll-container">
+                      <div className="filter-scroll-container" style={{ maxHeight: '200px' }}>
                         {displayedSkills.map((option) => (
-                          <label key={option.label} className="filter-item">
+                          <label key={option.label} className="filter-item" style={{ marginBottom: '7px' }}>
                             <input type="checkbox" 
                               checked={activeFilters.includes(`skills-${option.value}`)}
-                              onChange={() => toggleFilter('skills', option.value)} />
-                            <span className="label">{option.label}</span>
-                            <span className="count">{option.count}</span>
+                              onChange={() => toggleFilter('skills', option.value)}
+                              style={{ width: '14px', height: '14px', marginRight: '10px' }}
+                            />
+                            <span className="label" style={{ fontSize: '14px' }}>{option.label}</span>
+                            <span className="count" style={{ fontSize: '14px', padding: '0 6px', minWidth: '20px' }}>{option.count}</span>
                           </label>
                         ))}
                       </div>
                       {filteredSkills.length > 5 && (
                         <button 
                           className="show-more-btn"
+                          style={{ fontSize: '12px' }}
                           onClick={() => setShowAllSkills(!showAllSkills)}
                         >
                           {showAllSkills ? (
-                            <>Show Less <ChevronUp size={14} /></>
+                            <>Show Less <ChevronUp size={13} /></>
                           ) : (
-                            <>Show More <Plus size={14} /></>
+                            <>Show More <Plus size={13} /></>
                           )}
                         </button>
                       )}
@@ -1596,49 +2046,49 @@ export default function FinlystaUI() {
                   )}
                 </div>
 
-                <div className="clear-all-bottom">
-                  <button onClick={clearAllFilters}>
-                    <RotateCw size={16} />
+                <div className="clear-all-bottom" style={{ marginTop: '12px', paddingTop: '12px' }}>
+                  <button onClick={clearAllFilters} style={{ padding: '10px', fontSize: '14px' }}>
+                    <RotateCw size={14} />
                     Clear All Filters
                   </button>
                 </div>
               </aside>
             </div>
 
-            {/* JOB LISTINGS */}
-            <div className="jobs-container">
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', background: 'white', padding: '18px 24px', borderRadius: '12px', border: '1px solid #e5e7eb' }}>
-                <h2 style={{ fontWeight: 'bold', color: '#1a1a1a', fontSize: '18px' }}>{sortedJobs.length}+ Active Jobs</h2>
-                <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <span style={{ fontSize: '16px', fontWeight: 600, color: '#111827' }}>Sort by:</span>
+            {/* JOB LISTINGS - No right gap, single column */}
+            <div className="jobs-container" style={{ flex: 1, minWidth: 0 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', background: 'white', padding: '14px 20px', borderRadius: '12px', border: '1px solid #e5e7eb', gap: '12px', flexWrap: 'nowrap' }}>
+                <h2 style={{ fontWeight: 'bold', color: '#1a1a1a', fontSize: '17px', whiteSpace: 'nowrap', flexShrink: 0 }}>{jobs.length}+ Active Internships</h2>
+                <div style={{ display: 'flex', gap: '10px', alignItems: 'center', flexShrink: 0 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <span style={{ fontSize: '14px', fontWeight: 600, color: '#111827', whiteSpace: 'nowrap' }}>Sort by:</span>
                     <select 
                       value={sortBy}
                       onChange={(e) => setSortBy(e.target.value)}
                       className="sort-select"
                       style={{
-                        fontSize: '16px',
-                        height: '42px',
+                        fontSize: '14px',
+                        height: '36px',
                         color: '#000000',
-                        padding: '0 12px',
+                        padding: '0 10px',
                       }}
                     >
                       <option value="newest">Newest First</option>
                       <option value="oldest">Oldest First</option>
                     </select>
                   </div>
-                  <div style={{ display: 'flex', gap: '4px', borderLeft: '1px solid #e5e7eb', paddingLeft: '18px' }}>
+                  <div style={{ display: 'flex', gap: '3px', borderLeft: '1px solid #e5e7eb', paddingLeft: '12px' }}>
                     <button 
                       onClick={() => handleViewToggle('list')}
                       className={`view-btn ${viewType === 'list' ? 'active' : ''}`}
-                      style={{ background: viewType === 'list' ? '#0052FF' : 'white', borderColor: viewType === 'list' ? '#0052FF' : '#ddd', color: viewType === 'list' ? 'white' : '#666' }}>
-                      <List size={18} />
+                      style={{ background: viewType === 'list' ? '#0052FF' : 'white', borderColor: viewType === 'list' ? '#0052FF' : '#ddd', color: viewType === 'list' ? 'white' : '#666', padding: '4px 8px' }}>
+                      <List size={16} />
                     </button>
                     <button 
                       onClick={() => handleViewToggle('grid')}
                       className={`view-btn ${viewType === 'grid' ? 'active' : ''}`}
-                      style={{ background: viewType === 'grid' ? '#0052FF' : 'white', borderColor: viewType === 'grid' ? '#0052FF' : '#ddd', color: viewType === 'grid' ? 'white' : '#666' }}>
-                      <LayoutGrid size={18} />
+                      style={{ background: viewType === 'grid' ? '#0052FF' : 'white', borderColor: viewType === 'grid' ? '#0052FF' : '#ddd', color: viewType === 'grid' ? 'white' : '#666', padding: '4px 8px' }}>
+                      <LayoutGrid size={16} />
                     </button>
                   </div>
                 </div>
@@ -1646,59 +2096,59 @@ export default function FinlystaUI() {
 
               {/* Job Cards - List View */}
               {viewType === 'list' ? (
-                <div className="jobs-list" style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                <div className="jobs-list" style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                   {currentJobs.map((job) => (
-                    <div key={job.id} style={{ background: 'white', border: '1px solid #e5e7eb', borderRadius: '12px', padding: '20px 24px', transition: 'box-shadow 0.3s' }}>
+                    <div key={job.id} style={{ background: 'white', border: '1px solid #e5e7eb', borderRadius: '10px', padding: '16px 20px', transition: 'box-shadow 0.3s' }}>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                        <div style={{ display: 'flex', gap: '16px', flex: 1 }}>
-                          {/* Company Logo */}
-                          <div style={{ width: '52px', height: '52px', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontWeight: 'bold', fontSize: '16px', flexShrink: 0 }} className={job.logoBg || 'bg-gray-600'}>
+                        <div style={{ display: 'flex', gap: '14px', flex: 1 }}>
+                          <div style={{ width: '44px', height: '44px', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontWeight: 'bold', fontSize: '14px', flexShrink: 0 }} className={job.logoBg || 'bg-gray-600'}>
                             {job.companyLogo ? (
-                              <img src={job.companyLogo} alt={job.company} style={{ width: '40px', height: '40px', objectFit: 'contain', borderRadius: '4px' }} />
+                              <img src={job.companyLogo} alt={job.company} style={{ width: '34px', height: '34px', objectFit: 'contain', borderRadius: '4px' }} />
                             ) : (
                               job.company?.substring(0, 2).toUpperCase() || 'IN'
                             )}
                           </div>
                           
                           <div style={{ flex: 1 }}>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '4px' }}>
-                              <h3 className="job-title">{job.title}</h3>
-                              {job.isNew && <span className="new-badge">New</span>}
-                              <span className="posted-time" style={{ marginLeft: 'auto' }}>{job.timeAgo || job.postedTime || 'Recently'}</span>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '2px', flexWrap: 'wrap' }}>
+                              <h3 className="job-title" style={{ fontSize: '18px' }}>{job.title}</h3>
+                              {job.isNew && <span className="new-badge" style={{ fontSize: '10px', padding: '1px 8px' }}>New</span>}
+                              <span className="posted-time" style={{ marginLeft: 'auto', fontSize: '13px' }}>{job.timeAgo || job.postedTime || 'Recently'}</span>
                             </div>
-                            <p className="company-name company-name-gap">{job.company}</p>
+                            <p className="company-name company-name-gap" style={{ fontSize: '15px', marginBottom: '4px' }}>{job.company}</p>
                             
-                            <div className="job-details-row job-details-gap">
-                              <div className="job-location">
-                                <MapPin style={{ width: '15px', height: '15px', flexShrink: 0 }} />
+                            <div className="job-details-row job-details-gap" style={{ gap: '12px', marginBottom: '8px', marginTop: '2px' }}>
+                              <div className="job-location" style={{ fontSize: '14px' }}>
+                                <MapPin style={{ width: '13px', height: '13px', flexShrink: 0 }} />
                                 <span>{job.location}</span>
                               </div>
-                              <div className="job-detail">
-                                <Building style={{ width: '15px', height: '15px', flexShrink: 0 }} />
+                              <div className="job-detail" style={{ fontSize: '14px' }}>
+                                <Building style={{ width: '13px', height: '13px', flexShrink: 0 }} />
                                 <span>{job.type}</span>
                               </div>
-                              <div className="job-detail">
-                                <Timer style={{ width: '15px', height: '15px', flexShrink: 0 }} />
+                              <div className="job-detail" style={{ fontSize: '14px' }}>
+                                <Timer style={{ width: '13px', height: '13px', flexShrink: 0 }} />
                                 <span>{job.experience || '0 - 1 Yrs'}</span>
                               </div>
                             </div>
                             
-                            <p className="job-description" style={{ marginBottom: '12px' }}>
+                            <p className="job-description" style={{ fontSize: '14px', marginBottom: '10px' }}>
                               {job.shortDescription || job.description || job.overview || 'No description available'}
                             </p>
                             
-                            <div style={{ display: 'flex', alignItems: 'center', marginTop: '14px', width: '100%' }}>
-                              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', flex: 1 }}>
+                            <div style={{ display: 'flex', alignItems: 'center', marginTop: '10px', width: '100%' }}>
+                              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px', flex: 1 }}>
                                 {job.skills?.slice(0, 4).map((skill) => (
-                                  <span key={skill} className="skill-badge">{skill}</span>
+                                  <span key={skill} className="skill-badge" style={{ fontSize: '11px', padding: '2px 8px' }}>{normalizeSkill(skill)}</span>
                                 ))}
                                 {job.skills?.length > 4 && (
-                                  <span style={{ fontSize: '12px', color: '#666', display: 'flex', alignItems: 'center' }}>+{job.skills.length - 4}</span>
+                                  <span style={{ fontSize: '11px', color: '#666', display: 'flex', alignItems: 'center' }}>+{job.skills.length - 4}</span>
                                 )}
                               </div>
                               <button 
                                 className="view-details-btn" 
                                 onClick={() => handleViewDetails(job.slug)}
+                                style={{ padding: '4px 16px', fontSize: '14px', marginLeft: '12px' }}
                               >
                                 View Details
                               </button>
@@ -1706,12 +2156,12 @@ export default function FinlystaUI() {
                           </div>
                         </div>
                         
-                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '4px', flexShrink: 0, marginLeft: '12px' }}>
+                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '4px', flexShrink: 0, marginLeft: '10px' }}>
                           <button 
                             onClick={() => toggleSaveJob(job.id)}
-                            style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '4px' }}
+                            style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '2px' }}
                           >
-                            <Bookmark className={`bookmark-icon ${savedJobs.includes(job.id) ? 'saved' : ''}`} />
+                            <Bookmark className={`bookmark-icon ${savedJobs.some(j => j.id === job.id) ? 'saved' : ''}`} style={{ width: '20px', height: '20px' }} />
                           </button>
                         </div>
                       </div>
@@ -1719,71 +2169,71 @@ export default function FinlystaUI() {
                   ))}
                 </div>
               ) : (
-                /* Grid View */
-                <div className="jobs-list" style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '20px' }}>
+                <div className="jobs-list" style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '16px' }}>
                   {currentJobs.map((job) => (
-                    <div key={job.id} className="grid-job-card">
-                      <div className="grid-job-header">
+                    <div key={job.id} className="grid-job-card" style={{ padding: '16px' }}>
+                      <div className="grid-job-header" style={{ marginBottom: '8px' }}>
                         <div className="grid-job-company">
-                          <div className={`grid-job-logo ${job.logoBg || 'bg-gray-600'}`}>
+                          <div className={`grid-job-logo ${job.logoBg || 'bg-gray-600'}`} style={{ width: '40px', height: '40px', fontSize: '14px' }}>
                             {job.companyLogo ? (
-                              <img src={job.companyLogo} alt={job.company} style={{ width: '32px', height: '32px', objectFit: 'contain', borderRadius: '4px' }} />
+                              <img src={job.companyLogo} alt={job.company} style={{ width: '28px', height: '28px', objectFit: 'contain', borderRadius: '4px' }} />
                             ) : (
                               job.company?.substring(0, 2).toUpperCase() || 'IN'
                             )}
                           </div>
                           <div className="grid-job-info">
-                            <h3 className="grid-job-title">{job.title}</h3>
-                            <span className="grid-job-company-name">{job.company}</span>
+                            <h3 className="grid-job-title" style={{ fontSize: '16px' }}>{job.title}</h3>
+                            <span className="grid-job-company-name" style={{ fontSize: '13px' }}>{job.company}</span>
                             <div className="grid-job-badges">
-                              {job.isNew && <span className="grid-job-new-badge">New</span>}
+                              {job.isNew && <span className="grid-job-new-badge" style={{ fontSize: '8px', padding: '1px 6px' }}>New</span>}
                             </div>
                           </div>
                         </div>
                         <div className="grid-job-actions">
                           <button 
                             onClick={() => toggleSaveJob(job.id)}
-                            className={`grid-job-bookmark ${savedJobs.includes(job.id) ? 'saved' : ''}`}
+                            className={`grid-job-bookmark ${savedJobs.some(j => j.id === job.id) ? 'saved' : ''}`}
                           >
-                            <Bookmark style={{ width: '18px', height: '18px' }} />
+                            <Bookmark style={{ width: '16px', height: '16px' }} />
                           </button>
-                          <span className="grid-job-time">{job.timeAgo || job.postedTime || 'Recently'}</span>
+                          <span className="grid-job-time" style={{ fontSize: '11px' }}>{job.timeAgo || job.postedTime || 'Recently'}</span>
                         </div>
                       </div>
                       
-                      <div className="grid-job-details">
-                        <div className="grid-job-location-text">
-                          <MapPin style={{ width: '15px', height: '15px', flexShrink: 0 }} />
+                      <div className="grid-job-details" style={{ gap: '2px', marginBottom: '8px' }}>
+                        <div className="grid-job-location-text" style={{ fontSize: '13px' }}>
+                          <MapPin style={{ width: '13px', height: '13px', flexShrink: 0 }} />
                           <span>{job.location}</span>
                         </div>
-                        <div className="grid-job-type-text">
+                        <div className="grid-job-type-text" style={{ fontSize: '13px' }}>
                           <span>
-                            <Building style={{ width: '15px', height: '15px' }} />
+                            <Building style={{ width: '13px', height: '13px' }} />
                             {job.type}
                           </span>
                           <span>
-                            <Timer style={{ width: '15px', height: '15px' }} />
+                            <Timer style={{ width: '13px', height: '13px' }} />
                             {job.experience || '0 - 1 Yrs'}
                           </span>
                         </div>
                       </div>
                       
-                      <p className="grid-job-description">
+                      <p className="grid-job-description" style={{ fontSize: '13px', marginBottom: '8px' }}>
                         {job.shortDescription || job.description || job.overview || 'No description available'}
                       </p>
                       
-                      <div className="grid-job-footer">
-                        <div className="grid-job-skills">
+                      <div className="grid-job-footer" style={{ paddingTop: '8px' }}>
+                        <div className="grid-job-skills" style={{ gap: '3px' }}>
                           {job.skills?.slice(0, 3).map((skill) => (
-                            <span key={skill} className="grid-job-skill">{skill}</span>
+                            <span key={skill} className="grid-job-skill" style={{ fontSize: '10px', padding: '2px 8px' }}>{normalizeSkill(skill)}</span>
                           ))}
                           {job.skills?.length > 3 && (
-                            <span className="grid-job-skill-count">+{job.skills.length - 3}</span>
+                            <span className="grid-job-skill-count" style={{ fontSize: '10px' }}>+{job.skills.length - 3}</span>
                           )}
                         </div>
                         <button 
                           className="grid-job-view-btn" 
                           onClick={() => handleViewDetails(job.slug)}
+                          style={{ padding: '4px 14px', fontSize: '12px' }}
                         >
                           View Details
                         </button>
@@ -1793,8 +2243,7 @@ export default function FinlystaUI() {
                 </div>
               )}
 
-              {/* Pagination */}
-              <div style={{ display: 'flex', justifyContent: 'center', gap: '8px', marginTop: '40px' }}>
+              <div style={{ display: 'flex', justifyContent: 'center', gap: '6px', marginTop: '32px' }}>
                 {[...Array(totalPages)].map((_, index) => {
                   const pageNumber = index + 1
                   return (
@@ -1802,6 +2251,7 @@ export default function FinlystaUI() {
                       key={pageNumber} 
                       onClick={() => handlePageChange(pageNumber)} 
                       className={`pagination-number ${currentPage === pageNumber ? 'active' : ''}`}
+                      style={{ width: '38px', height: '38px', fontSize: '14px' }}
                     >
                       {pageNumber}
                     </button>
@@ -1811,6 +2261,7 @@ export default function FinlystaUI() {
                   onClick={() => handlePageChange(Math.min(totalPages, currentPage + 1))}
                   disabled={currentPage === totalPages}
                   className="pagination-btn"
+                  style={{ padding: '6px 14px', fontSize: '14px' }}
                 >
                   Next
                 </button>
@@ -1831,7 +2282,7 @@ export default function FinlystaUI() {
             </div>
             <div style={{ flex: 1 }}>
               <h3 style={{ fontSize: '20px', fontWeight: 'bold', color: '#1a1a1a', marginBottom: '2px' }}>Don't miss new opportunities!</h3>
-              <p style={{ color: '#000000', fontSize: '16px' }}>Get daily alerts for the latest entry-level finance jobs.</p>
+              <p style={{ color: '#000000', fontSize: '16px' }}>Get daily alerts for the latest entry-level finance internships.</p>
             </div>
             <form onSubmit={handleEmailSubmit} style={{ display: 'flex', alignItems: 'flex-start', gap: '18px', flexShrink: 0 }}>
               <div style={{ display: 'flex', flexDirection: 'column' }}>
