@@ -59,14 +59,37 @@ const getCompanyColor = (company: string) => {
   return colors[index];
 };
 
+// FIXED: Format posted time correctly
 const formatPostedTime = (date: string): string => {
   if (!date) return 'Recently';
+  
   const postedDate = new Date(date);
   const now = new Date();
+  
+  if (isNaN(postedDate.getTime())) return 'Recently';
+  
+  // Check if the posted date is today but at midnight (00:00:00)
+  // This handles cases where the date is stored without time
+  const isMidnight = postedDate.getHours() === 0 && 
+                     postedDate.getMinutes() === 0 && 
+                     postedDate.getSeconds() === 0;
+  
+  const isToday = postedDate.getDate() === now.getDate() && 
+                  postedDate.getMonth() === now.getMonth() && 
+                  postedDate.getFullYear() === now.getFullYear();
+  
+  // If it's midnight today, treat it as "Just now"
+  if (isMidnight && isToday) {
+    return 'Just now';
+  }
+  
   const diffMs = now.getTime() - postedDate.getTime();
   const diffMins = Math.floor(diffMs / 60000);
   const diffHours = Math.floor(diffMs / 3600000);
   const diffDays = Math.floor(diffMs / 86400000);
+  
+  // If the date is in the future, treat as "Just now"
+  if (diffMs < 0) return 'Just now';
   
   if (diffMins < 1) return 'Just now';
   if (diffMins < 60) return `${diffMins}m ago`;
@@ -229,6 +252,9 @@ export default function JobDetailClient({ opportunity, relatedJobs = [] }: JobDe
     }
   };
 
+  // Calculate time ago once when component renders
+  const timeAgo = formatPostedTime(opportunity.postedAt || new Date().toISOString());
+
   const job: Job = {
     id: opportunity.id,
     slug: opportunity.slug,
@@ -252,11 +278,11 @@ export default function JobDetailClient({ opportunity, relatedJobs = [] }: JobDe
     isTrending: opportunity.isTrending || false,
     isActivelyHiring: opportunity.isActivelyHiring || true,
     postedAt: opportunity.postedAt || new Date().toISOString(),
-    postedTime: opportunity.postedTime || formatPostedTime(opportunity.postedAt || new Date().toISOString()),
+    postedTime: opportunity.postedTime || timeAgo,
     views: opportunity.views || 0,
     applyClicks: opportunity.applyClicks || 0,
     logoBg: getCompanyColor(opportunity.company || ''),
-    timeAgo: formatPostedTime(opportunity.postedAt || new Date().toISOString()),
+    timeAgo: timeAgo,
     description: opportunity.shortDescription || opportunity.overview?.substring(0, 200) || 'No description available',
     aboutCompany: opportunity.aboutCompany || '',
     responsibilities: opportunity.responsibilities || '',
@@ -279,13 +305,13 @@ export default function JobDetailClient({ opportunity, relatedJobs = [] }: JobDe
                 <img src="/Finlysta.png" alt="Finlysta" className="h-10 w-auto" />
               </div>
               <nav className="hidden md:flex gap-8">
-                <a href="#" className="text-gray-900 font-bold hover:text-blue-600">Home</a>
-                <a href="#" className="text-blue-600 font-bold border-b-2 border-blue-600 pb-1">Jobs</a>
-                <a href="#" className="text-gray-900 font-bold hover:text-blue-600">Internships</a>
-                <a href="#" className="text-gray-900 font-bold hover:text-blue-600">Learning Hub</a>
-                <a href="#" className="text-gray-900 font-bold hover:text-blue-600">Interview Prep</a>
-                <a href="#" className="text-gray-900 font-bold hover:text-blue-600">Blogs</a>
-                <a href="#" className="text-gray-900 font-bold hover:text-blue-600">Roadmap</a>
+                <a href="/" className="text-gray-900 font-bold hover:text-blue-600">Home</a>
+                <a href="/jobs" className="text-blue-600 font-bold border-b-2 border-blue-600 pb-1">Jobs</a>
+                <a href="/internships" className="text-gray-900 font-bold hover:text-blue-600">Internships</a>
+                <a href="/learning-hub" className="text-gray-900 font-bold hover:text-blue-600">Learning Hub</a>
+                <a href="/interview-prep" className="text-gray-900 font-bold hover:text-blue-600">Interview Prep</a>
+                <a href="/blogs" className="text-gray-900 font-bold hover:text-blue-600">Blogs</a>
+                <a href="/roadmap" className="text-gray-900 font-bold hover:text-blue-600">Roadmap</a>
               </nav>
             </div>
             <div className="flex items-center gap-4">
