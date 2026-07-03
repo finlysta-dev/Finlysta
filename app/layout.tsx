@@ -23,12 +23,12 @@ export const metadata: Metadata = {
   metadataBase: new URL("https://finlysta.com/"),
 
   title: {
-    default: "Finlysta - Finance Jobs, Internships & Career Platform",
-    template: "%s | Finlysta",
+    default: "Finlysta - Finance Jobs, Internships & Career Platform for Freshers",
+    template: "%s | Finlysta - Finance Career Platform",
   },
 
   description:
-    "Discover finance jobs, internships, career roadmaps, interview preparation, and learning resources for finance students and freshers.",
+    "Find entry-level finance jobs, internships, career roadmaps, interview preparation, and learning resources for finance students and freshers in India.",
 
   keywords: [
     "finance jobs",
@@ -38,6 +38,12 @@ export const metadata: Metadata = {
     "finance interview prep",
     "finance learning",
     "finance roadmap",
+    "entry level finance jobs",
+    "fresher finance jobs India",
+    "accounting jobs for freshers",
+    "finance graduate jobs",
+    "finance career guidance",
+    "finance skill development",
   ],
 
   authors: [{ name: "Finlysta" }],
@@ -90,42 +96,39 @@ export const metadata: Metadata = {
   },
 
   openGraph: {
-    title: "Finlysta - Finance Jobs, Internships & Career Platform",
-
+    title: "Finlysta - Finance Jobs, Internships & Career Platform for Freshers",
     description:
-      "Discover finance jobs, internships, career roadmaps, interview preparation, and learning resources for finance students and freshers.",
-
+      "Find entry-level finance jobs, internships, career roadmaps, interview preparation, and learning resources for finance students and freshers in India.",
     url: "https://finlysta.com",
-
     siteName: "Finlysta",
-
     locale: "en_IN",
-
     type: "website",
-
     images: [
       {
         url: "https://finlysta.com/og-image.png",
         width: 1200,
         height: 630,
-        alt: "Finlysta - Finance Jobs, Internships & Career Platform",
+        alt: "Finlysta - Finance Jobs, Internships & Career Platform for Freshers",
       },
     ],
   },
 
   twitter: {
     card: "summary_large_image",
-
-    title: "Finlysta - Finance Jobs, Internships & Career Platform",
-
+    title: "Finlysta - Finance Jobs, Internships & Career Platform for Freshers",
     description:
-      "Discover finance jobs, internships, career roadmaps, interview preparation, and learning resources for finance students and freshers.",
-
+      "Find entry-level finance jobs, internships, career roadmaps, interview preparation, and learning resources for finance students and freshers in India.",
     images: ["https://finlysta.com/og-image.png"],
-
     creator: "@Finlysta",
-
     site: "@Finlysta",
+  },
+
+  // Additional SEO improvements
+  other: {
+    "geo.region": "IN-OR",
+    "geo.placename": "Bhubaneswar",
+    "geo.position": "20.2961;85.8245",
+    "ICBM": "20.2961, 85.8245",
   },
 };
 
@@ -142,36 +145,22 @@ export default function RootLayout({
   return (
     <html lang="en-IN" suppressHydrationWarning>
       <head>
-        {/* Performance */}
+        {/* ============================================
+            PERFORMANCE OPTIMIZATIONS
+            ============================================ */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
-
         <link
           rel="preconnect"
           href="https://fonts.gstatic.com"
           crossOrigin="anonymous"
         />
+        <link rel="preconnect" href="https://www.googletagmanager.com" />
+        <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
+        <link rel="dns-prefetch" href="https://fonts.gstatic.com" />
+        <link rel="dns-prefetch" href="https://www.google-analytics.com" />
+        <link rel="dns-prefetch" href="https://www.googletagmanager.com" />
 
-        <link
-          rel="preconnect"
-          href="https://www.googletagmanager.com"
-        />
-
-        <link
-          rel="dns-prefetch"
-          href="https://fonts.googleapis.com"
-        />
-
-        <link
-          rel="dns-prefetch"
-          href="https://fonts.gstatic.com"
-        />
-
-        <link
-          rel="dns-prefetch"
-          href="https://www.google-analytics.com"
-        />
-
-        {/* Preload Logo */}
+        {/* Preload Critical Assets */}
         <link
           rel="preload"
           href="/Finlysta.png"
@@ -180,123 +169,197 @@ export default function RootLayout({
           fetchPriority="high"
         />
 
-        {/* Referrer */}
-        <meta
-          name="referrer"
-          content="strict-origin-when-cross-origin"
-        />
+        {/* ============================================
+            LLMS.TXT - For AI Crawlers
+            ============================================ */}
+        <link rel="llms" href="/llms.txt" />
 
-        {/* Favicons */}
+        {/* ============================================
+            SEO META TAGS
+            ============================================ */}
+        <meta name="referrer" content="strict-origin-when-cross-origin" />
+        <meta name="theme-color" content="#2563EB" />
+        <meta name="mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+        {/* ============================================
+            FAVICONS
+            ============================================ */}
         <link
           rel="apple-touch-icon"
           sizes="180x180"
           href="/apple-touch-icon.png"
         />
-
         <link
           rel="icon"
           type="image/png"
           sizes="32x32"
           href="/favicon-32x32.png"
         />
-
         <link
           rel="icon"
           type="image/png"
           sizes="16x16"
           href="/favicon-16x16.png"
         />
-
-        <link
-          rel="icon"
-          href="/favicon.ico"
-          sizes="any"
-        />
-
-        <link
-          rel="icon"
-          href="/icon.svg"
-          type="image/svg+xml"
-        />
-
+        <link rel="icon" href="/favicon.ico" sizes="any" />
+        <link rel="icon" href="/icon.svg" type="image/svg+xml" />
         <link rel="manifest" href="/site.webmanifest" />
 
-        {/* Organization Schema */}
+        {/* ============================================
+            SCHEMA MARKUP - ENHANCED FOR SEO
+            ============================================ */}
+
+        {/* 1. Organization Schema - Complete with Address & Social */}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
             __html: JSON.stringify({
               "@context": "https://schema.org",
-
               "@type": "Organization",
-
               name: "Finlysta",
-
-              alternateName:
-                "Finlysta - Finance Career Platform",
-
+              alternateName: "Finlysta - Finance Career Platform",
               url: "https://finlysta.com",
-
               logo: "https://finlysta.com/Finlysta.png",
-
               description:
                 "Finance career platform helping students and freshers discover jobs, internships, learning resources, and interview preparation opportunities.",
-
               foundingDate: "2026",
-
               foundingLocation: "India",
-
               areaServed: "India",
-
+              address: {
+                "@type": "PostalAddress",
+                streetAddress: "Finance District",
+                addressLocality: "Bhubaneswar",
+                addressRegion: "Odisha",
+                postalCode: "751001",
+                addressCountry: "IN",
+              },
               sameAs: [
                 "https://www.linkedin.com/company/finlysta",
                 "https://twitter.com/Finlysta",
                 "https://www.instagram.com/Finlysta.in/",
+                "https://facebook.com/finlysta",
+                "https://youtube.com/@finlysta",
               ],
-
               contactPoint: {
                 "@type": "ContactPoint",
-
                 contactType: "customer support",
-
+                email: "support@finlysta.com",
                 availableLanguage: ["English", "Hindi"],
-
                 responseTime: "PT24H",
-
                 url: "https://finlysta.com/contact",
               },
             }),
           }}
         />
 
-        {/* Website Schema */}
+        {/* 2. LocalBusiness Schema - For Local SEO */}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
             __html: JSON.stringify({
               "@context": "https://schema.org",
-
-              "@type": "WebSite",
-
+              "@type": "LocalBusiness",
               name: "Finlysta",
-
-              alternateName:
-                "Finance Jobs, Internships & Career Platform",
-
+              description:
+                "Finance career platform helping students and freshers discover jobs, internships, learning resources, and interview preparation opportunities.",
               url: "https://finlysta.com",
+              logo: "https://finlysta.com/Finlysta.png",
+              address: {
+                "@type": "PostalAddress",
+                streetAddress: "Finance District",
+                addressLocality: "Bhubaneswar",
+                addressRegion: "Odisha",
+                postalCode: "751001",
+                addressCountry: "IN",
+              },
+              geo: {
+                "@type": "GeoCoordinates",
+                latitude: "20.2961",
+                longitude: "85.8245",
+              },
+              areaServed: "IN",
+              priceRange: "₹",
+              openingHours: "Mo-Fr 09:00-18:00",
+              sameAs: [
+                "https://www.linkedin.com/company/finlysta",
+                "https://twitter.com/Finlysta",
+                "https://www.instagram.com/Finlysta.in/",
+                "https://facebook.com/finlysta",
+                "https://youtube.com/@finlysta",
+              ],
             }),
           }}
         />
 
-        {/* Navigation Schema */}
+        {/* 3. Website Schema */}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
             __html: JSON.stringify({
               "@context": "https://schema.org",
+              "@type": "WebSite",
+              name: "Finlysta",
+              alternateName: "Finance Jobs, Internships & Career Platform",
+              url: "https://finlysta.com",
+              potentialAction: {
+                "@type": "SearchAction",
+                target: {
+                  "@type": "EntryPoint",
+                  urlTemplate:
+                    "https://finlysta.com/jobs?search={search_term_string}",
+                },
+                "query-input": "required name=search_term_string",
+              },
+            }),
+          }}
+        />
 
+        {/* 4. Breadcrumb Schema - Helps with search result display */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "BreadcrumbList",
+              itemListElement: [
+                {
+                  "@type": "ListItem",
+                  position: 1,
+                  name: "Home",
+                  item: "https://finlysta.com/",
+                },
+                {
+                  "@type": "ListItem",
+                  position: 2,
+                  name: "Finance Jobs",
+                  item: "https://finlysta.com/jobs",
+                },
+                {
+                  "@type": "ListItem",
+                  position: 3,
+                  name: "Internships",
+                  item: "https://finlysta.com/internships",
+                },
+                {
+                  "@type": "ListItem",
+                  position: 4,
+                  name: "Learning Hub",
+                  item: "https://finlysta.com/learning-hub",
+                },
+              ],
+            }),
+          }}
+        />
+
+        {/* 5. Navigation Schema - Improved with complete structure */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
               "@type": "ItemList",
-
               itemListElement: [
                 {
                   "@type": "SiteNavigationElement",
@@ -334,10 +397,25 @@ export default function RootLayout({
                   name: "Blogs",
                   url: "https://finlysta.com/blogs",
                 },
+                {
+                  "@type": "SiteNavigationElement",
+                  position: 7,
+                  name: "About",
+                  url: "https://finlysta.com/about",
+                },
+                {
+                  "@type": "SiteNavigationElement",
+                  position: 8,
+                  name: "Contact",
+                  url: "https://finlysta.com/contact",
+                },
               ],
             }),
           }}
         />
+
+        {/* 6. JobPosting Schema - For job listings (add dynamically on job pages) */}
+        {/* This should be added on individual job pages, not globally */}
       </head>
 
       <body suppressHydrationWarning>
@@ -353,7 +431,9 @@ export default function RootLayout({
           </Suspense>
         </Providers>
 
-        {/* Google Analytics */}
+        {/* ============================================
+            GOOGLE ANALYTICS - ENHANCED
+            ============================================ */}
         <Script
           src={`https://www.googletagmanager.com/gtag/js?id=${gaId}`}
           strategy="lazyOnload"
@@ -377,40 +457,56 @@ export default function RootLayout({
                 send_page_view: true,
                 anonymize_ip: true,
                 allow_google_signals: true,
-                allow_enhanced_conversions: true
+                allow_enhanced_conversions: true,
+                linker: {
+                  domains: ['finlysta.com']
+                }
               });
 
+              // Track all page views including SPA navigation
               if (typeof window !== 'undefined') {
                 const originalPushState = history.pushState;
                 const originalReplaceState = history.replaceState;
 
                 history.pushState = function () {
                   originalPushState.apply(this, arguments);
-
                   gtag('config', '${gaId}', {
-                    page_path: window.location.pathname
+                    page_path: window.location.pathname + window.location.search
                   });
                 };
 
                 history.replaceState = function () {
                   originalReplaceState.apply(this, arguments);
-
                   gtag('config', '${gaId}', {
-                    page_path: window.location.pathname
+                    page_path: window.location.pathname + window.location.search
                   });
                 };
 
                 window.addEventListener('popstate', function () {
                   gtag('config', '${gaId}', {
-                    page_path: window.location.pathname
+                    page_path: window.location.pathname + window.location.search
                   });
                 });
               }
+
+              // Track outbound link clicks
+              document.addEventListener('click', function(e) {
+                const target = e.target.closest('a');
+                if (target && target.href && !target.href.startsWith(window.location.origin)) {
+                  gtag('event', 'click', {
+                    event_category: 'outbound',
+                    event_label: target.href,
+                    transport_type: 'beacon'
+                  });
+                }
+              });
             `,
           }}
         />
 
-        {/* Amplitude Analytics - CDN Script (optional fallback) */}
+        {/* ============================================
+            AMPLITUDE ANALYTICS
+            ============================================ */}
         {amplitudeApiKey && (
           <Script
             id="amplitude-init"

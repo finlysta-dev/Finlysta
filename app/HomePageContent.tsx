@@ -13,7 +13,7 @@ import {
   Building, Award as AwardIcon, FolderOpen, GitBranch, BookMarked, AlertCircle,
   TrendingUp as TrendingUpIcon, BadgeCheck, ChartLine, Plus, Minus, Check,
   FileSpreadsheet, FileText, ClipboardList, MessageSquare, Eye, BarChart4, Gift,
-  User
+  User, Phone, MapPin as MapPinIcon, Mail as MailIcon
 } from "lucide-react";
 import Link from "next/link";
 import Header from "./components/Header";
@@ -785,8 +785,7 @@ export default function HomePageContent() {
 
   return (
     <div className="min-h-screen font-sans">
-      {/* Organization structured data: helps search engines associate the
-          site with the Finlysta brand, logo, and official social profiles */}
+      {/* Organization structured data */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
@@ -802,10 +801,82 @@ export default function HomePageContent() {
               "https://www.linkedin.com/company/finlysta",
               "https://twitter.com/Finlysta",
               "https://instagram.com/finlysta.in",
+              "https://facebook.com/finlysta",
+              "https://youtube.com/@finlysta"
             ],
+            contactPoint: {
+              "@type": "ContactPoint",
+              email: "support@finlysta.com",
+              contactType: "customer service",
+              availableLanguage: ["English", "Hindi"]
+            },
+            address: {
+              "@type": "PostalAddress",
+              streetAddress: "Finance District",
+              addressLocality: "Bhubaneswar",
+              addressRegion: "Odisha",
+              postalCode: "751001",
+              addressCountry: "IN"
+            }
           }),
         }}
       />
+
+      {/* Local Business Schema */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "LocalBusiness",
+            "name": "Finlysta",
+            "image": "https://www.finlysta.com/Finlysta.png",
+            "description": "The job board built exclusively for entry-level financial roles and internships in India.",
+            "url": "https://www.finlysta.com",
+            "email": "support@finlysta.com",
+            "address": {
+              "@type": "PostalAddress",
+              "streetAddress": "Finance District",
+              "addressLocality": "Bhubaneswar",
+              "addressRegion": "Odisha",
+              "postalCode": "751001",
+              "addressCountry": "IN"
+            },
+            "priceRange": "₹",
+            "openingHours": "Mo-Fr 09:00-18:00",
+            "sameAs": [
+              "https://www.linkedin.com/company/finlysta",
+              "https://twitter.com/Finlysta",
+              "https://instagram.com/finlysta.in",
+              "https://facebook.com/finlysta",
+              "https://youtube.com/@finlysta"
+            ],
+            "areaServed": "IN"
+          }),
+        }}
+      />
+
+      {/* WebSite Schema */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "WebSite",
+            "name": "Finlysta",
+            "url": "https://www.finlysta.com",
+            "potentialAction": {
+              "@type": "SearchAction",
+              "target": {
+                "@type": "EntryPoint",
+                "urlTemplate": "https://www.finlysta.com/jobs?search={search_term_string}"
+              },
+              "query-input": "required name=search_term_string"
+            }
+          }),
+        }}
+      />
+
       <Header />
 
       <main>
@@ -829,13 +900,13 @@ export default function HomePageContent() {
                 <div className="flex flex-wrap gap-4 mt-8">
                   <button 
                     onClick={() => handleHeroCTA('find_job')}
-                    style={{ backgroundColor: '#2563EB', color: '#ffffff', borderRadius: '16px', padding: '14px 32px', fontWeight: 600, fontSize: '1rem', border: 'none', cursor: 'pointer', boxShadow: '0 4px 14px rgba(37,99,235,0.25)' }}
+                    className="bg-blue-600 hover:bg-blue-700 text-white rounded-2xl px-8 py-3.5 font-semibold text-base transition-all shadow-lg shadow-blue-200"
                   >
                     Find My First Job →
                   </button>
                   <button 
                     onClick={() => handleHeroCTA('explore_internships')}
-                    style={{ backgroundColor: '#ffffff', color: '#2563EB', borderRadius: '16px', padding: '14px 32px', fontWeight: 600, fontSize: '1rem', border: '2px solid #2563EB', cursor: 'pointer', boxShadow: '0 4px 14px rgba(37,99,235,0.10)' }}
+                    className="bg-white hover:bg-blue-50 text-blue-600 rounded-2xl px-8 py-3.5 font-semibold text-base border-2 border-blue-600 transition-all"
                   >
                     Explore Internships →
                   </button>
@@ -950,12 +1021,13 @@ export default function HomePageContent() {
                 <p className="text-sm text-slate-600 leading-relaxed max-w-xs">
                   The job board built exclusively for entry-level financial roles and internships in India.
                 </p>
+                {/* REMOVED: Business Contact Information - email, address, reply time removed from here */}
                 <div className="flex gap-3">
                   <a 
                     href="https://www.linkedin.com/company/finlysta" 
                     target="_blank" 
                     rel="noopener noreferrer" 
-                    className="w-9 h-9 bg-slate-100 text-slate-600 hover:bg-[#0077B5] hover:text-white rounded-lg flex items-center justify-center transition-all"
+                    className="w-9 h-9 bg-slate-100 text-slate-600 hover:bg-[#0077B5] hover:text-black rounded-lg flex items-center justify-center transition-all"
                     aria-label="Finlysta on LinkedIn"
                     onClick={() => handleSocialClick('linkedin')}
                   >
@@ -965,7 +1037,7 @@ export default function HomePageContent() {
                     href="https://twitter.com/Finlysta" 
                     target="_blank" 
                     rel="noopener noreferrer" 
-                    className="w-9 h-9 bg-slate-100 text-slate-600 hover:bg-[#1DA1F2] hover:text-white rounded-lg flex items-center justify-center transition-all"
+                    className="w-9 h-9 bg-slate-100 text-slate-600 hover:bg-[#1DA1F2] hover:text-black rounded-lg flex items-center justify-center transition-all"
                     aria-label="Finlysta on Twitter"
                     onClick={() => handleSocialClick('twitter')}
                   >
@@ -975,11 +1047,31 @@ export default function HomePageContent() {
                     href="https://instagram.com/finlysta.in" 
                     target="_blank" 
                     rel="noopener noreferrer" 
-                    className="w-9 h-9 bg-slate-100 text-slate-600 hover:bg-[#E4405F] hover:text-white rounded-lg flex items-center justify-center transition-all"
+                    className="w-9 h-9 bg-slate-100 text-slate-600 hover:bg-[#E4405F] hover:text-black rounded-lg flex items-center justify-center transition-all"
                     aria-label="Finlysta on Instagram"
                     onClick={() => handleSocialClick('instagram')}
                   >
                     <Instagram size={16} />
+                  </a>
+                  <a 
+                    href="https://facebook.com/finlysta" 
+                    target="_blank" 
+                    rel="noopener noreferrer" 
+                    className="w-9 h-9 bg-slate-100 text-slate-600 hover:bg-[#1877F2] hover:text-black rounded-lg flex items-center justify-center transition-all"
+                    aria-label="Finlysta on Facebook"
+                    onClick={() => handleSocialClick('facebook')}
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+                  </a>
+                  <a 
+                    href="https://youtube.com/@finlysta" 
+                    target="_blank" 
+                    rel="noopener noreferrer" 
+                    className="w-9 h-9 bg-slate-100 text-slate-600 hover:bg-[#FF0000] hover:text-black rounded-lg flex items-center justify-center transition-all"
+                    aria-label="Finlysta on YouTube"
+                    onClick={() => handleSocialClick('youtube')}
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
                   </a>
                 </div>
               </div>
@@ -1078,6 +1170,7 @@ export default function HomePageContent() {
                   >
                     <Mail size={13} /> support@finlysta.com
                   </a>
+                  {/* KEPT: Reply within 24 hours in Support section */}
                   <p className="text-xs text-slate-500 whitespace-nowrap">Reply within 24 hours</p>
                 </div>
               </div>
