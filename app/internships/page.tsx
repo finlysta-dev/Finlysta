@@ -99,7 +99,7 @@ export default function FinlystaUI() {
 
   const noPrefetch = ["/blogs", "/learning-hub", "/interview-prep", "/career-paths"]
 
-  const popularSearches = ['Financial Analyst Intern', 'Finance Intern', 'Accounts Intern', 'Audit Intern', 'Article Trainee']
+  const popularSearches = ['Finance Analyst Intern', 'Finance Intern', 'Accounts Intern', 'Audit Intern', 'Article Trainee']
 
   // Maps older/raw skill names to their modern display name.
   const skillAliasMap: Record<string, string> = {
