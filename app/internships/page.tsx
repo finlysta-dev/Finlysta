@@ -99,7 +99,7 @@ export default function FinlystaUI() {
 
   const noPrefetch = ["/blogs", "/learning-hub", "/interview-prep", "/career-paths"]
 
-  const popularSearches = ['Financial Analyst', 'Finance Intern', 'Accounts Executive', 'Audit Associate', 'Finance Associate', 'Intern']
+  const popularSearches = ['Financial Analyst Intern', 'Finance Intern', 'Accounts Intern', 'Audit Intern', 'Article Trainee']
 
   // Maps older/raw skill names to their modern display name.
   const skillAliasMap: Record<string, string> = {
@@ -378,7 +378,6 @@ export default function FinlystaUI() {
   }
 
   const jobTypeOptions = [
-    { label: 'Full-time Jobs', count: getJobTypeCount('full-time'), value: 'full-time' },
     { label: 'Internships', count: getJobTypeCount('internship'), value: 'internship' },
     { label: 'Apprentice', count: getJobTypeCount('apprentice'), value: 'apprentice' },
     { label: 'Contract', count: getJobTypeCount('contract'), value: 'contract' },
@@ -396,7 +395,6 @@ export default function FinlystaUI() {
 
   const experienceOptions = [
     { label: '0 - 1 Yrs', count: getExperienceCount('0-1'), value: '0-1' },
-    { label: '1 - 2 Yrs', count: getExperienceCount('1-2'), value: '1-2' },
   ]
 
   const skillsOptions = [
@@ -1626,7 +1624,7 @@ export default function FinlystaUI() {
                 marginBottom: '24px', 
                 lineHeight: 1.1 
               }}>
-                Find Your First<br />Step in <span style={{ color: '#0052FF' }}>Finance</span>
+                Discover Entry-Level<br /><span style={{ color: '#0052FF' }}>Finance Internships</span>
               </h1>
               <p style={{ 
                 fontSize: '22px', 
@@ -1634,7 +1632,7 @@ export default function FinlystaUI() {
                 marginBottom: '40px', 
                 lineHeight: 1.8 
               }}>
-                Explore entry-level finance internships across India.<br /> Apply to opportunities that match your skills and<br />kickstart your career.
+                Explore the latest internships opportunities from companies across India<br /> Build practical skills, gain industry exposure, and take the first step<br/> toward your finance career.
               </p>
               
               <div style={{ display: 'flex', gap: '20px' }}>
@@ -1702,7 +1700,7 @@ export default function FinlystaUI() {
               <div className="hero-image-container">
                 <div style={{ position: 'relative', width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                   <img
-                    src="/Find_my_first_job.png"
+                    src="/Find_my_first_internship.png"
                     alt="Find My First Job"
                     style={{
                       width: '650px',
@@ -1827,8 +1825,6 @@ export default function FinlystaUI() {
                   >
                     <option value="all">All Experience</option>
                     <option value="0 - 1 Yrs">0 - 1 Yrs</option>
-                    <option value="1 - 2 Yrs">1 - 2 Yrs</option>
-                    <option value="2 - 3 Yrs">2 - 3 Yrs</option>
                   </select>
                   <ChevronDown size={18} style={{ position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)', color: '#000000', pointerEvents: 'none' }} />
                 </div>
