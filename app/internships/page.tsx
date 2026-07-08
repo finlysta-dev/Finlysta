@@ -9,7 +9,7 @@ import {
   Send, BarChart3, Briefcase, BadgeCheck, Building2, AlarmClock, 
   Sparkles, RotateCcw, LayoutGrid, List, Filter, CalendarDays,
   Building, Users, TrendingUp, Plus, ChevronUp, RotateCw, CheckCircle,
-  GraduationCap, BriefcaseBusiness, Timer, Trash2
+  GraduationCap, BriefcaseBusiness, Timer, Trash2, Award
 } from 'lucide-react'
 
 interface Job {
@@ -42,6 +42,7 @@ interface Job {
   timeAgo?: string
   description?: string
   applyLink?: string
+  qualifications?: string
 }
 
 export default function FinlystaUI() {
@@ -66,7 +67,6 @@ export default function FinlystaUI() {
   const [sortBy, setSortBy] = useState('newest')
   const [allJobs, setAllJobs] = useState<Job[]>([])
   const [jobs, setJobs] = useState<Job[]>([])
-  const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [savedJobs, setSavedJobs] = useState<any[]>([])
   const [showSavedJobs, setShowSavedJobs] = useState(false)
@@ -74,7 +74,6 @@ export default function FinlystaUI() {
   const [email, setEmail] = useState('')
   const [emailStatus, setEmailStatus] = useState<'idle' | 'sending' | 'success' | 'error'>('idle')
 
-  // Autosuggest state for the top "Search Jobs" and "Location" inputs
   const [searchQuery, setSearchQuery] = useState('')
   const [showSearchSuggestions, setShowSearchSuggestions] = useState(false)
   const [locationQuery, setLocationQuery] = useState('')
@@ -101,7 +100,6 @@ export default function FinlystaUI() {
 
   const popularSearches = ['Finance Analyst Intern', 'Finance Intern', 'Accounts Intern', 'Audit Intern', 'Article Trainee']
 
-  // Maps older/raw skill names to their modern display name.
   const skillAliasMap: Record<string, string> = {
     'excel': 'Advanced Excel',
     'ms excel': 'Advanced Excel',
@@ -116,7 +114,6 @@ export default function FinlystaUI() {
     return skillAliasMap[key] || skill
   }
 
-  // Load saved jobs from localStorage
   useEffect(() => {
     const saved = JSON.parse(localStorage.getItem('saved_blogs') || '[]')
     setSavedJobs(saved)
@@ -178,7 +175,6 @@ export default function FinlystaUI() {
 
   const fetchJobs = async () => {
     try {
-      setLoading(true)
       setError(null)
       
       const response = await fetch('/api/opportunities')
@@ -189,9 +185,10 @@ export default function FinlystaUI() {
       
       const data = await response.json()
       
-      // Filter ONLY for internships (type === 'internship')
       const jobData = Array.isArray(data) 
-        ? data.filter((item: any) => item.type === 'internship')
+        ? data.filter((item: any) => {
+            return item.type === 'internship' || item.type === 'articleship' || item.type === 'industrial_trainee'
+          })
         : []
       
       const formattedJobs = jobData.map((job: any) => {
@@ -201,6 +198,8 @@ export default function FinlystaUI() {
         
         let jobTypeDisplay = job.type || 'Internship'
         if (job.type === 'internship') jobTypeDisplay = 'Internship'
+        if (job.type === 'articleship') jobTypeDisplay = 'Articleship'
+        if (job.type === 'industrial_trainee') jobTypeDisplay = 'Industrial Trainee'
         
         let experienceDisplay = job.experience || '0 - 1 Yrs'
         
@@ -237,6 +236,7 @@ export default function FinlystaUI() {
           timeAgo: timeAgo,
           description: job.shortDescription || job.overview?.substring(0, 200) || 'No description available',
           applyLink: job.applyLink || '#',
+          qualifications: job.qualifications || job.overview || 'No qualifications specified',
         }
       })
       
@@ -246,8 +246,6 @@ export default function FinlystaUI() {
     } catch (err) {
       console.error('Error fetching jobs:', err)
       setError('Failed to load jobs. Please try again later.')
-    } finally {
-      setLoading(false)
     }
   }
 
@@ -261,7 +259,7 @@ export default function FinlystaUI() {
     
     if (isSaved) {
       updatedSavedJobs = savedJobs.filter(job => job.id !== jobId)
-      message = 'Job removed from saved!'
+      message = 'Removed from saved!'
     } else {
       const newJob = {
         id: jobToSave.id,
@@ -275,7 +273,7 @@ export default function FinlystaUI() {
         applyLink: jobToSave.applyLink || '#',
       }
       updatedSavedJobs = [...savedJobs, newJob]
-      message = 'Job saved successfully!'
+      message = 'Saved successfully!'
     }
     setSavedJobs(updatedSavedJobs)
     localStorage.setItem('saved_blogs', JSON.stringify(updatedSavedJobs))
@@ -341,6 +339,8 @@ export default function FinlystaUI() {
     return allJobs.filter(job => {
       if (type === 'full-time') return job.type === 'Full-time'
       if (type === 'internship') return job.type === 'Internship'
+      if (type === 'articleship') return job.type === 'Articleship'
+      if (type === 'industrial_trainee') return job.type === 'Industrial Trainee'
       if (type === 'apprentice') return job.type?.toLowerCase().includes('trainee') || job.type?.toLowerCase().includes('apprentice')
       if (type === 'contract') return job.type?.toLowerCase().includes('contract')
       return false
@@ -379,7 +379,8 @@ export default function FinlystaUI() {
 
   const jobTypeOptions = [
     { label: 'Internships', count: getJobTypeCount('internship'), value: 'internship' },
-    { label: 'Apprentice', count: getJobTypeCount('apprentice'), value: 'apprentice' },
+    { label: 'Articleship', count: getJobTypeCount('articleship'), value: 'articleship' },
+    { label: 'Industrial Trainee', count: getJobTypeCount('industrial_trainee'), value: 'industrial_trainee' },
     { label: 'Contract', count: getJobTypeCount('contract'), value: 'contract' },
   ]
 
@@ -434,6 +435,8 @@ export default function FinlystaUI() {
       if (type === 'jobType') {
         if (value === 'full-time') filtered = filtered.filter(job => job.type === 'Full-time')
         if (value === 'internship') filtered = filtered.filter(job => job.type === 'Internship')
+        if (value === 'articleship') filtered = filtered.filter(job => job.type === 'Articleship')
+        if (value === 'industrial_trainee') filtered = filtered.filter(job => job.type === 'Industrial Trainee')
         if (value === 'apprentice') filtered = filtered.filter(job => job.type?.toLowerCase().includes('trainee') || job.type?.toLowerCase().includes('apprentice'))
         if (value === 'contract') filtered = filtered.filter(job => job.type?.toLowerCase().includes('contract'))
       }
@@ -463,9 +466,6 @@ export default function FinlystaUI() {
     setJobs(allJobs)
   }
 
-  // Suggestions for the "Search Jobs" box: matches from job titles,
-  // companies, and skills only (no locations). Skill names are normalized
-  // to their modern display name (e.g. "MS Excel" -> "Advanced Excel").
   const getSearchSuggestions = () => {
     if (!searchQuery.trim()) return []
     const query = searchQuery.toLowerCase()
@@ -485,7 +485,6 @@ export default function FinlystaUI() {
     return Array.from(suggestions).slice(0, 8)
   }
 
-  // Suggestions for the "Location" box: cities / locations only.
   const getLocationSuggestions = () => {
     if (!locationQuery.trim()) return []
     const query = locationQuery.toLowerCase()
@@ -553,6 +552,11 @@ export default function FinlystaUI() {
 
   const displayedLocations = showAllLocations ? filteredLocations : filteredLocations.slice(0, 5)
   const displayedSkills = showAllSkills ? filteredSkills : filteredSkills.slice(0, 5)
+
+  // Helper to check if job is articleship
+  const isArticleship = (job: Job) => {
+    return job.type === 'Articleship' || job.type === 'Industrial Trainee'
+  }
 
   if (error) {
     return (
@@ -1312,7 +1316,6 @@ export default function FinlystaUI() {
           background: #f5f8ff;
           color: #0052FF;
         }
-        /* Saved Internships Panel */
         .saved-jobs-panel {
           position: fixed;
           top: 0;
@@ -1343,6 +1346,23 @@ export default function FinlystaUI() {
           opacity: 1;
           pointer-events: auto;
         }
+        .articleship-badge {
+          background: #f3e8ff;
+          color: #000000;
+          font-size: 10px;
+          font-weight: 600;
+          padding: 2px 10px;
+          border-radius: 9999px;
+          display: inline-block;
+        }
+        .sort-select-box {
+          display: flex;
+          align-items: center;
+          border: 1px solid #ddd;
+          border-radius: 6px;
+          padding: 0 4px;
+          background: white;
+        }
       `}</style>
 
       {/* Save Message Toast */}
@@ -1353,18 +1373,17 @@ export default function FinlystaUI() {
         </div>
       )}
 
-      {/* Saved Internships Panel Backdrop */}
+      {/* Saved Jobs Panel Backdrop */}
       <div 
         className={`panel-backdrop ${showSavedJobs ? 'open' : ''}`}
         onClick={() => setShowSavedJobs(false)}
       />
 
-      {/* Saved Internships Panel */}
+      {/* Saved Jobs Panel */}
       <div className={`saved-jobs-panel ${showSavedJobs ? 'open' : ''}`}>
         <div className="flex flex-col h-full">
-          {/* Header */}
           <div className="flex items-center justify-between p-6 border-b border-gray-200 sticky top-0 bg-white z-10">
-            <h3 className="text-xl font-bold text-gray-900">Saved Internships</h3>
+            <h3 className="text-xl font-bold text-gray-900">Saved Opportunities</h3>
             <div className="flex items-center gap-3">
               {savedJobs.length > 0 && (
                 <button
@@ -1384,13 +1403,12 @@ export default function FinlystaUI() {
             </div>
           </div>
 
-          {/* Content */}
           <div className="flex-1 overflow-y-auto p-4">
             {savedJobs.length === 0 ? (
               <div className="flex flex-col items-center justify-center h-full text-center p-8">
                 <Bookmark className="w-20 h-20 text-gray-300 mb-4" />
-                <p className="text-xl font-medium text-gray-700">No saved internships yet</p>
-                <p className="text-gray-500 mt-2">Start saving internships you're interested in!</p>
+                <p className="text-xl font-medium text-gray-700">No saved opportunities yet</p>
+                <p className="text-gray-500 mt-2">Start saving opportunities you're interested in!</p>
               </div>
             ) : (
               <div className="space-y-3">
@@ -1448,11 +1466,10 @@ export default function FinlystaUI() {
             )}
           </div>
 
-          {/* Footer */}
           {savedJobs.length > 0 && (
             <div className="p-4 border-t border-gray-200 bg-gray-50 sticky bottom-0">
               <p className="text-sm text-gray-500 text-center">
-                {savedJobs.length} internship{savedJobs.length > 1 ? 's' : ''} saved
+                {savedJobs.length} opportunity{savedJobs.length > 1 ? 's' : ''} saved
               </p>
             </div>
           )}
@@ -1468,7 +1485,6 @@ export default function FinlystaUI() {
         }`}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-          {/* Logo */}
           <div className="flex items-center">
             <Link
               href="/"
@@ -1486,7 +1502,6 @@ export default function FinlystaUI() {
             </Link>
           </div>
 
-          {/* Navigation - Centered (desktop) */}
           <nav
             aria-label="Main navigation"
             className="hidden md:flex items-center justify-center gap-10 lg:gap-12 absolute left-1/2 transform -translate-x-1/2"
@@ -1513,7 +1528,6 @@ export default function FinlystaUI() {
               )
             })}
 
-            {/* Resources Dropdown */}
             <div className="relative resources-dropdown">
               <button
                 onClick={(e) => {
@@ -1553,14 +1567,13 @@ export default function FinlystaUI() {
             </div>
           </nav>
 
-          {/* Right Side - Saved Internships Button */}
           <div className="hidden md:flex items-center gap-4">
             <button
               onClick={() => setShowSavedJobs(!showSavedJobs)}
               className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-blue-700 transition-colors relative"
             >
               <Bookmark className="w-5 h-5" />
-              <span className="text-sm font-medium">Saved Internships</span>
+              <span className="text-sm font-medium">Saved</span>
               {savedJobs.length > 0 && (
                 <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
                   {savedJobs.length}
@@ -1598,7 +1611,7 @@ export default function FinlystaUI() {
                 className="flex items-center justify-center gap-2 w-full px-5 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all duration-200 font-medium mt-3"
               >
                 <Bookmark className="w-4 h-4" />
-                Saved Internships
+                Saved
                 {savedJobs.length > 0 && (
                   <span className="bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
                     {savedJobs.length}
@@ -1610,48 +1623,53 @@ export default function FinlystaUI() {
         )}
       </header>
 
-      {/* HERO SECTION */}
+      {/* HERO SECTION - FIXED HEADING */}
       <section style={{ backgroundColor: 'white', paddingTop: '60px', paddingBottom: '60px' }}>
         <div className="container-custom">
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '60px', alignItems: 'center' }}>
             <div style={{ paddingRight: '20px' }}>
-              <span style={{ color: '#0052FF', fontSize: '18px', fontWeight: 'bold', letterSpacing: '2px', textTransform: 'uppercase' }}>INTERNSHIPS</span>
+              <span style={{ color: '#0052FF', fontSize: '18px', fontWeight: 'bold', letterSpacing: '2px', textTransform: 'uppercase' }}>
+                INTERNSHIPS &amp; ARTICLESHIP
+              </span>
+              {/* FIXED: Using display block to prevent line break issues */}
               <h1 style={{ 
-                fontSize: '72px', 
+                fontSize: '62px', 
                 fontWeight: 'bold', 
                 color: '#1a1a1a', 
                 marginTop: '16px', 
                 marginBottom: '24px', 
-                lineHeight: 1.1 
+                lineHeight: '1.1'
               }}>
-                Discover Entry-Level<br /><span style={{ color: '#0052FF' }}>Finance Internships</span>
+                <span style={{ display: 'block' }}>Discover Entry-Level</span>
+                <span style={{ display: 'block', color: '#0052FF' }}>Finance Opportunities</span>
               </h1>
-              <p style={{ 
-                fontSize: '22px', 
-                color: '#666', 
-                marginBottom: '40px', 
-                lineHeight: 1.8 
-              }}>
-                Explore the latest internships opportunities from companies across India<br /> Build practical skills, gain industry exposure, and take the first step<br/> toward your finance career.
-              </p>
+               <p style={{ 
+          fontSize: '21px', 
+          color: '#666', 
+          marginBottom: '40px', 
+          lineHeight: 1.6 
+        }}>
+          Explore the latest internships opportunities from companies across India. Build practical skills, gain industry exposure, and take the first step toward your finance career.
+        </p>
               
-              <div style={{ display: 'flex', gap: '20px' }}>
+              <div style={{ display: 'flex', gap: '16px', flexWrap: 'nowrap' }}>
                 <div style={{ 
                   background: 'white', 
                   border: '1px solid #e5e7eb', 
                   borderRadius: '8px', 
-                  padding: '16px 24px',
+                  padding: '16px 18px',
                   display: 'flex',
                   alignItems: 'center',
-                  gap: '18px',
-                  minWidth: '220px'
+                  gap: '14px',
+                  flex: '1 1 0',
+                  minWidth: '0'
                 }}>
-                  <div style={{ width: '56px', height: '56px', background: '#f0fdf4', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                    <BadgeCheck style={{ color: '#16a34a', width: '28px', height: '28px' }} strokeWidth={2} />
+                  <div style={{ width: '52px', height: '52px', background: '#f0fdf4', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                    <BadgeCheck style={{ color: '#16a34a', width: '26px', height: '26px' }} strokeWidth={2} />
                   </div>
                   <div>
-                    <p style={{ fontSize: '24px', fontWeight: 'bold', color: '#1a1a1a' }}>{allJobs.length}+</p>
-                    <p style={{ fontSize: '15px', color: '#666', whiteSpace: 'nowrap', margin: 0 }}>Active Internships</p>
+                    <p style={{ fontSize: '22px', fontWeight: 'bold', color: '#1a1a1a' }}>{allJobs.length}+</p>
+                    <p style={{ fontSize: '14px', color: '#666', whiteSpace: 'nowrap', margin: 0 }}>Active Opportunities</p>
                   </div>
                 </div>
 
@@ -1659,20 +1677,21 @@ export default function FinlystaUI() {
                   background: 'white', 
                   border: '1px solid #e5e7eb', 
                   borderRadius: '8px', 
-                  padding: '16px 24px',
+                  padding: '16px 18px',
                   display: 'flex',
                   alignItems: 'center',
-                  gap: '16px',
-                  minWidth: '140px'
+                  gap: '14px',
+                  flex: '1 1 0',
+                  minWidth: '0'
                 }}>
                   <div style={{ width: '44px', height: '44px', background: '#faf5ff', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                     <Building2 style={{ color: '#9333ea', width: '22px', height: '22px' }} strokeWidth={2} />
                   </div>
                   <div>
-                    <p style={{ fontSize: '24px', fontWeight: 'bold', color: '#1a1a1a' }}>
+                    <p style={{ fontSize: '22px', fontWeight: 'bold', color: '#1a1a1a' }}>
                       {new Set(allJobs.map(j => j.company)).size}+
                     </p>
-                    <p style={{ fontSize: '15px', color: '#666', whiteSpace: 'nowrap', margin: 0 }}>Companies Hiring</p>
+                    <p style={{ fontSize: '14px', color: '#666', whiteSpace: 'nowrap', margin: 0 }}>Companies Hiring</p>
                   </div>
                 </div>
 
@@ -1680,18 +1699,19 @@ export default function FinlystaUI() {
                   background: 'white', 
                   border: '1px solid #e5e7eb', 
                   borderRadius: '8px', 
-                  padding: '22px 28px',
+                  padding: '24px 22px',
                   display: 'flex',
                   alignItems: 'center',
                   gap: '16px',
-                  minWidth: '250px'
+                  flex: '1.3 1 0',
+                  minWidth: '0'
                 }}>
-                  <div style={{ width: '44px', height: '44px', background: '#fef2f2', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                    <AlarmClock style={{ color: '#dc2626', width: '22px', height: '22px' }} strokeWidth={2} />
+                  <div style={{ width: '48px', height: '48px', background: '#fef2f2', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                    <AlarmClock style={{ color: '#dc2626', width: '24px', height: '24px' }} strokeWidth={2} />
                   </div>
                   <div>
                     <p style={{ fontSize: '24px', fontWeight: 'bold', color: '#1a1a1a', whiteSpace: 'nowrap', margin: 0, lineHeight: '30px' }}>Updated Daily</p>
-                    <p style={{ fontSize: '15px', color: '#666', whiteSpace: 'nowrap', margin: 0 }}>New Opportunities</p>
+                    <p style={{ fontSize: '14px', color: '#666', whiteSpace: 'nowrap', margin: 0 }}>New Opportunities</p>
                   </div>
                 </div>
               </div>
@@ -1730,7 +1750,7 @@ export default function FinlystaUI() {
           <div style={{ background: 'white', borderRadius: '10px', border: '1px solid #e5e7eb', boxShadow: '0 1px 3px rgba(0,0,0,0.06)', padding: '24px' }}>
             <div style={{ display: 'grid', gridTemplateColumns: '1.3fr 0.9fr 0.9fr 0.7fr', gap: '10px', marginBottom: '10px' }}>
               <div style={{ position: 'relative' }}>
-                <label className="search-input-label">Search Internships</label>
+                <label className="search-input-label">Search Opportunities</label>
                 <div style={{ position: 'relative' }}>
                   <input
                     type="text"
@@ -1873,12 +1893,12 @@ export default function FinlystaUI() {
         </div>
       </section>
 
-      {/* JOBS SECTION - FIXED: Removed right column gap, reduced box space */}
+      {/* JOBS SECTION */}
       <section style={{ backgroundColor: '#f9fafb', paddingTop: '32px', paddingBottom: '48px' }}>
         <div className="container-custom">
           <div className="filter-wrapper" style={{ gap: '16px' }}>
 
-            {/* SIDEBAR FILTERS - Reduced width */}
+            {/* SIDEBAR FILTERS */}
             <div className="filter-sidebar-wrapper" style={{ width: '260px' }}>
               <aside className="filter-sidebar" style={{ padding: '16px' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
@@ -2051,27 +2071,32 @@ export default function FinlystaUI() {
               </aside>
             </div>
 
-            {/* JOB LISTINGS - No right gap, single column */}
+            {/* JOB LISTINGS */}
             <div className="jobs-container" style={{ flex: 1, minWidth: 0 }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', background: 'white', padding: '14px 20px', borderRadius: '12px', border: '1px solid #e5e7eb', gap: '12px', flexWrap: 'nowrap' }}>
-                <h2 style={{ fontWeight: 'bold', color: '#1a1a1a', fontSize: '17px', whiteSpace: 'nowrap', flexShrink: 0 }}>{jobs.length}+ Active Internships</h2>
+                <h2 style={{ fontWeight: 'bold', color: '#1a1a1a', fontSize: '17px', whiteSpace: 'nowrap', flexShrink: 0 }}>{jobs.length}+ Active Opportunities</h2>
                 <div style={{ display: 'flex', gap: '10px', alignItems: 'center', flexShrink: 0 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                     <span style={{ fontSize: '14px', fontWeight: 600, color: '#111827', whiteSpace: 'nowrap' }}>Sort by:</span>
-                    <select 
-                      value={sortBy}
-                      onChange={(e) => setSortBy(e.target.value)}
-                      className="sort-select"
-                      style={{
-                        fontSize: '14px',
-                        height: '36px',
-                        color: '#000000',
-                        padding: '0 10px',
-                      }}
-                    >
-                      <option value="newest">Newest First</option>
-                      <option value="oldest">Oldest First</option>
-                    </select>
+                    <div className="sort-select-box">
+                      <select 
+                        value={sortBy}
+                        onChange={(e) => setSortBy(e.target.value)}
+                        className="sort-select"
+                        style={{
+                          fontSize: '14px',
+                          height: '36px',
+                          color: '#000000',
+                          padding: '0 10px',
+                          border: 'none',
+                          borderRadius: '4px',
+                          background: 'transparent',
+                        }}
+                      >
+                        <option value="newest">Newest First</option>
+                        <option value="oldest">Oldest First</option>
+                      </select>
+                    </div>
                   </div>
                   <div style={{ display: 'flex', gap: '3px', borderLeft: '1px solid #e5e7eb', paddingLeft: '12px' }}>
                     <button 
@@ -2093,149 +2118,177 @@ export default function FinlystaUI() {
               {/* Job Cards - List View */}
               {viewType === 'list' ? (
                 <div className="jobs-list" style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                  {currentJobs.map((job) => (
-                    <div key={job.id} style={{ background: 'white', border: '1px solid #e5e7eb', borderRadius: '10px', padding: '16px 20px', transition: 'box-shadow 0.3s' }}>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                        <div style={{ display: 'flex', gap: '14px', flex: 1 }}>
-                          <div style={{ width: '44px', height: '44px', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontWeight: 'bold', fontSize: '14px', flexShrink: 0 }} className={job.logoBg || 'bg-gray-600'}>
-                            {job.companyLogo ? (
-                              <img src={job.companyLogo} alt={job.company} style={{ width: '34px', height: '34px', objectFit: 'contain', borderRadius: '4px' }} />
-                            ) : (
-                              job.company?.substring(0, 2).toUpperCase() || 'IN'
-                            )}
-                          </div>
-                          
-                          <div style={{ flex: 1 }}>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '2px', flexWrap: 'wrap' }}>
-                              <h3 className="job-title" style={{ fontSize: '18px' }}>{job.title}</h3>
-                              {job.isNew && <span className="new-badge" style={{ fontSize: '10px', padding: '1px 8px' }}>New</span>}
-                              <span className="posted-time" style={{ marginLeft: 'auto', fontSize: '13px' }}>{job.timeAgo || job.postedTime || 'Recently'}</span>
-                            </div>
-                            <p className="company-name company-name-gap" style={{ fontSize: '15px', marginBottom: '4px' }}>{job.company}</p>
-                            
-                            <div className="job-details-row job-details-gap" style={{ gap: '12px', marginBottom: '8px', marginTop: '2px' }}>
-                              <div className="job-location" style={{ fontSize: '14px' }}>
-                                <MapPin style={{ width: '13px', height: '13px', flexShrink: 0 }} />
-                                <span>{job.location}</span>
-                              </div>
-                              <div className="job-detail" style={{ fontSize: '14px' }}>
-                                <Building style={{ width: '13px', height: '13px', flexShrink: 0 }} />
-                                <span>{job.type}</span>
-                              </div>
-                              <div className="job-detail" style={{ fontSize: '14px' }}>
-                                <Timer style={{ width: '13px', height: '13px', flexShrink: 0 }} />
-                                <span>{job.experience || '0 - 1 Yrs'}</span>
-                              </div>
+                  {currentJobs.map((job) => {
+                    const isArticleshipJob = isArticleship(job);
+                    return (
+                      <div key={job.id} style={{ background: 'white', border: '1px solid #e5e7eb', borderRadius: '10px', padding: '16px 20px', transition: 'box-shadow 0.3s' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                          <div style={{ display: 'flex', gap: '14px', flex: 1 }}>
+                            <div style={{ width: '44px', height: '44px', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontWeight: 'bold', fontSize: '14px', flexShrink: 0 }} className={job.logoBg || 'bg-gray-600'}>
+                              {job.companyLogo ? (
+                                <img src={job.companyLogo} alt={job.company} style={{ width: '34px', height: '34px', objectFit: 'contain', borderRadius: '4px' }} />
+                              ) : (
+                                job.company?.substring(0, 2).toUpperCase() || 'IN'
+                              )}
                             </div>
                             
-                            <p className="job-description" style={{ fontSize: '14px', marginBottom: '10px' }}>
-                              {job.shortDescription || job.description || job.overview || 'No description available'}
-                            </p>
-                            
-                            <div style={{ display: 'flex', alignItems: 'center', marginTop: '10px', width: '100%' }}>
-                              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px', flex: 1 }}>
-                                {job.skills?.slice(0, 4).map((skill) => (
-                                  <span key={skill} className="skill-badge" style={{ fontSize: '11px', padding: '2px 8px' }}>{normalizeSkill(skill)}</span>
-                                ))}
-                                {job.skills?.length > 4 && (
-                                  <span style={{ fontSize: '11px', color: '#666', display: 'flex', alignItems: 'center' }}>+{job.skills.length - 4}</span>
+<div style={{ flex: 1 }}>
+  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '2px', flexWrap: 'wrap' }}>
+    <h3 className="job-title" style={{ fontSize: '18px' }}>{job.title}</h3>
+    {job.isNew && <span className="new-badge" style={{ fontSize: '10px', padding: '1px 8px' }}>New</span>}
+    <span className="posted-time" style={{ marginLeft: 'auto', fontSize: '13px' }}>{job.timeAgo || job.postedTime || 'Recently'}</span>
+  </div>
+  <p className="company-name company-name-gap" style={{ fontSize: '15px', marginBottom: '4px' }}>{job.company}</p>
+  
+  <div className="job-details-row job-details-gap" style={{ gap: '12px', marginBottom: '8px', marginTop: '2px' }}>
+    <div className="job-location" style={{ fontSize: '14px' }}>
+      <MapPin style={{ width: '13px', height: '13px', flexShrink: 0 }} />
+      <span>{job.location}</span>
+    </div>
+    <div className="job-detail" style={{ fontSize: '14px' }}>
+      <Building style={{ width: '13px', height: '13px', flexShrink: 0 }} />
+      <span>{job.type}</span>
+    </div>
+                                {/* Show Experience ONLY for non-articleship jobs */}
+                                {!isArticleshipJob && (
+                                  <div className="job-detail" style={{ fontSize: '14px' }}>
+                                    <Timer style={{ width: '13px', height: '13px', flexShrink: 0 }} />
+                                    <span>{job.experience || '0 - 1 Yrs'}</span>
+                                  </div>
+                                )}
+                                {/* Show Qualification for articleship jobs */}
+                                {isArticleshipJob && job.qualifications && (
+                                  <div className="job-detail" style={{ fontSize: '14px' }}>
+                                    <Award style={{ width: '13px', height: '13px', flexShrink: 0 }} />
+                                    <span style={{ maxWidth: '200px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                                      {job.qualifications}
+                                    </span>
+                                  </div>
                                 )}
                               </div>
-                              <button 
-                                className="view-details-btn" 
-                                onClick={() => handleViewDetails(job.slug)}
-                                style={{ padding: '4px 16px', fontSize: '14px', marginLeft: '12px' }}
-                              >
-                                View Details
-                              </button>
+                              
+                              <p className="job-description" style={{ fontSize: '14px', marginBottom: '10px' }}>
+                                {job.shortDescription || job.description || job.overview || 'No description available'}
+                              </p>
+                              
+                              <div style={{ display: 'flex', alignItems: 'center', marginTop: '10px', width: '100%' }}>
+                                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px', flex: 1 }}>
+                                  {job.skills?.slice(0, 4).map((skill) => (
+                                    <span key={skill} className="skill-badge" style={{ fontSize: '11px', padding: '2px 8px' }}>{normalizeSkill(skill)}</span>
+                                  ))}
+                                  {job.skills?.length > 4 && (
+                                    <span style={{ fontSize: '11px', color: '#666', display: 'flex', alignItems: 'center' }}>+{job.skills.length - 4}</span>
+                                  )}
+                                </div>
+                                <button 
+                                  className="view-details-btn" 
+                                  onClick={() => handleViewDetails(job.slug)}
+                                  style={{ padding: '4px 16px', fontSize: '14px', marginLeft: '12px' }}
+                                >
+                                  View Details
+                                </button>
+                              </div>
                             </div>
                           </div>
-                        </div>
-                        
-                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '4px', flexShrink: 0, marginLeft: '10px' }}>
-                          <button 
-                            onClick={() => toggleSaveJob(job.id)}
-                            style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '2px' }}
-                          >
-                            <Bookmark className={`bookmark-icon ${savedJobs.some(j => j.id === job.id) ? 'saved' : ''}`} style={{ width: '20px', height: '20px' }} />
-                          </button>
+                          
+                          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '4px', flexShrink: 0, marginLeft: '10px' }}>
+                            <button 
+                              onClick={() => toggleSaveJob(job.id)}
+                              style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '2px' }}
+                            >
+                              <Bookmark className={`bookmark-icon ${savedJobs.some(j => j.id === job.id) ? 'saved' : ''}`} style={{ width: '20px', height: '20px' }} />
+                            </button>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               ) : (
                 <div className="jobs-list" style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '16px' }}>
-                  {currentJobs.map((job) => (
-                    <div key={job.id} className="grid-job-card" style={{ padding: '16px' }}>
-                      <div className="grid-job-header" style={{ marginBottom: '8px' }}>
-                        <div className="grid-job-company">
-                          <div className={`grid-job-logo ${job.logoBg || 'bg-gray-600'}`} style={{ width: '40px', height: '40px', fontSize: '14px' }}>
-                            {job.companyLogo ? (
-                              <img src={job.companyLogo} alt={job.company} style={{ width: '28px', height: '28px', objectFit: 'contain', borderRadius: '4px' }} />
-                            ) : (
-                              job.company?.substring(0, 2).toUpperCase() || 'IN'
+                  {currentJobs.map((job) => {
+                    const isArticleshipJob = isArticleship(job);
+                    return (
+                      <div key={job.id} className="grid-job-card" style={{ padding: '16px' }}>
+                        <div className="grid-job-header" style={{ marginBottom: '8px' }}>
+                          <div className="grid-job-company">
+                            <div className={`grid-job-logo ${job.logoBg || 'bg-gray-600'}`} style={{ width: '40px', height: '40px', fontSize: '14px' }}>
+                              {job.companyLogo ? (
+                                <img src={job.companyLogo} alt={job.company} style={{ width: '28px', height: '28px', objectFit: 'contain', borderRadius: '4px' }} />
+                              ) : (
+                                job.company?.substring(0, 2).toUpperCase() || 'IN'
+                              )}
+                            </div>
+                          <div className="grid-job-info">
+  <h3 className="grid-job-title" style={{ fontSize: '16px' }}>{job.title}</h3>
+  <span className="grid-job-company-name" style={{ fontSize: '14px' }}>{job.company}</span>
+  <div className="grid-job-badges">
+    {job.isNew && <span className="grid-job-new-badge" style={{ fontSize: '10px', padding: '1px 6px' }}>New</span>}
+  </div>
+</div>
+                          </div>
+                          <div className="grid-job-actions">
+                            <button 
+                              onClick={() => toggleSaveJob(job.id)}
+                              className={`grid-job-bookmark ${savedJobs.some(j => j.id === job.id) ? 'saved' : ''}`}
+                            >
+                              <Bookmark style={{ width: '16px', height: '16px' }} />
+                            </button>
+                            <span className="grid-job-time" style={{ fontSize: '13px' }}>{job.timeAgo || job.postedTime || 'Recently'}</span>
+                          </div>
+                        </div>
+                        
+                        <div className="grid-job-details" style={{ gap: '2px', marginBottom: '8px' }}>
+                          <div className="grid-job-location-text" style={{ fontSize: '14px' }}>
+                            <MapPin style={{ width: '13px', height: '14px', flexShrink: 0 }} />
+                            <span>{job.location}</span>
+                          </div>
+                          <div className="grid-job-type-text" style={{ fontSize: '14px' }}>
+                            <span>
+                              <Building style={{ width: '13px', height: '13px' }} />
+                              {job.type}
+                            </span>
+                            {/* Show Experience ONLY for non-articleship jobs */}
+                            {!isArticleshipJob && (
+                              <span>
+                                <Timer style={{ width: '13px', height: '13px' }} />
+                                {job.experience || '0 - 1 Yrs'}
+                              </span>
+                            )}
+                            {/* Show Qualification for articleship jobs */}
+                            {isArticleshipJob && job.qualifications && (
+                              <span style={{ fontSize: '14px', color: '#000000' }}>
+                                <Award style={{ width: '13px', height: '13px' }} />
+                                {job.qualifications.length > 30 ? job.qualifications.substring(0, 30) + '...' : job.qualifications}
+                              </span>
                             )}
                           </div>
-                          <div className="grid-job-info">
-                            <h3 className="grid-job-title" style={{ fontSize: '16px' }}>{job.title}</h3>
-                            <span className="grid-job-company-name" style={{ fontSize: '13px' }}>{job.company}</span>
-                            <div className="grid-job-badges">
-                              {job.isNew && <span className="grid-job-new-badge" style={{ fontSize: '8px', padding: '1px 6px' }}>New</span>}
-                            </div>
+                        </div>
+                        
+                        <p className="grid-job-description" style={{ fontSize: '14px', marginBottom: '8px' }}>
+                          {job.shortDescription || job.description || job.overview || 'No description available'}
+                        </p>
+                        
+                        <div className="grid-job-footer" style={{ paddingTop: '8px' }}>
+                          <div className="grid-job-skills" style={{ gap: '3px' }}>
+                            {job.skills?.slice(0, 3).map((skill) => (
+                              <span key={skill} className="grid-job-skill" style={{ fontSize: '11px', padding: '2px 8px' }}>{normalizeSkill(skill)}</span>
+                            ))}
+                            {job.skills?.length > 3 && (
+                              <span className="grid-job-skill-count" style={{ fontSize: '11px' }}>+{job.skills.length - 3}</span>
+                            )}
                           </div>
-                        </div>
-                        <div className="grid-job-actions">
                           <button 
-                            onClick={() => toggleSaveJob(job.id)}
-                            className={`grid-job-bookmark ${savedJobs.some(j => j.id === job.id) ? 'saved' : ''}`}
+                            className="grid-job-view-btn" 
+                            onClick={() => handleViewDetails(job.slug)}
+                            style={{ padding: '4px 14px', fontSize: '13px' }}
                           >
-                            <Bookmark style={{ width: '16px', height: '16px' }} />
+                            View Details
                           </button>
-                          <span className="grid-job-time" style={{ fontSize: '11px' }}>{job.timeAgo || job.postedTime || 'Recently'}</span>
                         </div>
                       </div>
-                      
-                      <div className="grid-job-details" style={{ gap: '2px', marginBottom: '8px' }}>
-                        <div className="grid-job-location-text" style={{ fontSize: '13px' }}>
-                          <MapPin style={{ width: '13px', height: '13px', flexShrink: 0 }} />
-                          <span>{job.location}</span>
-                        </div>
-                        <div className="grid-job-type-text" style={{ fontSize: '13px' }}>
-                          <span>
-                            <Building style={{ width: '13px', height: '13px' }} />
-                            {job.type}
-                          </span>
-                          <span>
-                            <Timer style={{ width: '13px', height: '13px' }} />
-                            {job.experience || '0 - 1 Yrs'}
-                          </span>
-                        </div>
-                      </div>
-                      
-                      <p className="grid-job-description" style={{ fontSize: '13px', marginBottom: '8px' }}>
-                        {job.shortDescription || job.description || job.overview || 'No description available'}
-                      </p>
-                      
-                      <div className="grid-job-footer" style={{ paddingTop: '8px' }}>
-                        <div className="grid-job-skills" style={{ gap: '3px' }}>
-                          {job.skills?.slice(0, 3).map((skill) => (
-                            <span key={skill} className="grid-job-skill" style={{ fontSize: '10px', padding: '2px 8px' }}>{normalizeSkill(skill)}</span>
-                          ))}
-                          {job.skills?.length > 3 && (
-                            <span className="grid-job-skill-count" style={{ fontSize: '10px' }}>+{job.skills.length - 3}</span>
-                          )}
-                        </div>
-                        <button 
-                          className="grid-job-view-btn" 
-                          onClick={() => handleViewDetails(job.slug)}
-                          style={{ padding: '4px 14px', fontSize: '12px' }}
-                        >
-                          View Details
-                        </button>
-                      </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               )}
 
@@ -2278,7 +2331,7 @@ export default function FinlystaUI() {
             </div>
             <div style={{ flex: 1 }}>
               <h3 style={{ fontSize: '20px', fontWeight: 'bold', color: '#1a1a1a', marginBottom: '2px' }}>Don't miss new opportunities!</h3>
-              <p style={{ color: '#000000', fontSize: '16px' }}>Get daily alerts for the latest entry-level finance internships.</p>
+              <p style={{ color: '#000000', fontSize: '16px' }}>Get daily alerts for the latest entry-level finance internships and articleship.</p>
             </div>
             <form onSubmit={handleEmailSubmit} style={{ display: 'flex', alignItems: 'flex-start', gap: '18px', flexShrink: 0 }}>
               <div style={{ display: 'flex', flexDirection: 'column' }}>
