@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { FileSpreadsheet, ChevronRight, BookOpen, Users, Clock } from "lucide-react";
+import { ComponentType } from "react";
 
 // ============================================================
 // SEO METADATA
@@ -61,14 +62,14 @@ const structuredData = {
 };
 
 // ============================================================
-// TYPES
+// TYPES - Fixed icon type
 // ============================================================
 type Guide = {
   title: string;
   description: string;
   category: string;
   readTime: string;
-  icon: React.ComponentType<{ size?: number; className?: string }>;
+  icon: ComponentType<{ size?: number | string; className?: string }>;
   slug: string;
   color: string;
   bgColor: string;
