@@ -109,14 +109,14 @@ const StatsSection = () => {
         if (active) setStats((prev) => ({ ...prev, isLoading: false }));
       }
     };
-    fetchStats(); // fetch once — no wasteful 30s polling
+    fetchStats();
     return () => {
       active = false;
     };
   }, []);
   const formatNumber = (num: number): string => {
     const safe = Math.max(num, 0);
-    if (safe < 1) return "—"; // never render "0+" — it signals a dead site
+    if (safe < 1) return "—";
     if (safe >= 10000000) return `${(safe / 10000000).toFixed(1)}Cr+`;
     if (safe >= 1000000) return `${(safe / 1000000).toFixed(1)}M+`;
     if (safe >= 100000) return `${(safe / 100000).toFixed(1)}L+`;
@@ -293,6 +293,7 @@ const ExcelFunctionsSection = () => {
     </section>
   );
 };
+
 // ============================================
 // FINANCE CAREER PATHS
 // ============================================
@@ -650,8 +651,8 @@ export default function HomePageContent() {
       url: window.location.pathname,
     });
     trackPageView("/");
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
   const handleHeroCTA = useCallback((buttonType: string) => {
     track("Hero CTA Clicked", {
       buttonType,
@@ -661,6 +662,7 @@ export default function HomePageContent() {
     if (buttonType === "find_job") router.push("/jobs");
     else if (buttonType === "explore_internships") router.push("/internships");
   }, [router, track]);
+
   const handlePopularRoleClick = (roleName: string) => {
     track("Popular Role Clicked", {
       roleName,
@@ -669,6 +671,7 @@ export default function HomePageContent() {
     });
     router.push(`/jobs?search=${encodeURIComponent(roleName)}`);
   };
+
   const handleFooterLinkClick = (linkType: string, linkName: string) => {
     track("Footer Link Clicked", {
       linkType,
@@ -677,6 +680,7 @@ export default function HomePageContent() {
       timestamp: new Date().toISOString(),
     });
   };
+
   const handleSocialClick = (platform: string) => {
     track("Social Media Clicked", {
       platform,
@@ -684,6 +688,7 @@ export default function HomePageContent() {
       timestamp: new Date().toISOString(),
     });
   };
+
   const popularRoles = [
     { name: "Financial Analyst", icon: Briefcase },
     { name: "Investment Banking", icon: Building2 },
@@ -692,6 +697,7 @@ export default function HomePageContent() {
     { name: "Article Trainee", icon: FileText },
     { name: "Article Assistant", icon: GraduationCap },
   ];
+
   const socials = [
     { platform: "linkedin", href: "https://www.linkedin.com/company/finlysta", label: "Finlysta on LinkedIn", hover: "hover:bg-[#0077B5]", node: <Linkedin size={16} /> },
     { platform: "twitter", href: "https://twitter.com/Finlysta", label: "Finlysta on Twitter", hover: "hover:bg-[#1DA1F2]", node: <Twitter size={16} /> },
@@ -699,9 +705,10 @@ export default function HomePageContent() {
     { platform: "facebook", href: "https://facebook.com/finlysta", label: "Finlysta on Facebook", hover: "hover:bg-[#1877F2]", node: <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" /></svg> },
     { platform: "youtube", href: "https://youtube.com/@finlysta", label: "Finlysta on YouTube", hover: "hover:bg-[#FF0000]", node: <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" /></svg> },
   ];
+
   return (
     <div className="min-h-screen font-sans">
-      {/* Organization + LocalBusiness + WebSite structured data */}
+      {/* Organization + LocalBusiness + WebSite structured data - FIXED: removed www */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
@@ -709,8 +716,8 @@ export default function HomePageContent() {
             "@context": "https://schema.org",
             "@type": "Organization",
             name: "Finlysta",
-            url: "https://www.finlysta.com",
-            logo: "https://www.finlysta.com/Finlysta.png",
+            url: "https://finlysta.com",
+            logo: "https://finlysta.com/Finlysta.png",
             description: "The job board built exclusively for entry-level financial roles and internships in India.",
             sameAs: [
               "https://www.linkedin.com/company/finlysta",
@@ -743,10 +750,10 @@ export default function HomePageContent() {
             "@context": "https://schema.org",
             "@type": "WebSite",
             name: "Finlysta",
-            url: "https://www.finlysta.com",
+            url: "https://finlysta.com",
             potentialAction: {
               "@type": "SearchAction",
-              target: { "@type": "EntryPoint", urlTemplate: "https://www.finlysta.com/jobs?search={search_term_string}" },
+              target: { "@type": "EntryPoint", urlTemplate: "https://finlysta.com/jobs?search={search_term_string}" },
               "query-input": "required name=search_term_string",
             },
           }),
@@ -754,7 +761,7 @@ export default function HomePageContent() {
       />
       <Header />
       <main>
-        {/* 1. HERO */}
+        {/* 1. HERO - FIXED: SEO-optimized H1 with target keywords */}
         <section className="relative overflow-hidden bg-[#F8FAFC] pt-6 pb-0">
           <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-blue-100 rounded-full blur-3xl opacity-40 pointer-events-none"></div>
           <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-blue-50 rounded-full blur-3xl opacity-30 pointer-events-none"></div>
@@ -765,12 +772,14 @@ export default function HomePageContent() {
                   <span className="text-blue-600 text-base" aria-hidden="true">⭐</span>
                   <span className="font-semibold text-blue-700 text-sm">Built for Finance Freshers</span>
                 </div>
+                {/* SEO-OPTIMIZED H1 */}
                 <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-[64px] font-extrabold leading-[1.1] tracking-tight text-[#081B4B]">
-                  Empowering Future <span className="text-blue-600">Finance Professionals.</span>
+                  Finance Jobs & Internships <span className="text-blue-600">for Freshers in India.</span>
                 </h1>
+                {/* SEO-OPTIMIZED SUBTITLE */}
                 <p className="mt-6 text-lg md:text-2xl leading-relaxed text-slate-600 max-w-[540px]">
-                  Opportunities, skills, and guidance to help finance students and fresh graduates{" "}
-                  <span className="text-blue-600">grow and stand out.</span>
+                  Entry-level finance jobs, internships, career roadmaps, and learning resources — built exclusively for finance students and fresh graduates.{" "}
+                  <span className="text-blue-600">100% free.</span>
                 </p>
                 <div className="flex flex-wrap gap-4 mt-8">
                   <button type="button" onClick={() => handleHeroCTA("find_job")} className="bg-blue-600 hover:bg-blue-700 text-white rounded-2xl px-8 py-3.5 font-semibold text-base transition-all shadow-lg shadow-blue-200">
@@ -790,6 +799,7 @@ export default function HomePageContent() {
             </div>
           </div>
         </section>
+
         {/* 2. POPULAR ROLES */}
         <nav aria-label="Popular entry-level roles" className="w-full border-t border-b border-gray-100 bg-white py-4 mt-8">
           <div className="max-w-7xl mx-auto px-6 flex items-center gap-8 overflow-x-auto whitespace-nowrap scrollbar-hide">
@@ -805,23 +815,24 @@ export default function HomePageContent() {
             </Link>
           </div>
         </nav>
+
         {/* 3–9 */}
         <StatsSection />
         <TrendingInternships />
         <SkillsSection />
-        
-        {/* Excel Functions Section - NEW */}
         <ExcelFunctionsSection />
-        
         <FinanceCareerPaths />
         <RoadmapLearningSection />
         <TestimonialSection />
         <FAQCTASection />
       </main>
+
+      {/* FOOTER - FIXED: Added visible Contact block with address */}
       <footer className="bg-white border-t border-slate-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="pt-12 pb-8">
             <div className="flex flex-col md:flex-row md:flex-wrap lg:flex-nowrap justify-between gap-8">
+              {/* Brand */}
               <div className="min-w-[260px] flex-shrink-0 space-y-4">
                 <Link href="/" className="flex items-center" onClick={() => handleFooterLinkClick("internal", "logo")}>
                   <Image src="/Finlysta.png" alt="Finlysta logo" width={180} height={40} priority className="object-contain" />
@@ -837,6 +848,8 @@ export default function HomePageContent() {
                   ))}
                 </div>
               </div>
+
+              {/* Jobs */}
               <div className="flex-shrink-0">
                 <h4 className="font-bold text-sm mb-4 text-[#081B4B]">Jobs</h4>
                 <ul className="space-y-2 text-sm text-slate-600">
@@ -846,6 +859,8 @@ export default function HomePageContent() {
                   <li><Link href="/blogs" className="hover:text-[#2563EB] transition" onClick={() => handleFooterLinkClick("internal", "career_blogs")}>Career Blogs</Link></li>
                 </ul>
               </div>
+
+              {/* Employers */}
               <div className="flex-shrink-0">
                 <h4 className="font-bold text-sm mb-4 text-[#081B4B]">Employers</h4>
                 <ul className="space-y-2 text-sm text-slate-600">
@@ -853,13 +868,18 @@ export default function HomePageContent() {
                   <li><Link href="/employers/how-it-works" className="hover:text-[#2563EB] transition" onClick={() => handleFooterLinkClick("internal", "how_it_works")}>How It Works</Link></li>
                 </ul>
               </div>
+
+              {/* Resources */}
               <div className="flex-shrink-0">
                 <h4 className="font-bold text-sm mb-4 text-[#081B4B]">Resources</h4>
                 <ul className="space-y-2 text-sm text-slate-600">
                   <li><Link href="/learning-hub" className="hover:text-[#2563EB] transition" onClick={() => handleFooterLinkClick("internal", "learning_hub")}>Learning Hub</Link></li>
                   <li><Link href="/interview-prep" className="hover:text-[#2563EB] transition" onClick={() => handleFooterLinkClick("internal", "interview_prep")}>Interview Prep</Link></li>
+                  <li><Link href="/guides" className="hover:text-[#2563EB] transition" onClick={() => handleFooterLinkClick("internal", "guides")}>Guides</Link></li>
                 </ul>
               </div>
+
+              {/* Company */}
               <div className="flex-shrink-0">
                 <h4 className="font-bold text-sm mb-4 text-[#081B4B]">Company</h4>
                 <ul className="space-y-2 text-sm text-slate-600">
@@ -869,16 +889,25 @@ export default function HomePageContent() {
                   <li><Link href="/terms" className="hover:text-[#2563EB] transition" onClick={() => handleFooterLinkClick("internal", "terms")}>Terms</Link></li>
                 </ul>
               </div>
+
+              {/* Contact - NEW: Visible address block for Local SEO */}
               <div className="flex-shrink-0">
-                <h4 className="font-bold text-sm mb-4 text-[#081B4B]">Support</h4>
-                <div className="space-y-2">
-                  <a href="mailto:support@finlysta.com" className="flex items-center gap-2 text-sm text-slate-600 hover:text-[#2563EB] transition whitespace-nowrap" onClick={() => handleFooterLinkClick("external", "support_email")}>
+                <h4 className="font-bold text-sm mb-4 text-[#081B4B]">Contact</h4>
+                <div className="space-y-2 text-sm text-slate-600">
+                  <a href="mailto:support@finlysta.com" className="flex items-center gap-2 hover:text-[#2563EB] transition" onClick={() => handleFooterLinkClick("external", "support_email")}>
                     <Mail size={13} /> support@finlysta.com
                   </a>
-                  <p className="text-xs text-slate-500 whitespace-nowrap">Reply within 24 hours</p>
+                  <p className="text-xs text-slate-500">Reply within 24 hours</p>
+                  <address className="not-italic text-xs text-slate-500 leading-relaxed mt-2">
+                    Finlysta Pvt. Ltd.<br />
+                    Bhubaneswar, Odisha 751001<br />
+                    India
+                  </address>
                 </div>
               </div>
             </div>
+
+            {/* Copyright */}
             <div className="border-t border-slate-200 pt-6 pb-8 mt-8">
               <div className="flex flex-col items-center justify-center gap-2 text-sm text-slate-700 text-center">
                 <span>© {new Date().getFullYear()} Finlysta Pvt. Ltd. All rights reserved.</span>
@@ -892,6 +921,7 @@ export default function HomePageContent() {
           </div>
         </div>
       </footer>
+
       <style jsx global>{`
         .scrollbar-hide::-webkit-scrollbar { display: none; }
         .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }

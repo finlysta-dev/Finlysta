@@ -103,7 +103,6 @@ const formatPostedTime = (date: string): string => {
 // Format responsibilities into bullet points
 const formatResponsibilities = (text: string | undefined): string[] => {
   if (!text) return [];
-  // Split by newlines, periods with spaces, or standalone periods
   const items = text.split(/\n|\.\s+|\./).filter(s => s.trim().length > 0);
   return items.map(s => s.trim() + '.');
 };
@@ -111,7 +110,6 @@ const formatResponsibilities = (text: string | undefined): string[] => {
 // FIXED: Format qualifications without breaking "B.Com" and similar terms
 const formatQualifications = (text: string | undefined): string[] => {
   if (!text) return [];
-  // Split by newlines or bullet points, but NOT by periods
   const items = text.split(/\n|•|\*|-\s+/).filter(s => s.trim().length > 0);
   return items.map(s => s.trim());
 };
@@ -335,24 +333,63 @@ Best regards,
   const applyEmail = job.applyEmail || job.recruiterEmail;
   const hasEmail = applyEmail && applyEmail.trim() !== '';
 
+  // Breadcrumb schema data
+  const breadcrumbSchema = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      {
+        "@type": "ListItem",
+        position: 1,
+        name: "Home",
+        item: "https://finlysta.com",
+      },
+      {
+        "@type": "ListItem",
+        position: 2,
+        name: "Jobs",
+        item: "https://finlysta.com/jobs",
+      },
+      {
+        "@type": "ListItem",
+        position: 3,
+        name: job.title,
+        item: `https://finlysta.com/jobs/${job.slug}`,
+      },
+    ],
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
+      {/* BreadcrumbList structured data */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+      />
+
       {/* Header */}
       <header className="bg-white border-b border-gray-200 sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center gap-8">
               <div className="flex items-center">
-                <img src="/Finlysta.png" alt="Finlysta" className="h-10 w-auto" />
+                <Image 
+                  src="/Finlysta.png" 
+                  alt="Finlysta" 
+                  width={160} 
+                  height={40} 
+                  priority 
+                  className="h-10 w-auto object-contain" 
+                />
               </div>
               <nav className="hidden md:flex gap-8">
-                <a href="/" className="text-gray-900 font-bold hover:text-blue-600">Home</a>
-                <a href="/jobs" className="text-blue-600 font-bold border-b-2 border-blue-600 pb-1">Jobs</a>
-                <a href="/internships" className="text-gray-900 font-bold hover:text-blue-600">Internships</a>
-                <a href="/learning-hub" className="text-gray-900 font-bold hover:text-blue-600">Learning Hub</a>
-                <a href="/interview-prep" className="text-gray-900 font-bold hover:text-blue-600">Interview Prep</a>
-                <a href="/blogs" className="text-gray-900 font-bold hover:text-blue-600">Blogs</a>
-                <a href="/roadmap" className="text-gray-900 font-bold hover:text-blue-600">Roadmap</a>
+                <Link href="/" className="text-gray-900 font-bold hover:text-blue-600">Home</Link>
+                <Link href="/jobs" className="text-blue-600 font-bold border-b-2 border-blue-600 pb-1">Jobs</Link>
+                <Link href="/internships" className="text-gray-900 font-bold hover:text-blue-600">Internships</Link>
+                <Link href="/learning-hub" className="text-gray-900 font-bold hover:text-blue-600">Learning Hub</Link>
+                <Link href="/interview-prep" className="text-gray-900 font-bold hover:text-blue-600">Interview Prep</Link>
+                <Link href="/blogs" className="text-gray-900 font-bold hover:text-blue-600">Blogs</Link>
+                <Link href="/roadmap" className="text-gray-900 font-bold hover:text-blue-600">Roadmap</Link>
               </nav>
             </div>
             <div className="flex items-center gap-4">
@@ -479,25 +516,25 @@ Best regards,
         </div>
       )}
 
-      {/* Breadcrumb */}
+      {/* Breadcrumb - FIXED: Using Link components */}
       <div className="border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <a href="/" className="text-blue-600 font-bold hover:underline text-sm">Home</a>
+              <Link href="/" className="text-blue-600 font-bold hover:underline text-sm">Home</Link>
               <svg className="w-4 h-4 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5l7 7-7 7" />
               </svg>
-              <a href="/jobs" className="text-blue-600 font-bold hover:underline text-sm">Jobs</a>
+              <Link href="/jobs" className="text-blue-600 font-bold hover:underline text-sm">Jobs</Link>
               <svg className="w-4 h-4 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5l7 7-7 7" />
               </svg>
               <span className="text-gray-600 font-bold text-sm">{job.title}</span>
             </div>
-            <button onClick={() => window.history.back()} className="flex items-center gap-2 text-blue-600 hover:text-blue-700 font-medium">
+            <Link href="/jobs" className="flex items-center gap-2 text-blue-600 hover:text-blue-700 font-medium">
               <ArrowLeft className="w-4 h-4" />
               Back to Jobs
-            </button>
+            </Link>
           </div>
         </div>
       </div>
@@ -510,7 +547,13 @@ Best regards,
             <div className="flex items-start gap-6 flex-1">
               <div className={`w-24 h-24 ${job.logoBg || 'bg-blue-600'} rounded-lg flex items-center justify-center flex-shrink-0`}>
                 {job.companyLogo ? (
-                  <img src={job.companyLogo} alt={job.company} className="w-16 h-16 object-contain" />
+                  <Image 
+                    src={job.companyLogo} 
+                    alt={job.company} 
+                    width={64} 
+                    height={64} 
+                    className="object-contain w-16 h-16" 
+                  />
                 ) : (
                   <span className="text-white font-bold text-3xl">{job.company?.substring(0, 2).toUpperCase() || 'CO'}</span>
                 )}
@@ -740,9 +783,7 @@ Best regards,
               </div>
             </div>
 
-            {/* ============================================================
-                APPLY VIA EMAIL SECTION - Only shows when email is available
-                ============================================================ */}
+            {/* Apply via Email Section */}
             {hasEmail && (
               <div className="bg-white rounded-lg p-6 border-2 border-blue-200 shadow-md">
                 <div className="flex items-center gap-2 mb-4">
@@ -753,13 +794,11 @@ Best regards,
                   Send your application directly to the recruiter.
                 </p>
                 
-                {/* Email Display */}
                 <div className="bg-blue-50 rounded-lg p-3 mb-4 flex items-center gap-2">
                   <Mail className="w-4 h-4 text-blue-600 flex-shrink-0" />
                   <span className="text-sm font-medium text-gray-700 break-all">{applyEmail}</span>
                 </div>
 
-                {/* Apply Button */}
                 <button
                   onClick={handleApplyViaEmail}
                   className="w-full bg-blue-600 text-white py-3 px-4 rounded-lg font-semibold text-sm hover:bg-blue-700 transition-colors flex items-center justify-center gap-2"
@@ -768,7 +807,6 @@ Best regards,
                   Compose Email Application
                 </button>
 
-                {/* Phone if available */}
                 {job.recruiterPhone && (
                   <button
                     onClick={handlePhoneCall}
@@ -801,7 +839,7 @@ Best regards,
                     <Briefcase className="w-5 h-5 text-blue-600" />
                     Similar Jobs
                   </h3>
-                  <a href="/jobs" className="text-blue-600 hover:text-blue-700 font-bold text-sm">View All</a>
+                  <Link href="/jobs" className="text-blue-600 hover:text-blue-700 font-bold text-sm">View All</Link>
                 </div>
                 <div className="space-y-4">
                   {relatedJobs.map((relatedJob) => {
@@ -815,7 +853,13 @@ Best regards,
                         <div className="flex items-center gap-3 mb-2">
                           <div className={`w-12 h-12 ${relatedLogoBg} rounded-lg flex items-center justify-center flex-shrink-0`}>
                             {relatedJob.companyLogo ? (
-                              <img src={relatedJob.companyLogo} alt={relatedJob.company} className="w-8 h-8 object-contain" />
+                              <Image 
+                                src={relatedJob.companyLogo} 
+                                alt={relatedJob.company} 
+                                width={32} 
+                                height={32} 
+                                className="object-contain w-8 h-8" 
+                              />
                             ) : (
                               <span className="text-white font-bold text-base">{relatedJob.company?.substring(0, 2).toUpperCase() || 'CO'}</span>
                             )}
