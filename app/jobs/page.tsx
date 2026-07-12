@@ -41,7 +41,10 @@ interface Job {
   logoBg?: string
   timeAgo?: string
   description?: string
-  applyLink?: string  // Added applyLink
+  applyLink?: string
+  applyEmail?: string
+  recruiterEmail?: string
+  recruiterPhone?: string
 }
 
 export default function FinlystaUI() {
@@ -236,7 +239,10 @@ export default function FinlystaUI() {
           logoBg: getCompanyColor(job.company || ''),
           timeAgo: timeAgo,
           description: job.shortDescription || job.overview?.substring(0, 200) || 'No description available',
-          applyLink: job.applyLink || '#', // Added applyLink
+          applyLink: job.applyLink || '#',
+          applyEmail: job.applyEmail || '',
+          recruiterEmail: job.recruiterEmail || '',
+          recruiterPhone: job.recruiterPhone || '',
         }
       })
       

@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { ArrowLeft, MapPin, Calendar, Clock, Briefcase, DollarSign, Building2, Share2, Heart, Linkedin, Twitter, MessageCircle, Mail, Link as LinkIcon, ChevronRight, Bell, Bookmark, ArrowUpRight, X, Hourglass, Send, Trash2 } from 'lucide-react';
+import { ArrowLeft, MapPin, Calendar, Clock, Briefcase, DollarSign, Building2, Share2, Heart, Linkedin, Twitter, MessageCircle, Mail, Link as LinkIcon, ChevronRight, Bell, Bookmark, ArrowUpRight, X, Hourglass, Send, Trash2, User, FileText } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -40,6 +40,9 @@ interface Job {
   qualifications?: string;
   benefits?: string;
   applyLink?: string;
+  applyEmail?: string;
+  recruiterEmail?: string;
+  recruiterPhone?: string;
 }
 
 interface JobDetailClientProps {
@@ -59,7 +62,7 @@ const getCompanyColor = (company: string) => {
   return colors[index];
 };
 
-// FIXED: Format posted time correctly
+// Format posted time correctly
 const formatPostedTime = (date: string): string => {
   if (!date) return 'Recently';
   
@@ -68,8 +71,6 @@ const formatPostedTime = (date: string): string => {
   
   if (isNaN(postedDate.getTime())) return 'Recently';
   
-  // Check if the posted date is today but at midnight (00:00:00)
-  // This handles cases where the date is stored without time
   const isMidnight = postedDate.getHours() === 0 && 
                      postedDate.getMinutes() === 0 && 
                      postedDate.getSeconds() === 0;
@@ -78,7 +79,6 @@ const formatPostedTime = (date: string): string => {
                   postedDate.getMonth() === now.getMonth() && 
                   postedDate.getFullYear() === now.getFullYear();
   
-  // If it's midnight today, treat it as "Just now"
   if (isMidnight && isToday) {
     return 'Just now';
   }
@@ -88,7 +88,6 @@ const formatPostedTime = (date: string): string => {
   const diffHours = Math.floor(diffMs / 3600000);
   const diffDays = Math.floor(diffMs / 86400000);
   
-  // If the date is in the future, treat as "Just now"
   if (diffMs < 0) return 'Just now';
   
   if (diffMins < 1) return 'Just now';
@@ -101,18 +100,20 @@ const formatPostedTime = (date: string): string => {
   return `${Math.floor(diffDays / 365)}y ago`;
 };
 
-// Format responsibilities into bullet points with proper punctuation
+// Format responsibilities into bullet points
 const formatResponsibilities = (text: string | undefined): string[] => {
   if (!text) return [];
-  const sentences = text.split(/[.!?]\s*|\n/).filter(s => s.trim().length > 0);
-  return sentences.map(s => s.trim() + '.');
+  // Split by newlines, periods with spaces, or standalone periods
+  const items = text.split(/\n|\.\s+|\./).filter(s => s.trim().length > 0);
+  return items.map(s => s.trim() + '.');
 };
 
-// Format qualifications into bullet points with proper punctuation
+// FIXED: Format qualifications without breaking "B.Com" and similar terms
 const formatQualifications = (text: string | undefined): string[] => {
   if (!text) return [];
-  const sentences = text.split(/[.!?]\s*|\n/).filter(s => s.trim().length > 0);
-  return sentences.map(s => s.trim() + '.');
+  // Split by newlines or bullet points, but NOT by periods
+  const items = text.split(/\n|•|\*|-\s+/).filter(s => s.trim().length > 0);
+  return items.map(s => s.trim());
 };
 
 export default function JobDetailClient({ opportunity, relatedJobs = [] }: JobDetailClientProps) {
@@ -122,12 +123,12 @@ export default function JobDetailClient({ opportunity, relatedJobs = [] }: JobDe
   const [showSavedJobs, setShowSavedJobs] = useState(false);
   const [email, setEmail] = useState('');
   const [emailStatus, setEmailStatus] = useState<'idle' | 'sending' | 'success' | 'error'>('idle');
+  const [applyEmailSent, setApplyEmailSent] = useState(false);
   
   // Load saved jobs from localStorage
   useEffect(() => {
     const saved = JSON.parse(localStorage.getItem('saved_blogs') || '[]');
     setSavedJobs(saved);
-    // Check if current job is saved
     if (opportunity && saved.some((job: any) => job.id === opportunity.id)) {
       setIsSaved(true);
     }
@@ -203,6 +204,39 @@ export default function JobDetailClient({ opportunity, relatedJobs = [] }: JobDe
     
     if (shareUrls[platform]) {
       window.open(shareUrls[platform], '_blank', 'width=600,height=500');
+    }
+  };
+
+  // Handle Apply via Email
+  const handleApplyViaEmail = () => {
+    const applyEmail = opportunity.applyEmail || opportunity.recruiterEmail;
+    if (applyEmail) {
+      const subject = encodeURIComponent(`Application for ${opportunity.title} at ${opportunity.company}`);
+      const body = encodeURIComponent(
+        `Dear Hiring Team,
+
+I am writing to apply for the ${opportunity.title} position at ${opportunity.company}.
+
+I have attached my resume for your review. I am excited about this opportunity and would love to discuss how my skills and experience align with your requirements.
+
+Thank you for your time and consideration.
+
+Best regards,
+[Your Full Name]
+[Your Phone Number]
+[Your LinkedIn Profile]`
+      );
+      window.location.href = `mailto:${applyEmail}?subject=${subject}&body=${body}`;
+      setApplyEmailSent(true);
+      setTimeout(() => setApplyEmailSent(false), 5000);
+    }
+  };
+
+  // Handle Phone Call
+  const handlePhoneCall = () => {
+    const phone = opportunity.recruiterPhone;
+    if (phone) {
+      window.location.href = `tel:${phone}`;
     }
   };
 
@@ -289,10 +323,17 @@ export default function JobDetailClient({ opportunity, relatedJobs = [] }: JobDe
     qualifications: opportunity.qualifications || '',
     benefits: opportunity.benefits || '',
     applyLink: opportunity.applyLink || '#',
+    applyEmail: opportunity.applyEmail || '',
+    recruiterEmail: opportunity.recruiterEmail || '',
+    recruiterPhone: opportunity.recruiterPhone || '',
   };
 
   const responsibilitiesList = formatResponsibilities(job.responsibilities || '');
   const qualificationsList = formatQualifications(job.qualifications || '');
+
+  // Get apply email (prefer applyEmail over recruiterEmail)
+  const applyEmail = job.applyEmail || job.recruiterEmail;
+  const hasEmail = applyEmail && applyEmail.trim() !== '';
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -315,7 +356,6 @@ export default function JobDetailClient({ opportunity, relatedJobs = [] }: JobDe
               </nav>
             </div>
             <div className="flex items-center gap-4">
-              {/* Saved Jobs Button */}
               <button
                 onClick={() => setShowSavedJobs(!showSavedJobs)}
                 className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-blue-700 transition-colors relative"
@@ -336,16 +376,13 @@ export default function JobDetailClient({ opportunity, relatedJobs = [] }: JobDe
       {/* Saved Jobs Slide-in Panel */}
       {showSavedJobs && (
         <div className="fixed inset-0 z-50 overflow-hidden">
-          {/* Backdrop */}
           <div 
             className="absolute inset-0 bg-black/50 transition-opacity"
             onClick={() => setShowSavedJobs(false)}
           />
           
-          {/* Panel - slides in from right */}
           <div className="absolute right-0 top-0 h-full w-full max-w-md bg-white shadow-xl transform translate-x-0 transition-transform duration-300 ease-in-out overflow-y-auto">
             <div className="flex flex-col h-full">
-              {/* Header */}
               <div className="flex items-center justify-between p-6 border-b border-gray-200 sticky top-0 bg-white z-10">
                 <h3 className="text-xl font-bold text-gray-900">Saved Jobs</h3>
                 <div className="flex items-center gap-3">
@@ -367,7 +404,6 @@ export default function JobDetailClient({ opportunity, relatedJobs = [] }: JobDe
                 </div>
               </div>
 
-              {/* Content */}
               <div className="flex-1 overflow-y-auto p-4">
                 {savedJobs.length === 0 ? (
                   <div className="flex flex-col items-center justify-center h-full text-center p-8">
@@ -431,7 +467,6 @@ export default function JobDetailClient({ opportunity, relatedJobs = [] }: JobDe
                 )}
               </div>
 
-              {/* Footer */}
               {savedJobs.length > 0 && (
                 <div className="p-4 border-t border-gray-200 bg-gray-50 sticky bottom-0">
                   <p className="text-sm text-gray-500 text-center">
@@ -579,7 +614,7 @@ export default function JobDetailClient({ opportunity, relatedJobs = [] }: JobDe
 
               <h3 className="text-xl font-bold text-gray-900 mb-4">Eligibility Criteria</h3>
               {qualificationsList.length > 0 ? (
-                <ul className="space-y-3 text-gray-700 whitespace-normal">
+                <ul className="space-y-3 text-gray-700">
                   {qualificationsList.map((item, index) => (
                     <li key={index} className="flex gap-3">
                       <span className="text-blue-600 font-bold text-2xl leading-none mt-0.5">•</span>
@@ -704,6 +739,59 @@ export default function JobDetailClient({ opportunity, relatedJobs = [] }: JobDe
                 </button>
               </div>
             </div>
+
+            {/* ============================================================
+                APPLY VIA EMAIL SECTION - Only shows when email is available
+                ============================================================ */}
+            {hasEmail && (
+              <div className="bg-white rounded-lg p-6 border-2 border-blue-200 shadow-md">
+                <div className="flex items-center gap-2 mb-4">
+                  <Mail className="w-5 h-5 text-blue-600" />
+                  <h3 className="text-lg font-bold text-gray-900">Apply via Email</h3>
+                </div>
+                <p className="text-sm text-gray-600 mb-3">
+                  Send your application directly to the recruiter.
+                </p>
+                
+                {/* Email Display */}
+                <div className="bg-blue-50 rounded-lg p-3 mb-4 flex items-center gap-2">
+                  <Mail className="w-4 h-4 text-blue-600 flex-shrink-0" />
+                  <span className="text-sm font-medium text-gray-700 break-all">{applyEmail}</span>
+                </div>
+
+                {/* Apply Button */}
+                <button
+                  onClick={handleApplyViaEmail}
+                  className="w-full bg-blue-600 text-white py-3 px-4 rounded-lg font-semibold text-sm hover:bg-blue-700 transition-colors flex items-center justify-center gap-2"
+                >
+                  <Mail className="w-4 h-4" />
+                  Compose Email Application
+                </button>
+
+                {/* Phone if available */}
+                {job.recruiterPhone && (
+                  <button
+                    onClick={handlePhoneCall}
+                    className="w-full mt-2 bg-green-600 text-white py-2.5 px-4 rounded-lg font-semibold text-sm hover:bg-green-700 transition-colors flex items-center justify-center gap-2"
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                    </svg>
+                    Call Recruiter
+                  </button>
+                )}
+
+                {applyEmailSent && (
+                  <p className="text-green-600 text-sm mt-3 text-center">
+                    ✅ Email client opened! Make sure to attach your resume.
+                  </p>
+                )}
+                
+                <p className="text-xs text-gray-500 mt-3 text-center">
+                  Make sure to include your resume and a brief introduction.
+                </p>
+              </div>
+            )}
 
             {/* Similar Jobs */}
             {relatedJobs && relatedJobs.length > 0 && (
