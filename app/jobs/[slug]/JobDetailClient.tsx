@@ -114,6 +114,75 @@ const formatQualifications = (text: string | undefined): string[] => {
   return items.map(s => s.trim());
 };
 
+// Helper to render company logo
+const renderCompanyLogo = (companyLogo?: string, company?: string) => {
+  const logoBg = company ? getCompanyColor(company) : 'bg-blue-600';
+  
+  if (companyLogo) {
+    return (
+      <div className={`w-24 h-24 rounded-lg flex items-center justify-center flex-shrink-0 ${logoBg}`}>
+        <img 
+          src={companyLogo} 
+          alt={company || 'Company'} 
+          className="w-16 h-16 object-contain rounded-lg"
+          onError={(e) => {
+            // If image fails to load, show fallback
+            const target = e.target as HTMLImageElement;
+            target.style.display = 'none';
+            const parent = target.parentElement;
+            if (parent) {
+              const span = document.createElement('span');
+              span.className = 'text-white font-bold text-3xl';
+              span.textContent = company?.substring(0, 2).toUpperCase() || 'CO';
+              parent.appendChild(span);
+            }
+          }}
+        />
+      </div>
+    );
+  }
+  
+  return (
+    <div className={`w-24 h-24 ${logoBg} rounded-lg flex items-center justify-center flex-shrink-0`}>
+      <span className="text-white font-bold text-3xl">{company?.substring(0, 2).toUpperCase() || 'CO'}</span>
+    </div>
+  );
+};
+
+// Helper to render related company logo
+const renderRelatedLogo = (companyLogo?: string, company?: string) => {
+  const logoBg = company ? getCompanyColor(company) : 'bg-blue-600';
+  
+  if (companyLogo) {
+    return (
+      <div className={`w-12 h-12 ${logoBg} rounded-lg flex items-center justify-center flex-shrink-0`}>
+        <img 
+          src={companyLogo} 
+          alt={company || 'Company'} 
+          className="w-8 h-8 object-contain rounded-lg"
+          onError={(e) => {
+            const target = e.target as HTMLImageElement;
+            target.style.display = 'none';
+            const parent = target.parentElement;
+            if (parent) {
+              const span = document.createElement('span');
+              span.className = 'text-white font-bold text-base';
+              span.textContent = company?.substring(0, 2).toUpperCase() || 'CO';
+              parent.appendChild(span);
+            }
+          }}
+        />
+      </div>
+    );
+  }
+  
+  return (
+    <div className={`w-12 h-12 ${logoBg} rounded-lg flex items-center justify-center flex-shrink-0`}>
+      <span className="text-white font-bold text-base">{company?.substring(0, 2).toUpperCase() || 'CO'}</span>
+    </div>
+  );
+};
+
 export default function JobDetailClient({ opportunity, relatedJobs = [] }: JobDetailClientProps) {
   const router = useRouter();
   const [isSaved, setIsSaved] = useState(false);
@@ -516,7 +585,7 @@ Best regards,
         </div>
       )}
 
-      {/* Breadcrumb - FIXED: Using Link components */}
+      {/* Breadcrumb */}
       <div className="border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center justify-between">
@@ -545,19 +614,8 @@ Best regards,
         <div className="bg-white rounded-lg p-8 mb-8">
           <div className="flex items-start justify-between">
             <div className="flex items-start gap-6 flex-1">
-              <div className={`w-24 h-24 ${job.logoBg || 'bg-blue-600'} rounded-lg flex items-center justify-center flex-shrink-0`}>
-                {job.companyLogo ? (
-                  <Image 
-                    src={job.companyLogo} 
-                    alt={job.company} 
-                    width={64} 
-                    height={64} 
-                    className="object-contain w-16 h-16" 
-                  />
-                ) : (
-                  <span className="text-white font-bold text-3xl">{job.company?.substring(0, 2).toUpperCase() || 'CO'}</span>
-                )}
-              </div>
+              {/* Company Logo - FIXED with fallback */}
+              {renderCompanyLogo(job.companyLogo, job.company)}
 
               <div className="flex-1">
                 <div className="flex items-center gap-3 mb-2">
@@ -842,53 +900,39 @@ Best regards,
                   <Link href="/jobs" className="text-blue-600 hover:text-blue-700 font-bold text-sm">View All</Link>
                 </div>
                 <div className="space-y-4">
-                  {relatedJobs.map((relatedJob) => {
-                    const relatedLogoBg = getCompanyColor(relatedJob.company || '');
-                    return (
-                      <Link 
-                        key={relatedJob.id} 
-                        href={`/jobs/${relatedJob.slug}`}
-                        className="block border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow hover:border-blue-400"
-                      >
-                        <div className="flex items-center gap-3 mb-2">
-                          <div className={`w-12 h-12 ${relatedLogoBg} rounded-lg flex items-center justify-center flex-shrink-0`}>
-                            {relatedJob.companyLogo ? (
-                              <Image 
-                                src={relatedJob.companyLogo} 
-                                alt={relatedJob.company} 
-                                width={32} 
-                                height={32} 
-                                className="object-contain w-8 h-8" 
-                              />
-                            ) : (
-                              <span className="text-white font-bold text-base">{relatedJob.company?.substring(0, 2).toUpperCase() || 'CO'}</span>
-                            )}
-                          </div>
-                          <div>
-                            <h4 className="font-bold text-gray-900 text-base hover:text-blue-600 transition-colors">{relatedJob.title}</h4>
-                            <p className="text-blue-600 text-sm font-medium">{relatedJob.company}</p>
-                          </div>
+                  {relatedJobs.map((relatedJob) => (
+                    <Link 
+                      key={relatedJob.id} 
+                      href={`/jobs/${relatedJob.slug}`}
+                      className="block border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow hover:border-blue-400"
+                    >
+                      <div className="flex items-center gap-3 mb-2">
+                        {/* Related Company Logo - FIXED with fallback */}
+                        {renderRelatedLogo(relatedJob.companyLogo, relatedJob.company)}
+                        <div>
+                          <h4 className="font-bold text-gray-900 text-base hover:text-blue-600 transition-colors">{relatedJob.title}</h4>
+                          <p className="text-blue-600 text-sm font-medium">{relatedJob.company}</p>
                         </div>
-                        <div className="flex items-center gap-2 text-gray-900 text-sm font-medium mt-1">
-                          <MapPin className="w-4 h-4 text-gray-500" />
-                          <span>{relatedJob.city && relatedJob.country ? `${relatedJob.city}, ${relatedJob.country}` : relatedJob.location || 'India'}</span>
+                      </div>
+                      <div className="flex items-center gap-2 text-gray-900 text-sm font-medium mt-1">
+                        <MapPin className="w-4 h-4 text-gray-500" />
+                        <span>{relatedJob.city && relatedJob.country ? `${relatedJob.city}, ${relatedJob.country}` : relatedJob.location || 'India'}</span>
+                      </div>
+                      <div className="flex items-center gap-2 text-gray-900 text-sm font-medium mt-1">
+                        <Clock className="w-4 h-4 text-gray-500" />
+                        <span>{relatedJob.experience || '0 - 1 Yrs'}</span>
+                      </div>
+                      {relatedJob.skills && relatedJob.skills.length > 0 && (
+                        <div className="flex flex-wrap gap-1.5 mt-3">
+                          {relatedJob.skills.slice(0, 3).map((skill: string) => (
+                            <span key={skill} className="bg-blue-50 text-blue-700 text-xs font-semibold px-2.5 py-1 rounded-full border border-blue-100">
+                              {skill}
+                            </span>
+                          ))}
                         </div>
-                        <div className="flex items-center gap-2 text-gray-900 text-sm font-medium mt-1">
-                          <Clock className="w-4 h-4 text-gray-500" />
-                          <span>{relatedJob.experience || '0 - 1 Yrs'}</span>
-                        </div>
-                        {relatedJob.skills && relatedJob.skills.length > 0 && (
-                          <div className="flex flex-wrap gap-1.5 mt-3">
-                            {relatedJob.skills.slice(0, 3).map((skill: string) => (
-                              <span key={skill} className="bg-blue-50 text-blue-700 text-xs font-semibold px-2.5 py-1 rounded-full border border-blue-100">
-                                {skill}
-                              </span>
-                            ))}
-                          </div>
-                        )}
-                      </Link>
-                    );
-                  })}
+                      )}
+                    </Link>
+                  ))}
                 </div>
               </div>
             )}
