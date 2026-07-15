@@ -511,38 +511,106 @@ const RoadmapLearningSection = () => {
 // ============================================
 const TestimonialSection = () => {
   const { track } = useTracking();
-  const handleTestimonialClick = () => {
+  
+  const handleTestimonialClick = (name: string) => {
     track("Testimonial Viewed", {
-      user: "Khushi",
-      role: "BBA Student",
+      user: name,
       location: "homepage_testimonials",
       timestamp: new Date().toISOString(),
     });
   };
+
+  const testimonials = [
+    {
+      name: "Sneha Suresh",
+      role: "B.Com Student",
+      testimonial: "Finlysta exceeded my expectations with their professional resume and LinkedIn profile updates. They didn't just make changes—they provided valuable guidance that helped me understand what recruiters actually look for. The personalized support and attention to detail throughout the process gave me confidence in my job search. I'm truly grateful for their help in enhancing my professional presence.",
+      linkedin: "https://www.linkedin.com/in/sneha-suresh-70a537411",
+      image: "/Userprofile.png"
+    },
+    {
+      name: "Khushi",
+      role: "BBA Student",
+      testimonial: "Finlysta helped me build an ATS-friendly resume, improve my LinkedIn profile, and guided me through a structured learning roadmap that made my career journey much clearer.",
+      linkedin: null,
+      image: "/Userprofile.png"
+    }
+  ];
+
   return (
-    <section className="py-12 bg-[#F8FAFC]" aria-label="Student testimonial">
+    <section className="py-12 bg-[#F8FAFC]" aria-label="Student testimonials">
       <div className="max-w-7xl mx-auto px-6">
         <div className="flex justify-center mb-6">
           <p className="text-sm font-bold text-[#081B4B] bg-blue-50 px-4 py-1.5 rounded-full">Loved by Finance Freshers</p>
         </div>
-        <div className="max-w-2xl mx-auto">
-          <div className="bg-white border border-slate-100 rounded-xl px-6 py-6 shadow-sm hover:shadow-md transition-all duration-300 cursor-pointer" onClick={handleTestimonialClick}>
-            <div className="flex items-start gap-4">
-              <div className="flex-shrink-0">
-                <Image src="/Userprofile.png" alt="Khushi, BBA student" width={48} height={48} className="rounded-full object-cover" />
-              </div>
-              <div className="flex-1">
-                <p className="text-[13px] text-slate-700 leading-relaxed">
-                  Finlysta helped me build an ATS-friendly resume, improve my LinkedIn profile, and guided me through a structured learning roadmap that made my career journey much clearer.
-                </p>
-                <div className="mt-4">
-                  <p className="text-[12px] font-semibold text-[#081B4B]">— Khushi</p>
-                  <p className="text-[11px] text-slate-500">BBA Student</p>
+        <div className="max-w-2xl mx-auto space-y-4">
+          {testimonials.map((testimonial, index) => (
+            <div 
+              key={index}
+              className="bg-white border border-slate-100 rounded-xl px-6 py-6 shadow-sm hover:shadow-md transition-all duration-300 cursor-pointer" 
+              onClick={() => handleTestimonialClick(testimonial.name)}
+            >
+              <div className="flex items-start gap-4">
+                <div className="flex-shrink-0">
+                  <Image 
+                    src={testimonial.image} 
+                    alt={`${testimonial.name}, ${testimonial.role}`} 
+                    width={48} 
+                    height={48} 
+                    className="rounded-full object-cover" 
+                  />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-start gap-1 mb-1">
+                    <span className="text-amber-400 text-lg">⭐</span>
+                    <span className="text-amber-400 text-lg">⭐</span>
+                    <span className="text-amber-400 text-lg">⭐</span>
+                    <span className="text-amber-400 text-lg">⭐</span>
+                    <span className="text-amber-400 text-lg">⭐</span>
+                  </div>
+                  <p className="text-[13px] text-slate-700 leading-relaxed">
+                    {testimonial.testimonial}
+                  </p>
+                  <div className="mt-4 flex items-center justify-between">
+                    <div>
+                      <p className="text-[12px] font-semibold text-[#081B4B]">— {testimonial.name}</p>
+                      <p className="text-[11px] text-slate-500">{testimonial.role}</p>
+                    </div>
+                    {/* Only show LinkedIn icon for Sneha Suresh */}
+                    {testimonial.linkedin && (
+                      <a 
+                        href={testimonial.linkedin}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          track("LinkedIn Profile Clicked", {
+                            user: testimonial.name,
+                            location: "homepage_testimonials"
+                          });
+                        }}
+                        className="flex items-center gap-1.5 text-[11px] text-[#0A66C2] hover:text-[#0A66C2]/80 font-medium transition-colors flex-shrink-0"
+                        aria-label={`View ${testimonial.name}'s LinkedIn profile`}
+                      >
+                        <svg 
+                          xmlns="http://www.w3.org/2000/svg" 
+                          width="16" 
+                          height="16" 
+                          viewBox="0 0 24 24" 
+                          fill="currentColor"
+                          className="text-[#0A66C2]"
+                        >
+                          <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+                        </svg>
+                        <span>View Profile</span>
+                        <ArrowRight size={12} className="text-[#0A66C2] ml-0.5" />
+                      </a>
+                    )}
+                  </div>
                 </div>
               </div>
-              <ArrowRight size={16} className="text-[#2563EB] mt-1 flex-shrink-0 opacity-70" />
             </div>
-          </div>
+          ))}
         </div>
       </div>
     </section>
