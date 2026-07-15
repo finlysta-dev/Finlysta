@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { ArrowLeft, MapPin, Calendar, Clock, Briefcase, DollarSign, Building2, Share2, Heart, Linkedin, Twitter, MessageCircle, Mail, Link as LinkIcon, ChevronRight, Bell, Bookmark, ArrowUpRight, X, Hourglass, Send, Trash2, User, FileText } from 'lucide-react';
+import { ArrowLeft, MapPin, Calendar, Clock, Briefcase, DollarSign, Building2, Share2, Heart, Linkedin, Twitter, MessageCircle, Mail, Link as LinkIcon, ChevronRight, Bell, Bookmark, ArrowUpRight, X, Hourglass, Send, Trash2, User, FileText, GraduationCap } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -19,6 +19,7 @@ interface Job {
   state?: string;
   country?: string;
   experience?: string;
+  qualification?: string;
   duration?: string;
   salary?: string;
   skills: string[];
@@ -209,6 +210,9 @@ export default function JobDetailClient({ opportunity, relatedJobs = [] }: JobDe
       updatedSavedJobs = savedJobs.filter((job: any) => job.id !== opportunity.id);
       setIsSaved(false);
     } else {
+      // Determine if it's an articleship
+      const isArticleship = opportunity.type === 'articleship' || opportunity.title?.toLowerCase().includes('article');
+      
       const jobToSave = {
         id: opportunity.id,
         slug: opportunity.slug,
@@ -216,7 +220,7 @@ export default function JobDetailClient({ opportunity, relatedJobs = [] }: JobDe
         company: opportunity.company,
         companyLogo: opportunity.companyLogo,
         location: opportunity.city && opportunity.country ? `${opportunity.city}, ${opportunity.country}` : opportunity.location || 'India',
-        type: opportunity.type === 'job' ? 'Full-time' : 'Internship',
+        type: isArticleship ? 'Articleship' : (opportunity.type === 'job' ? 'Full-time' : 'Internship'),
         experience: opportunity.experience || '0 - 1 Yrs',
         applyLink: opportunity.applyLink || '#',
       };
@@ -358,19 +362,37 @@ Best regards,
   // Calculate time ago once when component renders
   const timeAgo = formatPostedTime(opportunity.postedAt || new Date().toISOString());
 
+  // Check if this is an articleship
+  const isArticleship = opportunity.type === 'articleship' || 
+                        opportunity.title?.toLowerCase().includes('article') ||
+                        opportunity.type?.toLowerCase().includes('article');
+
+  // Determine the display type
+  const displayType = isArticleship ? 'Articleship' : 
+                      (opportunity.type === 'job' ? 'Full-time' : 'Internship');
+
+  // Get qualification or experience
+  const getQualificationOrExperience = () => {
+    if (isArticleship) {
+      return opportunity.qualification || opportunity.qualifications || 'CA Articleship';
+    }
+    return opportunity.experience || '0 - 1 Yrs';
+  };
+
   const job: Job = {
     id: opportunity.id,
     slug: opportunity.slug,
     title: opportunity.title || 'Financial Analyst',
     company: opportunity.company || 'Company',
     companyLogo: opportunity.companyLogo,
-    type: opportunity.type === 'job' ? 'Full-time' : 'Internship',
+    type: displayType,
     workMode: opportunity.workMode || 'On-site',
     location: opportunity.city && opportunity.country ? `${opportunity.city}, ${opportunity.country}` : opportunity.location || 'India',
     city: opportunity.city || opportunity.location?.split(',')[0]?.trim() || 'India',
     state: opportunity.state,
     country: opportunity.country || 'India',
     experience: opportunity.experience || '0 - 1 Yrs',
+    qualification: opportunity.qualification || opportunity.qualifications || '',
     duration: opportunity.duration,
     salary: opportunity.salary || 'Not Disclosed',
     skills: opportunity.skills || ['Excel', 'Financial Analysis', 'Reporting', 'PowerPoint'],
@@ -623,6 +645,9 @@ Best regards,
                 <div className="flex items-center gap-3 mb-2">
                   <h1 className="text-4xl font-bold text-gray-900">{job.title}</h1>
                   {job.isNew && <span className="bg-green-100 text-green-800 text-xs font-semibold px-3 py-1 rounded-full">New</span>}
+                  {isArticleship && (
+                    <span className="bg-purple-100 text-purple-800 text-xs font-semibold px-3 py-1 rounded-full">Articleship</span>
+                  )}
                 </div>
                 
                 <p className="text-blue-600 text-lg font-bold mb-4">{job.company}</p>
@@ -637,8 +662,17 @@ Best regards,
                     <span className="text-gray-700">{job.type}</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <Clock className="w-5 h-5 text-gray-500" />
-                    <span className="text-gray-700">{job.experience}</span>
+                    {isArticleship ? (
+                      <>
+                        <GraduationCap className="w-5 h-5 text-gray-500" />
+                        <span className="text-gray-700">{job.qualification || 'CA Articleship'}</span>
+                      </>
+                    ) : (
+                      <>
+                        <Clock className="w-5 h-5 text-gray-500" />
+                        <span className="text-gray-700">{job.experience}</span>
+                      </>
+                    )}
                   </div>
                 </div>
 
@@ -664,10 +698,18 @@ Best regards,
                   <ArrowUpRight className="w-5 h-5" />
                 </button>
               </a>
-              <div className="flex items-center justify-center gap-2 text-sm text-gray-600 font-medium">
-                <Hourglass className="w-4 h-4" />
-                <span>Applications closing soon</span>
-              </div>
+              {isArticleship && (
+                <div className="flex items-center justify-center gap-2 text-sm text-purple-600 font-medium">
+                  <GraduationCap className="w-4 h-4" />
+                  <span>CA Articleship Opportunity</span>
+                </div>
+              )}
+              {!isArticleship && (
+                <div className="flex items-center justify-center gap-2 text-sm text-gray-600 font-medium">
+                  <Hourglass className="w-4 h-4" />
+                  <span>Applications closing soon</span>
+                </div>
+              )}
             </div>
           </div>
 
@@ -690,7 +732,7 @@ Best regards,
             <div className="bg-white rounded-lg p-8">
               <h2 className="text-2xl font-bold text-gray-900 mb-4 flex items-center gap-2">
                 <Briefcase className="w-6 h-6 text-blue-600" />
-                Job Description
+                {isArticleship ? 'Articleship Description' : 'Job Description'}
               </h2>
               <p className="text-gray-700 mb-6 leading-relaxed text-base">
                 {job.overview || job.shortDescription || 'No description available'}
@@ -715,7 +757,9 @@ Best regards,
                 </ul>
               )}
 
-              <h3 className="text-xl font-bold text-gray-900 mb-4">Eligibility Criteria</h3>
+              <h3 className="text-xl font-bold text-gray-900 mb-4">
+                {isArticleship ? 'Eligibility & Qualification' : 'Eligibility Criteria'}
+              </h3>
               {qualificationsList.length > 0 ? (
                 <ul className="space-y-3 text-gray-700">
                   {qualificationsList.map((item, index) => (
@@ -729,7 +773,9 @@ Best regards,
                 <ul className="space-y-3 text-gray-700">
                   <li className="flex gap-3">
                     <span className="text-blue-600 font-bold text-2xl leading-none mt-0.5">•</span>
-                    <span className="text-base leading-relaxed">No specific qualifications listed for this role.</span>
+                    <span className="text-base leading-relaxed">
+                      {isArticleship ? 'CA Articleship qualification required.' : 'No specific qualifications listed for this role.'}
+                    </span>
                   </li>
                 </ul>
               )}
@@ -772,7 +818,7 @@ Best regards,
             <div className="bg-white rounded-lg p-6">
               <h3 className="text-lg font-bold text-gray-900 mb-6 flex items-center gap-2">
                 <Briefcase className="w-5 h-5 text-blue-600" />
-                Job Overview
+                {isArticleship ? 'Articleship Overview' : 'Job Overview'}
               </h3>
               <div className="space-y-4">
                 <div className="flex justify-between items-center border-b border-gray-100 pb-3">
@@ -780,13 +826,28 @@ Best regards,
                   <p className="text-gray-900 font-bold text-sm">{job.timeAgo || 'Recently'}</p>
                 </div>
                 <div className="flex justify-between items-center border-b border-gray-100 pb-3">
-                  <p className="text-xs text-gray-500 uppercase tracking-wider font-bold">Job Type</p>
+                  <p className="text-xs text-gray-500 uppercase tracking-wider font-bold">Type</p>
                   <p className="text-gray-900 font-bold text-sm">{job.type}</p>
                 </div>
-                <div className="flex justify-between items-center border-b border-gray-100 pb-3">
-                  <p className="text-xs text-gray-500 uppercase tracking-wider font-bold">Experience</p>
-                  <p className="text-gray-900 font-bold text-sm">{job.experience}</p>
-                </div>
+                {isArticleship ? (
+                  <>
+                    <div className="flex justify-between items-center border-b border-gray-100 pb-3">
+                      <p className="text-xs text-gray-500 uppercase tracking-wider font-bold">Qualification</p>
+                      <p className="text-gray-900 font-bold text-sm">{job.qualification || 'CA Articleship'}</p>
+                    </div>
+                    {job.duration && (
+                      <div className="flex justify-between items-center border-b border-gray-100 pb-3">
+                        <p className="text-xs text-gray-500 uppercase tracking-wider font-bold">Duration</p>
+                        <p className="text-gray-900 font-bold text-sm">{job.duration}</p>
+                      </div>
+                    )}
+                  </>
+                ) : (
+                  <div className="flex justify-between items-center border-b border-gray-100 pb-3">
+                    <p className="text-xs text-gray-500 uppercase tracking-wider font-bold">Experience</p>
+                    <p className="text-gray-900 font-bold text-sm">{job.experience}</p>
+                  </div>
+                )}
                 <div className="flex justify-between items-center border-b border-gray-100 pb-3">
                   <p className="text-xs text-gray-500 uppercase tracking-wider font-bold">Location</p>
                   <p className="text-gray-900 font-bold text-sm">{job.location}</p>
@@ -808,7 +869,7 @@ Best regards,
 
             {/* Share Section */}
             <div className="bg-white rounded-lg p-6">
-              <h3 className="text-lg font-bold text-gray-900 mb-4">Share this job</h3>
+              <h3 className="text-lg font-bold text-gray-900 mb-4">Share this {isArticleship ? 'articleship' : 'job'}</h3>
               <div className="flex gap-2 flex-wrap">
                 <button 
                   onClick={() => shareJob('linkedin')}
@@ -897,44 +958,57 @@ Best regards,
                 <div className="flex items-center justify-between mb-4">
                   <h3 className="text-lg font-bold text-gray-900 flex items-center gap-2">
                     <Briefcase className="w-5 h-5 text-blue-600" />
-                    Similar Jobs
+                    Similar {relatedJobs.some(j => j.type === 'articleship') ? 'Articleships' : 'Jobs'}
                   </h3>
                   <Link href="/jobs" className="text-blue-600 hover:text-blue-700 font-bold text-sm">View All</Link>
                 </div>
                 <div className="space-y-4">
-                  {relatedJobs.map((relatedJob) => (
-                    <Link 
-                      key={relatedJob.id} 
-                      href={`/jobs/${relatedJob.slug}`}
-                      className="block border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow hover:border-blue-400"
-                    >
-                      <div className="flex items-center gap-3 mb-2">
-                        {/* Related Company Logo - Small/Medium size with background color */}
-                        {renderRelatedLogo(relatedJob.companyLogo, relatedJob.company)}
-                        <div>
-                          <h4 className="font-bold text-gray-900 text-base hover:text-blue-600 transition-colors">{relatedJob.title}</h4>
-                          <p className="text-blue-600 text-sm font-medium">{relatedJob.company}</p>
+                  {relatedJobs.map((relatedJob) => {
+                    const isRelatedArticleship = relatedJob.type === 'articleship' || 
+                                                  relatedJob.title?.toLowerCase().includes('article');
+                    return (
+                      <Link 
+                        key={relatedJob.id} 
+                        href={`/jobs/${relatedJob.slug}`}
+                        className="block border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow hover:border-blue-400"
+                      >
+                        <div className="flex items-center gap-3 mb-2">
+                          {/* Related Company Logo - Small/Medium size with background color */}
+                          {renderRelatedLogo(relatedJob.companyLogo, relatedJob.company)}
+                          <div>
+                            <h4 className="font-bold text-gray-900 text-base hover:text-blue-600 transition-colors">{relatedJob.title}</h4>
+                            <p className="text-blue-600 text-sm font-medium">{relatedJob.company}</p>
+                          </div>
                         </div>
-                      </div>
-                      <div className="flex items-center gap-2 text-gray-900 text-sm font-medium mt-1">
-                        <MapPin className="w-4 h-4 text-gray-500" />
-                        <span>{relatedJob.city && relatedJob.country ? `${relatedJob.city}, ${relatedJob.country}` : relatedJob.location || 'India'}</span>
-                      </div>
-                      <div className="flex items-center gap-2 text-gray-900 text-sm font-medium mt-1">
-                        <Clock className="w-4 h-4 text-gray-500" />
-                        <span>{relatedJob.experience || '0 - 1 Yrs'}</span>
-                      </div>
-                      {relatedJob.skills && relatedJob.skills.length > 0 && (
-                        <div className="flex flex-wrap gap-1.5 mt-3">
-                          {relatedJob.skills.slice(0, 3).map((skill: string) => (
-                            <span key={skill} className="bg-blue-50 text-blue-700 text-xs font-semibold px-2.5 py-1 rounded-full border border-blue-100">
-                              {skill}
-                            </span>
-                          ))}
+                        <div className="flex items-center gap-2 text-gray-900 text-sm font-medium mt-1">
+                          <MapPin className="w-4 h-4 text-gray-500" />
+                          <span>{relatedJob.city && relatedJob.country ? `${relatedJob.city}, ${relatedJob.country}` : relatedJob.location || 'India'}</span>
                         </div>
-                      )}
-                    </Link>
-                  ))}
+                        <div className="flex items-center gap-2 text-gray-900 text-sm font-medium mt-1">
+                          {isRelatedArticleship ? (
+                            <>
+                              <GraduationCap className="w-4 h-4 text-gray-500" />
+                              <span>{relatedJob.qualification || relatedJob.qualifications || 'CA Articleship'}</span>
+                            </>
+                          ) : (
+                            <>
+                              <Clock className="w-4 h-4 text-gray-500" />
+                              <span>{relatedJob.experience || '0 - 1 Yrs'}</span>
+                            </>
+                          )}
+                        </div>
+                        {relatedJob.skills && relatedJob.skills.length > 0 && (
+                          <div className="flex flex-wrap gap-1.5 mt-3">
+                            {relatedJob.skills.slice(0, 3).map((skill: string) => (
+                              <span key={skill} className="bg-blue-50 text-blue-700 text-xs font-semibold px-2.5 py-1 rounded-full border border-blue-100">
+                                {skill}
+                              </span>
+                            ))}
+                          </div>
+                        )}
+                      </Link>
+                    );
+                  })}
                 </div>
               </div>
             )}
