@@ -114,27 +114,27 @@ const formatQualifications = (text: string | undefined): string[] => {
   return items.map(s => s.trim());
 };
 
-// Helper to render company logo
+// Helper to render company logo - Medium size with background color
 const renderCompanyLogo = (companyLogo?: string, company?: string) => {
   const logoBg = company ? getCompanyColor(company) : 'bg-blue-600';
   
   if (companyLogo) {
     return (
-      <div className={`w-24 h-24 rounded-lg flex items-center justify-center flex-shrink-0 ${logoBg}`}>
+      <div className={`w-20 h-20 rounded-lg flex items-center justify-center flex-shrink-0 ${logoBg}`}>
         <img 
           src={companyLogo} 
           alt={company || 'Company'} 
-          className="w-16 h-16 object-contain rounded-lg"
+          className="w-14 h-14 object-contain rounded-lg"
           onError={(e) => {
-            // If image fails to load, show fallback
+            // If image fails to load, show fallback with company initials
             const target = e.target as HTMLImageElement;
             target.style.display = 'none';
             const parent = target.parentElement;
             if (parent) {
-              const span = document.createElement('span');
-              span.className = 'text-white font-bold text-3xl';
-              span.textContent = company?.substring(0, 2).toUpperCase() || 'CO';
-              parent.appendChild(span);
+              const fallback = document.createElement('span');
+              fallback.className = 'text-white font-bold text-2xl';
+              fallback.textContent = company?.substring(0, 2).toUpperCase() || 'CO';
+              parent.appendChild(fallback);
             }
           }}
         />
@@ -142,20 +142,21 @@ const renderCompanyLogo = (companyLogo?: string, company?: string) => {
     );
   }
   
+  // Fallback when no logo is provided
   return (
-    <div className={`w-24 h-24 ${logoBg} rounded-lg flex items-center justify-center flex-shrink-0`}>
-      <span className="text-white font-bold text-3xl">{company?.substring(0, 2).toUpperCase() || 'CO'}</span>
+    <div className={`w-20 h-20 ${logoBg} rounded-lg flex items-center justify-center flex-shrink-0`}>
+      <span className="text-white font-bold text-2xl">{company?.substring(0, 2).toUpperCase() || 'CO'}</span>
     </div>
   );
 };
 
-// Helper to render related company logo
+// Helper to render related company logo - Small/Medium size with background color
 const renderRelatedLogo = (companyLogo?: string, company?: string) => {
   const logoBg = company ? getCompanyColor(company) : 'bg-blue-600';
   
   if (companyLogo) {
     return (
-      <div className={`w-12 h-12 ${logoBg} rounded-lg flex items-center justify-center flex-shrink-0`}>
+      <div className={`w-12 h-12 rounded-lg flex items-center justify-center flex-shrink-0 ${logoBg}`}>
         <img 
           src={companyLogo} 
           alt={company || 'Company'} 
@@ -165,10 +166,10 @@ const renderRelatedLogo = (companyLogo?: string, company?: string) => {
             target.style.display = 'none';
             const parent = target.parentElement;
             if (parent) {
-              const span = document.createElement('span');
-              span.className = 'text-white font-bold text-base';
-              span.textContent = company?.substring(0, 2).toUpperCase() || 'CO';
-              parent.appendChild(span);
+              const fallback = document.createElement('span');
+              fallback.className = 'text-white font-bold text-base';
+              fallback.textContent = company?.substring(0, 2).toUpperCase() || 'CO';
+              parent.appendChild(fallback);
             }
           }}
         />
@@ -176,6 +177,7 @@ const renderRelatedLogo = (companyLogo?: string, company?: string) => {
     );
   }
   
+  // Fallback when no logo is provided
   return (
     <div className={`w-12 h-12 ${logoBg} rounded-lg flex items-center justify-center flex-shrink-0`}>
       <span className="text-white font-bold text-base">{company?.substring(0, 2).toUpperCase() || 'CO'}</span>
@@ -614,7 +616,7 @@ Best regards,
         <div className="bg-white rounded-lg p-8 mb-8">
           <div className="flex items-start justify-between">
             <div className="flex items-start gap-6 flex-1">
-              {/* Company Logo - FIXED with fallback */}
+              {/* Company Logo - Medium size with background color */}
               {renderCompanyLogo(job.companyLogo, job.company)}
 
               <div className="flex-1">
@@ -907,7 +909,7 @@ Best regards,
                       className="block border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow hover:border-blue-400"
                     >
                       <div className="flex items-center gap-3 mb-2">
-                        {/* Related Company Logo - FIXED with fallback */}
+                        {/* Related Company Logo - Small/Medium size with background color */}
                         {renderRelatedLogo(relatedJob.companyLogo, relatedJob.company)}
                         <div>
                           <h4 className="font-bold text-gray-900 text-base hover:text-blue-600 transition-colors">{relatedJob.title}</h4>
