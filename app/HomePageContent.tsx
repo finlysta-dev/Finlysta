@@ -2,21 +2,43 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
+import dynamic from "next/dynamic";
 import {
   ChevronRight, TrendingUp, Shield, Calculator, MessageCircle,
   BarChart3, Landmark, Building2, Heart, Linkedin, Instagram, GraduationCap,
   Twitter, Mail, ArrowRight, BookOpen, Sparkles, Briefcase, Users,
   FileSpreadsheet, FileText, ClipboardList, MessageSquare, Gift,
-  ChevronDown, Sigma, Eye
+  ChevronDown, Sigma, Eye, BadgeCheck
 } from "lucide-react";
 import Link from "next/link";
 import Header from "./components/Header";
-import TrendingInternships from "@/components/TrendingOpportunities";
 import { useTracking } from "@/hooks/useTracking";
 import { trackPageView } from "@/lib/analytics/tracking";
 
+// FIXED: Safer dynamic import with error handling
+const TrendingInternships = dynamic(
+  () => import("@/components/TrendingOpportunities").then(mod => mod.default || mod),
+  { 
+    ssr: false,
+    loading: () => (
+      <div className="py-8 bg-[#F8FAFC]">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="animate-pulse">
+            <div className="h-8 bg-gray-200 rounded w-48 mb-4"></div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {[1, 2, 3].map((i) => (
+                <div key={i} className="h-48 bg-gray-200 rounded-xl"></div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    )
+  }
+);
+
 // ============================================
-// SKILLS SECTION — responsive grid (was overflowing on mobile)
+// SKILLS SECTION
 // ============================================
 const SkillsSection = () => {
   const { track } = useTracking();
@@ -53,9 +75,8 @@ const SkillsSection = () => {
               {skills.map((skill, index) => {
                 const Icon = skill.icon;
                 return (
-                  <button
+                  <div
                     key={index}
-                    type="button"
                     className="text-center px-1 pb-2 cursor-pointer hover:opacity-80 transition-opacity"
                     onClick={() => handleSkillClick(skill.title)}
                   >
@@ -66,7 +87,7 @@ const SkillsSection = () => {
                       <span className="text-[12px] font-bold text-[#081B4B] leading-tight">{skill.title}</span>
                       <span className="text-[11px] text-slate-500 leading-tight">{skill.subtitle}</span>
                     </div>
-                  </button>
+                  </div>
                 );
               })}
             </div>
@@ -78,7 +99,7 @@ const SkillsSection = () => {
 };
 
 // ============================================
-// STATS SECTION — fetch once, never show a discouraging "0+"
+// STATS SECTION
 // ============================================
 const StatsSection = () => {
   const { track } = useTracking();
@@ -173,7 +194,6 @@ const StatsSection = () => {
 // EXCEL FUNCTIONS SECTION
 // ============================================
 const ExcelFunctionsSection = () => {
-  const router = useRouter();
   const { track } = useTracking();
 
   const topFunctions = [
@@ -224,7 +244,6 @@ const ExcelFunctionsSection = () => {
       location: "homepage_excel_functions",
       timestamp: new Date().toISOString(),
     });
-    router.push("/guides/excel-functions-guide");
   };
 
   return (
@@ -250,22 +269,22 @@ const ExcelFunctionsSection = () => {
                   each with a clear definition, syntax, real dataset, practice question, and example.
                 </p>
               </div>
-              <button
-                type="button"
-                onClick={handleExploreClick}
+              <Link
+                href="/guides/excel-functions-guide"
                 className="flex-shrink-0 px-6 py-3 bg-blue-600 text-white rounded-xl font-semibold text-sm hover:bg-blue-700 transition-all shadow-lg shadow-blue-200 flex items-center gap-2"
+                onClick={handleExploreClick}
               >
                 Explore All Functions
                 <ArrowRight size={16} />
-              </button>
+              </Link>
             </div>
 
-            {/* Function Cards with Clean Definitions */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-6">
               {topFunctions.map((func, index) => (
-                <div
+                <Link
                   key={index}
-                  className="bg-white border border-slate-200 rounded-xl p-4 hover:shadow-lg transition-all hover:-translate-y-1 cursor-pointer group"
+                  href="/guides/excel-functions-guide"
+                  className="bg-white border border-slate-200 rounded-xl p-4 hover:shadow-lg transition-all hover:-translate-y-1 cursor-pointer group block"
                   onClick={handleExploreClick}
                 >
                   <div className="flex items-start gap-3">
@@ -279,7 +298,7 @@ const ExcelFunctionsSection = () => {
                       </p>
                     </div>
                   </div>
-                </div>
+                </Link>
               ))}
             </div>
 
@@ -299,7 +318,6 @@ const ExcelFunctionsSection = () => {
 // ============================================
 const FinanceCareerPaths = () => {
   const { track } = useTracking();
-  const router = useRouter();
   const categories = [
     { title: "Finance & Analysis", subtitle: "Most popular modern finance careers", roles: ["Financial Analyst", "FP&A Analyst", "MIS Analyst", "Investment Finance Analyst"], extraRoles: 1, icon: BarChart3, iconBg: "bg-blue-50", iconColor: "text-blue-600", link: "Explore Finance Roles", bgGradient: "from-blue-50/50 to-white", path: "/jobs?search=Finance" },
     { title: "Accounting, Audit & Tax", subtitle: "Huge fresher demand in India", roles: ["Article Trainee", "Audit Associate", "Tax Analyst", "Accounting Executive"], extraRoles: 2, icon: Calculator, iconBg: "bg-green-50", iconColor: "text-green-600", link: "Explore Accounting Roles", bgGradient: "from-green-50/50 to-white", path: "/jobs?search=Accounting" },
@@ -311,14 +329,12 @@ const FinanceCareerPaths = () => {
       location: "homepage_career_paths",
       timestamp: new Date().toISOString(),
     });
-    router.push(path);
   };
   const handleBrowseAllClick = () => {
     track("Browse All Roles Clicked", {
       location: "homepage_career_paths",
       timestamp: new Date().toISOString(),
     });
-    router.push("/jobs");
   };
   return (
     <section className="py-12 bg-[#F8FAFC]" aria-labelledby="career-paths-heading">
@@ -337,9 +353,10 @@ const FinanceCareerPaths = () => {
               {categories.map((item, index) => {
                 const Icon = item.icon;
                 return (
-                  <div
+                  <Link
                     key={index}
-                    className={`bg-gradient-to-b ${item.bgGradient} border border-slate-200 rounded-xl p-5 shadow-sm hover:shadow-lg transition-all duration-300 hover:-translate-y-1 cursor-pointer`}
+                    href={item.path}
+                    className={`bg-gradient-to-b ${item.bgGradient} border border-slate-200 rounded-xl p-5 shadow-sm hover:shadow-lg transition-all duration-300 hover:-translate-y-1 cursor-pointer block`}
                     onClick={() => handleCareerPathClick(item.title, item.path)}
                   >
                     <div className="flex items-start justify-between gap-3">
@@ -362,31 +379,24 @@ const FinanceCareerPaths = () => {
                             <li className="text-sm text-blue-500 font-medium">+{item.extraRoles} more roles</li>
                           )}
                         </ul>
-                        <button
-                          type="button"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleCareerPathClick(item.title, item.path);
-                          }}
-                          className="mt-4 text-[#2563EB] font-semibold text-sm inline-flex items-center gap-1.5 hover:gap-2 transition-all group"
-                        >
+                        <span className="mt-4 text-[#2563EB] font-semibold text-sm inline-flex items-center gap-1.5 hover:gap-2 transition-all group">
                           {item.link}
                           <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
-                        </button>
+                        </span>
                       </div>
                     </div>
-                  </div>
+                  </Link>
                 );
               })}
             </div>
             <div className="w-full flex justify-center lg:justify-start mt-6">
-              <button
-                type="button"
+              <Link
+                href="/jobs"
+                className="px-6 py-2.5 bg-white border-2 border-[#2563EB] text-[#2563EB] rounded-lg font-semibold text-sm hover:bg-blue-50 transition inline-block"
                 onClick={handleBrowseAllClick}
-                className="px-6 py-2.5 bg-white border-2 border-[#2563EB] text-[#2563EB] rounded-lg font-semibold text-sm hover:bg-blue-50 transition"
               >
                 Browse All Entry-Level Finance Roles →
-              </button>
+              </Link>
             </div>
           </div>
         </div>
@@ -399,7 +409,6 @@ const FinanceCareerPaths = () => {
 // ROADMAP + LEARNING + BLOGS
 // ============================================
 const RoadmapLearningSection = () => {
-  const router = useRouter();
   const { track } = useTracking();
   const learningTags = [
     { name: "Finance Fundamentals", icon: GraduationCap },
@@ -414,14 +423,12 @@ const RoadmapLearningSection = () => {
   ];
   const go = (event: string, path: string, extra: Record<string, unknown> = {}) => {
     track(event, { location: "homepage_learning_section", timestamp: new Date().toISOString(), ...extra });
-    router.push(path);
   };
   return (
     <section className="py-12 bg-[#F8FAFC]" aria-labelledby="learning-heading">
       <div className="max-w-7xl mx-auto px-6">
         <h2 id="learning-heading" className="sr-only">Learning resources and career blogs</h2>
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Roadmap card */}
           <div className="bg-white rounded-2xl border border-blue-100 p-4 shadow-sm hover:shadow-md transition-all duration-300 flex flex-col relative overflow-hidden">
             <div className="flex items-center gap-2 mb-1 relative z-10">
               <GraduationCap size={16} className="text-blue-600" />
@@ -435,12 +442,15 @@ const RoadmapLearningSection = () => {
               <Image src="/steps.png" alt="Step-by-step financial analyst career roadmap" width={220} height={120} quality={100} className="object-contain" />
             </div>
             <div className="flex flex-wrap gap-3 mt-2">
-              <button type="button" onClick={() => go("Learning Hub Clicked", "/learning-hub", { source: "get_resources_button" })} className="px-3 py-2 bg-blue-600 text-white rounded-xl font-medium text-[11px] hover:bg-blue-700 transition-all inline-flex">
+              <Link
+                href="/learning-hub"
+                className="px-3 py-2 bg-blue-600 text-white rounded-xl font-medium text-[11px] hover:bg-blue-700 transition-all inline-flex items-center"
+                onClick={() => go("Learning Hub Clicked", "/learning-hub", { source: "get_resources_button" })}
+              >
                 Get Free Learning Resources →
-              </button>
+              </Link>
             </div>
           </div>
-          {/* Learning categories card */}
           <div className="bg-white rounded-2xl border border-blue-100 p-6 shadow-sm hover:shadow-md transition-all duration-300 flex flex-col">
             <div className="flex items-center justify-between mb-2">
               <p className="text-xs font-bold text-blue-600 uppercase tracking-wide">Best Learning Hub Categories</p>
@@ -452,9 +462,14 @@ const RoadmapLearningSection = () => {
               {learningTags.map((item) => {
                 const Icon = item.icon;
                 return (
-                  <button type="button" key={item.name} className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs rounded-full bg-blue-50 text-blue-700 cursor-pointer hover:bg-blue-100 transition-colors" onClick={() => go("Learning Tag Clicked", `/learning-hub?topic=${encodeURIComponent(item.name)}`, { tagName: item.name })}>
+                  <Link
+                    key={item.name}
+                    href={`/learning-hub?topic=${encodeURIComponent(item.name)}`}
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs rounded-full bg-blue-50 text-blue-700 cursor-pointer hover:bg-blue-100 transition-colors"
+                    onClick={() => go("Learning Tag Clicked", `/learning-hub?topic=${encodeURIComponent(item.name)}`, { tagName: item.name })}
+                  >
                     <Icon size={12} className="text-blue-500" />{item.name}
-                  </button>
+                  </Link>
                 );
               })}
             </div>
@@ -463,18 +478,25 @@ const RoadmapLearningSection = () => {
               <h4 className="text-xl font-bold text-[#081B4B] mt-1">Ready to Start Your Journey?</h4>
               <div className="flex items-end justify-between mt-4">
                 <div className="flex flex-col gap-6">
-                  <button type="button" onClick={() => go("Start Learning Clicked", "/learning-hub", { source: "start_learning_button" })} className="px-4 py-2 bg-blue-600 text-white rounded-xl font-medium text-sm hover:bg-blue-700 transition-all">
+                  <Link
+                    href="/learning-hub"
+                    className="px-4 py-2 bg-blue-600 text-white rounded-xl font-medium text-sm hover:bg-blue-700 transition-all inline-block text-center"
+                    onClick={() => go("Start Learning Clicked", "/learning-hub", { source: "start_learning_button" })}
+                  >
                     Start Learning Now →
-                  </button>
-                  <button type="button" onClick={() => go("Explore All Topics Clicked", "/learning-hub")} className="px-4 py-2 border border-blue-600 text-blue-600 rounded-xl font-medium text-sm hover:bg-blue-50 transition-all">
+                  </Link>
+                  <Link
+                    href="/learning-hub"
+                    className="px-4 py-2 border border-blue-600 text-blue-600 rounded-xl font-medium text-sm hover:bg-blue-50 transition-all inline-block text-center"
+                    onClick={() => go("Explore All Topics Clicked", "/learning-hub")}
+                  >
                     Explore All Topics →
-                  </button>
+                  </Link>
                 </div>
                 <Image src="/learning-books.png" alt="Free finance learning resources" width={140} height={100} className="object-contain" />
               </div>
             </div>
           </div>
-          {/* Blogs card */}
           <div className="bg-white rounded-2xl border border-blue-100 p-6 shadow-sm hover:shadow-md transition-all duration-300 flex flex-col">
             <div className="flex items-center justify-between mb-2">
               <p className="text-xs font-bold text-blue-600 uppercase tracking-wide">Fresh Insights</p>
@@ -484,7 +506,12 @@ const RoadmapLearningSection = () => {
             <p className="text-sm text-slate-500 mt-2">Expert career advice, interview tips, and practical finance guides.</p>
             <div className="space-y-4 mt-4 flex-1">
               {blogPosts.map((blog, index) => (
-                <div key={index} className="flex gap-3 cursor-pointer hover:bg-slate-50 p-2 rounded-lg transition-colors" onClick={() => go("Blog Clicked", `/blogs/${blog.slug}`, { blogTitle: blog.title, blogSlug: blog.slug })}>
+                <Link
+                  key={index}
+                  href={`/blogs/${blog.slug}`}
+                  className="flex gap-3 cursor-pointer hover:bg-slate-50 p-2 rounded-lg transition-colors block"
+                  onClick={() => go("Blog Clicked", `/blogs/${blog.slug}`, { blogTitle: blog.title, blogSlug: blog.slug })}
+                >
                   <div className="w-32 h-24 rounded-xl bg-white border border-slate-100 flex-shrink-0 overflow-hidden p-1">
                     <Image src={blog.image} alt={blog.title} width={160} height={128} className="w-full h-full object-contain" />
                   </div>
@@ -493,12 +520,16 @@ const RoadmapLearningSection = () => {
                     <p className="text-[11px] text-slate-500 mt-1">{blog.category} • {blog.readTime}</p>
                     <span className="text-blue-600 text-xs font-medium mt-1 hover:underline inline-block">Read full article →</span>
                   </div>
-                </div>
+                </Link>
               ))}
             </div>
-            <button type="button" onClick={() => go("Explore All Blogs Clicked", "/blogs")} className="w-full mt-4 border border-blue-600 text-blue-600 py-2.5 rounded-xl font-medium text-sm hover:bg-blue-50 transition-all">
+            <Link
+              href="/blogs"
+              className="w-full mt-4 border border-blue-600 text-blue-600 py-2.5 rounded-xl font-medium text-sm hover:bg-blue-50 transition-all inline-block text-center"
+              onClick={() => go("Explore All Blogs Clicked", "/blogs")}
+            >
               Explore All Blogs →
-            </button>
+            </Link>
           </div>
         </div>
       </div>
@@ -526,14 +557,16 @@ const TestimonialSection = () => {
       role: "B.Com Student",
       testimonial: "Finlysta exceeded my expectations with their professional resume and LinkedIn profile updates. They didn't just make changes—they provided valuable guidance that helped me understand what recruiters actually look for. The personalized support and attention to detail throughout the process gave me confidence in my job search. I'm truly grateful for their help in enhancing my professional presence.",
       linkedin: "https://www.linkedin.com/in/sneha-suresh-70a537411",
-      image: "/Userprofile.png"
+      image: "/Userprofile1.png",
+      verified: true
     },
     {
       name: "Khushi",
       role: "BBA Student",
       testimonial: "Finlysta helped me build an ATS-friendly resume, improve my LinkedIn profile, and guided me through a structured learning roadmap that made my career journey much clearer.",
       linkedin: null,
-      image: "/Userprofile.png"
+      image: "/Userprofile.png",
+      verified: true
     }
   ];
 
@@ -573,10 +606,17 @@ const TestimonialSection = () => {
                   </p>
                   <div className="mt-4 flex items-center justify-between">
                     <div>
-                      <p className="text-[12px] font-semibold text-[#081B4B]">— {testimonial.name}</p>
+                      <div className="flex items-center gap-2">
+                        <p className="text-[12px] font-semibold text-[#081B4B]">— {testimonial.name}</p>
+                        {testimonial.verified && (
+                          <span className="inline-flex items-center gap-1 text-[10px] text-green-600 bg-green-50 px-2 py-0.5 rounded-full">
+                            <BadgeCheck size={10} className="text-green-500" />
+                            Verified Student
+                          </span>
+                        )}
+                      </div>
                       <p className="text-[11px] text-slate-500">{testimonial.role}</p>
                     </div>
-                    {/* Only show LinkedIn icon for Sneha Suresh */}
                     {testimonial.linkedin && (
                       <a 
                         href={testimonial.linkedin}
@@ -618,7 +658,7 @@ const TestimonialSection = () => {
 };
 
 // ============================================
-// FAQ (with FAQPage structured data for SEO)
+// FAQ
 // ============================================
 const FAQCTASection = () => {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
@@ -639,22 +679,9 @@ const FAQCTASection = () => {
       timestamp: new Date().toISOString(),
     });
   };
+
   return (
     <section className="py-16 bg-[#F8FAFC]" aria-labelledby="faq-heading">
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "FAQPage",
-            mainEntity: faqs.map((faq) => ({
-              "@type": "Question",
-              name: faq.q,
-              acceptedAnswer: { "@type": "Answer", text: faq.a },
-            })),
-          }),
-        }}
-      />
       <div className="max-w-7xl mx-auto px-6">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           <div className="flex flex-col">
@@ -696,7 +723,7 @@ const FAQCTASection = () => {
           </div>
           <div className="flex flex-col items-center justify-center mt-8 lg:mt-16">
             <div className="w-full max-w-2xl">
-              <Image src="/faq.png" alt="Finlysta frequently asked questions" width={640} height={480} className="w-full h-auto object-contain" />
+              <Image src="/faq.png" alt="Frequently asked questions about Finlysta finance jobs and internships" width={640} height={480} className="w-full h-auto object-contain" />
             </div>
           </div>
         </div>
@@ -706,11 +733,172 @@ const FAQCTASection = () => {
 };
 
 // ============================================
-// PAGE
+// SCHEMA DEFINITIONS
+// ============================================
+const popularRoles = [
+  { name: "Financial Analyst" },
+  { name: "Investment Banking" },
+  { name: "Credit Analyst" },
+  { name: "Risk Analyst" },
+  { name: "Article Trainee" },
+  { name: "Article Assistant" },
+];
+
+const organizationSchema = {
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  name: "Finlysta",
+  url: "https://finlysta.com",
+  logo: "https://finlysta.com/Finlysta.png",
+  description: "The job board built exclusively for entry-level financial roles and internships in India.",
+  sameAs: [
+    "https://www.linkedin.com/company/finlysta",
+    "https://twitter.com/Finlysta",
+    "https://instagram.com/finlysta.in",
+    "https://facebook.com/finlysta",
+    "https://youtube.com/@finlysta",
+  ],
+  contactPoint: {
+    "@type": "ContactPoint",
+    email: "support@finlysta.com",
+    contactType: "customer service",
+    availableLanguage: ["English", "Hindi"],
+  },
+};
+
+const webpageSchema = {
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  name: "Finance Jobs & Internships for Freshers in India | Finlysta",
+  description: "Find entry-level finance jobs, internships, career roadmaps, interview preparation, and learning resources for finance students and freshers in India.",
+  url: "https://finlysta.com",
+  about: {
+    "@type": "Thing",
+    name: "Entry-Level Finance Careers in India",
+  },
+  audience: {
+    "@type": "Audience",
+    name: "Finance students and fresh graduates in India",
+  },
+  isPartOf: {
+    "@type": "WebSite",
+    name: "Finlysta",
+    url: "https://finlysta.com",
+  },
+};
+
+const websiteSchema = {
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  name: "Finlysta",
+  url: "https://finlysta.com",
+  potentialAction: {
+    "@type": "SearchAction",
+    target: {
+      "@type": "EntryPoint",
+      urlTemplate: "https://finlysta.com/jobs?search={search_term_string}",
+    },
+    "query-input": "required name=search_term_string",
+  },
+};
+
+const breadcrumbSchema = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  itemListElement: [
+    {
+      "@type": "ListItem",
+      position: 1,
+      name: "Home",
+      item: "https://finlysta.com/",
+    },
+  ],
+};
+
+const itemListSchema = {
+  "@context": "https://schema.org",
+  "@type": "ItemList",
+  name: "Popular Entry-Level Finance Roles",
+  description: "Most popular entry-level finance roles for freshers in India",
+  itemListElement: popularRoles.map((role, index) => ({
+    "@type": "ListItem",
+    position: index + 1,
+    name: role.name,
+    url: `https://finlysta.com/jobs?search=${encodeURIComponent(role.name)}`,
+  })),
+};
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  mainEntity: [
+    {
+      "@type": "Question",
+      name: "How is Finlysta different from traditional job portals?",
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: "Unlike traditional portals, Finlysta focuses only on entry-level finance roles. Every listing is manually reviewed — no ghost jobs, no spam, no irrelevant senior positions."
+      }
+    },
+    {
+      "@type": "Question",
+      name: "Are the jobs on Finlysta verified?",
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: "Yes. Every job and internship listed on Finlysta is manually reviewed to help students avoid fake listings."
+      }
+    },
+    {
+      "@type": "Question",
+      name: "What kind of finance jobs are available on Finlysta?",
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: "Finlysta features entry-level finance roles including Finance Executive, Finance Associate, Accounts Executive, MIS Executive, Audit Associate, Tax Associate, and Accounting roles."
+      }
+    },
+    {
+      "@type": "Question",
+      name: "Who can use Finlysta?",
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: "Finlysta is designed for finance students, graduates, and career-switchers looking for entry-level positions."
+      }
+    },
+    {
+      "@type": "Question",
+      name: "Can freshers apply for jobs on Finlysta?",
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: "Absolutely. Finlysta is built specifically for students, graduates, and first-time job seekers."
+      }
+    },
+    {
+      "@type": "Question",
+      name: "Is Finlysta really free?",
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: "Yes — 100% free for job seekers. Always."
+      }
+    }
+  ]
+};
+
+// All schemas combined into a single array
+const allSchemas = [
+  organizationSchema,
+  webpageSchema,
+  websiteSchema,
+  breadcrumbSchema,
+  itemListSchema,
+  faqSchema,
+];
+
+// ============================================
+// MAIN COMPONENT
 // ============================================
 export default function HomePageContent() {
-  const router = useRouter();
   const { track } = useTracking();
+
   useEffect(() => {
     track("Homepage Viewed", {
       page: "home",
@@ -719,7 +907,7 @@ export default function HomePageContent() {
       url: window.location.pathname,
     });
     trackPageView("/");
-  }, []);
+  }, [track]);
 
   const handleHeroCTA = useCallback((buttonType: string) => {
     track("Hero CTA Clicked", {
@@ -727,9 +915,7 @@ export default function HomePageContent() {
       location: "hero_section",
       timestamp: new Date().toISOString(),
     });
-    if (buttonType === "find_job") router.push("/jobs");
-    else if (buttonType === "explore_internships") router.push("/internships");
-  }, [router, track]);
+  }, [track]);
 
   const handlePopularRoleClick = (roleName: string) => {
     track("Popular Role Clicked", {
@@ -737,7 +923,6 @@ export default function HomePageContent() {
       location: "homepage_popular_roles",
       timestamp: new Date().toISOString(),
     });
-    router.push(`/jobs?search=${encodeURIComponent(roleName)}`);
   };
 
   const handleFooterLinkClick = (linkType: string, linkName: string) => {
@@ -757,7 +942,7 @@ export default function HomePageContent() {
     });
   };
 
-  const popularRoles = [
+  const popularRolesList = [
     { name: "Financial Analyst", icon: Briefcase },
     { name: "Investment Banking", icon: Building2 },
     { name: "Credit Analyst", icon: Shield },
@@ -775,61 +960,19 @@ export default function HomePageContent() {
   ];
 
   return (
-    <div className="min-h-screen font-sans">
-      {/* Organization + LocalBusiness + WebSite structured data - FIXED: removed www */}
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "Organization",
-            name: "Finlysta",
-            url: "https://finlysta.com",
-            logo: "https://finlysta.com/Finlysta.png",
-            description: "The job board built exclusively for entry-level financial roles and internships in India.",
-            sameAs: [
-              "https://www.linkedin.com/company/finlysta",
-              "https://twitter.com/Finlysta",
-              "https://instagram.com/finlysta.in",
-              "https://facebook.com/finlysta",
-              "https://youtube.com/@finlysta",
-            ],
-            contactPoint: {
-              "@type": "ContactPoint",
-              email: "support@finlysta.com",
-              contactType: "customer service",
-              availableLanguage: ["English", "Hindi"],
-            },
-            address: {
-              "@type": "PostalAddress",
-              streetAddress: "Finance District",
-              addressLocality: "Bhubaneswar",
-              addressRegion: "Odisha",
-              postalCode: "751001",
-              addressCountry: "IN",
-            },
-          }),
-        }}
-      />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "WebSite",
-            name: "Finlysta",
-            url: "https://finlysta.com",
-            potentialAction: {
-              "@type": "SearchAction",
-              target: { "@type": "EntryPoint", urlTemplate: "https://finlysta.com/jobs?search={search_term_string}" },
-              "query-input": "required name=search_term_string",
-            },
-          }),
-        }}
-      />
+    <div className="min-h-screen font-sans" suppressHydrationWarning>
+      {/* JSON-LD structured data */}
+      {allSchemas.map((schema, index) => (
+        <script
+          key={`schema-${index}`}
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+        />
+      ))}
+
       <Header />
       <main>
-        {/* 1. HERO - FIXED: SEO-optimized H1 with target keywords */}
+        {/* Hero Section */}
         <section className="relative overflow-hidden bg-[#F8FAFC] pt-6 pb-0">
           <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-blue-100 rounded-full blur-3xl opacity-40 pointer-events-none"></div>
           <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-blue-50 rounded-full blur-3xl opacity-30 pointer-events-none"></div>
@@ -840,43 +983,61 @@ export default function HomePageContent() {
                   <span className="text-blue-600 text-base" aria-hidden="true">⭐</span>
                   <span className="font-semibold text-blue-700 text-sm">Built for Finance Freshers</span>
                 </div>
-                {/* SEO-OPTIMIZED H1 */}
                 <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-[64px] font-extrabold leading-[1.1] tracking-tight text-[#081B4B]">
                   Finance Jobs & Internships <span className="text-blue-600">for Freshers in India.</span>
                 </h1>
-                {/* SEO-OPTIMIZED SUBTITLE */}
                 <p className="mt-6 text-lg md:text-2xl leading-relaxed text-slate-600 max-w-[540px]">
                   Entry-level finance jobs, internships, career roadmaps, and learning resources — built exclusively for finance students and fresh graduates.{" "}
                   <span className="text-blue-600">100% free.</span>
                 </p>
                 <div className="flex flex-wrap gap-4 mt-8">
-                  <button type="button" onClick={() => handleHeroCTA("find_job")} className="bg-blue-600 hover:bg-blue-700 text-white rounded-2xl px-8 py-3.5 font-semibold text-base transition-all shadow-lg shadow-blue-200">
+                  <Link
+                    href="/jobs"
+                    className="bg-blue-600 hover:bg-blue-700 text-white rounded-2xl px-8 py-3.5 font-semibold text-base transition-all shadow-lg shadow-blue-200 inline-flex items-center"
+                    onClick={() => handleHeroCTA("find_job")}
+                  >
                     Find My First Job →
-                  </button>
-                  <button type="button" onClick={() => handleHeroCTA("explore_internships")} className="bg-white hover:bg-blue-50 text-blue-600 rounded-2xl px-8 py-3.5 font-semibold text-base border-2 border-blue-600 transition-all">
+                  </Link>
+                  <Link
+                    href="/internships"
+                    className="bg-white hover:bg-blue-50 text-blue-600 rounded-2xl px-8 py-3.5 font-semibold text-base border-2 border-blue-600 transition-all inline-flex items-center"
+                    onClick={() => handleHeroCTA("explore_internships")}
+                  >
                     Explore Internships →
-                  </button>
+                  </Link>
                 </div>
               </div>
               <div className="flex-1 flex justify-center lg:justify-start lg:-ml-52">
                 <div className="relative">
                   <div className="absolute inset-0 bg-blue-100 blur-3xl opacity-40 rounded-full pointer-events-none"></div>
-                  <Image src="/herostudent.png" alt="Finance student ready to start their career" width={820} height={820} priority className="relative z-20 w-full max-w-[560px] lg:max-w-[820px] drop-shadow-2xl" />
+                  <Image 
+                    src="/herostudent.png" 
+                    alt="Finance student and fresh graduate ready to start their career in India" 
+                    width={820} 
+                    height={820} 
+                    priority 
+                    className="relative z-20 w-full max-w-[560px] lg:max-w-[820px] drop-shadow-2xl" 
+                  />
                 </div>
               </div>
             </div>
           </div>
         </section>
 
-        {/* 2. POPULAR ROLES */}
+        {/* Popular Roles */}
         <nav aria-label="Popular entry-level roles" className="w-full border-t border-b border-gray-100 bg-white py-4 mt-8">
           <div className="max-w-7xl mx-auto px-6 flex items-center gap-8 overflow-x-auto whitespace-nowrap scrollbar-hide">
             <span className="text-[15px] font-semibold text-[#0F172A]">Popular Entry-Level Roles:</span>
-            {popularRoles.map(({ name, icon: Icon }) => (
-              <button key={name} type="button" className="flex items-center gap-2 text-[#0F172A] cursor-pointer hover:text-blue-600 transition-colors" onClick={() => handlePopularRoleClick(name)}>
+            {popularRolesList.map(({ name, icon: Icon }) => (
+              <Link
+                key={name}
+                href={`/jobs?search=${encodeURIComponent(name)}`}
+                className="flex items-center gap-2 text-[#0F172A] cursor-pointer hover:text-blue-600 transition-colors"
+                onClick={() => handlePopularRoleClick(name)}
+              >
                 <Icon className="w-5 h-5 text-[#2563EB]" />
                 <span className="text-[15px] font-medium">{name}</span>
-              </button>
+              </Link>
             ))}
             <Link href="/jobs" aria-label="View more popular roles" className="w-7 h-7 rounded-full bg-[#EEF4FF] flex items-center justify-center flex-shrink-0 hover:bg-blue-100 transition-colors">
               <ChevronRight className="w-4 h-4 text-[#2563EB]" />
@@ -884,7 +1045,6 @@ export default function HomePageContent() {
           </div>
         </nav>
 
-        {/* 3–9 */}
         <StatsSection />
         <TrendingInternships />
         <SkillsSection />
@@ -895,7 +1055,7 @@ export default function HomePageContent() {
         <FAQCTASection />
       </main>
 
-      {/* FOOTER - FIXED: Added visible Contact block with address */}
+      {/* Footer */}
       <footer className="bg-white border-t border-slate-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="pt-12 pb-8">
@@ -903,7 +1063,14 @@ export default function HomePageContent() {
               {/* Brand */}
               <div className="min-w-[260px] flex-shrink-0 space-y-4">
                 <Link href="/" className="flex items-center" onClick={() => handleFooterLinkClick("internal", "logo")}>
-                  <Image src="/Finlysta.png" alt="Finlysta logo" width={180} height={40} priority className="object-contain" />
+                  <Image 
+                    src="/Finlysta.png" 
+                    alt="Finlysta logo" 
+                    width={180} 
+                    height={40} 
+                    priority 
+                    className="object-contain" 
+                  />
                 </Link>
                 <p className="text-sm text-slate-600 leading-relaxed max-w-xs">
                   The job board built exclusively for entry-level financial roles and internships in India.
@@ -923,7 +1090,6 @@ export default function HomePageContent() {
                 <ul className="space-y-2 text-sm text-slate-600">
                   <li><Link href="/jobs" className="hover:text-[#2563EB] transition" onClick={() => handleFooterLinkClick("internal", "all_jobs")}>All Jobs</Link></li>
                   <li><Link href="/internships" className="hover:text-[#2563EB] transition" onClick={() => handleFooterLinkClick("internal", "internships")}>Internships</Link></li>
-                  <li><Link href="/jobs?type=remote" className="hover:text-[#2563EB] transition" onClick={() => handleFooterLinkClick("internal", "remote_jobs")}>Remote Jobs</Link></li>
                   <li><Link href="/blogs" className="hover:text-[#2563EB] transition" onClick={() => handleFooterLinkClick("internal", "career_blogs")}>Career Blogs</Link></li>
                 </ul>
               </div>
@@ -958,7 +1124,7 @@ export default function HomePageContent() {
                 </ul>
               </div>
 
-              {/* Contact - NEW: Visible address block for Local SEO */}
+              {/* Contact */}
               <div className="flex-shrink-0">
                 <h4 className="font-bold text-sm mb-4 text-[#081B4B]">Contact</h4>
                 <div className="space-y-2 text-sm text-slate-600">
@@ -967,8 +1133,9 @@ export default function HomePageContent() {
                   </a>
                   <p className="text-xs text-slate-500">Reply within 24 hours</p>
                   <address className="not-italic text-xs text-slate-500 leading-relaxed mt-2">
-                    Finlysta Pvt. Ltd.<br />
-                    Bhubaneswar, Odisha 751001<br />
+                    Finlysta<br />
+                    Near Smart Bazzar, Barbil<br />
+                    Odisha 758035<br />
                     India
                   </address>
                 </div>
@@ -978,7 +1145,7 @@ export default function HomePageContent() {
             {/* Copyright */}
             <div className="border-t border-slate-200 pt-6 pb-8 mt-8">
               <div className="flex flex-col items-center justify-center gap-2 text-sm text-slate-700 text-center">
-                <span>© {new Date().getFullYear()} Finlysta Pvt. Ltd. All rights reserved.</span>
+                <span>© {new Date().getFullYear()} Finlysta. All rights reserved.</span>
                 <div className="flex items-center gap-1.5">
                   <span>Made with</span>
                   <Heart size={12} className="text-red-500 fill-red-500" />
