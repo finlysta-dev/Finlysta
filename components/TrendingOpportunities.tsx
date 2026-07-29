@@ -7,9 +7,8 @@ import { useRouter } from "next/navigation";
 import {
   MapPin, Building2, Briefcase, ExternalLink, ArrowRight,
   Sparkles, Eye, Bookmark, Flame, BadgeCheck, Clock,
-  IndianRupee, Wifi, Globe, Calendar, GraduationCap, Grid3X3, Award
+  IndianRupee, Wifi, Globe, Calendar, GraduationCap, Grid3X3
 } from "lucide-react";
-import { trackJobView, trackApplyClick } from "@/lib/analytics/tracking";
 
 // Types
 interface Opportunity {
@@ -34,8 +33,6 @@ interface Opportunity {
   experience?: string | null;
   views?: number;
   slug: string;
-  qualifications?: string | null;
-  status?: string | null;
 }
 
 // Helper functions
@@ -147,12 +144,9 @@ const formatPostedDate = (date: string) => {
   return `${Math.floor(diffDays / 365)} year ago`;
 };
 
-const isJobNew = (createdAt: string): boolean => {
-  if (!createdAt) return false;
-  const now = new Date();
-  const createdDate = new Date(createdAt);
-  const diffHours = (now.getTime() - createdDate.getTime()) / (1000 * 60 * 60);
-  return diffHours < 24;
+const trackApplyClick = async (id: string, type: string, applyLink: string) => {
+  try { await fetch('/api/track-opportunity-click', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ opportunityId: id, type }) }); } catch (error) { console.error(error); }
+  if (typeof window !== 'undefined') window.open(applyLink, '_blank');
 };
 
 const getSavedJobs = (): string[] => {
@@ -179,9 +173,7 @@ const isJobSaved = (id: string): boolean => {
   return getSavedJobs().includes(id);
 };
 
-// ============================================
-// JOB CARD COMPONENT - WITH ARTICLESHIP SUPPORT
-// ============================================
+// Job Card Component
 const JobCard = ({ job, imageErrors, handleImageError, onSaveToggle }: { 
   job: Opportunity; 
   imageErrors: { [key: string]: boolean }; 
@@ -192,11 +184,6 @@ const JobCard = ({ job, imageErrors, handleImageError, onSaveToggle }: {
   const hasLogoError = imageErrors[job.id];
   const shortTitle = shortenTitle(job.title);
   const [isSaved, setIsSaved] = useState(false);
-  const [isTracking, setIsTracking] = useState(false);
-  
-  // Check if this is an articleship or industrial trainee
-  const isArticleshipJob = job.type === 'articleship' || job.type === 'industrial_trainee';
-  const isNew = isJobNew(job.createdAt);
 
   useEffect(() => { setIsSaved(isJobSaved(job.id)); }, [job.id]);
 
@@ -208,60 +195,16 @@ const JobCard = ({ job, imageErrors, handleImageError, onSaveToggle }: {
     onSaveToggle();
   };
 
-  const handleCardClick = async (e: React.MouseEvent) => {
+  const handleCardClick = (e: React.MouseEvent) => {
     const target = e.target as HTMLElement;
-    if (target.closest('button')) {
-      return;
-    }
-    
-    if (isTracking) {
-      console.log('⏳ [FIXED] Already tracking, please wait...');
-      return;
-    }
-    
-    setIsTracking(true);
-    console.log('👁️ [FIXED] Card clicked! Tracking view for:', job.id);
-    
-    try {
-      await trackJobView(job.id);
-      console.log('✅ [FIXED] Job view tracked successfully for:', job.id);
-    } catch (error) {
-      console.error('❌ [FIXED] Failed to track job view:', error);
-    } finally {
-      setIsTracking(false);
-      router.push(`/jobs/${job.slug}`);
-    }
-  };
-
-  const handleApplyClick = async (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    console.log('🖱️ [Debug] Apply button clicked for:', job.id);
-    await trackApplyClick(job.id);
-    console.log('✅ [Debug] Apply click tracked for:', job.id);
-    if (job.applyLink) {
-      window.open(job.applyLink, '_blank');
-    }
-  };
-
-  const getTypeLabel = (type: string) => {
-    if (type === 'job') return 'Full Time';
-    if (type === 'articleship') return 'Articleship';
-    if (type === 'industrial_trainee') return 'Industrial Trainee';
-    return 'Internship';
-  };
-
-  const getTypeBadgeColor = (type: string) => {
-    if (type === 'job') return 'bg-blue-50 text-blue-600';
-    if (type === 'articleship') return 'bg-purple-50 text-purple-600';
-    if (type === 'industrial_trainee') return 'bg-indigo-50 text-indigo-600';
-    return 'bg-green-50 text-green-600';
+    if (!target.closest('button') && !target.closest('a')) router.push(`/jobs/${job.slug}`);
   };
 
   return (
     <div 
       onClick={handleCardClick}
-      className={`bg-white rounded-2xl border border-slate-100 shadow-sm hover:shadow-lg transition-all duration-300 hover:-translate-y-1 overflow-hidden flex flex-col cursor-pointer ${isTracking ? 'opacity-70' : ''}`}
+      className="bg-white rounded-2xl border border-slate-100 shadow-sm hover:shadow-lg transition-all duration-300 hover:-translate-y-1 cursor-pointer overflow-hidden flex flex-col"
+      style={{ minHeight: '460px' }}
     >
       <div className="p-5 flex flex-col h-full">
         {/* Actively Hiring Badge */}
@@ -276,7 +219,7 @@ const JobCard = ({ job, imageErrors, handleImageError, onSaveToggle }: {
         <div className="flex items-center gap-3 mt-4">
           <div className="w-10 h-10 rounded-lg border border-slate-200 bg-slate-50 flex items-center justify-center overflow-hidden flex-shrink-0">
             {!hasLogoError && job.companyLogo ? (
-              <img src={job.companyLogo} alt={job.company} className="w-10 h-10 object-contain" loading="lazy" onError={() => handleImageError(job.id)} />
+              <img src={job.companyLogo} alt={job.company} className="w-8 h-8 object-contain" loading="lazy" onError={() => handleImageError(job.id)} />
             ) : (
               <span className="text-base font-bold text-slate-700">{job.company.charAt(0)}</span>
             )}
@@ -284,46 +227,45 @@ const JobCard = ({ job, imageErrors, handleImageError, onSaveToggle }: {
           <div>
             <div className="flex items-center gap-1.5">
               <p className="font-semibold text-[#081B4B] text-sm">{job.company}</p>
-              {job.isVerified && <BadgeCheck size={15} className="text-blue-500" />}
-              {isNew && (
-                <span className="inline-block bg-green-100 text-green-700 text-[9px] font-bold px-1.5 py-0.5 rounded-full uppercase tracking-wide">
-                  New
-                </span>
-              )}
+              {job.isVerified && <BadgeCheck size={12} className="text-blue-500" />}
             </div>
-            <p className="text-sm text-black-700">{getTypeLabel(job.type)}</p>
+            <p className="text-xs text-slate-500">{job.type === "job" ? "Full-Time" : "Internship"}</p>
           </div>
         </div>
 
         {/* Role Title */}
-        <h3 className="mt-4 font-semibold text-[#081B4B] text-md leading-tight line-clamp-2 min-h-[40px]">
+        <h3 className="mt-4 font-semibold text-[#081B4B] text-sm leading-tight line-clamp-2 min-h-[40px]">
           {shortTitle}
         </h3>
 
         {/* Location */}
-        <p className="text-sm text-black-800 mt-2 flex items-center gap-1">
+        <p className="text-xs text-slate-500 mt-2 flex items-center gap-1">
           📍 {getLocationDisplay(job.location, job.workMode)}
         </p>
 
-        {/* Show Qualification for Articleship only - NO Experience for Jobs */}
-        {isArticleshipJob && (
-          <div className="mt-3 flex items-center gap-2 text-sm text-black-600">
-            <span className="flex items-center gap-1">
-              <Award size={20} className="text-purple-900" />
-              <span className="text-black-600">
-                {job.qualifications 
-                  ? (job.qualifications.length > 50 ? job.qualifications.substring(0, 50) + '...' : job.qualifications)
-                  : 'CA Articleship Eligible'}
-              </span>
+        {/* Tags */}
+        <div className="flex flex-wrap gap-2 mt-3">
+          <span className="bg-blue-50 text-blue-600 text-xs px-2 py-1 rounded-full">
+            {job.type === "job" ? "Full Time" : "Internship"}
+          </span>
+          {job.workMode === "Remote" && (
+            <span className="bg-purple-50 text-purple-600 text-xs px-2 py-1 rounded-full">
+              Remote
             </span>
-          </div>
-        )}
+          )}
+          {job.isTrending && (
+            <span className="bg-orange-50 text-orange-600 text-xs px-2 py-1 rounded-full flex items-center gap-1">
+              <Flame size={10} /> Trending
+            </span>
+          )}
+        </div>
 
-        {/* Skills List */}
+        {/* Skills List — black dots */}
         {job.skills && job.skills.length > 0 && (
           <ul className="mt-4 space-y-2">
             {job.skills.slice(0, 5).map((skill, idx) => (
-              <li key={idx} className="flex items-center gap-3 text-sm text-black-700">
+              <li key={idx} className="flex items-center gap-2 text-xs text-slate-600">
+                {/* Black dot */}
                 <span
                   style={{
                     width: '6px',
@@ -338,7 +280,7 @@ const JobCard = ({ job, imageErrors, handleImageError, onSaveToggle }: {
               </li>
             ))}
             {job.skills.length > 5 && (
-              <li className="text-blue-500 font-medium text-sm mt-1">+{job.skills.length - 5} more skills</li>
+              <li className="text-blue-500 font-medium text-xs mt-1">+{job.skills.length - 5} more skills</li>
             )}
           </ul>
         )}
@@ -346,9 +288,13 @@ const JobCard = ({ job, imageErrors, handleImageError, onSaveToggle }: {
         {/* Flexible spacer */}
         <div className="flex-1"></div>
 
-        {/* Apply Now */}
+        {/* Apply Now — always visible, no hover dependency */}
         <button
-          onClick={handleApplyClick}
+          onClick={(e) => {
+            e.stopPropagation();
+            if (job.applyLink) trackApplyClick(job.id, 'job', job.applyLink);
+            else router.push(`/jobs/${job.slug}`);
+          }}
           style={{
             marginTop: '20px',
             backgroundColor: '#2563EB',
@@ -371,16 +317,14 @@ const JobCard = ({ job, imageErrors, handleImageError, onSaveToggle }: {
   );
 };
 
-// ============================================
-// MAIN COMPONENT
-// ============================================
+// Main Component
 export default function TrendingOpportunities() {
   const [isMounted, setIsMounted] = useState(false);
   const [allOpportunities, setAllOpportunities] = useState<Opportunity[]>([]);
   const [visibleCount, setVisibleCount] = useState(8);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [activeFilter, setActiveFilter] = useState<"all" | "jobs" | "internships" | "articleship">("all");
+  const [activeFilter, setActiveFilter] = useState<"all" | "jobs" | "internships">("all");
   const [imageErrors, setImageErrors] = useState<{ [key: string]: boolean }>({});
   const [saveToggle, setSaveToggle] = useState(false);
 
@@ -412,7 +356,6 @@ export default function TrendingOpportunities() {
     let filtered = [...allOpportunities];
     if (activeFilter === "jobs") filtered = filtered.filter(opp => opp.type === "job");
     else if (activeFilter === "internships") filtered = filtered.filter(opp => opp.type === "internship");
-    else if (activeFilter === "articleship") filtered = filtered.filter(opp => opp.type === "articleship" || opp.type === "industrial_trainee");
     return filtered.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
   };
 
@@ -421,19 +364,17 @@ export default function TrendingOpportunities() {
   const hasMore = visibleCount < filteredOpportunities.length;
 
   const handleViewMore = () => setVisibleCount(prev => prev + 8);
-  const handleFilterChange = (filter: "all" | "jobs" | "internships" | "articleship") => { setActiveFilter(filter); setVisibleCount(8); };
+  const handleFilterChange = (filter: "all" | "jobs" | "internships") => { setActiveFilter(filter); setVisibleCount(8); };
 
   const getViewAllLink = () => {
     if (activeFilter === "jobs") return "/jobs";
     if (activeFilter === "internships") return "/internships";
-    if (activeFilter === "articleship") return "/articleship";
     return "/opportunities";
   };
 
   const getViewAllText = () => {
     if (activeFilter === "jobs") return "View All Jobs →";
     if (activeFilter === "internships") return "View All Internships →";
-    if (activeFilter === "articleship") return "View All Articleship →";
     return "View All Opportunities →";
   };
 
@@ -473,10 +414,6 @@ export default function TrendingOpportunities() {
 
   if (allOpportunities.length === 0) return null;
 
-  const jobCount = allOpportunities.filter(opp => opp.type === "job").length;
-  const internshipCount = allOpportunities.filter(opp => opp.type === "internship").length;
-  const articleshipCount = allOpportunities.filter(opp => opp.type === "articleship" || opp.type === "industrial_trainee").length;
-
   return (
     <section className="py-12 bg-[#F8FAFC]">
       <div className="max-w-7xl mx-auto px-6">
@@ -486,38 +423,37 @@ export default function TrendingOpportunities() {
           <h2 className="text-2xl md:text-3xl font-bold text-[#081B4B]">
             Latest Opportunities <span className="text-[#2563EB]">for Freshers</span>
           </h2>
-          <p className="text-sm text-slate-500 mt-1">Hand-picked entry-level finance jobs, internships, and articleship</p>
+          <p className="text-sm text-slate-500 mt-1">Hand-picked entry-level finance jobs and internships</p>
         </div>
 
-        {/* Filter bar - Numbers removed, black text used */}
+        {/* Filter bar — filters left, View All right, all on ONE line */}
         <div className="flex items-center justify-between mb-6 gap-3">
-          <div className="flex items-center gap-2 flex-wrap">
-            {(["all", "jobs", "internships", "articleship"] as const).map((filter) => {
-              const label = filter === "all" ? "All" : filter === "jobs" ? "Jobs" : filter === "internships" ? "Internships" : "Articleship";
-              const icon = filter === "all" ? <Grid3X3 size={16} /> : filter === "jobs" ? <Briefcase size={16} /> : filter === "internships" ? <GraduationCap size={16} /> : <Flame size={16} />;
-              const isActive = activeFilter === filter;
-              
-              return (
-                <button
-                  key={filter}
-                  onClick={() => handleFilterChange(filter)}
-                  className={`flex items-center gap-2 px-6 py-2.5 rounded-full text-sm font-semibold transition-all duration-200 ${
-                    isActive
-                      ? "bg-[#2563EB] text-white shadow-lg"
-                      : "bg-white text-[#081B4B] border border-slate-200 hover:border-[#2563EB]"
-                  }`}
-                  style={{
-                    color: isActive ? '#ffffff' : '#000000',
-                    backgroundColor: isActive ? '#2563EB' : '#ffffff'
-                  }}
-                >
-                  {icon}
-                  {label}
-                </button>
-              );
-            })}
+          {/* Filter pills */}
+          <div className="flex items-center gap-2">
+            {(["all", "jobs", "internships"] as const).map((filter) => (
+  <button
+    key={filter}
+    onClick={() => handleFilterChange(filter)}
+    className={`flex items-center gap-2 px-6 py-2.5 rounded-full text-sm font-semibold transition-all duration-200 ${
+      activeFilter === filter
+        ? "bg-[#2563EB] text-Black shadow-lg"
+        : "bg-white text-[#081B4B] border border-slate-200 hover:border-[#2563EB]"
+    }`}
+  >
+    {filter === "all" && <Grid3X3 size={16} />}
+    {filter === "jobs" && <Briefcase size={16} />}
+    {filter === "internships" && <GraduationCap size={16} />}
+
+    {filter === "all"
+      ? "All"
+      : filter === "jobs"
+      ? "Jobs"
+      : "Internships"}
+  </button>
+))}
           </div>
 
+          {/* View All — same row, pushed to right */}
           <Link href={getViewAllLink()}>
             <button className="text-[#2563EB] font-semibold text-sm hover:underline flex items-center gap-1 whitespace-nowrap">
               {getViewAllText()}
@@ -546,6 +482,7 @@ export default function TrendingOpportunities() {
               ))}
             </div>
 
+            {/* Load More — bigger box, smaller text, blue border, no fill */}
             {hasMore && (
               <div className="flex justify-center mt-10">
                 <button
@@ -562,7 +499,7 @@ export default function TrendingOpportunities() {
                     letterSpacing: '0.01em',
                   }}
                 >
-                  Load More Opportunities →
+                  Load more opportunities →
                 </button>
               </div>
             )}

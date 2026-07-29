@@ -10,20 +10,34 @@ export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [employerDropdownOpen, setEmployerDropdownOpen] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
   const pathname = usePathname();
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  // Handle scroll effect for header
+  // Set isMounted to true after component mounts on client
   useEffect(() => {
-    const handleScroll = () => {
-      setScrolled(window.scrollY > 10);
-    };
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
+    setIsMounted(true);
   }, []);
 
-  // Close mobile menu when window resizes to desktop
+  // Handle scroll effect - only on client after mount
   useEffect(() => {
+    if (!isMounted) return;
+    
+    const handleScroll = () => {
+      const shouldBeScrolled = window.scrollY > 10;
+      if (shouldBeScrolled !== scrolled) {
+        setScrolled(shouldBeScrolled);
+      }
+    };
+    
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [isMounted, scrolled]);
+
+  // Close mobile menu on resize - only on client after mount
+  useEffect(() => {
+    if (!isMounted) return;
+    
     const handleResize = () => {
       if (window.innerWidth >= 768 && mobileMenuOpen) {
         setMobileMenuOpen(false);
@@ -31,10 +45,12 @@ export default function Header() {
     };
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
-  }, [mobileMenuOpen]);
+  }, [isMounted, mobileMenuOpen]);
 
-  // Close dropdown when clicking outside
+  // Close dropdown when clicking outside - only on client after mount
   useEffect(() => {
+    if (!isMounted) return;
+    
     const handleClickOutside = (event: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
         setEmployerDropdownOpen(false);
@@ -42,9 +58,9 @@ export default function Header() {
     };
     document.addEventListener("click", handleClickOutside);
     return () => document.removeEventListener("click", handleClickOutside);
-  }, []);
+  }, [isMounted]);
 
-  // Navigation links
+  // Navigation links - Practice Hub added after Blogs
   const navLinks = [
     { href: "/", label: "Home" },
     { href: "/jobs", label: "Jobs" },
@@ -52,6 +68,7 @@ export default function Header() {
     { href: "/learning-hub", label: "Learning Hub" },
     { href: "/interview-prep", label: "Interview Prep" },
     { href: "/blogs", label: "Blogs" },
+    // { href: "/practice-hub", label: "Practice Hub" },
   ];
 
   // Pages that are heavy and don't need prefetching
@@ -62,6 +79,14 @@ export default function Header() {
     { href: "/employers/post-internship", label: "📝 Post an Internship" },
   ];
 
+  // Determine if navigation item is active
+  const isActiveLink = (href: string) => {
+    if (href === "/") {
+      return pathname === href;
+    }
+    return pathname?.startsWith(href);
+  };
+
   return (
     <>
       <header 
@@ -70,10 +95,11 @@ export default function Header() {
             ? "bg-white/95 backdrop-blur-md shadow-lg" 
             : "bg-white shadow-sm"
         }`}
+        suppressHydrationWarning
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-          {/* Logo - Full Left */}
-          <div className="flex items-center">
+          {/* Logo - Left */}
+          <div className="flex items-center flex-shrink-0">
             <Link 
               href="/" 
               className="flex items-center focus:outline-none focus:ring-2 focus:ring-blue-500 rounded-lg group"
@@ -86,24 +112,25 @@ export default function Header() {
                 height={36}
                 priority
                 className="object-contain transition-opacity duration-300 group-hover:opacity-90"
+                suppressHydrationWarning
               />
             </Link>
           </div>
 
-          {/* Navigation - Desktop - Centered */}
+          {/* Navigation - Desktop - Centered with flex spacing */}
           <nav
             aria-label="Main navigation"
-            className="hidden md:flex items-center justify-center gap-10 lg:gap-12 absolute left-1/2 transform -translate-x-1/2"
+            className="hidden md:flex items-center justify-center gap-8 lg:gap-10 mx-4"
           >
             {navLinks.map((link) => {
-              const isActive = pathname === link.href;
+              const isActive = isActiveLink(link.href);
               
               return (
                 <div key={link.href} className="relative">
                   <Link
                     href={link.href}
                     prefetch={!noPrefetch.includes(link.href)}
-                    className={`text-base font-bold transition-colors duration-200 ${
+                    className={`text-base font-bold transition-colors duration-200 whitespace-nowrap ${
                       isActive
                         ? "text-blue-600"
                         : "text-black hover:text-blue-600"
@@ -122,43 +149,47 @@ export default function Header() {
             })}
           </nav>
 
-          {/* For Employers Dropdown - Right Side */}
-          <div className="hidden md:block" ref={dropdownRef}>
-            <div className="relative">
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setEmployerDropdownOpen(!employerDropdownOpen);
-                }}
-              className="inline-flex items-center gap-2 px-5 py-2 bg-blue-600 text-white text-[14px] font-semibold rounded-lg hover:bg-blue-700 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
-                🚀Post Openings Free
-                <ChevronDown 
-                  size={14} 
-                  className={`transition-transform duration-200 ${employerDropdownOpen ? "rotate-180" : ""}`}
-                />
-              </button>
+          {/* Right Side Actions */}
+          <div className="hidden md:flex items-center gap-3 flex-shrink-0">
+            {/* For Employers Dropdown */}
+            <div ref={dropdownRef} className="flex-shrink-0">
+              <div className="relative">
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setEmployerDropdownOpen(!employerDropdownOpen);
+                  }}
+                  className="inline-flex items-center gap-1.5 px-4 py-2 bg-blue-600 text-white text-[14px] font-semibold rounded-lg hover:bg-blue-700 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 whitespace-nowrap"
+                >
+                  🚀 Post Openings Free
+                  <ChevronDown 
+                    size={14} 
+                    className={`transition-transform duration-200 ${employerDropdownOpen ? "rotate-180" : ""}`}
+                  />
+                </button>
 
-              {employerDropdownOpen && (
-                <div className="absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-lg border border-gray-100 py-2 z-50">
-                  {employerLinks.map((link) => (
-                    <Link
-                      key={link.href}
-                      href={link.href}
-                      onClick={() => setEmployerDropdownOpen(false)}
-                      className="block px-4 py-2.5 text-sm font-medium text-black hover:text-blue-600 hover:bg-blue-50 transition-colors duration-200"
-                    >
-                      {link.label}
-                    </Link>
-                  ))}
-                </div>
-              )}
+                {employerDropdownOpen && (
+                  <div className="absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-lg border border-gray-100 py-2 z-50">
+                    {employerLinks.map((link) => (
+                      <Link
+                        key={link.href}
+                        href={link.href}
+                        onClick={() => setEmployerDropdownOpen(false)}
+                        className="block px-4 py-2.5 text-sm font-medium text-black hover:text-blue-600 hover:bg-blue-50 transition-colors duration-200"
+                      >
+                        {link.label}
+                      </Link>
+                    ))}
+                  </div>
+                )}
+              </div>
             </div>
           </div>
 
           {/* Mobile Menu Button */}
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="md:hidden p-2 rounded-xl text-black hover:bg-blue-50 hover:text-blue-600 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="md:hidden p-2 rounded-xl text-black hover:bg-blue-50 hover:text-blue-600 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 flex-shrink-0"
             aria-label={mobileMenuOpen ? "Close mobile menu" : "Open mobile menu"}
             aria-expanded={mobileMenuOpen}
             aria-controls="mobile-nav"
@@ -188,7 +219,7 @@ export default function Header() {
           >
             <div className="px-4 py-2 space-y-1">
               {navLinks.map((link) => {
-                const isActive = pathname === link.href;
+                const isActive = isActiveLink(link.href);
                 return (
                   <div key={link.href} className="py-2">
                     <Link 
