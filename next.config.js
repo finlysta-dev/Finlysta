@@ -2,11 +2,13 @@
 
 const nextConfig = {
   reactStrictMode: true,
-
   trailingSlash: false,
+  swcMinify: true, // ADDED
+  compress: true, // ADDED
 
   images: {
     domains: ['static.wixstatic.com'],
+    formats: ['image/avif', 'image/webp'], // ADDED
   },
 
   async redirects() {
@@ -23,6 +25,32 @@ const nextConfig = {
           },
         ],
         destination: 'https://finlysta.com/:path*',
+        permanent: true,
+      },
+
+      // =========================
+      // REMOVE DYNAMIC PARAMETERS (ADDED)
+      // =========================
+      {
+        source: '/:path*',
+        has: [
+          {
+            type: 'query',
+            key: 'utm_.*',
+          },
+        ],
+        destination: '/:path*',
+        permanent: true,
+      },
+      {
+        source: '/:path*',
+        has: [
+          {
+            type: 'query',
+            key: 'ref',
+          },
+        ],
+        destination: '/:path*',
         permanent: true,
       },
 
@@ -48,12 +76,8 @@ const nextConfig = {
       // OLD FINANCE PATH
       // =========================
       {
-        source:
-          '/learning-hub/financial-statements/:path*',
-
-        destination:
-          '/learning-hub/finance-fundamentals/:path*',
-
+        source: '/learning-hub/financial-statements/:path*',
+        destination: '/learning-hub/finance-fundamentals/:path*',
         permanent: true,
       },
     ];
@@ -66,27 +90,44 @@ const nextConfig = {
       // =========================
       {
         source: '/api/:path*',
-
         headers: [
           {
             key: 'Cache-Control',
-            value:
-              'no-store, no-cache, must-revalidate, proxy-revalidate',
+            value: 'no-store, no-cache, must-revalidate, proxy-revalidate',
           },
-
           {
             key: 'Pragma',
             value: 'no-cache',
           },
-
           {
             key: 'Expires',
             value: '0',
           },
-
           {
             key: 'Surrogate-Control',
             value: 'no-store',
+          },
+        ],
+      },
+
+      // =========================
+      // CACHE STATIC ASSETS (ADDED)
+      // =========================
+      {
+        source: '/_next/static/:path*',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=31536000, immutable',
+          },
+        ],
+      },
+      {
+        source: '/:path*.(jpg|jpeg|png|webp|avif|svg|woff|woff2|ttf)',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=2592000, stale-while-revalidate=86400',
           },
         ],
       },
@@ -96,26 +137,26 @@ const nextConfig = {
       // =========================
       {
         source: '/:path*',
-
         headers: [
           {
             key: 'X-DNS-Prefetch-Control',
             value: 'on',
           },
-
           {
             key: 'X-XSS-Protection',
             value: '1; mode=block',
           },
-
           {
             key: 'X-Frame-Options',
             value: 'SAMEORIGIN',
           },
-
           {
             key: 'Referrer-Policy',
             value: 'strict-origin-when-cross-origin',
+          },
+          {
+            key: 'Content-Security-Policy', // ADDED
+            value: "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://static.cloudflareinsights.com https://www.googletagmanager.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://static.wixstatic.com; font-src 'self' data:; connect-src 'self' https://*.cloudflareinsights.com;",
           },
         ],
       },

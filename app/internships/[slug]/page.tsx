@@ -1,3 +1,4 @@
+// app/internships/[slug]/page.tsx
 "use client";
 
 import { useState, useEffect } from "react";
@@ -7,7 +8,8 @@ import {
   MapPin, Clock, Building2, Calendar,
   CheckCircle, Bookmark, Share2, Zap,
   ExternalLink, Award, GraduationCap,
-  Briefcase, Target, Sparkles, ChevronRight, ChevronUp,ChevronDown, TrendingUp, Heart, AlertCircle
+  Briefcase, Target, Sparkles, ChevronRight, ChevronUp, ChevronDown, 
+  TrendingUp, Heart, AlertCircle, Users, Globe, Mail
 } from "lucide-react";
 
 interface Internship {
@@ -35,6 +37,10 @@ interface Internship {
   postedAt: string;
   deadline?: string;
   updatedAt?: string;
+  city?: string;
+  state?: string;
+  country?: string;
+  experience?: string;
 }
 
 // Helper functions
@@ -52,8 +58,8 @@ const getTimeAgo = (date: string) => {
 
 const getLocationDisplay = (location: string, workMode: string) => {
   if (!location) return null;
-  if (workMode === "remote") return "Remote";
-  if (workMode === "hybrid") return `${location} (Hybrid)`;
+  if (workMode?.toLowerCase() === "remote") return "Remote";
+  if (workMode?.toLowerCase() === "hybrid") return `${location} (Hybrid)`;
   if (location === "PAN India" || location.toLowerCase().includes("pan india")) {
     return "Multiple Locations (On-site)";
   }
@@ -167,7 +173,8 @@ export default function InternshipDetailPage() {
       setLoading(true);
       setError(null);
       try {
-        const response = await fetch(`/api/opportunities/slug/${slug}`);
+        // Fetch only internships (type = 'internship')
+        const response = await fetch(`/api/opportunities/slug/${slug}?type=internship`);
         
         if (!response.ok) {
           if (response.status === 404) throw new Error("Internship not found");
@@ -175,6 +182,15 @@ export default function InternshipDetailPage() {
         }
         
         const data = await response.json();
+        
+        // Verify it's actually an internship
+        if (data.type !== 'internship' && data.type !== 'articleship') {
+          // Redirect to the correct URL type
+          const correctPrefix = data.type === 'job' ? '/jobs' : '/articleships';
+          router.push(`${correctPrefix}/${data.slug}`);
+          return;
+        }
+        
         setInternship(data);
       } catch (err) {
         console.error("Error:", err);
@@ -185,7 +201,7 @@ export default function InternshipDetailPage() {
     };
     
     fetchInternship();
-  }, [slug]);
+  }, [slug, router]);
 
   useEffect(() => {
     if (internship) {
@@ -351,7 +367,7 @@ export default function InternshipDetailPage() {
             <ChevronRight size={14} className="text-gray-400" />
             <Link href="/internships" className="hover:text-emerald-600">Internships</Link>
             <ChevronRight size={14} className="text-gray-400" />
-            <span className="text-gray-900">{internship.title}</span>
+            <span className="text-gray-900 truncate max-w-xs">{internship.title}</span>
           </div>
         </div>
       </div>
@@ -364,7 +380,12 @@ export default function InternshipDetailPage() {
               <div className="flex-shrink-0">
                 {!logoError && internship.companyLogo ? (
                   <div className="w-20 h-20 bg-white border border-gray-200 rounded-2xl shadow-sm flex items-center justify-center p-3">
-                    <img src={internship.companyLogo} alt={internship.company} className="max-w-full max-h-full object-contain" onError={() => setLogoError(true)} />
+                    <img 
+                      src={internship.companyLogo} 
+                      alt={internship.company} 
+                      className="max-w-full max-h-full object-contain" 
+                      onError={() => setLogoError(true)} 
+                    />
                   </div>
                 ) : (
                   <div className={`w-20 h-20 bg-gradient-to-br ${companyColor} rounded-2xl shadow-sm flex items-center justify-center`}>
@@ -373,7 +394,12 @@ export default function InternshipDetailPage() {
                 )}
               </div>
               <div>
-                <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-1">{internship.title}</h1>
+                <div className="flex items-center gap-2 mb-1">
+                  <h1 className="text-2xl md:text-3xl font-bold text-gray-900">{internship.title}</h1>
+                  <span className="px-2 py-0.5 bg-purple-100 text-purple-700 text-xs font-semibold rounded-full">
+                    Internship
+                  </span>
+                </div>
                 <p className="text-lg text-gray-600">{internship.company}</p>
                 <div className="flex flex-wrap items-center gap-2 mt-2">
                   {internship.isVerified && (
@@ -397,10 +423,17 @@ export default function InternshipDetailPage() {
                 </div>
               </div>
             </div>
-            <button onClick={handleSave} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition ${saved ? "bg-emerald-50 text-emerald-600" : "bg-gray-100 text-gray-600 hover:bg-gray-200"}`}>
-              <Bookmark size={16} fill={saved ? "currentColor" : "none"} />
-              <span className="text-sm">{saved ? "Saved" : "Save Internship"}</span>
-            </button>
+            <div className="flex items-center gap-2">
+              <button 
+                onClick={handleSave} 
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition ${
+                  saved ? "bg-emerald-50 text-emerald-600" : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                }`}
+              >
+                <Bookmark size={16} fill={saved ? "currentColor" : "none"} />
+                <span className="text-sm">{saved ? "Saved" : "Save"}</span>
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -429,13 +462,29 @@ export default function InternshipDetailPage() {
                 )}
                 {cleanStipend && (
                   <div className="flex items-center gap-2 text-sm">
-                    <span className="font-semibold text-green-600">{cleanStipend === "Competitive" ? "💰 Competitive" : cleanStipend === "Unpaid" ? "Unpaid" : `₹${cleanStipend}`}</span>
+                    <span className="font-semibold text-green-600">
+                      {cleanStipend === "Competitive" ? "💰 Competitive" : 
+                       cleanStipend === "Unpaid" ? "Unpaid" : 
+                       `₹${cleanStipend}`}
+                    </span>
                   </div>
                 )}
                 {locationDisplay && (
                   <div className="flex items-center gap-2 text-sm">
                     <MapPin size={14} className="text-gray-400" />
                     <span className="text-gray-700">{locationDisplay}</span>
+                  </div>
+                )}
+                {internship.experience && (
+                  <div className="flex items-center gap-2 text-sm">
+                    <Users size={14} className="text-gray-400" />
+                    <span className="text-gray-700">{internship.experience}</span>
+                  </div>
+                )}
+                {internship.workMode && internship.workMode.toLowerCase() !== "not specified" && (
+                  <div className="flex items-center gap-2 text-sm">
+                    <Globe size={14} className="text-gray-400" />
+                    <span className="text-gray-700 capitalize">{internship.workMode}</span>
                   </div>
                 )}
               </div>
@@ -494,7 +543,9 @@ export default function InternshipDetailPage() {
                     <h3 className="text-sm font-semibold text-gray-700 mb-2">Finance & Accounting</h3>
                     <div className="flex flex-wrap gap-2">
                       {financeSkills.map((skill, idx) => (
-                        <span key={idx} className="px-2.5 py-1 bg-blue-50 text-blue-700 rounded-full text-xs font-medium border border-blue-100">{skill}</span>
+                        <span key={idx} className="px-2.5 py-1 bg-blue-50 text-blue-700 rounded-full text-xs font-medium border border-blue-100">
+                          {skill}
+                        </span>
                       ))}
                     </div>
                   </div>
@@ -505,7 +556,9 @@ export default function InternshipDetailPage() {
                     <h3 className="text-sm font-semibold text-gray-700 mb-2">Technical & Tools</h3>
                     <div className="flex flex-wrap gap-2">
                       {technicalSkills.map((skill, idx) => (
-                        <span key={idx} className="px-2.5 py-1 bg-gray-100 text-gray-700 rounded-full text-xs font-medium border border-gray-200">{skill}</span>
+                        <span key={idx} className="px-2.5 py-1 bg-gray-100 text-gray-700 rounded-full text-xs font-medium border border-gray-200">
+                          {skill}
+                        </span>
                       ))}
                     </div>
                   </div>
@@ -516,7 +569,9 @@ export default function InternshipDetailPage() {
                     <h3 className="text-sm font-semibold text-gray-700 mb-2">Soft Skills</h3>
                     <div className="flex flex-wrap gap-2">
                       {softSkills.map((skill, idx) => (
-                        <span key={idx} className="px-2.5 py-1 bg-green-50 text-green-700 rounded-full text-xs font-medium border border-green-100">{skill}</span>
+                        <span key={idx} className="px-2.5 py-1 bg-green-50 text-green-700 rounded-full text-xs font-medium border border-green-100">
+                          {skill}
+                        </span>
                       ))}
                     </div>
                   </div>
@@ -527,7 +582,9 @@ export default function InternshipDetailPage() {
                     <h3 className="text-sm font-semibold text-gray-700 mb-2">Other Skills</h3>
                     <div className="flex flex-wrap gap-2">
                       {otherSkills.map((skill, idx) => (
-                        <span key={idx} className="px-2.5 py-1 bg-gray-100 text-gray-700 rounded-full text-xs font-medium border border-gray-200">{skill}</span>
+                        <span key={idx} className="px-2.5 py-1 bg-gray-100 text-gray-700 rounded-full text-xs font-medium border border-gray-200">
+                          {skill}
+                        </span>
                       ))}
                     </div>
                   </div>
@@ -569,7 +626,10 @@ export default function InternshipDetailPage() {
                   ))}
                 </ul>
                 {mainRequirements.length > 6 && (
-                  <button onClick={() => setShowFullQualifications(!showFullQualifications)} className="mt-3 text-sm text-blue-600 hover:text-blue-700 flex items-center gap-1">
+                  <button 
+                    onClick={() => setShowFullQualifications(!showFullQualifications)} 
+                    className="mt-3 text-sm text-blue-600 hover:text-blue-700 flex items-center gap-1"
+                  >
                     {showFullQualifications ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
                     {showFullQualifications ? "Show less" : `View all ${mainRequirements.length} requirements`}
                   </button>
@@ -596,7 +656,7 @@ export default function InternshipDetailPage() {
             )}
 
             {/* Benefits */}
-            {benefitsPoints.length > 0 && !internship.benefits?.includes("not provided") && (
+            {benefitsPoints.length > 0 && !internship.benefits?.toLowerCase().includes("not provided") && (
               <div className="bg-white rounded-xl border border-gray-100 p-5 shadow-sm">
                 <div className="flex items-center gap-2 mb-3">
                   <Heart size={18} className="text-rose-600" />
@@ -613,9 +673,12 @@ export default function InternshipDetailPage() {
               </div>
             )}
 
-            {/* Report Job */}
+            {/* Report Button */}
             <div className="flex justify-end">
-              <button onClick={() => setShowReportModal(true)} className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-red-50 text-red-600 text-xs font-medium rounded-lg hover:bg-red-100 transition">
+              <button 
+                onClick={() => setShowReportModal(true)} 
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-red-50 text-red-600 text-xs font-medium rounded-lg hover:bg-red-100 transition"
+              >
                 <AlertCircle size={12} />
                 Report Internship
               </button>
@@ -641,18 +704,58 @@ export default function InternshipDetailPage() {
                 </button>
 
                 <div className="mt-4 pt-3 border-t border-gray-100 space-y-2 text-xs">
-                  <div className="flex justify-between"><span className="text-gray-500">Posted</span><span className="font-medium text-gray-700">{timeAgo}</span></div>
-                  {cleanStipend && <div className="flex justify-between"><span className="text-gray-500">Stipend</span><span className="font-semibold text-green-600">{cleanStipend === "Competitive" ? "💰 Competitive" : cleanStipend === "Unpaid" ? "Unpaid" : `₹${cleanStipend}`}</span></div>}
-                  {internship.duration && <div className="flex justify-between"><span className="text-gray-500">Duration</span><span className="font-medium text-gray-700">{internship.duration}</span></div>}
+                  <div className="flex justify-between">
+                    <span className="text-gray-500">Posted</span>
+                    <span className="font-medium text-gray-700">{timeAgo}</span>
+                  </div>
+                  {cleanStipend && (
+                    <div className="flex justify-between">
+                      <span className="text-gray-500">Stipend</span>
+                      <span className="font-semibold text-green-600">
+                        {cleanStipend === "Competitive" ? "💰 Competitive" : 
+                         cleanStipend === "Unpaid" ? "Unpaid" : 
+                         `₹${cleanStipend}`}
+                      </span>
+                    </div>
+                  )}
+                  {internship.duration && (
+                    <div className="flex justify-between">
+                      <span className="text-gray-500">Duration</span>
+                      <span className="font-medium text-gray-700">{internship.duration}</span>
+                    </div>
+                  )}
+                  {locationDisplay && (
+                    <div className="flex justify-between">
+                      <span className="text-gray-500">Location</span>
+                      <span className="font-medium text-gray-700 text-right max-w-[150px] truncate">
+                        {locationDisplay}
+                      </span>
+                    </div>
+                  )}
                 </div>
 
                 {/* Share buttons */}
                 <div className="mt-4 pt-3 border-t border-gray-100">
                   <p className="text-xs text-gray-500 mb-2">📢 Share this internship:</p>
                   <div className="flex gap-2">
-                    <button onClick={() => handleShare("linkedin")} className="flex-1 py-2 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 text-sm font-medium">LinkedIn</button>
-                    <button onClick={() => handleShare("whatsapp")} className="flex-1 py-2 bg-green-50 text-green-600 rounded-lg hover:bg-green-100 text-sm font-medium">WhatsApp</button>
-                    <button onClick={() => handleShare()} className="flex-1 py-2 bg-gray-100 text-gray-600 rounded-lg hover:bg-gray-200 text-sm font-medium">Copy Link</button>
+                    <button 
+                      onClick={() => handleShare("linkedin")} 
+                      className="flex-1 py-2 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 text-sm font-medium"
+                    >
+                      LinkedIn
+                    </button>
+                    <button 
+                      onClick={() => handleShare("whatsapp")} 
+                      className="flex-1 py-2 bg-green-50 text-green-600 rounded-lg hover:bg-green-100 text-sm font-medium"
+                    >
+                      WhatsApp
+                    </button>
+                    <button 
+                      onClick={() => handleShare()} 
+                      className="flex-1 py-2 bg-gray-100 text-gray-600 rounded-lg hover:bg-gray-200 text-sm font-medium"
+                    >
+                      Copy Link
+                    </button>
                   </div>
                 </div>
               </div>
@@ -660,16 +763,20 @@ export default function InternshipDetailPage() {
           </div>
         </div>
 
-        {/* Similar Internships - No stipend/salary */}
+        {/* Similar Internships */}
         {relatedInternships && relatedInternships.length > 0 && (
           <div className="mt-10 pt-6 border-t border-gray-200">
             <div className="flex items-center gap-2 mb-5">
               <TrendingUp size={18} className="text-emerald-600" />
-              <h2 className="text-xl font-bold text-gray-900">Similar Entry-Level Finance Internships</h2>
+              <h2 className="text-xl font-bold text-gray-900">Similar Finance Internships</h2>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {relatedInternships.map((intern) => (
-                <Link key={intern.id} href={`/internships/${intern.slug}`} className="group block bg-white rounded-lg border border-gray-100 p-4 hover:shadow-md hover:border-emerald-200 transition">
+                <Link 
+                  key={intern.id} 
+                  href={`/internships/${intern.slug}`} 
+                  className="group block bg-white rounded-lg border border-gray-100 p-4 hover:shadow-md hover:border-emerald-200 transition"
+                >
                   <div className="flex items-start gap-3">
                     <div className="flex-shrink-0">
                       {intern.companyLogo ? (
@@ -683,16 +790,19 @@ export default function InternshipDetailPage() {
                       )}
                     </div>
                     <div className="flex-1">
-                      <h3 className="font-semibold text-gray-900 group-hover:text-emerald-600 text-sm line-clamp-1">{intern.title}</h3>
+                      <h3 className="font-semibold text-gray-900 group-hover:text-emerald-600 text-sm line-clamp-1">
+                        {intern.title}
+                      </h3>
                       <p className="text-xs text-gray-500">{intern.company}</p>
                       <div className="flex flex-wrap items-center gap-2 mt-1.5 text-xs">
                         {intern.duration && <span className="text-gray-400">{intern.duration}</span>}
-                        {intern.workMode && intern.workMode !== "Not specified" && (
+                        {intern.workMode && intern.workMode.toLowerCase() !== "not specified" && (
                           <span className="capitalize text-gray-400">{intern.workMode}</span>
                         )}
                       </div>
                       <div className="flex items-center gap-1 mt-1 text-xs text-gray-400">
-                        <MapPin size={10} />{intern.location?.split(',')[0]}
+                        <MapPin size={10} />
+                        {intern.location?.split(',')[0] || 'Location not specified'}
                       </div>
                     </div>
                   </div>
@@ -705,7 +815,10 @@ export default function InternshipDetailPage() {
 
       {/* Mobile Sticky Apply Button */}
       <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4 shadow-lg z-50">
-        <button onClick={handleApply} className="w-full py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-base rounded-xl transition text-center flex items-center justify-center gap-2 shadow-md">
+        <button 
+          onClick={handleApply} 
+          className="w-full py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-base rounded-xl transition text-center flex items-center justify-center gap-2 shadow-md"
+        >
           <ExternalLink size={18} /> Apply for This Internship →
         </button>
       </div>
@@ -716,8 +829,12 @@ export default function InternshipDetailPage() {
           <h3 className="text-lg font-bold text-gray-900 mb-1">Start Your Finance Career Today</h3>
           <p className="text-gray-600 text-sm mb-4">Browse more entry-level finance internships and jobs</p>
           <div className="flex flex-wrap gap-3 justify-center">
-            <Link href="/internships" className="px-5 py-2 bg-emerald-600 text-white text-sm font-semibold rounded-lg hover:bg-emerald-700">Browse All Internships</Link>
-            <Link href="/jobs" className="px-5 py-2 bg-white text-gray-700 text-sm font-semibold rounded-lg border border-gray-300 hover:bg-gray-50">Find Jobs</Link>
+            <Link href="/internships" className="px-5 py-2 bg-emerald-600 text-white text-sm font-semibold rounded-lg hover:bg-emerald-700">
+              Browse All Internships
+            </Link>
+            <Link href="/jobs" className="px-5 py-2 bg-white text-gray-700 text-sm font-semibold rounded-lg border border-gray-300 hover:bg-gray-50">
+              Find Jobs
+            </Link>
           </div>
         </div>
       </div>
@@ -727,10 +844,25 @@ export default function InternshipDetailPage() {
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-xl max-w-md w-full p-6">
             <h3 className="text-lg font-bold mb-2">Report Internship</h3>
-            <p className="text-sm text-gray-600 mb-4">Help us keep Finlysta safe by reporting this internship if it's inappropriate or spam.</p>
+            <p className="text-sm text-gray-600 mb-4">
+              Help us keep Finlysta safe by reporting this internship if it's inappropriate or spam.
+            </p>
             <div className="flex gap-3">
-              <button onClick={() => setShowReportModal(false)} className="flex-1 px-4 py-2 border border-gray-300 rounded-lg text-gray-700">Cancel</button>
-              <button onClick={() => { setShowReportModal(false); alert("Thank you for reporting. We'll review this internship."); }} className="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg">Report</button>
+              <button 
+                onClick={() => setShowReportModal(false)} 
+                className="flex-1 px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"
+              >
+                Cancel
+              </button>
+              <button 
+                onClick={() => {
+                  setShowReportModal(false);
+                  alert("Thank you for reporting. We'll review this internship.");
+                }} 
+                className="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700"
+              >
+                Report
+              </button>
             </div>
           </div>
         </div>

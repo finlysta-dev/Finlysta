@@ -115,7 +115,7 @@ export default function BlogPage({ params }: BlogPageProps) {
     };
   }, [resource?.content, slug]);
 
-  // Process content when resource loads
+  // Process content when resource loads - FIXED
   useEffect(() => {
     if (resource?.content) {
       const content = resource.content;
@@ -123,31 +123,40 @@ export default function BlogPage({ params }: BlogPageProps) {
       // Check if content is HTML (contains HTML tags)
       const isHtml = /<[a-z][\s\S]*>/i.test(content);
       
-      // Check if content is Markdown (contains markdown syntax but not HTML wrapper)
+      // Check if content is Markdown (contains markdown syntax)
       const isMarkdown = /^#+\s|^[-*+]\s|^>\s|\[.+\]\(.+\)/m.test(content);
       
-      // Check if content is corrupted/mixed
-      const isCorrupted = content.includes('<div class=') && !content.includes('</div>');
+      // If content is empty or just whitespace, show a message
+      if (!content.trim()) {
+        setRenderedContent(<p className="text-gray-500">No content available for this blog post.</p>);
+        return;
+      }
       
-      if (isCorrupted) {
-        // Clean corrupted HTML content
-        const cleanedContent = cleanCorruptedHtml(content);
+      // Check if content is pure HTML with proper structure
+      const hasHtmlWrapper = /<div[^>]*>/.test(content) && /<\/div>/.test(content);
+      const hasHtmlTags = /<h[1-6]|<p>|<ul>|<ol>|<li>|<table>|<blockquote>/.test(content);
+      
+      // If content has HTML tags and is properly structured, render as HTML
+      if (hasHtmlTags || hasHtmlWrapper) {
+        // Clean any broken HTML
+        let cleanContent = content;
+        
+        // Remove any empty div wrappers that might break layout
+        cleanContent = cleanContent.replace(/<div[^>]*>\s*<\/div>/g, '');
+        
+        // Fix any unclosed tags (basic fix)
+        if (cleanContent.includes('<div') && !cleanContent.includes('</div>')) {
+          cleanContent = cleanContent + '</div>';
+        }
+        
         setRenderedContent(
           <div 
             className="blog-html-content prose prose-lg max-w-none"
-            dangerouslySetInnerHTML={{ __html: cleanedContent }}
+            dangerouslySetInnerHTML={{ __html: cleanContent }}
           />
         );
-      } else if (isHtml && !isMarkdown) {
-        // Pure HTML content
-        setRenderedContent(
-          <div 
-            className="blog-html-content prose prose-lg max-w-none"
-            dangerouslySetInnerHTML={{ __html: content }}
-          />
-        );
-      } else {
-        // Markdown content
+      } else if (isMarkdown) {
+        // Render as Markdown
         setRenderedContent(
           <ReactMarkdown 
             remarkPlugins={[remarkGfm]}
@@ -156,35 +165,19 @@ export default function BlogPage({ params }: BlogPageProps) {
             {content}
           </ReactMarkdown>
         );
+      } else {
+        // Plain text - wrap in paragraphs
+        const paragraphs = content.split('\n\n').filter(p => p.trim());
+        setRenderedContent(
+          <div>
+            {paragraphs.map((p, i) => (
+              <p key={i} className="mb-4 text-gray-700 leading-relaxed">{p}</p>
+            ))}
+          </div>
+        );
       }
     }
   }, [resource?.content]);
-
-  const cleanCorruptedHtml = (html: string): string => {
-    // Remove empty or broken elements
-    let cleaned = html
-      // Remove empty h1 tags
-      .replace(/<h1[^>]*>\s*<\/h1>/gi, '')
-      // Fix unclosed divs
-      .replace(/<div(?![^>]*\/>)/g, '<div')
-      // Remove blog-post-container wrapper but keep inner content
-      .replace(/<div[^>]*class="blog-post-container"[^>]*>/gi, '')
-      // Remove blog-header wrapper
-      .replace(/<div[^>]*class="blog-header"[^>]*>/gi, '')
-      // Remove blog-meta wrapper
-      .replace(/<div[^>]*class="blog-meta"[^>]*>/gi, '')
-      // Extract actual content from broken structure
-      .replace(/<span[^>]*class="blog-category"[^>]*>(.*?)<\/span>/gi, '<p><strong>Category:</strong> $1</p>')
-      .replace(/<span[^>]*class="blog-read-time"[^>]*>(.*?)<\/span>/gi, '<p><strong>Read time:</strong> $1</p>')
-      .replace(/<span[^>]*class="blog-date"[^>]*>(.*?)<\/span>/gi, '<p><strong>Date:</strong> $1</p>')
-      // Remove any remaining empty elements
-      .replace(/<[^>]+>\s*<\/[^>]+>/g, '')
-      // Clean up extra whitespace
-      .replace(/\s+/g, ' ')
-      .trim();
-    
-    return cleaned;
-  };
 
   const fetchBlog = async () => {
     if (!slug) return;
@@ -510,15 +503,12 @@ export default function BlogPage({ params }: BlogPageProps) {
               <p className="text-gray-700 text-base leading-relaxed">{resource.excerpt}</p>
             </div>
 
-            {/* Blog Content - Auto-detects and renders HTML or Markdown */}
+            {/* Blog Content - Fixed rendering */}
             <div id="blog-content" className="blog-content">
               {renderedContent || (
-                <ReactMarkdown 
-                  remarkPlugins={[remarkGfm]}
-                  components={markdownComponents}
-                >
-                  {resource.content || ''}
-                </ReactMarkdown>
+                <div className="prose prose-lg max-w-none">
+                  <p className="text-gray-500">Content is being loaded...</p>
+                </div>
               )}
             </div>
           </div>

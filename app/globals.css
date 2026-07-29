@@ -4815,3 +4815,7 @@ video {
   color: #000000;
   opacity: 1;
 }
+input::placeholder {
+  color: #000000;
+  opacity: 1;
+}
