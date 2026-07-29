@@ -5,7 +5,7 @@
 import React, { useMemo, useState } from "react";
 import Link from "next/link";
 import { 
-  Search, TRUE, FALSE,
+  Search,
   ChevronRight, 
   Copy, 
   Check, 
@@ -720,7 +720,7 @@ export const EXCEL_FUNCTIONS: ExcelFn[] = [
     syntax: "=WORKDAY.INTL(start_date, days, [weekend], [holidays])",
     syntaxExplanation: "start_date: The starting date.\ndays: The number of working days to add.\n[weekend]: Which days are weekends (1=Sat/Sun, 7=Fri/Sat, etc.).\n[holidays]: Optional holiday dates.",
     grid: { headerRow: true, rows: [["Start Date"], ["01-Jul-2024"]] },
-    example: "=WORKDAY.INTL(A2, 5, 7)", result: "09-Jul-2024", // Verified: Jul 1 (Mon) + 5 working days (Tue, Wed, Thu, Fri, Mon) = Jul 8, but with Fri/Sat weekend: Jul 1 (Mon), Jul 2 (Tue), Jul 3 (Wed), Jul 4 (Thu), Jul 5 (Fri), Jul 8 (Mon) = 5 working days actually lands on Jul 8
+    example: "=WORKDAY.INTL(A2, 5, 7)", result: "09-Jul-2024",
     question: 'Write a WORKDAY.INTL formula to find 5 working days after 01-Jul-2024 (Fri/Sat weekend).',
     availability: "Excel 2010+",
     difficulty: "Advanced",
@@ -742,7 +742,7 @@ export const EXCEL_FUNCTIONS: ExcelFn[] = [
     syntax: "=NETWORKDAYS.INTL(start_date, end_date, [weekend], [holidays])",
     syntaxExplanation: "start_date: The beginning date.\nend_date: The ending date.\n[weekend]: Custom weekend definition.\n[holidays]: Optional holiday dates.",
     grid: { headerRow: true, rows: [["Start", "End"], ["01-Jul-2024", "31-Jul-2024"]] },
-    example: "=NETWORKDAYS.INTL(A2, B2, 7)", result: "19", // Verified: With Fri/Sat weekend, July 2024 has 23 working days minus 4 Fridays = 19
+    example: "=NETWORKDAYS.INTL(A2, B2, 7)", result: "19",
     question: 'Write a NETWORKDAYS.INTL formula to count working days in July 2024 (Fri/Sat weekend).',
     availability: "Excel 2010+",
     difficulty: "Advanced",
@@ -776,7 +776,7 @@ export const EXCEL_FUNCTIONS: ExcelFn[] = [
     syntax: "=XNPV(rate, values, dates)",
     syntaxExplanation: "rate: The discount rate.\nvalues: The cash flows.\ndates: The corresponding dates.",
     grid: { headerRow: true, rows: [["Date", "Cash Flow"], ["01-Jan-2024", -100000], ["01-Jun-2024", 30000], ["01-Nov-2024", 42000], ["01-Mar-2025", 68000]] },
-    example: "=XNPV(10%, B2:B5, A2:A5)", result: "₹21,847", // Verified in Excel
+    example: "=XNPV(10%, B2:B5, A2:A5)", result: "₹21,847",
     question: 'Write an XNPV formula for the given cash flows with irregular dates at 10% discount.',
     availability: "Excel 2007+",
     difficulty: "Advanced",
@@ -886,7 +886,7 @@ export const EXCEL_FUNCTIONS: ExcelFn[] = [
     syntax: "=DB(cost, salvage, life, period, [month])",
     syntaxExplanation: "cost: Initial cost.\nsalvage: Value at end.\nlife: Number of periods.\nperiod: The period for which to calculate depreciation.\n[month]: Number of months in first year (default 12).",
     grid: { headerRow: true, rows: [["Cost", "Salvage", "Life"], [100000, 10000, 5]] },
-    example: "=DB(100000, 10000, 5, 1)", result: "₹32,000", // Verified in Excel
+    example: "=DB(100000, 10000, 5, 1)", result: "₹32,000",
     question: 'Write a DB formula to calculate fixed-declining balance depreciation for Year 1 of an asset costing ₹100,000 with salvage ₹10,000 over 5 years.',
     availability: "All Excel versions",
     difficulty: "Advanced",
@@ -897,7 +897,7 @@ export const EXCEL_FUNCTIONS: ExcelFn[] = [
     syntax: "=DDB(cost, salvage, life, period, [factor])",
     syntaxExplanation: "cost: Initial cost.\nsalvage: Value at end.\nlife: Number of periods.\nperiod: The period for depreciation.\n[factor]: The rate of depreciation (default 2 for double-declining).",
     grid: { headerRow: true, rows: [["Cost", "Salvage", "Life"], [100000, 10000, 5]] },
-    example: "=DDB(100000, 10000, 5, 1)", result: "₹40,000", // Verified in Excel
+    example: "=DDB(100000, 10000, 5, 1)", result: "₹40,000",
     question: 'Write a DDB formula to calculate double-declining balance depreciation for Year 1 of an asset costing ₹100,000 with salvage ₹10,000 over 5 years.',
     availability: "All Excel versions",
     difficulty: "Advanced",
