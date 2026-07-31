@@ -2,13 +2,12 @@
 import { NextResponse } from 'next/server';
 import Groq from 'groq-sdk';
 
-// Initialize Groq client
-const groq = new Groq({
-  apiKey: process.env.GROQ_API_KEY,
-});
-
 export async function POST(request: Request) {
   try {
+    const groq = new Groq({
+      apiKey: process.env.GROQ_API_KEY,
+    });
+
     const body = await request.json();
     const {
       recruiterName,
