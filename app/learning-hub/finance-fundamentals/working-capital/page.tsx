@@ -242,6 +242,27 @@ const CommonMistake: React.FC<CommonMistakeProps> = ({ mistake, correction }) =>
 // ============================================================================
 // MAIN PAGE COMPONENT - Financial Ratios
 // ============================================================================
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: "Working Capital Explained - Formula & Management",
+  description: "Understand working capital, how to calculate it, and why working capital management matters for business finance.",
+  alternates: { canonical: "https://finlysta.com/learning-hub/finance-fundamentals/working-capital" },
+  openGraph: {
+    title: "Working Capital Explained - Formula & Management | Finlysta",
+    description: "Understand working capital, how to calculate it, and why working capital management matters for business finance.",
+    url: "https://finlysta.com/learning-hub/finance-fundamentals/working-capital",
+    images: [{ url: 'https://finlysta.com/og-image.png', width: 1200, height: 630, alt: "Working Capital Explained - Formula & Management" }],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: "Working Capital Explained - Formula & Management | Finlysta",
+    description: "Understand working capital, how to calculate it, and why working capital management matters for business finance.",
+    images: ['https://finlysta.com/og-image.png'],
+  },
+};
+
+
 export default function FinancialRatiosPage() {
   // Financial Ratios specific data
   const conceptsData: ConceptCardProps[] = [

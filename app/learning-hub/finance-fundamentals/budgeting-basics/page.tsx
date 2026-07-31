@@ -242,6 +242,27 @@ const CommonMistake: React.FC<CommonMistakeProps> = ({ mistake, correction }) =>
 // ============================================================================
 // MAIN PAGE COMPONENT - Financial Ratios
 // ============================================================================
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: "Budgeting Basics - How Business Budgets Work",
+  description: "Understand the fundamentals of budgeting — types of budgets, the budgeting process, and why it matters in finance. A guide for finance freshers.",
+  alternates: { canonical: "https://finlysta.com/learning-hub/finance-fundamentals/budgeting-basics" },
+  openGraph: {
+    title: "Budgeting Basics - How Business Budgets Work | Finlysta",
+    description: "Understand the fundamentals of budgeting — types of budgets, the budgeting process, and why it matters in finance. A guide for finance freshers.",
+    url: "https://finlysta.com/learning-hub/finance-fundamentals/budgeting-basics",
+    images: [{ url: 'https://finlysta.com/og-image.png', width: 1200, height: 630, alt: "Budgeting Basics - How Business Budgets Work" }],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: "Budgeting Basics - How Business Budgets Work | Finlysta",
+    description: "Understand the fundamentals of budgeting — types of budgets, the budgeting process, and why it matters in finance. A guide for finance freshers.",
+    images: ['https://finlysta.com/og-image.png'],
+  },
+};
+
+
 export default function FinancialRatiosPage() {
   // Financial Ratios specific data
   const conceptsData: ConceptCardProps[] = [

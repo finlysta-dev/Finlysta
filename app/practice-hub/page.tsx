@@ -21,7 +21,7 @@ import {
   EyeOff,
   Lightbulb,
 } from "lucide-react";
-import { salesData, priorYearH1Sales, type SalesRecord } from "app/data/sales-data";
+import { salesData, priorYearH1Sales, type SalesRecord } from "@/app/data/sales-data";
 
 // ---------------------------------------------------------------------------
 // Header Component (unchanged)

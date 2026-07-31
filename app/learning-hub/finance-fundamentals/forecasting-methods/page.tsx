@@ -242,6 +242,27 @@ const CommonMistake: React.FC<CommonMistakeProps> = ({ mistake, correction }) =>
 // ============================================================================
 // MAIN PAGE COMPONENT - Financial Ratios
 // ============================================================================
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: "Financial Forecasting Methods Explained",
+  description: "Learn common financial forecasting methods used in business planning and analysis, explained simply for finance students and freshers.",
+  alternates: { canonical: "https://finlysta.com/learning-hub/finance-fundamentals/forecasting-methods" },
+  openGraph: {
+    title: "Financial Forecasting Methods Explained | Finlysta",
+    description: "Learn common financial forecasting methods used in business planning and analysis, explained simply for finance students and freshers.",
+    url: "https://finlysta.com/learning-hub/finance-fundamentals/forecasting-methods",
+    images: [{ url: 'https://finlysta.com/og-image.png', width: 1200, height: 630, alt: "Financial Forecasting Methods Explained" }],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: "Financial Forecasting Methods Explained | Finlysta",
+    description: "Learn common financial forecasting methods used in business planning and analysis, explained simply for finance students and freshers.",
+    images: ['https://finlysta.com/og-image.png'],
+  },
+};
+
+
 export default function FinancialRatiosPage() {
   // Financial Ratios specific data
   const conceptsData: ConceptCardProps[] = [

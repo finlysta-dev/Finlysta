@@ -214,6 +214,27 @@ const CommonMistake: React.FC<CommonMistakeProps> = ({ mistake, correction }) =>
 // ============================================================================
 // MAIN PAGE COMPONENT - Cash Flow Statement
 // ============================================================================
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: "Cash Flow Statement Explained - Format & Analysis",
+  description: "Learn how to read and analyze a cash flow statement — operating, investing, and financing activities explained with examples.",
+  alternates: { canonical: "https://finlysta.com/learning-hub/finance-fundamentals/cash-flow-statement" },
+  openGraph: {
+    title: "Cash Flow Statement Explained - Format & Analysis | Finlysta",
+    description: "Learn how to read and analyze a cash flow statement — operating, investing, and financing activities explained with examples.",
+    url: "https://finlysta.com/learning-hub/finance-fundamentals/cash-flow-statement",
+    images: [{ url: 'https://finlysta.com/og-image.png', width: 1200, height: 630, alt: "Cash Flow Statement Explained - Format & Analysis" }],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: "Cash Flow Statement Explained - Format & Analysis | Finlysta",
+    description: "Learn how to read and analyze a cash flow statement — operating, investing, and financing activities explained with examples.",
+    images: ['https://finlysta.com/og-image.png'],
+  },
+};
+
+
 export default function CashFlowStatementPage() {
   // Cash Flow Statement specific data
   const conceptsData: ConceptCardProps[] = [

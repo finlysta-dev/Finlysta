@@ -12,6 +12,10 @@ Disallow: /test-tracking/
 Disallow: /debug-analytics/
 Disallow: /tracking-test/
 Disallow: /edit-job/
+Disallow: /dashboard/
+Disallow: /login
+Disallow: /register
+Disallow: /post-job
 
 # Sitemap location
 Sitemap: https://finlysta.com/sitemap.xml

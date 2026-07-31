@@ -242,6 +242,27 @@ const CommonMistake: React.FC<CommonMistakeProps> = ({ mistake, correction }) =>
 // ============================================================================
 // MAIN PAGE COMPONENT - Financial Ratios
 // ============================================================================
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: "Capital Budgeting - Methods & Techniques Explained",
+  description: "Learn capital budgeting techniques like NPV, IRR, and payback period used to evaluate long-term investment decisions in finance.",
+  alternates: { canonical: "https://finlysta.com/learning-hub/finance-fundamentals/capital-budgeting" },
+  openGraph: {
+    title: "Capital Budgeting - Methods & Techniques Explained | Finlysta",
+    description: "Learn capital budgeting techniques like NPV, IRR, and payback period used to evaluate long-term investment decisions in finance.",
+    url: "https://finlysta.com/learning-hub/finance-fundamentals/capital-budgeting",
+    images: [{ url: 'https://finlysta.com/og-image.png', width: 1200, height: 630, alt: "Capital Budgeting - Methods & Techniques Explained" }],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: "Capital Budgeting - Methods & Techniques Explained | Finlysta",
+    description: "Learn capital budgeting techniques like NPV, IRR, and payback period used to evaluate long-term investment decisions in finance.",
+    images: ['https://finlysta.com/og-image.png'],
+  },
+};
+
+
 export default function FinancialRatiosPage() {
   // Financial Ratios specific data
   const conceptsData: ConceptCardProps[] = [

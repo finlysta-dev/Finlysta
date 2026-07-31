@@ -242,6 +242,27 @@ const CommonMistake: React.FC<CommonMistakeProps> = ({ mistake, correction }) =>
 // ============================================================================
 // MAIN PAGE COMPONENT - Financial Ratios
 // ============================================================================
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: "Financial Ratios Explained - Liquidity, Profitability & More",
+  description: "Understand key financial ratios — liquidity, profitability, solvency, and efficiency ratios — and how they are used to analyze a company.",
+  alternates: { canonical: "https://finlysta.com/learning-hub/finance-fundamentals/financial-ratios" },
+  openGraph: {
+    title: "Financial Ratios Explained - Liquidity, Profitability & More | Finlysta",
+    description: "Understand key financial ratios — liquidity, profitability, solvency, and efficiency ratios — and how they are used to analyze a company.",
+    url: "https://finlysta.com/learning-hub/finance-fundamentals/financial-ratios",
+    images: [{ url: 'https://finlysta.com/og-image.png', width: 1200, height: 630, alt: "Financial Ratios Explained - Liquidity, Profitability & More" }],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: "Financial Ratios Explained - Liquidity, Profitability & More | Finlysta",
+    description: "Understand key financial ratios — liquidity, profitability, solvency, and efficiency ratios — and how they are used to analyze a company.",
+    images: ['https://finlysta.com/og-image.png'],
+  },
+};
+
+
 export default function FinancialRatiosPage() {
   // Financial Ratios specific data
   const conceptsData: ConceptCardProps[] = [

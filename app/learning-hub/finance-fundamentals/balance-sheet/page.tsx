@@ -208,6 +208,27 @@ const CommonMistake: React.FC<CommonMistakeProps> = ({ mistake, correction }) =>
 // ============================================================================
 // MAIN PAGE COMPONENT - Balance Sheet
 // ============================================================================
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: "Balance Sheet Explained - Structure, Format & Examples",
+  description: "Learn how a balance sheet works — assets, liabilities, and equity explained with examples. A finance fundamentals guide for students and freshers.",
+  alternates: { canonical: "https://finlysta.com/learning-hub/finance-fundamentals/balance-sheet" },
+  openGraph: {
+    title: "Balance Sheet Explained - Structure, Format & Examples | Finlysta",
+    description: "Learn how a balance sheet works — assets, liabilities, and equity explained with examples. A finance fundamentals guide for students and freshers.",
+    url: "https://finlysta.com/learning-hub/finance-fundamentals/balance-sheet",
+    images: [{ url: 'https://finlysta.com/og-image.png', width: 1200, height: 630, alt: "Balance Sheet Explained - Structure, Format & Examples" }],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: "Balance Sheet Explained - Structure, Format & Examples | Finlysta",
+    description: "Learn how a balance sheet works — assets, liabilities, and equity explained with examples. A finance fundamentals guide for students and freshers.",
+    images: ['https://finlysta.com/og-image.png'],
+  },
+};
+
+
 export default function BalanceSheetPage() {
   // Balance Sheet specific data
   const conceptsData: ConceptCardProps[] = [

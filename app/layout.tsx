@@ -5,7 +5,6 @@ import "./globals.css"
 import { AuthProvider } from "@/app/providers/AuthProvider"
 import { NextAuthSessionProvider } from "@/app/providers/SessionProvider"
 import GoogleAnalytics from "@/app/components/GoogleAnalytics"
-import ClientOnly from "@/components/ClientOnly"
 
 const inter = Inter({ subsets: ["latin"] })
 
@@ -88,6 +87,31 @@ export const metadata: Metadata = {
   },
 }
 
+const organizationSchema = {
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  name: "Finlysta",
+  url: "https://finlysta.com",
+  logo: "https://finlysta.com/og-image.png",
+  sameAs: [
+    "https://www.instagram.com/Finlysta.in/",
+    "https://www.linkedin.com/company/join-Finlysta/",
+    "https://x.com/Finlysta83656",
+  ],
+}
+
+const websiteSchema = {
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  name: "Finlysta",
+  url: "https://finlysta.com",
+  potentialAction: {
+    "@type": "SearchAction",
+    target: "https://finlysta.com/jobs?search={search_term_string}",
+    "query-input": "required name=search_term_string",
+  },
+}
+
 export default function RootLayout({
   children,
 }: {
@@ -97,6 +121,14 @@ export default function RootLayout({
     <html lang="en-IN" suppressHydrationWarning>
       <head>
         <GoogleAnalytics />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema) }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteSchema) }}
+        />
       </head>
       <body className={inter.className} suppressHydrationWarning>
         <NextAuthSessionProvider>

@@ -808,6 +808,27 @@ const KeyTakeaways = () => {
 // ============================================
 // MAIN PAGE
 // ============================================
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: "VLOOKUP in Excel - Complete Guide with Examples",
+  description: "Master VLOOKUP in Excel with step-by-step examples. A practical guide for finance freshers who need Excel skills for the workplace.",
+  alternates: { canonical: "https://finlysta.com/learning-hub/advanced-excel/vlookup" },
+  openGraph: {
+    title: "VLOOKUP in Excel - Complete Guide with Examples | Finlysta",
+    description: "Master VLOOKUP in Excel with step-by-step examples. A practical guide for finance freshers who need Excel skills for the workplace.",
+    url: "https://finlysta.com/learning-hub/advanced-excel/vlookup",
+    images: [{ url: 'https://finlysta.com/og-image.png', width: 1200, height: 630, alt: "VLOOKUP in Excel - Complete Guide with Examples" }],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: "VLOOKUP in Excel - Complete Guide with Examples | Finlysta",
+    description: "Master VLOOKUP in Excel with step-by-step examples. A practical guide for finance freshers who need Excel skills for the workplace.",
+    images: ['https://finlysta.com/og-image.png'],
+  },
+};
+
+
 export default function VlookupBlogPage() {
   return (
     <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-8">

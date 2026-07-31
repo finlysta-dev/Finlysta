@@ -36,6 +36,14 @@ export async function POST(request: NextRequest) {
 
     console.log('✅ [LOGIN] User found:', user.email)
 
+    if (!user.password) {
+      console.log('❌ [LOGIN] User has no password set:', email)
+      return NextResponse.json(
+        { error: 'Invalid credentials' },
+        { status: 401 }
+      )
+    }
+
     // Verify password
     console.log('🔍 [LOGIN] Verifying password...')
     const isValid = await bcrypt.compare(password, user.password)

@@ -813,6 +813,27 @@ const FooterSection = () => {
 // ============================================
 // MAIN PAGE
 // ============================================
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: "Excel Interface & Navigation - Beginner Guide",
+  description: "Learn the Excel interface and navigation basics — ribbon, cells, shortcuts, and more. A beginner-friendly Excel guide for finance freshers.",
+  alternates: { canonical: "https://finlysta.com/learning-hub/advanced-excel/excel-interface-navigation" },
+  openGraph: {
+    title: "Excel Interface & Navigation - Beginner Guide | Finlysta",
+    description: "Learn the Excel interface and navigation basics — ribbon, cells, shortcuts, and more. A beginner-friendly Excel guide for finance freshers.",
+    url: "https://finlysta.com/learning-hub/advanced-excel/excel-interface-navigation",
+    images: [{ url: 'https://finlysta.com/og-image.png', width: 1200, height: 630, alt: "Excel Interface & Navigation - Beginner Guide" }],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: "Excel Interface & Navigation - Beginner Guide | Finlysta",
+    description: "Learn the Excel interface and navigation basics — ribbon, cells, shortcuts, and more. A beginner-friendly Excel guide for finance freshers.",
+    images: ['https://finlysta.com/og-image.png'],
+  },
+};
+
+
 export default function ExcelInterfaceNavigationPage() {
   return (
     <>

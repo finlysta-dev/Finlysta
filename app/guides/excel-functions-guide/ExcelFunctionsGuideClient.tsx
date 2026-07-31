@@ -243,7 +243,7 @@ export const EXCEL_FUNCTIONS: ExcelFn[] = [
     definition: "Returns TRUE if an odd number of conditions are TRUE (exclusive OR).",
     syntax: "=XOR(logical1, [logical2], ...)",
     syntaxExplanation: "logical1: The first condition.\n[logical2]: Additional conditions.\nReturns TRUE if an odd number of conditions are TRUE.",
-    grid: { headerRow: true, rows: [["Condition1", "Condition2", "Condition3"], [TRUE, FALSE, TRUE]] },
+    grid: { headerRow: true, rows: [["Condition1", "Condition2", "Condition3"], ["TRUE", "FALSE", "TRUE"]] },
     example: "=XOR(A2, B2, C2)", result: "FALSE",
     question: 'Write an XOR formula to check if an odd number of conditions (TRUE, FALSE, TRUE) are TRUE.',
     availability: "Excel 2013+",

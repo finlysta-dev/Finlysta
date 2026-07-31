@@ -201,6 +201,27 @@ const CommonMistake: React.FC<CommonMistakeProps> = ({ mistake, correction }) =>
 // ============================================================================
 // MAIN PAGE COMPONENT
 // ============================================================================
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: "Profit & Loss Statement Explained - Format & Examples",
+  description: "Learn how to read a profit and loss (P&L) statement — revenue, expenses, and net income explained with examples for finance freshers.",
+  alternates: { canonical: "https://finlysta.com/learning-hub/finance-fundamentals/profit-loss-statement" },
+  openGraph: {
+    title: "Profit & Loss Statement Explained - Format & Examples | Finlysta",
+    description: "Learn how to read a profit and loss (P&L) statement — revenue, expenses, and net income explained with examples for finance freshers.",
+    url: "https://finlysta.com/learning-hub/finance-fundamentals/profit-loss-statement",
+    images: [{ url: 'https://finlysta.com/og-image.png', width: 1200, height: 630, alt: "Profit & Loss Statement Explained - Format & Examples" }],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: "Profit & Loss Statement Explained - Format & Examples | Finlysta",
+    description: "Learn how to read a profit and loss (P&L) statement — revenue, expenses, and net income explained with examples for finance freshers.",
+    images: ['https://finlysta.com/og-image.png'],
+  },
+};
+
+
 export default function ProfitLossStatementPage() {
   const conceptsData: ConceptCardProps[] = [
     { icon: DollarSign, title: "Revenue", definition: "Total income generated from primary business operations before any deductions.", example: "Amazon earned $574B from product sales in 2023." },
