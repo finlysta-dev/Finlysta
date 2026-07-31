@@ -69,7 +69,7 @@ export function normalizeJob(job: RawJobPosting) {
     isNew: true,
     status: "active",
     featured: false,
-    isVerified: false,
+    isVerified: true,
     isTrending: false,
     isActivelyHiring: true,
     published: true,
