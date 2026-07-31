@@ -615,89 +615,13 @@ export default function TemplatesPage() {
     }
   };
 
-  // AI Personalization function - calls your API endpoint
-  const callAIPersonalization = async (data: any) => {
-    try {
-      const response = await fetch('/api/ai/personalize-email', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          recruiterName: data.recruiterName,
-          companyName: data.companyName,
-          jobTitle: data.jobTitle,
-          yourName: data.yourName,
-          skills: [data.skill1, data.skill2, data.skill3],
-          specificPoint: data.specificPoint,
-          templateType: data.templateType,
-          currentBody: data.currentBody,
-          currentSubject: data.currentSubject
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error('AI personalization failed');
-      }
-
-      const result = await response.json();
-      
-      // Return the AI-suggested improvements
-      return {
-        skill1: result.skill1 || data.skill1,
-        skill2: result.skill2 || data.skill2,
-        skill3: result.skill3 || data.skill3,
-        specificPoint: result.specificPoint || data.specificPoint,
-        body: result.body || data.currentBody,
-        subject: result.subject || data.currentSubject
-      };
-    } catch (error) {
-      console.error('AI personalization error:', error);
-      // Fallback to local personalization if API fails
-      return fallbackPersonalization(data);
-    }
-  };
-
-  // AI Personalization with real API
+  // Smart personalization (local, no external AI service)
   const handleAIPersonalize = async () => {
     setIsPersonalizing(true);
     setAiError(null);
-    
+
     try {
-      const result = await callAIPersonalization({
-        recruiterName: personalization.recruiterName,
-        companyName: personalization.companyName,
-        jobTitle: personalization.jobTitle,
-        yourName: personalization.yourName,
-        skill1: personalization.skill1,
-        skill2: personalization.skill2,
-        skill3: personalization.skill3,
-        specificPoint: personalization.specificPoint,
-        templateType: activeTemplate,
-        currentBody: template.body,
-        currentSubject: template.subject
-      });
-
-      // Update personalization with AI suggestions
-      setPersonalization({
-        ...personalization,
-        skill1: result.skill1 || personalization.skill1,
-        skill2: result.skill2 || personalization.skill2,
-        skill3: result.skill3 || personalization.skill3,
-        specificPoint: result.specificPoint || personalization.specificPoint,
-        customMessage: result.body || personalization.customMessage
-      });
-
-      // Show success feedback
-      setAiError('✅ AI personalization complete! Check the updated fields above.');
-      setTimeout(() => setAiError(null), 3000);
-      
-    } catch (error) {
-      console.error('AI personalization failed:', error);
-      setAiError('⚠️ AI personalization failed. Using smart fallback instead.');
-      
-      // Use fallback
-      const fallback = fallbackPersonalization({
+      const result = fallbackPersonalization({
         recruiterName: personalization.recruiterName,
         companyName: personalization.companyName,
         jobTitle: personalization.jobTitle,
@@ -710,11 +634,15 @@ export default function TemplatesPage() {
 
       setPersonalization({
         ...personalization,
-        skill1: fallback.skill1 || personalization.skill1,
-        skill2: fallback.skill2 || personalization.skill2,
-        skill3: fallback.skill3 || personalization.skill3,
-        specificPoint: fallback.specificPoint || personalization.specificPoint
+        skill1: result.skill1 || personalization.skill1,
+        skill2: result.skill2 || personalization.skill2,
+        skill3: result.skill3 || personalization.skill3,
+        specificPoint: result.specificPoint || personalization.specificPoint,
+        customMessage: result.body || personalization.customMessage
       });
+
+      setAiError('✅ Personalization complete! Check the updated fields above.');
+      setTimeout(() => setAiError(null), 3000);
     } finally {
       setIsPersonalizing(false);
     }
@@ -933,7 +861,7 @@ export default function TemplatesPage() {
                 ) : (
                   <>
                     <Brain className="w-4 h-4" />
-                    ✨ Personalize with AI
+                    ✨ Smart Personalize
                   </>
                 )}
               </button>
