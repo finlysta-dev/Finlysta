@@ -60,7 +60,7 @@ const SkillsSection = () => {
   return (
     <section className="py-8 bg-[#F8FAFC]" aria-labelledby="skills-heading">
       <div className="max-w-7xl mx-auto px-6">
-        <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
+        <div className="bg-white rounded-xl border border-slate-100 shadow-sm overflow-hidden">
           <div className="p-6">
             <div className="text-left mb-6">
               <p className="text-sm font-semibold text-[#2563EB] mb-2">Skills That Get You Hired</p>
@@ -147,7 +147,7 @@ const StatsSection = () => {
   const statsData = [
     { value: stats.isLoading ? "…" : formatNumber(stats.totalVisitors), label: "Visitors", description: "Students exploring finance careers with us", icon: Users, color: "text-blue-600", bg: "bg-blue-50" },
     { value: stats.isLoading ? "…" : formatNumber(stats.totalOpportunities), label: "Opportunities", description: "Jobs & internships available", icon: Briefcase, color: "text-indigo-600", bg: "bg-indigo-50" },
-    { value: "Learning", label: "Hub", description: "Essential finance knowledge to build your career", icon: BookOpen, color: "text-purple-600", bg: "bg-purple-50" },
+    { value: "Free", label: "Learning Hub", description: "Essential finance knowledge to build your career", icon: BookOpen, color: "text-purple-600", bg: "bg-purple-50" },
     { value: "100%", label: "Free Access", description: "Everything on Finlysta is completely free", icon: Gift, color: "text-orange-500", bg: "bg-orange-50" },
   ];
   const handleStatClick = (statLabel: string) => {
@@ -160,7 +160,7 @@ const StatsSection = () => {
   return (
     <section className="py-10" aria-label="Platform statistics">
       <div className="max-w-7xl mx-auto px-6">
-        <div className="bg-white border border-slate-200 rounded-2xl px-8 py-6 shadow-sm">
+        <div className="bg-white border border-slate-200 rounded-xl px-8 py-6 shadow-sm">
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4">
             {statsData.map((stat, index) => {
               const Icon = stat.icon;
@@ -249,15 +249,15 @@ const ExcelFunctionsSection = () => {
   return (
     <section className="py-12 bg-[#F8FAFC]" aria-labelledby="excel-heading">
       <div className="max-w-7xl mx-auto px-6">
-        <div className="bg-gradient-to-r from-blue-50 via-white to-indigo-50 rounded-2xl border border-blue-100 shadow-sm overflow-hidden">
+        <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
           <div className="p-8">
             <div className="flex items-center gap-3 mb-2">
-              <div className="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center">
+              <div className="w-10 h-10 rounded-lg bg-blue-600 flex items-center justify-center">
                 <Sigma size={20} className="text-white" />
               </div>
               <span className="text-sm font-bold text-blue-600 uppercase tracking-wide">Excel Mastery</span>
             </div>
-            
+
             <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6">
               <div className="flex-1">
                 <h2 id="excel-heading" className="text-2xl md:text-3xl font-bold text-[#081B4B]">
@@ -265,13 +265,13 @@ const ExcelFunctionsSection = () => {
                   <span className="text-blue-600">for Finance</span>
                 </h2>
                 <p className="mt-3 text-md text-slate-600 max-w-2xl">
-                  Master the most-used Excel functions in finance jobs and interviews — 
+                  Master the most-used Excel functions in finance jobs and interviews —
                   each with a clear definition, syntax, real dataset, practice question, and example.
                 </p>
               </div>
               <Link
                 href="/guides/excel-functions-guide"
-                className="flex-shrink-0 px-6 py-3 bg-blue-600 text-white rounded-xl font-semibold text-sm hover:bg-blue-700 transition-all shadow-lg shadow-blue-200 flex items-center gap-2"
+                className="flex-shrink-0 px-6 py-3 bg-blue-600 text-white rounded-lg font-semibold text-sm hover:bg-blue-700 transition-colors flex items-center gap-2"
                 onClick={handleExploreClick}
               >
                 Explore All Functions
@@ -429,7 +429,7 @@ const RoadmapLearningSection = () => {
       <div className="max-w-7xl mx-auto px-6">
         <h2 id="learning-heading" className="sr-only">Learning resources and career blogs</h2>
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <div className="bg-white rounded-2xl border border-blue-100 p-4 shadow-sm hover:shadow-md transition-all duration-300 flex flex-col relative overflow-hidden">
+          <div className="bg-white rounded-xl border border-blue-100 p-4 shadow-sm hover:shadow-md transition-all duration-300 flex flex-col relative overflow-hidden">
             <div className="flex items-center gap-2 mb-1 relative z-10">
               <GraduationCap size={16} className="text-blue-600" />
               <p className="text-xs font-bold text-blue-600 uppercase tracking-wide">Proven Path</p>
@@ -451,7 +451,7 @@ const RoadmapLearningSection = () => {
               </Link>
             </div>
           </div>
-          <div className="bg-white rounded-2xl border border-blue-100 p-6 shadow-sm hover:shadow-md transition-all duration-300 flex flex-col">
+          <div className="bg-white rounded-xl border border-blue-100 p-6 shadow-sm hover:shadow-md transition-all duration-300 flex flex-col">
             <div className="flex items-center justify-between mb-2">
               <p className="text-xs font-bold text-blue-600 uppercase tracking-wide">Best Learning Hub Categories</p>
               <BookOpen size={16} className="text-blue-400" />
@@ -497,7 +497,7 @@ const RoadmapLearningSection = () => {
               </div>
             </div>
           </div>
-          <div className="bg-white rounded-2xl border border-blue-100 p-6 shadow-sm hover:shadow-md transition-all duration-300 flex flex-col">
+          <div className="bg-white rounded-xl border border-blue-100 p-6 shadow-sm hover:shadow-md transition-all duration-300 flex flex-col">
             <div className="flex items-center justify-between mb-2">
               <p className="text-xs font-bold text-blue-600 uppercase tracking-wide">Fresh Insights</p>
               <Sparkles size={16} className="text-blue-400" />
@@ -973,52 +973,47 @@ export default function HomePageContent() {
       <Header />
       <main>
         {/* Hero Section */}
-        <section className="relative overflow-hidden bg-[#F8FAFC] pt-6 pb-0">
-          <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-blue-100 rounded-full blur-3xl opacity-40 pointer-events-none"></div>
-          <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-blue-50 rounded-full blur-3xl opacity-30 pointer-events-none"></div>
+        <section className="relative bg-white border-b border-slate-200 pt-10 pb-0">
           <div className="max-w-7xl mx-auto px-6 lg:px-8">
-            <div className="flex flex-col lg:flex-row items-center justify-between gap-4">
-              <div className="flex-1 z-10">
-                <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-50 border border-blue-100 shadow-sm mb-6">
-                  <span className="text-blue-600 text-base" aria-hidden="true">⭐</span>
-                  <span className="font-semibold text-blue-700 text-sm">Built for Finance Freshers</span>
+            <div className="flex flex-col lg:flex-row items-center justify-between gap-10 lg:gap-6">
+              <div className="flex-1 z-10 max-w-xl">
+                <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-md bg-blue-50 border border-blue-100 mb-6">
+                  <BadgeCheck size={14} className="text-blue-600" aria-hidden="true" />
+                  <span className="font-semibold text-blue-700 text-xs uppercase tracking-wide">Built for Finance Freshers</span>
                 </div>
-                <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-[64px] font-extrabold leading-[1.1] tracking-tight text-[#081B4B]">
-                  Finance Jobs & Internships <span className="text-blue-600">for Freshers in India.</span>
+                <h1 className="text-4xl sm:text-5xl md:text-[56px] font-bold leading-[1.15] tracking-tight text-[#081B4B]">
+                  Finance Jobs &amp; Internships <span className="text-blue-600">for Freshers in India</span>
                 </h1>
-                <p className="mt-6 text-lg md:text-2xl leading-relaxed text-slate-600 max-w-[540px]">
+                <p className="mt-6 text-lg leading-relaxed text-slate-600 max-w-[500px]">
                   Entry-level finance jobs, internships, career roadmaps, and learning resources — built exclusively for finance students and fresh graduates.{" "}
-                  <span className="text-blue-600">100% free.</span>
+                  <span className="font-semibold text-[#081B4B]">100% free.</span>
                 </p>
-                <div className="flex flex-wrap gap-4 mt-8">
+                <div className="flex flex-wrap gap-3 mt-8">
                   <Link
                     href="/jobs"
-                    className="bg-blue-600 hover:bg-blue-700 text-white rounded-2xl px-8 py-3.5 font-semibold text-base transition-all shadow-lg shadow-blue-200 inline-flex items-center"
+                    className="bg-blue-600 hover:bg-blue-700 text-white rounded-lg px-7 py-3 font-semibold text-base transition-colors inline-flex items-center gap-2"
                     onClick={() => handleHeroCTA("find_job")}
                   >
-                    Find My First Job →
+                    Find My First Job <ArrowRight size={18} />
                   </Link>
                   <Link
                     href="/internships"
-                    className="bg-white hover:bg-blue-50 text-blue-600 rounded-2xl px-8 py-3.5 font-semibold text-base border-2 border-blue-600 transition-all inline-flex items-center"
+                    className="bg-white hover:bg-slate-50 text-[#081B4B] rounded-lg px-7 py-3 font-semibold text-base border border-slate-300 transition-colors inline-flex items-center gap-2"
                     onClick={() => handleHeroCTA("explore_internships")}
                   >
-                    Explore Internships →
+                    Explore Internships
                   </Link>
                 </div>
               </div>
-              <div className="flex-1 flex justify-center lg:justify-start lg:-ml-52">
-                <div className="relative">
-                  <div className="absolute inset-0 bg-blue-100 blur-3xl opacity-40 rounded-full pointer-events-none"></div>
-                  <Image 
-                    src="/herostudent.png" 
-                    alt="Finance student and fresh graduate ready to start their career in India" 
-                    width={820} 
-                    height={820} 
-                    priority 
-                    className="relative z-20 w-full max-w-[560px] lg:max-w-[820px] drop-shadow-2xl" 
-                  />
-                </div>
+              <div className="flex-1 flex justify-center lg:justify-end">
+                <Image
+                  src="/herostudent.png"
+                  alt="Finance student and fresh graduate ready to start their career in India"
+                  width={820}
+                  height={820}
+                  priority
+                  className="w-full max-w-[420px] lg:max-w-[520px]"
+                />
               </div>
             </div>
           </div>
@@ -1046,12 +1041,12 @@ export default function HomePageContent() {
         </nav>
 
         <StatsSection />
+        <TestimonialSection />
         <TrendingInternships />
         <SkillsSection />
         <ExcelFunctionsSection />
         <FinanceCareerPaths />
         <RoadmapLearningSection />
-        <TestimonialSection />
         <FAQCTASection />
       </main>
 
