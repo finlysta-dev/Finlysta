@@ -46,6 +46,12 @@
       ]
     }
   ],
+  "crons": [
+    {
+      "path": "/api/cron/aggregate-jobs",
+      "schedule": "30 3 * * *"
+    }
+  ],
   "redirects": [
     {
       "source": "/index.html",
