@@ -79,15 +79,28 @@ export const FINANCE_DOMAIN_INCLUDE = [
   "fpna",
 ];
 
+// Terms short/ambiguous enough that a plain substring match produces false
+// positives (e.g. "mis" inside "mission", "commission", "permission").
+// These are matched as whole words instead.
+const WHOLE_WORD_TERMS = new Set(["mis"]);
+
+function matchesTerm(text: string, term: string): boolean {
+  const trimmed = term.trim();
+  if (WHOLE_WORD_TERMS.has(trimmed)) {
+    return new RegExp(`\\b${trimmed}\\b`).test(text);
+  }
+  return text.includes(term);
+}
+
 export function isEntryLevelFinance(title: string, description: string): boolean {
   const text = `${title} ${description}`.toLowerCase();
 
-  const hasExclusion = SENIORITY_EXCLUDE.some((term) => text.includes(term));
+  const hasExclusion = SENIORITY_EXCLUDE.some((term) => matchesTerm(text, term));
   if (hasExclusion) return false;
 
-  const isFinance = FINANCE_DOMAIN_INCLUDE.some((term) => text.includes(term));
+  const isFinance = FINANCE_DOMAIN_INCLUDE.some((term) => matchesTerm(text, term));
   if (!isFinance) return false;
 
-  const isEntryLevel = ENTRY_LEVEL_INCLUDE.some((term) => text.includes(term));
+  const isEntryLevel = ENTRY_LEVEL_INCLUDE.some((term) => matchesTerm(text, term));
   return isEntryLevel;
 }

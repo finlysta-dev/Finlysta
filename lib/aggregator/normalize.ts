@@ -17,7 +17,9 @@ export function buildSlug(job: RawJobPosting): string {
 
 function detectType(title: string, description: string): string {
   const text = `${title} ${description}`.toLowerCase();
-  if (text.includes("intern") || text.includes("internship") || text.includes("articleship")) {
+  // Word boundaries matter here: a plain substring check on "intern" also
+  // matches "international"/"internal"/"internet".
+  if (/\bintern(ship)?\b/.test(text) || /\barticleship\b/.test(text)) {
     return "internship";
   }
   return "job";
