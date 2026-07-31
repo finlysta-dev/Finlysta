@@ -45,25 +45,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: route.priority,
   }));
 
-  const [opportunities, blogs] = await Promise.all([
-    prisma.opportunity.findMany({
-      where: { published: true },
-      select: { slug: true, updatedAt: true, type: true },
-      orderBy: { updatedAt: "desc" },
-    }),
-    prisma.careerResource.findMany({
-      where: { published: true },
-      select: { slug: true, updatedAt: true },
-      orderBy: { updatedAt: "desc" },
-    }).catch(() => []),
-  ]);
-
-  const opportunityEntries: MetadataRoute.Sitemap = opportunities.map((o) => ({
-    url: `${BASE_URL}/jobs/${o.slug}`,
-    lastModified: o.updatedAt,
-    changeFrequency: "daily",
-    priority: o.type === "job" ? 0.85 : 0.8,
-  }));
+  const blogs = await prisma.careerResource.findMany({
+    where: { published: true },
+    select: { slug: true, updatedAt: true },
+    orderBy: { updatedAt: "desc" },
+  }).catch(() => []);
 
   const blogEntries: MetadataRoute.Sitemap = blogs.map((b) => ({
     url: `${BASE_URL}/blogs/${b.slug}`,
@@ -72,5 +58,5 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.65,
   }));
 
-  return [...staticEntries, ...opportunityEntries, ...blogEntries];
+  return [...staticEntries, ...blogEntries];
 }
