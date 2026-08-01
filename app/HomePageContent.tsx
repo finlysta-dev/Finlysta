@@ -58,10 +58,10 @@ const SkillsSection = () => {
     });
   };
   return (
-    <section className="py-8 bg-[#F8FAFC]" aria-labelledby="skills-heading">
+    <section className="py-16 sm:py-20 bg-[#F8FAFC]" aria-labelledby="skills-heading">
       <div className="max-w-7xl mx-auto px-6">
-        <div className="bg-white rounded-xl border border-slate-100 shadow-sm overflow-hidden">
-          <div className="p-6">
+        <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+          <div className="p-6 sm:p-8">
             <div className="text-left mb-6">
               <p className="text-sm font-semibold text-[#2563EB] mb-2">Skills That Get You Hired</p>
               <h2 id="skills-heading" className="text-2xl md:text-3xl font-bold text-[#081B4B]">
@@ -158,7 +158,7 @@ const StatsSection = () => {
     });
   };
   return (
-    <section className="py-10" aria-label="Platform statistics">
+    <section className="py-16 sm:py-20 bg-white" aria-label="Platform statistics">
       <div className="max-w-7xl mx-auto px-6">
         <div className="bg-white border border-slate-200 rounded-xl px-8 py-6 shadow-sm">
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4">
@@ -247,10 +247,10 @@ const ExcelFunctionsSection = () => {
   };
 
   return (
-    <section className="py-12 bg-[#F8FAFC]" aria-labelledby="excel-heading">
+    <section className="py-16 sm:py-20 bg-white" aria-labelledby="excel-heading">
       <div className="max-w-7xl mx-auto px-6">
         <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
-          <div className="p-8">
+          <div className="p-6 sm:p-8">
             <div className="flex items-center gap-3 mb-2">
               <div className="w-10 h-10 rounded-lg bg-blue-600 flex items-center justify-center">
                 <Sigma size={20} className="text-white" />
@@ -284,7 +284,7 @@ const ExcelFunctionsSection = () => {
                 <Link
                   key={index}
                   href="/guides/excel-functions-guide"
-                  className="bg-white border border-slate-200 rounded-xl p-4 hover:shadow-lg transition-all hover:-translate-y-1 cursor-pointer group block"
+                  className="bg-white border border-slate-200 rounded-xl p-4 hover:shadow-md hover:border-blue-200 transition-all hover:-translate-y-0.5 cursor-pointer group block"
                   onClick={handleExploreClick}
                 >
                   <div className="flex items-start gap-3">
@@ -319,9 +319,9 @@ const ExcelFunctionsSection = () => {
 const FinanceCareerPaths = () => {
   const { track } = useTracking();
   const categories = [
-    { title: "Finance & Analysis", subtitle: "Most popular modern finance careers", roles: ["Financial Analyst", "FP&A Analyst", "MIS Analyst", "Investment Finance Analyst"], extraRoles: 1, icon: BarChart3, iconBg: "bg-blue-50", iconColor: "text-blue-600", link: "Explore Finance Roles", bgGradient: "from-blue-50/50 to-white", path: "/jobs?search=Finance" },
-    { title: "Accounting, Audit & Tax", subtitle: "Huge fresher demand in India", roles: ["Article Trainee", "Audit Associate", "Tax Analyst", "Accounting Executive"], extraRoles: 2, icon: Calculator, iconBg: "bg-green-50", iconColor: "text-green-600", link: "Explore Accounting Roles", bgGradient: "from-green-50/50 to-white", path: "/jobs?search=Accounting" },
-    { title: "Banking, Investment & Risk", subtitle: "High aspirational careers", roles: ["Investment Banking Analyst", "Equity Research Analyst", "Credit Analyst", "Risk Analyst"], extraRoles: 1, icon: Landmark, iconBg: "bg-purple-50", iconColor: "text-purple-600", link: "Explore Banking Roles", bgGradient: "from-purple-50/50 to-white", path: "/jobs?search=Banking" },
+    { title: "Finance & Analysis", subtitle: "Most popular modern finance careers", roles: ["Financial Analyst", "FP&A Analyst", "MIS Analyst", "Investment Finance Analyst"], extraRoles: 1, icon: BarChart3, iconBg: "bg-blue-50", iconColor: "text-blue-600", link: "Explore Finance Roles", path: "/jobs?search=Finance" },
+    { title: "Accounting, Audit & Tax", subtitle: "Huge fresher demand in India", roles: ["Article Trainee", "Audit Associate", "Tax Analyst", "Accounting Executive"], extraRoles: 2, icon: Calculator, iconBg: "bg-green-50", iconColor: "text-green-600", link: "Explore Accounting Roles", path: "/jobs?search=Accounting" },
+    { title: "Banking, Investment & Risk", subtitle: "High aspirational careers", roles: ["Investment Banking Analyst", "Equity Research Analyst", "Credit Analyst", "Risk Analyst"], extraRoles: 1, icon: Landmark, iconBg: "bg-purple-50", iconColor: "text-purple-600", link: "Explore Banking Roles", path: "/jobs?search=Banking" },
   ];
   const handleCareerPathClick = (categoryTitle: string, path: string) => {
     track("Career Path Clicked", {
@@ -337,7 +337,7 @@ const FinanceCareerPaths = () => {
     });
   };
   return (
-    <section className="py-12 bg-[#F8FAFC]" aria-labelledby="career-paths-heading">
+    <section className="py-16 sm:py-20 bg-[#F8FAFC]" aria-labelledby="career-paths-heading">
       <div className="max-w-7xl mx-auto px-6">
         <div className="flex flex-col lg:flex-row gap-8">
           <div className="lg:w-[280px] flex-shrink-0">
@@ -356,7 +356,7 @@ const FinanceCareerPaths = () => {
                   <Link
                     key={index}
                     href={item.path}
-                    className={`bg-gradient-to-b ${item.bgGradient} border border-slate-200 rounded-xl p-5 shadow-sm hover:shadow-lg transition-all duration-300 hover:-translate-y-1 cursor-pointer block`}
+                    className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm hover:shadow-md hover:border-blue-200 transition-all duration-300 hover:-translate-y-0.5 cursor-pointer block"
                     onClick={() => handleCareerPathClick(item.title, item.path)}
                   >
                     <div className="flex items-start justify-between gap-3">
@@ -425,11 +425,11 @@ const RoadmapLearningSection = () => {
     track(event, { location: "homepage_learning_section", timestamp: new Date().toISOString(), ...extra });
   };
   return (
-    <section className="py-12 bg-[#F8FAFC]" aria-labelledby="learning-heading">
+    <section className="py-16 sm:py-20 bg-white" aria-labelledby="learning-heading">
       <div className="max-w-7xl mx-auto px-6">
         <h2 id="learning-heading" className="sr-only">Learning resources and career blogs</h2>
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <div className="bg-white rounded-xl border border-blue-100 p-4 shadow-sm hover:shadow-md transition-all duration-300 flex flex-col relative overflow-hidden">
+          <div className="bg-white rounded-xl border border-slate-200 p-4 shadow-sm hover:shadow-md transition-all duration-300 flex flex-col relative overflow-hidden">
             <div className="flex items-center gap-2 mb-1 relative z-10">
               <GraduationCap size={16} className="text-blue-600" />
               <p className="text-xs font-bold text-blue-600 uppercase tracking-wide">Proven Path</p>
@@ -451,7 +451,7 @@ const RoadmapLearningSection = () => {
               </Link>
             </div>
           </div>
-          <div className="bg-white rounded-xl border border-blue-100 p-6 shadow-sm hover:shadow-md transition-all duration-300 flex flex-col">
+          <div className="bg-white rounded-xl border border-slate-200 p-6 shadow-sm hover:shadow-md transition-all duration-300 flex flex-col">
             <div className="flex items-center justify-between mb-2">
               <p className="text-xs font-bold text-blue-600 uppercase tracking-wide">Best Learning Hub Categories</p>
               <BookOpen size={16} className="text-blue-400" />
@@ -497,7 +497,7 @@ const RoadmapLearningSection = () => {
               </div>
             </div>
           </div>
-          <div className="bg-white rounded-xl border border-blue-100 p-6 shadow-sm hover:shadow-md transition-all duration-300 flex flex-col">
+          <div className="bg-white rounded-xl border border-slate-200 p-6 shadow-sm hover:shadow-md transition-all duration-300 flex flex-col">
             <div className="flex items-center justify-between mb-2">
               <p className="text-xs font-bold text-blue-600 uppercase tracking-wide">Fresh Insights</p>
               <Sparkles size={16} className="text-blue-400" />
@@ -571,7 +571,7 @@ const TestimonialSection = () => {
   ];
 
   return (
-    <section className="py-12 bg-[#F8FAFC]" aria-label="Student testimonials">
+    <section className="py-16 sm:py-20 bg-white" aria-label="Student testimonials">
       <div className="max-w-7xl mx-auto px-6">
         <div className="flex justify-center mb-6">
           <p className="text-sm font-bold text-[#081B4B] bg-blue-50 px-4 py-1.5 rounded-full">Loved by Finance Freshers</p>
@@ -1041,8 +1041,8 @@ export default function HomePageContent() {
         </nav>
 
         <StatsSection />
-        <TestimonialSection />
         <TrendingInternships />
+        <TestimonialSection />
         <SkillsSection />
         <ExcelFunctionsSection />
         <FinanceCareerPaths />
