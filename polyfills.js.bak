@@ -1,0 +1,47 @@
+// polyfills.js
+// Polyfill for globalThis (works in both Node.js and browser)
+
+(function() {
+  // Check if globalThis is already defined
+  if (typeof globalThis !== 'undefined') {
+    return;
+  }
+
+  // For Node.js environment
+  if (typeof global !== 'undefined') {
+    // @ts-ignore
+    global.globalThis = global;
+    return;
+  }
+
+  // For browser environment
+  if (typeof window !== 'undefined') {
+    // @ts-ignore
+    window.globalThis = window;
+    return;
+  }
+
+  // For web workers
+  if (typeof self !== 'undefined') {
+    // @ts-ignore
+    self.globalThis = self;
+    return;
+  }
+
+  // Fallback
+  // @ts-ignore
+  Function('return this')().globalThis = Function('return this')();
+})();
+
+// Ensure self is defined (for some packages)
+if (typeof self === 'undefined') {
+  if (typeof global !== 'undefined') {
+    // @ts-ignore
+    var self = global;
+  } else if (typeof window !== 'undefined') {
+    // @ts-ignore
+    var self = window;
+  }
+}
+
+console.log('Polyfills loaded - environment:', typeof global !== 'undefined' ? 'Node.js' : 'Browser');

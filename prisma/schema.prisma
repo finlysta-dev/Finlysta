@@ -1,0 +1,934 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+// =============================================
+// USER MODEL - SINGLE DEFINITION
+// =============================================
+
+model User {
+  id           String   @id @default(cuid())
+  name         String
+  email        String   @unique
+  password     String?  // Made optional for OAuth users
+  role         UserRole @default(USER)
+  emailVerified Boolean @default(false)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  lastLoginAt  DateTime?
+  profileImage String?
+  
+  // NextAuth OAuth relations
+  accounts     Account[]
+  sessions     Session[]
+  
+  // App relations
+  savedJobs    SavedJob[]
+  applications JobApplication[]
+
+  @@index([email])
+  @@index([role])
+  @@index([createdAt])
+}
+
+enum UserRole {
+  USER
+  ADMIN
+  EMPLOYER
+}
+
+// =============================================
+// NEXTAUTH MODELS
+// =============================================
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@index([userId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([sessionToken])
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+// =============================================
+// SAVED JOB - Updated to reference User
+// =============================================
+
+model SavedJob {
+  id        String   @id @default(cuid())
+  userId    String
+  jobId     String
+  savedAt   DateTime @default(now())
+  createdAt DateTime @default(now())
+  
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  job       Job      @relation(fields: [jobId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, jobId])
+  @@index([userId])
+  @@index([jobId])
+  @@index([savedAt])
+}
+
+// =============================================
+// JOB APPLICATION - Updated to reference User
+// =============================================
+
+model JobApplication {
+  id              String    @id @default(cuid())
+  jobId           String
+  userId          String?
+  applicantName   String
+  applicantEmail  String
+  applicantPhone  String?
+  resumeUrl       String?
+  coverLetter     String?
+  status          String    @default("pending")
+  appliedAt       DateTime  @default(now())
+  reviewedAt      DateTime?
+  notes           String?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  
+  job             Job       @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  user            User?     @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([jobId])
+  @@index([userId])
+  @@index([applicantEmail])
+  @@index([status])
+  @@index([appliedAt])
+}
+
+// =============================================
+// OPPORTUNITY MODELS
+// =============================================
+
+model Opportunity {
+  id               String             @id @default(cuid())
+  slug             String             @unique
+  title            String
+  company          String
+  companyLogo      String?
+  aboutCompany     String?
+  type             String
+  workMode         String
+  location         String
+  city             String?
+  state            String?
+  country          String?
+  experience       String?
+  duration         String?
+  salary           String?
+  skills           String[]
+  overview         String?
+  shortDescription String?
+  responsibilities String?
+  qualifications   String?
+  benefits         String?
+  applyLink        String
+  isNew            Boolean            @default(true)
+  status           String?            @default("active")
+  featured         Boolean            @default(false)
+  isVerified       Boolean            @default(false)
+  isTrending       Boolean            @default(false)
+  isActivelyHiring Boolean            @default(true)
+  published        Boolean            @default(true)
+  postedAt         DateTime           @default(now())
+  postedTime       String?
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt
+  deadline         DateTime?
+  views            Int                @default(0)
+  applyClicks      Int                @default(0)
+  clicksLog        OpportunityClick[]
+  viewsLog         OpportunityView[]
+
+  posterToken      String?
+  posterEmail      String?
+  posterName      String?
+  posterPhone      String?
+  companyWebsite   String?
+
+  analyticsViews   AnalyticsOpportunityView[]
+  analyticsClicks  AnalyticsOpportunityClick[]
+
+  @@index([type])
+  @@index([slug])
+  @@index([location])
+  @@index([city])
+  @@index([workMode])
+  @@index([postedAt])
+  @@index([isTrending])
+  @@index([isVerified])
+  @@index([published])
+  @@index([status])
+  @@index([featured])
+  @@index([posterToken])
+  @@index([posterEmail])
+}
+
+model OpportunityView {
+  id            String      @id @default(cuid())
+  opportunityId String
+  sessionId     String?
+  viewedAt      DateTime    @default(now())
+  opportunity   Opportunity @relation(fields: [opportunityId], references: [id], onDelete: Cascade)
+
+  @@index([opportunityId])
+  @@index([viewedAt])
+  @@index([sessionId])
+}
+
+model OpportunityClick {
+  id            String      @id @default(cuid())
+  opportunityId String
+  sessionId     String?
+  clickedAt     DateTime    @default(now())
+  opportunity   Opportunity @relation(fields: [opportunityId], references: [id], onDelete: Cascade)
+
+  @@index([opportunityId])
+  @@index([clickedAt])
+  @@index([sessionId])
+}
+
+// =============================================
+// SYSTEM STATS
+// =============================================
+
+model SystemStat {
+  id        String   @id @default(cuid())
+  label     String
+  value     String
+  icon      String?
+  order     Int      @default(0)
+  isActive  Boolean  @default(true)
+  updatedAt DateTime @updatedAt
+
+  @@index([isActive])
+  @@index([order])
+}
+
+// =============================================
+// CAREER RESOURCES
+// =============================================
+
+model CareerResource {
+  id            String   @id @default(cuid())
+  title         String
+  slug          String   @unique
+  excerpt       String
+  content       String?
+  category      String
+  coverImage    String?
+  published     Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  fileUrl       String?
+  link          String?
+  type          String?  @default("text")
+  downloadCount Int      @default(0)
+  shortDescription String?
+
+  @@index([category])
+  @@index([published])
+  @@index([slug])
+}
+
+// =============================================
+// VISITOR
+// =============================================
+
+model Visitor {
+  id        String   @id @default(cuid())
+  sessionId String
+  page      String?
+  referrer  String?
+  userAgent String?
+  ipAddress String?
+  createdAt DateTime @default(now())
+
+  @@index([sessionId])
+  @@index([createdAt])
+  @@index([page])
+}
+
+// =============================================
+// CONTACT MESSAGE
+// =============================================
+
+model ContactMessage {
+  id        String    @id @default(cuid())
+  name      String
+  email     String
+  userType  String
+  subject   String
+  message   String
+  company   String?
+  createdAt DateTime  @default(now())
+  status    String    @default("NEW")
+  reply     String?
+  repliedAt DateTime?
+  repliedBy String?
+
+  @@index([status])
+  @@index([createdAt])
+  @@index([email])
+}
+
+// =============================================
+// ADMIN
+// =============================================
+
+model Admin {
+  id        String    @id @default(cuid())
+  email     String    @unique
+  password  String
+  name      String?
+  role      String    @default("ADMIN")
+  createdAt DateTime  @default(now())
+  lastLogin DateTime?
+
+  @@index([email])
+  @@index([role])
+}
+
+// =============================================
+// DAILY STAT
+// =============================================
+
+model DailyStat {
+  id                String   @id @default(cuid())
+  date              DateTime @unique
+  totalVisitors     Int      @default(0)
+  totalViews        Int      @default(0)
+  totalClicks       Int      @default(0)
+  applications      Int      @default(0)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  newSubscribers    Int      @default(0)
+  blogClicks        Int      @default(0)
+  blogViews         Int      @default(0)
+  uniqueBlogReaders Int      @default(0)
+
+  @@index([date])
+}
+
+// =============================================
+// BLOG MODELS
+// =============================================
+
+model Blog {
+  id          String   @id @default(cuid())
+  title       String
+  slug        String   @unique
+  content     String?
+  excerpt     String?
+  shortDescription String?
+  coverImage  String?
+  author      String?  @default("Admin")
+  category    String?
+  tags        String[]
+  published   Boolean  @default(true)
+  publishedAt DateTime @default(now())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  views       Int      @default(0)
+  clicks      Int      @default(0)
+  avgReadTime Int?
+  
+  blogViews   BlogView[]
+  blogClicks  BlogClick[]
+  
+  @@index([slug])
+  @@index([published])
+  @@index([category])
+  @@index([publishedAt])
+  @@index([author])
+}
+
+model BlogView {
+  id        String   @id @default(cuid())
+  blogId    String
+  sessionId String?
+  ipAddress String?
+  userAgent String?
+  referrer  String?
+  readTime  Int?
+  viewedAt  DateTime @default(now())
+  
+  blog      Blog     @relation(fields: [blogId], references: [id], onDelete: Cascade)
+  
+  @@index([blogId])
+  @@index([sessionId])
+  @@index([viewedAt])
+}
+
+model BlogClick {
+  id        String   @id @default(cuid())
+  blogId    String
+  sessionId String?
+  targetUrl String
+  linkText  String?
+  linkType  String?
+  clickedAt DateTime @default(now())
+  
+  blog      Blog     @relation(fields: [blogId], references: [id], onDelete: Cascade)
+  
+  @@index([blogId])
+  @@index([sessionId])
+  @@index([clickedAt])
+}
+
+// =============================================
+// SUBSCRIBER MODELS
+// =============================================
+
+model Subscriber {
+  id               String            @id @default(cuid())
+  email            String            @unique
+  createdAt        DateTime          @default(now())
+  clickCount       Int               @default(0)
+  emailCount       Int               @default(0)
+  ipAddress        String?
+  lastEmailSent    DateTime?
+  name             String?
+  openCount        Int               @default(0)
+  preferences      Json?
+  source           String?
+  status           String            @default("ACTIVE")
+  subscribedAt     DateTime          @default(now())
+  unsubscribedAt   DateTime?
+  updatedAt        DateTime          @updatedAt
+  userAgent        String?
+  frequency        String?
+  interestedIn     String?
+  emailLogs        EmailLog[]
+  newsletterEmails NewsletterEmail[]
+
+  @@index([email])
+  @@index([status])
+  @@index([subscribedAt])
+  @@index([interestedIn])
+  @@index([frequency])
+}
+
+model NewsletterCampaign {
+  id                String            @id @default(cuid())
+  title             String
+  subject           String
+  content           String
+  previewText       String?
+  status            String            @default("DRAFT")
+  scheduledFor      DateTime?
+  sentAt            DateTime?
+  targetAudience    String?
+  totalSent         Int               @default(0)
+  totalOpened       Int               @default(0)
+  totalClicked      Int               @default(0)
+  totalUnsubscribed Int               @default(0)
+  createdBy         String?
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+  emails            NewsletterEmail[]
+
+  @@index([status])
+  @@index([sentAt])
+  @@index([scheduledFor])
+}
+
+model NewsletterEmail {
+  id           String             @id @default(cuid())
+  campaignId   String
+  subscriberId String
+  status       String             @default("PENDING")
+  sentAt       DateTime?
+  openedAt     DateTime?
+  clickedAt    DateTime?
+  openedCount  Int                @default(0)
+  clickedCount Int                @default(0)
+  userAgent    String?
+  ipAddress    String?
+  createdAt    DateTime           @default(now())
+  updatedAt    DateTime           @updatedAt
+  campaign     NewsletterCampaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  subscriber   Subscriber         @relation(fields: [subscriberId], references: [id], onDelete: Cascade)
+
+  @@index([campaignId])
+  @@index([subscriberId])
+  @@index([status])
+  @@index([sentAt])
+}
+
+model EmailLog {
+  id           String     @id @default(cuid())
+  subscriberId String
+  emailType    String
+  subject      String
+  status       String
+  errorMessage String?
+  sentAt       DateTime   @default(now())
+  subscriber   Subscriber @relation(fields: [subscriberId], references: [id], onDelete: Cascade)
+
+  @@index([subscriberId])
+  @@index([sentAt])
+  @@index([status])
+}
+
+// =============================================
+// FEEDBACK
+// =============================================
+
+model Feedback {
+  id         String    @id @default(cuid())
+  name       String    @default("Anonymous")
+  email      String?
+  rating     Int
+  comment    String    @default("")
+  page       String    @default("/")
+  sessionId  String?
+  category   String?
+  userAgent  String?
+  ipAddress  String?
+  country    String?
+  device     String?
+  status     String    @default("NEW")
+  adminNotes String?
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  reviewedAt DateTime?
+  reviewedBy String?
+
+  @@index([rating])
+  @@index([status])
+  @@index([createdAt])
+  @@index([page])
+  @@index([category])
+  @@index([sessionId])
+}
+
+// =============================================
+// COMPANY MODELS
+// =============================================
+
+model Company {
+  id               String            @id @default(cuid())
+  slug             String            @unique
+  name             String
+  logo             String?
+  website          String?
+  linkedinUrl      String?
+  email            String
+  description      String?
+  about            String?
+  foundedYear      Int?
+  companySize      String?
+  headquarters     String?
+  industry         String?
+  specialties      String[]
+  socialLinks      Json?
+  isVerified       Boolean           @default(false)
+  isActive         Boolean           @default(true)
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+  
+  recruiters       Recruiter[]
+  jobs             Job[]
+  companyJobs      CompanyJob[]
+
+  @@index([name])
+  @@index([slug])
+  @@index([industry])
+  @@index([isVerified])
+  @@index([isActive])
+  @@index([headquarters])
+}
+
+// =============================================
+// RECRUITER MODELS
+// =============================================
+
+model Recruiter {
+  id                 String          @id @default(cuid())
+  userId             String?         @unique
+  email              String          @unique
+  password           String?
+  name               String
+  companyId          String?
+  companyName        String
+  companyLogo        String?
+  companyWebsite     String?
+  companyLinkedin    String?
+  companyEmail       String
+  companyDescription String?
+  recruiterContact   String?
+  isVerified         Boolean         @default(false)
+  isActive           Boolean         @default(true)
+  role               String          @default("RECRUITER")
+  lastLogin          DateTime?
+  createdAt          DateTime        @default(now())
+  updatedAt          DateTime        @updatedAt
+  
+  company            Company?        @relation(fields: [companyId], references: [id], onDelete: SetNull)
+  jobs               Job[]
+  recruiterJobs      RecruiterJob[]
+  employerPlan       EmployerPlan?
+
+  @@index([email])
+  @@index([companyId])
+  @@index([companyName])
+  @@index([isVerified])
+  @@index([isActive])
+  @@index([role])
+}
+
+// =============================================
+// JOB MODELS
+// =============================================
+
+model Job {
+  id                  String          @id @default(cuid())
+  slug                String          @unique
+  recruiterId         String
+  companyId           String?
+  
+  jobTitle            String
+  hiringFor           String
+  jobType             String?
+  workMode            String?
+  location            String
+  numberOfOpenings    Int             @default(1)
+  salaryStipend       String
+  applicationDeadline DateTime?
+  joiningTimeline     String?
+  isFresherSuitable   Boolean         @default(true)
+  
+  eligibleEducation   String?
+  graduationYear      String?
+  experienceRequired  String?
+  skillsRequired      String[]
+  
+  responsibilities    String
+  requirements        String
+  niceToHave          String?
+  whyJoinTeam         String?
+  
+  applicationProcess  String          @default("finlysta")
+  applicationEmail    String?
+  externalLink        String?
+  additionalInstructions String?
+  
+  isGenuine           Boolean         @default(false)
+  termsAccepted       Boolean         @default(false)
+  status              String          @default("pending")
+  showOnTrending      Boolean         @default(false)
+  showOnJobs          Boolean         @default(true)
+  
+  views               Int             @default(0)
+  applicationsCount   Int             @default(0)
+  postedAt            DateTime        @default(now())
+  approvedAt          DateTime?
+  publishedAt         DateTime?
+  expiryDate          DateTime?
+  createdAt           DateTime        @default(now())
+  updatedAt           DateTime        @updatedAt
+  
+  recruiter           Recruiter       @relation(fields: [recruiterId], references: [id], onDelete: Cascade)
+  company             Company?        @relation(fields: [companyId], references: [id], onDelete: SetNull)
+  recruiterJobs       RecruiterJob[]
+  companyJobs         CompanyJob[]
+  jobSkills           JobSkill[]
+  jobApplications     JobApplication[]
+  jobViews            JobView[]
+  jobClicks           JobClick[]
+  savedJobs           SavedJob[]
+  
+  analyticsJobViews   AnalyticsJobView[]
+  analyticsApplyClicks AnalyticsApplyClick[]
+
+  @@index([recruiterId])
+  @@index([companyId])
+  @@index([slug])
+  @@index([status])
+  @@index([showOnTrending])
+  @@index([showOnJobs])
+  @@index([jobTitle])
+  @@index([hiringFor])
+  @@index([location])
+  @@index([workMode])
+  @@index([postedAt])
+  @@index([applicationDeadline])
+  @@index([expiryDate])
+}
+
+// =============================================
+// JUNCTION TABLES
+// =============================================
+
+model CompanyJob {
+  id        String   @id @default(cuid())
+  companyId String
+  jobId     String
+  status    String   @default("active")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  company   Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  job       Job      @relation(fields: [jobId], references: [id], onDelete: Cascade)
+
+  @@unique([companyId, jobId])
+  @@index([companyId])
+  @@index([jobId])
+  @@index([status])
+}
+
+model RecruiterJob {
+  id          String   @id @default(cuid())
+  recruiterId String
+  jobId       String
+  status      String   @default("active")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  recruiter   Recruiter @relation(fields: [recruiterId], references: [id], onDelete: Cascade)
+  job         Job       @relation(fields: [jobId], references: [id], onDelete: Cascade)
+
+  @@unique([recruiterId, jobId])
+  @@index([recruiterId])
+  @@index([jobId])
+  @@index([status])
+}
+
+model JobSkill {
+  id        String   @id @default(cuid())
+  jobId     String
+  skillName String
+  createdAt DateTime @default(now())
+  
+  job       Job      @relation(fields: [jobId], references: [id], onDelete: Cascade)
+
+  @@unique([jobId, skillName])
+  @@index([jobId])
+  @@index([skillName])
+}
+
+// =============================================
+// JOB ANALYTICS
+// =============================================
+
+model JobView {
+  id        String   @id @default(cuid())
+  jobId     String
+  sessionId String?
+  ipAddress String?
+  userAgent String?
+  viewedAt  DateTime @default(now())
+  
+  job       Job      @relation(fields: [jobId], references: [id], onDelete: Cascade)
+
+  @@index([jobId])
+  @@index([sessionId])
+  @@index([viewedAt])
+}
+
+model JobClick {
+  id        String   @id @default(cuid())
+  jobId     String
+  sessionId String?
+  targetUrl String?
+  clickedAt DateTime @default(now())
+  
+  job       Job      @relation(fields: [jobId], references: [id], onDelete: Cascade)
+
+  @@index([jobId])
+  @@index([sessionId])
+  @@index([clickedAt])
+}
+
+model JobAlert {
+  id          String   @id @default(cuid())
+  email       String
+  jobTitle    String?
+  location    String?
+  jobType     String?
+  frequency   String   @default("daily")
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  lastSentAt  DateTime?
+
+  @@index([email])
+  @@index([isActive])
+  @@index([frequency])
+}
+
+// =============================================
+// EMPLOYER PLAN
+// =============================================
+
+model EmployerPlan {
+  id          String   @id @default(cuid())
+  recruiterId String   @unique
+  planType    String   @default("free")
+  jobCredits  Int      @default(5)
+  usedCredits Int      @default(0)
+  expiresAt   DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  recruiter   Recruiter @relation(fields: [recruiterId], references: [id], onDelete: Cascade)
+
+  @@index([recruiterId])
+  @@index([planType])
+  @@index([expiresAt])
+}
+
+// =============================================
+// ANALYTICS MODELS
+// =============================================
+
+model AnalyticsVisitor {
+  id          String   @id @default(cuid())
+  visitorId   String   @unique
+  firstSeen   DateTime @default(now())
+  lastSeen    DateTime @updatedAt
+  isInternal  Boolean  @default(false)
+  userAgent   String?
+  ipAddress   String?
+  
+  pageViews          AnalyticsPageView[]
+  opportunityViews   AnalyticsOpportunityView[]
+  opportunityClicks  AnalyticsOpportunityClick[]
+  jobViews           AnalyticsJobView[]
+  applyClicks        AnalyticsApplyClick[]
+
+  @@index([visitorId])
+  @@index([isInternal])
+  @@index([firstSeen])
+}
+
+model AnalyticsPageView {
+  id        String   @id @default(cuid())
+  visitorId String
+  visitor   AnalyticsVisitor @relation(fields: [visitorId], references: [id], onDelete: Cascade)
+  path      String
+  timestamp DateTime @default(now())
+  referrer  String?
+
+  @@index([visitorId])
+  @@index([timestamp])
+  @@index([path])
+}
+
+model AnalyticsOpportunityView {
+  id            String   @id @default(cuid())
+  opportunityId String
+  visitorId     String
+  visitor       AnalyticsVisitor @relation(fields: [visitorId], references: [id], onDelete: Cascade)
+  timestamp     DateTime @default(now())
+  
+  opportunity   Opportunity @relation(fields: [opportunityId], references: [id], onDelete: Cascade)
+
+  @@index([opportunityId])
+  @@index([visitorId])
+  @@index([timestamp])
+}
+
+model AnalyticsOpportunityClick {
+  id            String   @id @default(cuid())
+  opportunityId String
+  visitorId     String
+  visitor       AnalyticsVisitor @relation(fields: [visitorId], references: [id], onDelete: Cascade)
+  timestamp     DateTime @default(now())
+  
+  opportunity   Opportunity @relation(fields: [opportunityId], references: [id], onDelete: Cascade)
+
+  @@index([opportunityId])
+  @@index([visitorId])
+  @@index([timestamp])
+}
+
+model AnalyticsJobView {
+  id        String   @id @default(cuid())
+  jobId     String
+  visitorId String
+  visitor   AnalyticsVisitor @relation(fields: [visitorId], references: [id], onDelete: Cascade)
+  timestamp DateTime @default(now())
+  
+  job       Job      @relation(fields: [jobId], references: [id], onDelete: Cascade)
+
+  @@index([jobId])
+  @@index([visitorId])
+  @@index([timestamp])
+}
+
+model AnalyticsApplyClick {
+  id        String   @id @default(cuid())
+  jobId     String
+  visitorId String
+  visitor   AnalyticsVisitor @relation(fields: [visitorId], references: [id], onDelete: Cascade)
+  timestamp DateTime @default(now())
+  
+  job       Job      @relation(fields: [jobId], references: [id], onDelete: Cascade)
+
+  @@index([jobId])
+  @@index([visitorId])
+  @@index([timestamp])
+}
+
+model AnalyticsDailyMetric {
+  id                String   @id @default(cuid())
+  date              DateTime @unique
+  totalVisitors     Int      @default(0)
+  uniqueVisitors    Int      @default(0)
+  opportunityViews  Int      @default(0)
+  opportunityClicks Int      @default(0)
+  jobViews          Int      @default(0)
+  applyClicks       Int      @default(0)
+  activeJobs        Int      @default(0)
+  activeInternships Int      @default(0)
+  totalOpportunities Int     @default(0)
+  addedToday        Int      @default(0)
+  addedThisWeek     Int      @default(0)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  @@index([date])
+}
