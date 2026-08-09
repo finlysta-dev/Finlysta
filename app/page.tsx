@@ -54,31 +54,7 @@ const interviewTopics = [
     title: "Advanced Excel Interview Questions",
     description:
       "Test your knowledge of formulas, lookup functions, Pivot Tables and more.",
-  },
-  {
-    title: "Excel Interview Questions for Freshers",
-    description:
-      "Prepare for common Excel questions asked in entry-level interviews.",
-  },
-  {
-    title: "Excel Scenario-Based Questions",
-    description:
-      "Practice solving realistic business and workplace Excel problems.",
-  },
-  {
-    title: "Excel Practical Test",
-    description:
-      "Move beyond theory and solve hands-on Excel tasks.",
-  },
-  {
-    title: "Excel Assessment Test",
-    description:
-      "Prepare for spreadsheet assessments used during hiring.",
-  },
-  {
-    title: "Excel Questions for Financial Analysts",
-    description:
-      "Practice Excel questions relevant to finance and analyst roles.",
+    href: "/interview-prep",
   },
 ];
 
@@ -141,10 +117,14 @@ export default function Home() {
         <div className="mx-auto flex max-w-7xl items-center justify-between px-5 py-4 sm:px-6 lg:px-8">
           <a
             href="/"
-            className="text-2xl font-extrabold tracking-tight text-slate-950 sm:text-3xl"
+            className="flex items-center gap-3"
             aria-label="Finlysta home"
           >
-            Finlysta
+            <img
+              src="/Finlysta.png"
+              alt="Finlysta Logo"
+              className="h-16 w-30 rounded-lg object-contain md:h-10 md:w-30"
+            />
           </a>
 
           <nav
@@ -171,6 +151,46 @@ export default function Home() {
             >
               How It Works
             </a>
+
+            {/* Excel Functions Dropdown */}
+            <div className="group relative">
+              <button className="flex items-center gap-1 text-slate-700 transition hover:text-blue-600">
+                Excel Functions
+                <svg
+                  className="h-4 w-4 transition-transform group-hover:rotate-180"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M19 9l-7 7-7-7"
+                  />
+                </svg>
+              </button>
+              <div className="absolute left-0 mt-2 w-48 rounded-lg border border-slate-200 bg-white py-2 shadow-lg opacity-0 invisible transition-all group-hover:opacity-100 group-hover:visible">
+                <a
+                  href="/excel-functions/vlookup"
+                  className="block px-4 py-2 text-sm text-slate-700 transition hover:bg-blue-50 hover:text-blue-600"
+                >
+                  VLOOKUP
+                </a>
+                <a
+                  href="/excel-functions/index-match"
+                  className="block px-4 py-2 text-sm text-slate-700 transition hover:bg-blue-50 hover:text-blue-600"
+                >
+                  INDEX MATCH
+                </a>
+                <a
+                  href="/excel-functions/sumifs"
+                  className="block px-4 py-2 text-sm text-slate-700 transition hover:bg-blue-50 hover:text-blue-600"
+                >
+                  SUMIFS
+                </a>
+              </div>
+            </div>
           </nav>
 
           <a
@@ -465,7 +485,7 @@ export default function Home() {
             {interviewTopics.map((topic) => (
               <a
                 key={topic.title}
-                href="/practice"
+                href={topic.href}
                 className="rounded-xl border border-slate-200 bg-white p-5 transition hover:border-blue-300 hover:bg-blue-50"
               >
                 <h3 className="font-bold text-slate-900">
@@ -477,7 +497,7 @@ export default function Home() {
                 </p>
 
                 <span className="mt-4 inline-block text-sm font-bold text-blue-600">
-                  Practice →
+                  Explore →
                 </span>
               </a>
             ))}
@@ -517,33 +537,47 @@ export default function Home() {
       {/* FAQ */}
       <section>
         <div className="mx-auto max-w-4xl px-5 py-16 sm:px-6 sm:py-20">
-          <p className="text-sm font-bold uppercase tracking-wider text-blue-600">
-            FAQ
-          </p>
+          <div className="text-center">
+            <p className="text-sm font-bold uppercase tracking-wider text-blue-600">
+              FAQ
+            </p>
 
-          <h2 className="mt-3 text-3xl font-extrabold tracking-tight sm:text-4xl">
-            Frequently Asked Questions
-          </h2>
+            <h2 className="mt-3 text-3xl font-extrabold tracking-tight sm:text-4xl">
+              Frequently Asked Questions
+            </h2>
 
-          <div className="mt-10 space-y-4">
-            {faqs.map((faq) => (
+            <p className="mx-auto mt-4 max-w-2xl text-slate-600">
+              Find answers to common questions about Finlysta and Excel practice.
+            </p>
+          </div>
+
+          <div className="mt-12 space-y-4">
+            {faqs.map((faq, index) => (
               <details
-                key={faq.question}
-                className="group rounded-xl border border-slate-200 bg-white p-5"
+                key={index}
+                className="group rounded-xl border border-slate-200 bg-white shadow-sm transition hover:border-blue-200 hover:shadow-md"
               >
-                <summary className="cursor-pointer list-none pr-6 font-bold text-slate-900">
-                  {faq.question}
-                  <span className="float-right text-blue-600 group-open:hidden">
-                    +
-                  </span>
-                  <span className="float-right hidden text-blue-600 group-open:inline">
-                    −
-                  </span>
+                <summary className="cursor-pointer list-none px-6 py-5 font-semibold text-slate-900 transition group-hover:text-blue-600">
+                  <div className="flex items-center justify-between gap-4">
+                    <span className="flex items-center gap-3">
+                      <span className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-50 text-sm font-bold text-blue-600 group-hover:bg-blue-100">
+                        {String(index + 1).padStart(2, '0')}
+                      </span>
+                      {faq.question}
+                    </span>
+                    <span className="flex h-8 w-8 items-center justify-center rounded-full bg-slate-100 text-xl text-slate-500 transition group-open:rotate-45 group-hover:bg-blue-100 group-hover:text-blue-600">
+                      +
+                    </span>
+                  </div>
                 </summary>
 
-                <p className="mt-4 leading-7 text-slate-600">
-                  {faq.answer}
-                </p>
+                <div className="px-6 pb-5 pt-2">
+                  <div className="border-t border-slate-100 pt-4">
+                    <p className="leading-7 text-slate-600">
+                      {faq.answer}
+                    </p>
+                  </div>
+                </div>
               </details>
             ))}
           </div>
@@ -573,40 +607,103 @@ export default function Home() {
 
       {/* Footer */}
       <footer className="border-t border-slate-200 bg-white">
-        <div className="mx-auto max-w-7xl px-5 py-10 sm:px-6 lg:px-8">
-          <div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
-            <div>
-              <a
-                href="/"
-                className="text-3xl font-extrabold tracking-tight text-slate-950"
-              >
-                Finlysta
+        <div className="mx-auto max-w-7xl px-5 py-12 sm:px-6 lg:px-8">
+          <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
+            {/* Brand */}
+            <div className="sm:col-span-2 lg:col-span-1">
+              <a href="/" className="flex items-center gap-3">
+                <img
+                  src="/Finlysta.png"
+                  alt="Finlysta Logo"
+                  className="h-16 w-30 rounded-lg object-contain md:h-10 md:w-30"
+                />
               </a>
-
-              <p className="mt-2 text-base font-semibold text-slate-600 sm:text-lg">
+              <p className="mt-3 text-sm text-slate-600">
                 Practice skills. Get interview ready.
               </p>
             </div>
 
-            <div className="flex gap-6 text-sm font-semibold text-slate-500">
-              <a
-                href="/privacy"
-                className="transition hover:text-slate-900"
-              >
-                Privacy
-              </a>
+            {/* Practice */}
+            <div>
+              <h3 className="text-sm font-semibold uppercase tracking-wider text-slate-900">
+                Practice
+              </h3>
+              <ul className="mt-4 space-y-3">
+                <li>
+                  <a
+                    href="/practice"
+                    className="text-sm text-slate-500 transition hover:text-blue-600"
+                  >
+                    Excel Practice
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="/assessment"
+                    className="text-sm text-slate-500 transition hover:text-blue-600"
+                  >
+                    Excel Assessment
+                  </a>
+                </li>
+              </ul>
+            </div>
 
-              <a
-                href="/contact"
-                className="transition hover:text-slate-900"
-              >
-                Contact
-              </a>
+            {/* Interview Prep */}
+            <div>
+              <h3 className="text-sm font-semibold uppercase tracking-wider text-slate-900">
+                Interview Prep
+              </h3>
+              <ul className="mt-4 space-y-3">
+                <li>
+                  <a
+                    href="/interview-prep"
+                    className="text-sm text-slate-500 transition hover:text-blue-600"
+                  >
+                    Advanced Excel Interview Questions
+                  </a>
+                </li>
+              </ul>
+            </div>
+
+            {/* Company */}
+            <div>
+              <h3 className="text-sm font-semibold uppercase tracking-wider text-slate-900">
+                Company
+              </h3>
+              <ul className="mt-4 space-y-3">
+                <li>
+                  <a
+                    href="/about"
+                    className="text-sm text-slate-500 transition hover:text-blue-600"
+                  >
+                    About Us
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="/contact"
+                    className="text-sm text-slate-500 transition hover:text-blue-600"
+                  >
+                    Contact Us
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="/privacy"
+                    className="text-sm text-slate-500 transition hover:text-blue-600"
+                  >
+                    Privacy
+                  </a>
+                </li>
+              </ul>
             </div>
           </div>
 
-          <div className="mt-8 border-t border-slate-100 pt-6 text-sm text-slate-400">
-            © 2026 Finlysta. Practice skills. Get interview ready.
+          {/* Bottom bar */}
+          <div className="mt-12 border-t border-slate-200 pt-8">
+            <p className="text-center text-sm text-slate-400">
+              © 2026 Finlysta. Practice skills. Get interview ready.
+            </p>
           </div>
         </div>
       </footer>

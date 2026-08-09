@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "VLOOKUP in Excel: Formula, Examples & Practice | Finlysta",
+  title: "VLOOKUP in Excel: Formula, Examples & Practice",
   description:
-    "Learn VLOOKUP in Excel with simple formulas, examples, exact and approximate matches, common errors, multiple criteria techniques, interview questions and practical exercises.",
+    "Learn VLOOKUP in Excel with formula syntax, examples, exact and approximate matches, common errors, multiple criteria, VLOOKUP vs XLOOKUP, interview questions and practical exercises.",
   keywords: [
     "VLOOKUP",
     "VLOOKUP Excel",
@@ -23,10 +23,10 @@ export const metadata: Metadata = {
     canonical: "/excel-functions/vlookup",
   },
   openGraph: {
-    title: "VLOOKUP in Excel: Formula, Examples & Practice | Finlysta",
+    title: "VLOOKUP in Excel: Formula, Examples & Practice",
     description:
-      "Learn VLOOKUP in Excel with practical examples, formulas, common mistakes and interview-focused practice.",
-    url: "/excel-functions/vlookup",
+      "Learn VLOOKUP in Excel with formulas, examples, common errors, interview questions and practical exercises.",
+    url: "https://finlysta.com/excel-functions/vlookup",
     siteName: "Finlysta",
     type: "article",
   },
@@ -42,81 +42,113 @@ const faqs = [
   {
     question: "What is VLOOKUP in Excel?",
     answer:
-      "VLOOKUP is an Excel lookup function used to search for a value in the first column of a table and return a corresponding value from another column in the same row.",
+      "VLOOKUP is an Excel lookup function that searches for a value in the first column of a table and returns a related value from another column in the same row.",
   },
   {
     question: "What is the VLOOKUP formula?",
     answer:
-      "The basic VLOOKUP syntax is =VLOOKUP(lookup_value, table_array, col_index_num, [range_lookup]). The final argument determines whether Excel should find an exact or approximate match.",
+      "The basic VLOOKUP syntax is =VLOOKUP(lookup_value, table_array, col_index_num, [range_lookup]). The fourth argument determines whether Excel should use an exact or approximate match.",
   },
   {
     question: "How do I use VLOOKUP in Excel?",
     answer:
-      "Choose the value you want to search for, select the table containing the lookup value and result, specify the result column number, and choose FALSE for an exact match when appropriate.",
+      "To use VLOOKUP, identify the value you want to find, select the table containing the lookup value and result, specify the result column number, and choose FALSE when an exact match is required.",
   },
   {
     question: "What does FALSE mean in VLOOKUP?",
     answer:
-      "FALSE tells VLOOKUP to look for an exact match. This is commonly used when matching employee IDs, product codes, invoice numbers or other unique identifiers.",
+      "FALSE tells VLOOKUP to find an exact match. It is commonly used when looking up employee IDs, product codes, invoice numbers and other unique identifiers.",
   },
   {
     question: "What does TRUE mean in VLOOKUP?",
     answer:
-      "TRUE allows an approximate match. For approximate matching, the first column of the lookup table generally needs to be sorted in ascending order.",
+      "TRUE tells VLOOKUP to perform an approximate match. The first column of the lookup table should generally be sorted in ascending order for reliable approximate matching.",
   },
   {
     question: "Can VLOOKUP look to the left?",
     answer:
-      "Traditional VLOOKUP searches in the first column of the selected table and returns a value from a column to its right. INDEX MATCH or XLOOKUP can be more flexible when you need a left lookup.",
+      "Traditional VLOOKUP cannot return a value from a column to the left of the lookup column. INDEX MATCH or XLOOKUP can be used when a left lookup is required.",
   },
   {
     question: "Can VLOOKUP use multiple criteria?",
     answer:
-      "VLOOKUP does not directly accept multiple independent criteria in its basic form. A helper column, combined lookup key or another lookup approach can be used when multiple criteria are required.",
+      "VLOOKUP does not directly handle multiple independent criteria in its basic form. A helper column or combined lookup key can be created to combine multiple criteria into one lookup value.",
   },
   {
     question: "What is the difference between VLOOKUP and XLOOKUP?",
     answer:
-      "VLOOKUP uses a column index number and traditionally searches from the first column toward the right. XLOOKUP provides a more flexible lookup approach and can return values from either side of the lookup range.",
+      "VLOOKUP uses a column index number and normally returns values from columns to the right of the lookup column. XLOOKUP is more flexible and can return values from either side of the lookup range.",
   },
 ];
 
 const interviewQuestions = [
-  "What is VLOOKUP in Excel?",
-  "Explain the syntax of the VLOOKUP formula.",
-  "What is the difference between TRUE and FALSE in VLOOKUP?",
-  "Why does VLOOKUP return #N/A?",
-  "Can VLOOKUP look to the left?",
-  "What is the difference between VLOOKUP and XLOOKUP?",
-  "How would you use VLOOKUP with multiple criteria?",
-  "How can you prevent VLOOKUP errors?",
+  {
+    question: "What is VLOOKUP in Excel?",
+    answer:
+      "VLOOKUP is a vertical lookup function. It searches for a value in the first column of a selected table and returns a related value from another column in the same row.",
+  },
+  {
+    question: "Explain the syntax of the VLOOKUP formula.",
+    answer:
+      "=VLOOKUP(lookup_value, table_array, col_index_num, [range_lookup]). The lookup_value is what you want to find, table_array is the lookup table, col_index_num specifies the return column, and range_lookup determines exact or approximate matching.",
+  },
+  {
+    question: "What is the difference between TRUE and FALSE in VLOOKUP?",
+    answer:
+      "FALSE performs an exact match, while TRUE performs an approximate match. FALSE is commonly preferred when matching IDs, codes and other unique values.",
+  },
+  {
+    question: "Why does VLOOKUP return #N/A?",
+    answer:
+      "VLOOKUP returns #N/A when it cannot find the lookup value. Common causes include spelling differences, extra spaces, incorrect ranges, different data types or a lookup value that does not exist in the first column.",
+  },
+  {
+    question: "Can VLOOKUP look to the left?",
+    answer:
+      "No. Traditional VLOOKUP searches the first column of the selected table and returns a value from a column to its right. INDEX MATCH or XLOOKUP can be used for left lookups.",
+  },
+  {
+    question: "What is the difference between VLOOKUP and XLOOKUP?",
+    answer:
+      "VLOOKUP requires a table and column index number, while XLOOKUP uses separate lookup and return ranges. XLOOKUP is more flexible because it can perform lookups in either direction.",
+  },
+  {
+    question: "How would you use VLOOKUP with multiple criteria?",
+    answer:
+      "A common approach is to create a helper column that combines the criteria into one lookup key. For example, Employee ID and Month could be combined into a single value and then used with VLOOKUP.",
+  },
+  {
+    question: "How can you prevent VLOOKUP errors?",
+    answer:
+      "You can use IFERROR around VLOOKUP to display a custom message or alternative value when the lookup returns an error. You should also check the lookup range, data types, spaces and lookup value.",
+  },
 ];
 
 const mistakes = [
   {
     title: "Using the wrong column index",
     description:
-      "The column index tells Excel which column to return from the selected table. Count the columns carefully starting from the first column of your table array.",
+      "The column index determines which column VLOOKUP returns. Count the columns starting from the first column of the selected table array.",
   },
   {
     title: "Using TRUE accidentally",
     description:
-      "If you need an exact match but leave the final argument blank or use TRUE, Excel may return an unexpected result. Use FALSE for exact matching.",
+      "If you need an exact match but use TRUE or omit the final argument, Excel may return an unexpected result. Use FALSE for exact matching.",
   },
   {
     title: "Lookup value is not in the first column",
     description:
-      "Traditional VLOOKUP searches for the lookup value in the first column of the table array.",
+      "Traditional VLOOKUP searches for the lookup value in the first column of the selected table array.",
   },
   {
     title: "Extra spaces or inconsistent data",
     description:
-      "Invisible spaces or inconsistent formats can prevent matches. Cleaning the source data can resolve many lookup problems.",
+      "Extra spaces and inconsistent data types can prevent VLOOKUP from finding a match. Cleaning and standardizing the source data can resolve these problems.",
   },
   {
     title: "Ignoring #N/A errors",
     description:
-      "An #N/A result usually means Excel could not find the requested value. Check the lookup value, source range and data formatting.",
+      "#N/A generally means Excel could not find the requested lookup value. Check the lookup value, source range and formatting before changing the formula.",
   },
 ];
 
@@ -126,7 +158,7 @@ export default function VlookupPage() {
     "@type": "Article",
     headline: "VLOOKUP in Excel: Formula, Examples & Practice",
     description:
-      "Learn VLOOKUP in Excel with formulas, examples, common errors and practical interview questions.",
+      "Learn VLOOKUP in Excel with formulas, examples, common errors, interview questions and practical exercises.",
     author: {
       "@type": "Organization",
       name: "Finlysta",
@@ -156,6 +188,7 @@ export default function VlookupPage() {
 
   return (
     <main className="min-h-screen bg-white text-slate-900">
+      {/* Structured data */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
@@ -173,16 +206,19 @@ export default function VlookupPage() {
       {/* Header */}
       <header className="border-b border-slate-200 bg-white">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-5 py-5 sm:px-6">
-          <a
-            href="/"
-            className="text-2xl font-extrabold tracking-tight text-slate-900 sm:text-3xl"
-          >
-            Finlysta
-          </a>
+          <div>
+            <p className="text-2xl font-extrabold tracking-tight text-slate-950 sm:text-3xl">
+              Excel Practice
+            </p>
+
+            <p className="mt-1 text-sm text-slate-500">
+              Practice real-world Excel skills
+            </p>
+          </div>
 
           <a
             href="/practice"
-            className="rounded-lg px-3 py-2 text-sm font-semibold text-blue-600 transition hover:bg-blue-50 hover:text-blue-700 sm:text-base"
+            className="rounded-xl bg-blue-600 px-5 py-2.5 text-sm font-bold text-white transition hover:bg-blue-700 sm:text-base"
           >
             Practice →
           </a>
@@ -191,44 +227,35 @@ export default function VlookupPage() {
 
       {/* Hero */}
       <section className="border-b border-slate-200">
-        <div className="mx-auto max-w-5xl px-5 py-12 sm:px-6 sm:py-16 lg:py-20">
-          <a
-            href="/"
-            className="text-sm font-semibold text-blue-600 hover:text-blue-700"
-          >
-            ← Back to Finlysta
-          </a>
+        <div className="mx-auto max-w-5xl px-5 py-14 sm:px-6 sm:py-20">
+          <p className="text-sm font-bold uppercase tracking-widest text-blue-600">
+            Excel Functions
+          </p>
 
-          <div className="mt-8">
-            <p className="text-sm font-bold uppercase tracking-widest text-blue-600">
-              Excel Functions
-            </p>
+          <h1 className="mt-4 max-w-4xl text-4xl font-extrabold tracking-tight text-slate-950 sm:text-5xl lg:text-6xl">
+            VLOOKUP in Excel: Formula, Examples & Practice
+          </h1>
 
-            <h1 className="mt-4 max-w-4xl text-4xl font-extrabold tracking-tight text-slate-950 sm:text-5xl lg:text-6xl">
-              VLOOKUP in Excel: Formula, Examples & Practice
-            </h1>
+          <p className="mt-6 max-w-3xl text-lg leading-8 text-slate-600 sm:text-xl">
+            Learn how to use VLOOKUP in Excel with simple formulas,
+            practical examples, exact and approximate matches, common
+            mistakes and interview-focused exercises.
+          </p>
 
-            <p className="mt-6 max-w-3xl text-lg leading-8 text-slate-600 sm:text-xl">
-              Learn how to use VLOOKUP in Excel with simple formulas,
-              practical examples, exact and approximate matches, common
-              mistakes and interview-focused exercises.
-            </p>
+          <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+            <a
+              href="/practice"
+              className="rounded-xl bg-blue-600 px-6 py-3.5 text-center font-bold text-white shadow-sm transition hover:bg-blue-700"
+            >
+              Practice VLOOKUP →
+            </a>
 
-            <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-              <a
-                href="/practice"
-                className="rounded-xl bg-blue-600 px-6 py-3.5 text-center font-bold text-white shadow-sm transition hover:bg-blue-700"
-              >
-                Practice VLOOKUP →
-              </a>
-
-              <a
-                href="/excel-functions/index-match"
-                className="rounded-xl border border-slate-300 bg-white px-6 py-3.5 text-center font-bold text-slate-800 transition hover:bg-slate-50"
-              >
-                Learn INDEX MATCH
-              </a>
-            </div>
+            <a
+              href="/excel-functions/index-match"
+              className="rounded-xl border border-slate-300 bg-white px-6 py-3.5 text-center font-bold text-slate-800 transition hover:bg-slate-50"
+            >
+              Learn INDEX MATCH
+            </a>
           </div>
         </div>
       </section>
@@ -250,10 +277,10 @@ export default function VlookupPage() {
 
           <p className="mt-4 text-base leading-8 text-slate-600 sm:text-lg">
             VLOOKUP is frequently used in finance, accounting, reporting,
-            operations and analyst roles. For example, you can use it to find
-            an employee's department from an Employee ID, retrieve a product
-            price from a product code or match customer information across
-            tables.
+            operations and analyst roles. For example, you can use it to
+            find an employee's department from an Employee ID, retrieve a
+            product price from a product code or match customer information
+            across tables.
           </p>
         </section>
 
@@ -294,6 +321,7 @@ export default function VlookupPage() {
                   className="border-slate-200 p-5 sm:border-b sm:border-r"
                 >
                   <p className="font-bold text-slate-900">{term}</p>
+
                   <p className="mt-2 text-sm leading-6 text-slate-600">
                     {description}
                   </p>
@@ -322,8 +350,8 @@ export default function VlookupPage() {
           </div>
 
           <p className="mt-5 leading-8 text-slate-600">
-            This formula searches for the value in E2 in the first column of
-            A2:C100 and returns the corresponding value from the second
+            This formula searches for the value in E2 in the first column
+            of A2:C100 and returns the corresponding value from the second
             column. FALSE tells Excel to find an exact match.
           </p>
 
@@ -334,9 +362,11 @@ export default function VlookupPage() {
                   <th className="whitespace-nowrap p-4 font-bold">
                     Employee ID
                   </th>
+
                   <th className="whitespace-nowrap p-4 font-bold">
                     Department
                   </th>
+
                   <th className="whitespace-nowrap p-4 font-bold">
                     Salary
                   </th>
@@ -373,9 +403,9 @@ export default function VlookupPage() {
           </h2>
 
           <p className="mt-5 leading-8 text-slate-600">
-            Exact matching is one of the most important VLOOKUP concepts for
-            Excel interviews. Use FALSE as the fourth argument when you need
-            Excel to find the exact lookup value.
+            Exact matching is one of the most important VLOOKUP concepts
+            for Excel interviews. Use FALSE as the fourth argument when you
+            need Excel to find the exact lookup value.
           </p>
 
           <div className="mt-6 overflow-x-auto rounded-2xl bg-slate-950 p-5 sm:p-7">
@@ -386,10 +416,11 @@ export default function VlookupPage() {
 
           <div className="mt-6 rounded-2xl border border-blue-100 bg-blue-50 p-6">
             <p className="font-bold text-blue-900">Interview tip</p>
+
             <p className="mt-2 leading-7 text-blue-900/80">
-              When matching IDs, codes or other unique identifiers, explicitly
-              using FALSE makes your intention clear and avoids accidental
-              approximate matches.
+              When matching IDs, codes or other unique identifiers,
+              explicitly using FALSE makes your intention clear and avoids
+              accidental approximate matches.
             </p>
           </div>
         </section>
@@ -401,9 +432,9 @@ export default function VlookupPage() {
           </h2>
 
           <p className="mt-5 leading-8 text-slate-600">
-            Approximate matching can be useful when working with ranges such
-            as commission tiers, grades or pricing bands. TRUE tells VLOOKUP
-            to use an approximate match.
+            Approximate matching can be useful when working with ranges
+            such as commission tiers, grades or pricing bands. TRUE tells
+            VLOOKUP to use an approximate match.
           </p>
 
           <div className="mt-6 overflow-x-auto rounded-2xl bg-slate-950 p-5 sm:p-7">
@@ -414,8 +445,8 @@ export default function VlookupPage() {
 
           <p className="mt-5 leading-8 text-slate-600">
             For approximate matching, the lookup column should generally be
-            sorted in ascending order. Otherwise, the returned result may not
-            be what you expect.
+            sorted in ascending order. Otherwise, the returned result may
+            not be what you expect.
           </p>
         </section>
 
@@ -456,8 +487,8 @@ export default function VlookupPage() {
           <p className="mt-5 leading-8 text-slate-600">
             A standard VLOOKUP works with one lookup value. When a problem
             requires multiple conditions, such as Employee ID plus Month or
-            Customer plus Product, you can create a combined lookup key in a
-            helper column and use that key with VLOOKUP.
+            Customer plus Product, you can create a combined lookup key in
+            a helper column and use that key with VLOOKUP.
           </p>
 
           <div className="mt-6 overflow-x-auto rounded-2xl bg-slate-950 p-5 sm:p-7">
@@ -468,8 +499,8 @@ export default function VlookupPage() {
 
           <p className="mt-5 leading-8 text-slate-600">
             The combined key can then be used as the lookup value. In newer
-            Excel workflows, XLOOKUP or other approaches may provide a cleaner
-            solution depending on the problem.
+            Excel workflows, XLOOKUP or other approaches may provide a
+            cleaner solution depending on the problem.
           </p>
         </section>
 
@@ -560,20 +591,25 @@ export default function VlookupPage() {
           </p>
 
           <div className="mt-7 space-y-3">
-            {interviewQuestions.map((question) => (
+            {interviewQuestions.map((item) => (
               <details
-                key={question}
+                key={item.question}
                 className="group rounded-2xl border border-slate-200 p-5"
               >
                 <summary className="cursor-pointer list-none font-bold text-slate-900">
-                  <span className="mr-3 text-blue-600">+</span>
-                  {question}
+                  <span className="mr-3 text-blue-600 group-open:hidden">
+                    +
+                  </span>
+
+                  <span className="mr-3 hidden text-blue-600 group-open:inline">
+                    −
+                  </span>
+
+                  {item.question}
                 </summary>
 
                 <p className="mt-4 border-t border-slate-100 pt-4 leading-7 text-slate-600">
-                  Practice explaining the answer using a real Excel example.
-                  Interviewers often care about whether you can apply the
-                  function correctly, not only whether you can define it.
+                  {item.answer}
                 </p>
               </details>
             ))}
@@ -592,7 +628,7 @@ export default function VlookupPage() {
 
           <p className="mx-auto mt-4 max-w-2xl leading-7 text-slate-600">
             Understanding the formula is only the beginning. Practice
-            realistic Excel scenarios and build the confidence to use lookup
+            realistic Excel scenarios and build confidence using lookup
             functions in interviews and real-world work.
           </p>
 
@@ -620,7 +656,8 @@ export default function VlookupPage() {
               </h3>
 
               <p className="mt-2 text-sm leading-6 text-slate-600">
-                Learn a flexible Excel lookup technique using INDEX and MATCH.
+                Learn a flexible Excel lookup technique using INDEX and
+                MATCH.
               </p>
 
               <span className="mt-4 inline-block text-sm font-bold text-blue-600">
@@ -673,45 +710,39 @@ export default function VlookupPage() {
         </section>
       </div>
 
-      {/* Footer */}
+      {/* Minimal footer */}
       <footer className="border-t border-slate-200">
-        <div className="mx-auto max-w-7xl px-5 py-10 sm:px-6">
-          <a
-            href="/"
-            className="text-2xl font-extrabold tracking-tight text-slate-950"
-          >
-            Finlysta
-          </a>
-
-          <p className="mt-3 text-base font-medium text-slate-600">
-            Practice skills. Get interview ready.
+        <div className="mx-auto max-w-7xl px-5 py-8 text-center sm:px-6">
+          <p className="text-sm font-medium text-slate-500">
+            Excel Practice — Learn formulas. Solve problems. Get interview
+            ready.
           </p>
 
-          <div className="mt-6 flex flex-wrap gap-x-6 gap-y-3 text-sm font-semibold">
+          <div className="mt-4 flex justify-center gap-6 text-sm font-semibold">
             <a
               href="/privacy"
-              className="text-slate-500 hover:text-slate-900"
+              className="text-slate-500 transition hover:text-slate-900"
             >
               Privacy
             </a>
 
             <a
               href="/contact"
-              className="text-slate-500 hover:text-slate-900"
+              className="text-slate-500 transition hover:text-slate-900"
             >
               Contact
             </a>
 
             <a
               href="/practice"
-              className="text-blue-600 hover:text-blue-700"
+              className="text-blue-600 transition hover:text-blue-700"
             >
-              Excel Practice
+              Practice
             </a>
           </div>
 
-          <p className="mt-8 text-sm text-slate-400">
-            © 2026 Finlysta. Practice skills. Get interview ready.
+          <p className="mt-5 text-xs text-slate-400">
+            © 2026 Finlysta
           </p>
         </div>
       </footer>
