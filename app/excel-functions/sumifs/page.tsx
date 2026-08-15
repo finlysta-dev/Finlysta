@@ -1,32 +1,36 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "VLOOKUP in Excel: Formula, Examples & Practice",
+  title: "SUMIFS & COUNTIFS in Excel: Formula, Examples & Practice",
   description:
-    "Learn VLOOKUP in Excel with formula syntax, examples, exact and approximate matches, common errors, multiple criteria, VLOOKUP vs XLOOKUP, interview questions and practical exercises.",
+    "Learn SUMIFS and COUNTIFS in Excel with formula syntax, examples, multiple criteria, logical operators, wildcards, dynamic ranges, common errors, interview questions and practical exercises.",
   keywords: [
-    "VLOOKUP",
-    "VLOOKUP Excel",
-    "VLOOKUP formula",
-    "how to use VLOOKUP",
-    "VLOOKUP example",
-    "Excel lookup formula",
-    "Excel lookup function",
-    "VLOOKUP for beginners",
-    "VLOOKUP interview questions",
-    "VLOOKUP multiple criteria",
-    "VLOOKUP two criteria",
-    "VLOOKUP vs XLOOKUP",
-    "VLOOKUP practice",
+    "SUMIFS",
+    "SUMIFS Excel",
+    "SUMIFS formula",
+    "COUNTIFS",
+    "COUNTIFS Excel",
+    "COUNTIFS formula",
+    "how to use SUMIFS",
+    "how to use COUNTIFS",
+    "SUMIFS example",
+    "COUNTIFS example",
+    "Excel conditional formulas",
+    "Excel conditional functions",
+    "SUMIFS multiple criteria",
+    "COUNTIFS multiple criteria",
+    "SUMIFS interview questions",
+    "SUMIFS practice",
+    "COUNTIFS practice",
   ],
   alternates: {
-    canonical: "/excel-functions/vlookup",
+    canonical: "/excel-functions/sumifs",
   },
   openGraph: {
-    title: "VLOOKUP in Excel: Formula, Examples & Practice",
+    title: "SUMIFS & COUNTIFS in Excel: Formula, Examples & Practice",
     description:
-      "Learn VLOOKUP in Excel with formulas, examples, common errors, interview questions and practical exercises.",
-    url: "https://finlysta.com/excel-functions/vlookup",
+      "Learn SUMIFS and COUNTIFS in Excel with formulas, examples, multiple criteria, common errors, interview questions and practical exercises.",
+    url: "https://finlysta.com/excel-functions/sumifs",
     siteName: "Finlysta",
     type: "article",
     images: [
@@ -34,140 +38,140 @@ export const metadata: Metadata = {
         url: "/og-image.png",
         width: 1200,
         height: 630,
-        alt: "VLOOKUP in Excel - Formula, Examples & Practice",
+        alt: "SUMIFS & COUNTIFS in Excel - Formula, Examples & Practice",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "VLOOKUP in Excel: Formula, Examples & Practice",
+    title: "SUMIFS & COUNTIFS in Excel: Formula, Examples & Practice",
     description:
-      "Learn VLOOKUP formulas, examples, common errors and practical Excel interview questions.",
+      "Learn SUMIFS and COUNTIFS formulas, examples, common errors and practical Excel interview questions.",
     images: ["/og-image.png"],
   },
 };
 
 const faqs = [
   {
-    question: "What is VLOOKUP in Excel?",
+    question: "What is SUMIFS in Excel?",
     answer:
-      "VLOOKUP is an Excel lookup function that searches for a value in the first column of a table and returns a related value from another column in the same row.",
+      "SUMIFS is a conditional summing function that adds values based on multiple criteria. For example, you can sum sales where Region is 'North' AND Month is 'January'.",
   },
   {
-    question: "What is the VLOOKUP formula?",
+    question: "What is COUNTIFS in Excel?",
     answer:
-      "The basic VLOOKUP syntax is =VLOOKUP(lookup_value, table_array, col_index_num, [range_lookup]). The fourth argument determines whether Excel should use an exact or approximate match.",
+      "COUNTIFS is a conditional counting function that counts cells based on multiple criteria. For example, you can count employees where Department is 'Finance' AND Salary is greater than 50,000.",
   },
   {
-    question: "How do I use VLOOKUP in Excel?",
+    question: "What is the SUMIFS formula syntax?",
     answer:
-      "To use VLOOKUP, identify the value you want to find, select the table containing the lookup value and result, specify the result column number, and choose FALSE when an exact match is required.",
+      "=SUMIFS(sum_range, criteria_range1, criteria1, [criteria_range2, criteria2], ...). The first argument is the range to sum, followed by pairs of criteria ranges and their conditions.",
   },
   {
-    question: "What does FALSE mean in VLOOKUP?",
+    question: "What is the COUNTIFS formula syntax?",
     answer:
-      "FALSE tells VLOOKUP to find an exact match. It is commonly used when looking up employee IDs, product codes, invoice numbers and other unique identifiers.",
+      "=COUNTIFS(criteria_range1, criteria1, [criteria_range2, criteria2], ...). Each pair defines a range and the condition that cells must meet to be counted.",
   },
   {
-    question: "What does TRUE mean in VLOOKUP?",
+    question: "How is SUMIFS different from SUMIF?",
     answer:
-      "TRUE tells VLOOKUP to perform an approximate match. The first column of the lookup table should generally be sorted in ascending order for reliable approximate matching.",
+      "SUMIF handles only one condition, while SUMIFS can handle multiple conditions. Always use SUMIFS for consistency—it works with one condition too.",
   },
   {
-    question: "Can VLOOKUP look to the left?",
+    question: "How is COUNTIFS different from COUNTIF?",
     answer:
-      "Traditional VLOOKUP cannot return a value from a column to the left of the lookup column. INDEX MATCH or XLOOKUP can be used when a left lookup is required.",
+      "COUNTIF handles only one condition, while COUNTIFS can handle multiple conditions. COUNTIFS is more powerful and should be used when you need to count with multiple criteria.",
   },
   {
-    question: "Can VLOOKUP use multiple criteria?",
+    question: "Can SUMIFS and COUNTIFS use logical operators?",
     answer:
-      "VLOOKUP does not directly handle multiple independent criteria in its basic form. A helper column or combined lookup key can be created to combine multiple criteria into one lookup value.",
+      "Yes, you can use operators like >, <, >=, <=, and <>. For example, '>100' or '<>0'. For text, you can use 'North' for exact matches.",
   },
   {
-    question: "What is the difference between VLOOKUP and XLOOKUP?",
+    question: "Can SUMIFS and COUNTIFS use wildcards?",
     answer:
-      "VLOOKUP uses a column index number and normally returns values from columns to the right of the lookup column. XLOOKUP is more flexible and can return values from either side of the lookup range.",
+      "Yes, you can use the * wildcard for any number of characters and ? for a single character. For example, 'S*' matches any text starting with 'S'.",
   },
 ];
 
 const interviewQuestions = [
   {
-    question: "What is VLOOKUP in Excel?",
+    question: "What is SUMIFS in Excel?",
     answer:
-      "VLOOKUP is a vertical lookup function. It searches for a value in the first column of a selected table and returns a related value from another column in the same row.",
+      "SUMIFS is a conditional summing function that adds values based on multiple criteria. It's one of the most frequently used functions in reporting and analysis.",
   },
   {
-    question: "Explain the syntax of the VLOOKUP formula.",
+    question: "Explain the syntax of SUMIFS.",
     answer:
-      "=VLOOKUP(lookup_value, table_array, col_index_num, [range_lookup]). The lookup_value is what you want to find, table_array is the lookup table, col_index_num specifies the return column, and range_lookup determines exact or approximate matching.",
+      "=SUMIFS(sum_range, criteria_range1, criteria1, [criteria_range2, criteria2], ...). The first range is the values to sum, followed by pairs of ranges and their conditions.",
   },
   {
-    question: "What is the difference between TRUE and FALSE in VLOOKUP?",
+    question: "What is COUNTIFS in Excel?",
     answer:
-      "FALSE performs an exact match, while TRUE performs an approximate match. FALSE is commonly preferred when matching IDs, codes and other unique values.",
+      "COUNTIFS counts cells that meet multiple conditions. It's useful for counting transactions, employees, or entries that satisfy specific criteria.",
   },
   {
-    question: "Why does VLOOKUP return #N/A?",
+    question: "Explain the syntax of COUNTIFS.",
     answer:
-      "VLOOKUP returns #N/A when it cannot find the lookup value. Common causes include spelling differences, extra spaces, incorrect ranges, different data types or a lookup value that does not exist in the first column.",
+      "=COUNTIFS(criteria_range1, criteria1, [criteria_range2, criteria2], ...). Each pair defines a range and the condition that cells must meet.",
   },
   {
-    question: "Can VLOOKUP look to the left?",
+    question: "How would you sum sales for the 'North' region in January?",
     answer:
-      "No. Traditional VLOOKUP searches the first column of the selected table and returns a value from a column to its right. INDEX MATCH or XLOOKUP can be used for left lookups.",
+      'Use SUMIFS: =SUMIFS(Sales_Range, Region_Range, "North", Month_Range, "January"). This sums all sales where Region is North and Month is January.',
   },
   {
-    question: "What is the difference between VLOOKUP and XLOOKUP?",
+    question: "How would you count employees with salary greater than 50,000 in the Finance department?",
     answer:
-      "VLOOKUP requires a table and column index number, while XLOOKUP uses separate lookup and return ranges. XLOOKUP is more flexible because it can perform lookups in either direction.",
+      'Use COUNTIFS: =COUNTIFS(Department_Range, "Finance", Salary_Range, ">50000"). This counts employees who meet both conditions.',
   },
   {
-    question: "How would you use VLOOKUP with multiple criteria?",
+    question: "What is the difference between SUMIF and SUMIFS?",
     answer:
-      "A common approach is to create a helper column that combines the criteria into one lookup key. For example, Employee ID and Month could be combined into a single value and then used with VLOOKUP.",
+      "SUMIF handles one condition, SUMIFS handles multiple. SUMIFS is more flexible and should be used even for single conditions for consistency.",
   },
   {
-    question: "How can you prevent VLOOKUP errors?",
+    question: "How do you use wildcards in SUMIFS and COUNTIFS?",
     answer:
-      "You can use IFERROR around VLOOKUP to display a custom message or alternative value when the lookup returns an error. You should also check the lookup range, data types, spaces and lookup value.",
+      'Use * for any number of characters (e.g., "S*" for words starting with S) and ? for a single character (e.g., "Sm?th"). These work for text criteria in both functions.',
   },
 ];
 
 const mistakes = [
   {
-    title: "Using the wrong column index",
+    title: "Mismatched range sizes",
     description:
-      "The column index determines which column VLOOKUP returns. Count the columns starting from the first column of the selected table array.",
+      "The sum_range and criteria_range must have the same number of rows and columns. If one range is larger than the other, the formula may return unexpected results.",
   },
   {
-    title: "Using TRUE accidentally",
+    title: "Incorrect criteria syntax",
     description:
-      "If you need an exact match but use TRUE or omit the final argument, Excel may return an unexpected result. Use FALSE for exact matching.",
+      "Text and date criteria should be in double quotes (e.g., 'North'). Numerical operators should also be in quotes (e.g., '>100').",
   },
   {
-    title: "Lookup value is not in the first column",
+    title: "Using SUMIFS when SUMIF would work",
     description:
-      "Traditional VLOOKUP searches for the lookup value in the first column of the selected table array.",
+      "For a single condition, either SUMIF or SUMIFS works. However, SUMIFS is often recommended for consistency when adding more conditions later.",
   },
   {
-    title: "Extra spaces or inconsistent data",
+    title: "Not using absolute references",
     description:
-      "Extra spaces and inconsistent data types can prevent VLOOKUP from finding a match. Cleaning and standardizing the source data can resolve these problems.",
+      "When copying formulas, use absolute references ($A$1:$A$100) to prevent ranges from shifting. This is especially important in dashboards and reports.",
   },
   {
-    title: "Ignoring #N/A errors",
+    title: "Mixing data types",
     description:
-      "#N/A generally means Excel could not find the requested lookup value. Check the lookup value, source range and formatting before changing the formula.",
+      "Ensure that numeric values in criteria are not formatted as text. Numbers stored as text may not match correctly in SUMIFS and COUNTIFS.",
   },
 ];
 
-export default function VlookupPage() {
+export default function SumifsPage() {
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "Article",
-    headline: "VLOOKUP in Excel: Formula, Examples & Practice",
+    headline: "SUMIFS & COUNTIFS in Excel: Formula, Examples & Practice",
     description:
-      "Learn VLOOKUP in Excel with formulas, examples, common errors, interview questions and practical exercises.",
+      "Learn SUMIFS and COUNTIFS in Excel with formulas, examples, common errors, interview questions and practical exercises.",
     author: {
       "@type": "Organization",
       name: "Finlysta",
@@ -178,7 +182,7 @@ export default function VlookupPage() {
     },
     mainEntityOfPage: {
       "@type": "WebPage",
-      "@id": "https://finlysta.com/excel-functions/vlookup",
+      "@id": "https://finlysta.com/excel-functions/sumifs",
     },
   };
 
@@ -214,8 +218,8 @@ export default function VlookupPage() {
       {
         "@type": "ListItem",
         position: 3,
-        name: "VLOOKUP",
-        item: "https://finlysta.com/excel-functions/vlookup",
+        name: "SUMIFS & COUNTIFS",
+        item: "https://finlysta.com/excel-functions/sumifs",
       },
     ],
   };
@@ -325,13 +329,13 @@ export default function VlookupPage() {
                   href="/excel-functions/index-match"
                   className="block px-4 py-2 text-sm text-slate-700 transition hover:bg-blue-50 hover:text-blue-600"
                 >
-                  INDEX MATCH
+                  INDEX & MATCH
                 </a>
                 <a
                   href="/excel-functions/sumifs"
                   className="block px-4 py-2 text-sm text-slate-700 transition hover:bg-blue-50 hover:text-blue-600"
                 >
-                  SUMIFS
+                  SUMIFS & COUNTIFS
                 </a>
               </div>
             </div>
@@ -363,7 +367,7 @@ export default function VlookupPage() {
                 </a>
               </li>
               <li className="text-slate-300">/</li>
-              <li className="font-semibold text-slate-900">VLOOKUP</li>
+              <li className="font-semibold text-slate-900">SUMIFS & COUNTIFS</li>
             </ol>
           </nav>
         </div>
@@ -382,12 +386,12 @@ export default function VlookupPage() {
           </div>
 
           <h1 className="mt-4 max-w-4xl text-4xl font-extrabold tracking-tight text-slate-950 sm:text-5xl lg:text-6xl">
-            VLOOKUP in Excel: Formula, Examples & Practice
+            SUMIFS & COUNTIFS in Excel: Formula, Examples & Practice
           </h1>
 
           <p className="mt-6 max-w-3xl text-lg leading-8 text-slate-600 sm:text-xl">
-            Learn how to use VLOOKUP in Excel with simple formulas,
-            practical examples, exact and approximate matches, common
+            Learn how to use SUMIFS and COUNTIFS in Excel with simple formulas,
+            practical examples, multiple criteria, logical operators, common
             mistakes and interview-focused exercises.
           </p>
 
@@ -408,10 +412,10 @@ export default function VlookupPage() {
             </a>
 
             <a
-              href="/excel-functions/index-match"
+              href="/excel-functions/vlookup"
               className="rounded-xl border border-slate-300 bg-white px-6 py-3.5 text-center font-bold text-slate-800 transition hover:bg-slate-50"
             >
-              Learn INDEX MATCH
+              Learn VLOOKUP
             </a>
           </div>
         </div>
@@ -419,48 +423,41 @@ export default function VlookupPage() {
 
       {/* Main content */}
       <div className="mx-auto max-w-4xl px-5 py-12 sm:px-6 sm:py-16">
-        {/* What is VLOOKUP */}
+        {/* What is SUMIFS & COUNTIFS */}
         <section>
           <h2 className="text-3xl font-extrabold tracking-tight sm:text-4xl">
-            What Is VLOOKUP in Excel?
+            What Are SUMIFS & COUNTIFS in Excel?
           </h2>
 
           <p className="mt-5 text-base leading-8 text-slate-600 sm:text-lg">
-            VLOOKUP stands for <strong>Vertical Lookup</strong>. It is one of the most commonly used Excel lookup functions.
+            SUMIFS and COUNTIFS are conditional functions that allow you to sum or count values based on one or more conditions.
           </p>
 
           <p className="mt-4 text-base leading-8 text-slate-600 sm:text-lg">
-            It allows you to search for a value in the first column of a table and return related information from another column in the same row.
+            SUMIFS adds values that meet specified criteria. COUNTIFS counts cells that meet specified criteria. Together, they are essential for reporting, data analysis, and financial modeling.
           </p>
 
           <p className="mt-4 text-base leading-8 text-slate-600 sm:text-lg">
-            VLOOKUP is frequently used in finance, accounting, reporting, operations and analyst roles.
-          </p>
-
-          <p className="mt-4 text-base leading-8 text-slate-600 sm:text-lg">
-            For example, you can use it to find an employee's department from an Employee ID, retrieve a product price from a product code, or match customer information across tables.
+            These functions are frequently used in finance, accounting, operations, and data analyst roles. They are often tested in interviews for their ability to handle multiple conditions efficiently.
           </p>
 
           <div className="mt-6 rounded-2xl border border-blue-100 bg-blue-50 p-6">
             <p className="font-bold text-blue-900">📌 Why this matters for interviews</p>
             <p className="mt-2 leading-7 text-blue-900/80">
-              VLOOKUP is one of the most frequently tested Excel functions in 
-              interviews for finance, accounting, data analysis, and consulting roles. 
-              Interviewers often ask you to explain the syntax, troubleshoot errors, 
-              or use it in a practical scenario.
+              SUMIFS and COUNTIFS are among the most frequently tested Excel functions in interviews. Interviewers often ask candidates to sum or count data based on multiple conditions to assess their practical Excel skills.
             </p>
           </div>
         </section>
 
-        {/* Formula */}
+        {/* SUMIFS Formula */}
         <section className="mt-16">
           <h2 className="text-3xl font-extrabold tracking-tight sm:text-4xl">
-            VLOOKUP Formula
+            SUMIFS Formula
           </h2>
 
           <div className="mt-6 overflow-x-auto rounded-2xl bg-slate-950 p-5 sm:p-7">
             <code className="whitespace-nowrap font-mono text-sm text-white sm:text-base">
-              =VLOOKUP(lookup_value, table_array, col_index_num, [range_lookup])
+              =SUMIFS(sum_range, criteria_range1, criteria1, [criteria_range2, criteria2], ...)
             </code>
           </div>
 
@@ -468,20 +465,20 @@ export default function VlookupPage() {
             <div className="grid grid-cols-1 divide-y divide-slate-200 sm:grid-cols-2 sm:divide-y-0">
               {[
                 [
-                  "lookup_value",
-                  "The value you want Excel to find.",
+                  "sum_range",
+                  "The range of values to sum.",
                 ],
                 [
-                  "table_array",
-                  "The range containing the lookup value and result.",
+                  "criteria_range1",
+                  "The range to apply the first condition to.",
                 ],
                 [
-                  "col_index_num",
-                  "The number of the column containing the result.",
+                  "criteria1",
+                  "The condition that must be met.",
                 ],
                 [
-                  "range_lookup",
-                  "TRUE for approximate match or FALSE for exact match.",
+                  "criteria_range2, criteria2",
+                  "Additional pairs of ranges and conditions.",
                 ],
               ].map(([term, description]) => (
                 <div
@@ -489,7 +486,48 @@ export default function VlookupPage() {
                   className="border-slate-200 p-5 sm:border-b sm:border-r"
                 >
                   <p className="font-bold text-slate-900">{term}</p>
+                  <p className="mt-2 text-sm leading-6 text-slate-600">
+                    {description}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
 
+        {/* COUNTIFS Formula */}
+        <section className="mt-16">
+          <h2 className="text-3xl font-extrabold tracking-tight sm:text-4xl">
+            COUNTIFS Formula
+          </h2>
+
+          <div className="mt-6 overflow-x-auto rounded-2xl bg-slate-950 p-5 sm:p-7">
+            <code className="whitespace-nowrap font-mono text-sm text-white sm:text-base">
+              =COUNTIFS(criteria_range1, criteria1, [criteria_range2, criteria2], ...)
+            </code>
+          </div>
+
+          <div className="mt-6 overflow-hidden rounded-2xl border border-slate-200">
+            <div className="grid grid-cols-1 divide-y divide-slate-200 sm:grid-cols-2 sm:divide-y-0">
+              {[
+                [
+                  "criteria_range1",
+                  "The range to apply the first condition to.",
+                ],
+                [
+                  "criteria1",
+                  "The condition that must be met.",
+                ],
+                [
+                  "criteria_range2, criteria2",
+                  "Additional pairs of ranges and conditions.",
+                ],
+              ].map(([term, description]) => (
+                <div
+                  key={term}
+                  className="border-slate-200 p-5 sm:border-b sm:border-r"
+                >
+                  <p className="font-bold text-slate-900">{term}</p>
                   <p className="mt-2 text-sm leading-6 text-slate-600">
                     {description}
                   </p>
@@ -502,180 +540,226 @@ export default function VlookupPage() {
         {/* Example */}
         <section className="mt-16">
           <h2 className="text-3xl font-extrabold tracking-tight sm:text-4xl">
-            VLOOKUP Example
+            SUMIFS & COUNTIFS Example
           </h2>
 
           <p className="mt-5 leading-8 text-slate-600">
-            Imagine you have an employee table containing Employee ID,
-            Department and Salary. The Employee ID you want to search is in
-            cell E2.
+            Let's say you have a sales table with Region, Month, and Sales. You want to:
           </p>
+
+          <ul className="mt-4 space-y-2 text-slate-600">
+            <li>• Sum sales for the North region in January</li>
+            <li>• Count how many sales transactions are in the North region in January</li>
+          </ul>
 
           <div className="mt-6 overflow-x-auto rounded-2xl bg-slate-950 p-5 sm:p-7">
             <code className="whitespace-nowrap font-mono text-sm text-white sm:text-base">
-              =VLOOKUP(E2,A2:C100,2,FALSE)
+              =SUMIFS(Sales_Range, Region_Range, "North", Month_Range, "January")
             </code>
           </div>
 
           <p className="mt-5 leading-8 text-slate-600">
-            This formula searches for the value in E2 in the first column
-            of A2:C100 and returns the corresponding value from the second
-            column. FALSE tells Excel to find an exact match.
+            This formula sums all sales where Region is "North" AND Month is "January".
+          </p>
+
+          <div className="mt-6 overflow-x-auto rounded-2xl bg-slate-950 p-5 sm:p-7">
+            <code className="whitespace-nowrap font-mono text-sm text-white sm:text-base">
+              =COUNTIFS(Region_Range, "North", Month_Range, "January")
+            </code>
+          </div>
+
+          <p className="mt-5 leading-8 text-slate-600">
+            This formula counts all rows where Region is "North" AND Month is "January".
           </p>
 
           <div className="mt-8 overflow-x-auto rounded-2xl border border-slate-200">
             <table className="min-w-full text-left text-sm">
               <thead className="bg-slate-50">
                 <tr>
-                  <th className="whitespace-nowrap p-4 font-bold">
-                    Employee ID
-                  </th>
-
-                  <th className="whitespace-nowrap p-4 font-bold">
-                    Department
-                  </th>
-
-                  <th className="whitespace-nowrap p-4 font-bold">
-                    Salary
-                  </th>
+                  <th className="whitespace-nowrap p-4 font-bold">Region</th>
+                  <th className="whitespace-nowrap p-4 font-bold">Month</th>
+                  <th className="whitespace-nowrap p-4 font-bold">Sales (₹)</th>
                 </tr>
               </thead>
-
               <tbody>
                 <tr className="border-t border-slate-200">
-                  <td className="p-4">EMP101</td>
-                  <td className="p-4">Finance</td>
-                  <td className="p-4">₹45,000</td>
+                  <td className="p-4">North</td>
+                  <td className="p-4">January</td>
+                  <td className="p-4">10,000</td>
                 </tr>
-
                 <tr className="border-t border-slate-200">
-                  <td className="p-4">EMP102</td>
-                  <td className="p-4">Accounting</td>
-                  <td className="p-4">₹42,000</td>
+                  <td className="p-4">North</td>
+                  <td className="p-4">February</td>
+                  <td className="p-4">12,000</td>
                 </tr>
-
                 <tr className="border-t border-slate-200">
-                  <td className="p-4">EMP103</td>
-                  <td className="p-4">Operations</td>
-                  <td className="p-4">₹48,000</td>
+                  <td className="p-4">South</td>
+                  <td className="p-4">January</td>
+                  <td className="p-4">8,000</td>
+                </tr>
+                <tr className="border-t border-slate-200">
+                  <td className="p-4">North</td>
+                  <td className="p-4">January</td>
+                  <td className="p-4">15,000</td>
                 </tr>
               </tbody>
             </table>
           </div>
+
+          <p className="mt-5 leading-8 text-slate-600">
+            The SUMIFS formula would return 25,000 (10,000 + 15,000). The COUNTIFS formula would return 2 (two rows matching the criteria).
+          </p>
         </section>
 
-        {/* Exact match */}
+        {/* Multiple Criteria */}
         <section className="mt-16">
           <h2 className="text-3xl font-extrabold tracking-tight sm:text-4xl">
-            VLOOKUP Exact Match
+            SUMIFS & COUNTIFS with Multiple Criteria
           </h2>
 
           <p className="mt-5 leading-8 text-slate-600">
-            Exact matching is one of the most important VLOOKUP concepts
-            for Excel interviews. Use FALSE as the fourth argument when you
-            need Excel to find the exact lookup value.
+            You can add as many criteria pairs as needed. Here's an example with three conditions:
           </p>
 
           <div className="mt-6 overflow-x-auto rounded-2xl bg-slate-950 p-5 sm:p-7">
             <code className="whitespace-nowrap font-mono text-sm text-white sm:text-base">
-              =VLOOKUP(A2,D2:F100,3,FALSE)
+              =SUMIFS(Sales_Range, Region_Range, "North", Month_Range, "January", Product_Range, "Electronics")
             </code>
           </div>
 
-          <div className="mt-6 rounded-2xl border border-blue-100 bg-blue-50 p-6">
-            <p className="font-bold text-blue-900">Interview tip</p>
+          <p className="mt-5 leading-8 text-slate-600">
+            This sums sales for North region, in January, for Electronics products only.
+          </p>
+        </section>
 
-            <p className="mt-2 leading-7 text-blue-900/80">
-              When matching IDs, codes or other unique identifiers,
-              explicitly using FALSE makes your intention clear and avoids
-              accidental approximate matches.
+        {/* Logical Operators */}
+        <section className="mt-16">
+          <h2 className="text-3xl font-extrabold tracking-tight sm:text-4xl">
+            Using Logical Operators
+          </h2>
+
+          <p className="mt-5 leading-8 text-slate-600">
+            SUMIFS and COUNTIFS support logical operators like &gt;, &lt;, &gt;=, &lt;=, and &lt;&gt;.
+          </p>
+
+          <div className="mt-6 space-y-4">
+            <div className="rounded-2xl border border-slate-200 bg-white p-6">
+              <p className="font-bold text-slate-900">Greater than 100</p>
+              <code className="mt-2 block font-mono text-sm text-slate-600">
+                =SUMIFS(Sales_Range, Sales_Range, "&gt;100")
+              </code>
+            </div>
+
+            <div className="rounded-2xl border border-slate-200 bg-white p-6">
+              <p className="font-bold text-slate-900">Greater than or equal to 50,000</p>
+              <code className="mt-2 block font-mono text-sm text-slate-600">
+                =COUNTIFS(Salary_Range, "&gt;=50000")
+              </code>
+            </div>
+
+            <div className="rounded-2xl border border-slate-200 bg-white p-6">
+              <p className="font-bold text-slate-900">Not equal to zero</p>
+              <code className="mt-2 block font-mono text-sm text-slate-600">
+                =COUNTIFS(Quantity_Range, "&lt;&gt;0")
+              </code>
+            </div>
+          </div>
+
+          <div className="mt-6 rounded-2xl border border-yellow-100 bg-yellow-50 p-6">
+            <p className="font-bold text-yellow-900">💡 Tip</p>
+            <p className="mt-2 leading-7 text-yellow-900/80">
+              Always put logical operators and text in double quotes. For example: "&gt;100", "North", "&lt;&gt;0".
             </p>
           </div>
         </section>
 
-        {/* Approximate */}
+        {/* Wildcards */}
         <section className="mt-16">
           <h2 className="text-3xl font-extrabold tracking-tight sm:text-4xl">
-            VLOOKUP Approximate Match
+            Using Wildcards
           </h2>
 
           <p className="mt-5 leading-8 text-slate-600">
-            Approximate matching can be useful when working with ranges
-            such as commission tiers, grades or pricing bands. TRUE tells
-            VLOOKUP to use an approximate match.
+            Wildcards are useful when you need to match patterns in text:
           </p>
 
-          <div className="mt-6 overflow-x-auto rounded-2xl bg-slate-950 p-5 sm:p-7">
-            <code className="whitespace-nowrap font-mono text-sm text-white sm:text-base">
-              =VLOOKUP(A2,D2:E10,2,TRUE)
-            </code>
-          </div>
+          <div className="mt-6 grid gap-4 sm:grid-cols-2">
+            <div className="rounded-2xl border border-slate-200 bg-white p-6">
+              <p className="font-bold text-slate-900">* (Asterisk)</p>
+              <p className="mt-2 text-sm text-slate-600">Matches any number of characters</p>
+              <code className="mt-3 block font-mono text-sm text-slate-700 bg-slate-100 p-2 rounded">
+                =SUMIFS(Sales_Range, Product_Range, "S*")
+              </code>
+              <p className="mt-2 text-xs text-slate-500">Sums sales for products starting with "S"</p>
+            </div>
 
-          <p className="mt-5 leading-8 text-slate-600">
-            For approximate matching, the lookup column should generally be
-            sorted in ascending order. Otherwise, the returned result may
-            not be what you expect.
-          </p>
-        </section>
-
-        {/* How it works */}
-        <section className="mt-16">
-          <h2 className="text-3xl font-extrabold tracking-tight sm:text-4xl">
-            How to Use VLOOKUP in Excel
-          </h2>
-
-          <div className="mt-7 space-y-4">
-            {[
-              "Identify the value you want to search for.",
-              "Select a table that contains the lookup value in its first column.",
-              "Choose the column containing the information you want to return.",
-              "Enter the appropriate column index number.",
-              "Use FALSE when you need an exact match.",
-            ].map((item, index) => (
-              <div
-                key={item}
-                className="flex gap-4 rounded-2xl border border-slate-200 p-5"
-              >
-                <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-blue-50 text-sm font-bold text-blue-700">
-                  {index + 1}
-                </span>
-
-                <p className="leading-7 text-slate-700">{item}</p>
-              </div>
-            ))}
+            <div className="rounded-2xl border border-slate-200 bg-white p-6">
+              <p className="font-bold text-slate-900">? (Question Mark)</p>
+              <p className="mt-2 text-sm text-slate-600">Matches a single character</p>
+              <code className="mt-3 block font-mono text-sm text-slate-700 bg-slate-100 p-2 rounded">
+                =COUNTIFS(Name_Range, "Sm?th")
+              </code>
+              <p className="mt-2 text-xs text-slate-500">Counts names like "Smith" or "Smyth"</p>
+            </div>
           </div>
         </section>
 
-        {/* Multiple criteria */}
+        {/* VLOOKUP Comparison */}
         <section className="mt-16">
           <h2 className="text-3xl font-extrabold tracking-tight sm:text-4xl">
-            VLOOKUP With Multiple Criteria
+            SUMIFS vs SUMIF / COUNTIFS vs COUNTIF
           </h2>
 
           <p className="mt-5 leading-8 text-slate-600">
-            A standard VLOOKUP works with one lookup value. When a problem
-            requires multiple conditions, such as Employee ID plus Month or
-            Customer plus Product, you can create a combined lookup key in
-            a helper column and use that key with VLOOKUP.
+            Both SUMIFS and COUNTIFS are more powerful than their single-condition counterparts:
           </p>
 
-          <div className="mt-6 overflow-x-auto rounded-2xl bg-slate-950 p-5 sm:p-7">
-            <code className="whitespace-nowrap font-mono text-sm text-white sm:text-base">
-              =A2&amp;"-"&amp;B2
-            </code>
+          <div className="mt-7 overflow-x-auto rounded-2xl border border-slate-200">
+            <table className="min-w-[620px] w-full text-left text-sm">
+              <thead className="bg-slate-50">
+                <tr>
+                  <th className="p-4 font-bold">Feature</th>
+                  <th className="p-4 font-bold">SUMIFS / COUNTIFS</th>
+                  <th className="p-4 font-bold">SUMIF / COUNTIF</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr className="border-t border-slate-200">
+                  <td className="p-4 font-medium">Number of conditions</td>
+                  <td className="p-4">Unlimited</td>
+                  <td className="p-4">Only one</td>
+                </tr>
+                <tr className="border-t border-slate-200">
+                  <td className="p-4 font-medium">Flexibility</td>
+                  <td className="p-4">Very flexible</td>
+                  <td className="p-4">Limited</td>
+                </tr>
+                <tr className="border-t border-slate-200">
+                  <td className="p-4 font-medium">Single condition use</td>
+                  <td className="p-4">Works perfectly</td>
+                  <td className="p-4">Works</td>
+                </tr>
+                <tr className="border-t border-slate-200">
+                  <td className="p-4 font-medium">Recommendation</td>
+                  <td className="p-4">Always use</td>
+                  <td className="p-4">Avoid for new work</td>
+                </tr>
+              </tbody>
+            </table>
           </div>
 
-          <p className="mt-5 leading-8 text-slate-600">
-            The combined key can then be used as the lookup value. In newer
-            Excel workflows, XLOOKUP or other approaches may provide a
-            cleaner solution depending on the problem.
-          </p>
+          <div className="mt-6 rounded-2xl border border-green-100 bg-green-50 p-6">
+            <p className="font-bold text-green-900">💡 Pro tip</p>
+            <p className="mt-2 leading-7 text-green-900/80">
+              Always use SUMIFS and COUNTIFS instead of SUMIF and COUNTIF. They work with one condition too and are easier to extend when you need to add more conditions later.
+            </p>
+          </div>
         </section>
 
-        {/* Errors */}
+        {/* Common Errors */}
         <section className="mt-16">
           <h2 className="text-3xl font-extrabold tracking-tight sm:text-4xl">
-            Common VLOOKUP Errors and Mistakes
+            Common SUMIFS & COUNTIFS Errors and Mistakes
           </h2>
 
           <div className="mt-7 space-y-4">
@@ -687,7 +771,6 @@ export default function VlookupPage() {
                 <h3 className="font-bold text-slate-900">
                   {mistake.title}
                 </h3>
-
                 <p className="mt-2 leading-7 text-slate-600">
                   {mistake.description}
                 </p>
@@ -696,65 +779,14 @@ export default function VlookupPage() {
           </div>
         </section>
 
-        {/* Comparison */}
+        {/* Interview Questions */}
         <section className="mt-16">
           <h2 className="text-3xl font-extrabold tracking-tight sm:text-4xl">
-            VLOOKUP vs XLOOKUP
+            SUMIFS & COUNTIFS Interview Questions
           </h2>
 
           <p className="mt-5 leading-8 text-slate-600">
-            VLOOKUP remains an important Excel skill because it is widely
-            recognized in interviews and existing business workbooks.
-            XLOOKUP provides a more flexible modern lookup approach.
-          </p>
-
-          <div className="mt-7 overflow-x-auto rounded-2xl border border-slate-200">
-            <table className="min-w-[620px] w-full text-left text-sm">
-              <thead className="bg-slate-50">
-                <tr>
-                  <th className="p-4 font-bold">Feature</th>
-                  <th className="p-4 font-bold">VLOOKUP</th>
-                  <th className="p-4 font-bold">XLOOKUP</th>
-                </tr>
-              </thead>
-
-              <tbody>
-                <tr className="border-t border-slate-200">
-                  <td className="p-4">Lookup direction</td>
-                  <td className="p-4">Primarily to the right</td>
-                  <td className="p-4">More flexible</td>
-                </tr>
-
-                <tr className="border-t border-slate-200">
-                  <td className="p-4">Column index number</td>
-                  <td className="p-4">Required</td>
-                  <td className="p-4">Not required</td>
-                </tr>
-
-                <tr className="border-t border-slate-200">
-                  <td className="p-4">Common in older workbooks</td>
-                  <td className="p-4">Yes</td>
-                  <td className="p-4">Less common</td>
-                </tr>
-
-                <tr className="border-t border-slate-200">
-                  <td className="p-4">Modern flexibility</td>
-                  <td className="p-4">Lower</td>
-                  <td className="p-4">Higher</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </section>
-
-        {/* Interview questions */}
-        <section className="mt-16">
-          <h2 className="text-3xl font-extrabold tracking-tight sm:text-4xl">
-            VLOOKUP Interview Questions
-          </h2>
-
-          <p className="mt-5 leading-8 text-slate-600">
-            These are common VLOOKUP questions you may encounter in Excel
+            These are common SUMIFS and COUNTIFS questions you may encounter in Excel
             interviews and practical assessments.
           </p>
 
@@ -768,14 +800,11 @@ export default function VlookupPage() {
                   <span className="mr-3 text-blue-600 group-open:hidden">
                     +
                   </span>
-
                   <span className="mr-3 hidden text-blue-600 group-open:inline">
                     −
                   </span>
-
                   {item.question}
                 </summary>
-
                 <p className="mt-4 border-t border-slate-100 pt-4 leading-7 text-slate-600">
                   {item.answer}
                 </p>
@@ -814,12 +843,12 @@ export default function VlookupPage() {
           </p>
 
           <h2 className="mt-3 text-3xl font-extrabold tracking-tight">
-            Ready to practice VLOOKUP?
+            Ready to practice SUMIFS & COUNTIFS?
           </h2>
 
           <p className="mx-auto mt-4 max-w-2xl leading-7 text-slate-600">
-            Understanding the formula is only the beginning. Practice
-            realistic Excel scenarios and build confidence using lookup
+            Understanding the formulas is only the beginning. Practice
+            realistic Excel scenarios and build confidence using conditional
             functions in interviews and real-world work.
           </p>
 
@@ -839,56 +868,32 @@ export default function VlookupPage() {
 
           <div className="mt-6 grid gap-4 sm:grid-cols-2">
             <a
+              href="/excel-functions/vlookup"
+              className="rounded-2xl border border-slate-200 p-6 transition hover:border-blue-300 hover:bg-blue-50/40"
+            >
+              <h3 className="font-bold text-slate-900">
+                VLOOKUP & XLOOKUP
+              </h3>
+              <p className="mt-2 text-sm leading-6 text-slate-600">
+                Practice lookup formulas with realistic data and business scenarios.
+              </p>
+              <span className="mt-4 inline-block text-sm font-bold text-blue-600">
+                Learn VLOOKUP →
+              </span>
+            </a>
+
+            <a
               href="/excel-functions/index-match"
               className="rounded-2xl border border-slate-200 p-6 transition hover:border-blue-300 hover:bg-blue-50/40"
             >
               <h3 className="font-bold text-slate-900">
-                INDEX MATCH
+                INDEX & MATCH
               </h3>
-
               <p className="mt-2 text-sm leading-6 text-slate-600">
-                Learn a flexible Excel lookup technique using INDEX and
-                MATCH.
+                Learn flexible lookup techniques used in real-world Excel analysis.
               </p>
-
               <span className="mt-4 inline-block text-sm font-bold text-blue-600">
-                Learn INDEX MATCH →
-              </span>
-            </a>
-
-            <a
-              href="/practice"
-              className="rounded-2xl border border-slate-200 p-6 transition hover:border-blue-300 hover:bg-blue-50/40"
-            >
-              <h3 className="font-bold text-slate-900">
-                Excel Practice
-              </h3>
-
-              <p className="mt-2 text-sm leading-6 text-slate-600">
-                Practice realistic Excel problems for finance and analyst
-                roles.
-              </p>
-
-              <span className="mt-4 inline-block text-sm font-bold text-blue-600">
-                Start Practice →
-              </span>
-            </a>
-
-            <a
-              href="/excel-functions/sumifs"
-              className="rounded-2xl border border-slate-200 p-6 transition hover:border-blue-300 hover:bg-blue-50/40"
-            >
-              <h3 className="font-bold text-slate-900">
-                SUMIFS & COUNTIFS
-              </h3>
-
-              <p className="mt-2 text-sm leading-6 text-slate-600">
-                Practice conditional calculations used in reporting and
-                analysis.
-              </p>
-
-              <span className="mt-4 inline-block text-sm font-bold text-blue-600">
-                Learn SUMIFS →
+                Learn INDEX & MATCH →
               </span>
             </a>
 
@@ -899,14 +904,26 @@ export default function VlookupPage() {
               <h3 className="font-bold text-slate-900">
                 Pivot Tables
               </h3>
-
               <p className="mt-2 text-sm leading-6 text-slate-600">
-                Analyze and summarize business data with practical Excel
-                exercises.
+                Analyze and summarize business data with practical Excel exercises.
               </p>
-
               <span className="mt-4 inline-block text-sm font-bold text-blue-600">
                 Learn Pivot Tables →
+              </span>
+            </a>
+
+            <a
+              href="/practice"
+              className="rounded-2xl border border-slate-200 p-6 transition hover:border-blue-300 hover:bg-blue-50/40"
+            >
+              <h3 className="font-bold text-slate-900">
+                Excel Practice
+              </h3>
+              <p className="mt-2 text-sm leading-6 text-slate-600">
+                Practice realistic Excel problems for finance and analyst roles.
+              </p>
+              <span className="mt-4 inline-block text-sm font-bold text-blue-600">
+                Start Practice →
               </span>
             </a>
           </div>
@@ -927,7 +944,6 @@ export default function VlookupPage() {
                 <summary className="cursor-pointer font-bold text-slate-900">
                   {faq.question}
                 </summary>
-
                 <p className="mt-4 leading-7 text-slate-600">
                   {faq.answer}
                 </p>

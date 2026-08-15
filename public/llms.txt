@@ -42,6 +42,7 @@ Finlysta helps learners build practical spreadsheet and analyst skills through s
 
 ### VLOOKUP & XLOOKUP
 - **URL:** https://finlysta.com/excel-functions/vlookup
+- **Category:** Excel Functions
 - **What You'll Learn:**
   - VLOOKUP syntax and usage
   - Exact match vs approximate match
@@ -53,6 +54,7 @@ Finlysta helps learners build practical spreadsheet and analyst skills through s
 
 ### INDEX & MATCH
 - **URL:** https://finlysta.com/excel-functions/index-match
+- **Category:** Excel Functions
 - **What You'll Learn:**
   - How INDEX & MATCH work together
   - Flexible lookup techniques
@@ -64,6 +66,7 @@ Finlysta helps learners build practical spreadsheet and analyst skills through s
 
 ### SUMIFS & COUNTIFS
 - **URL:** https://finlysta.com/excel-functions/sumifs
+- **Category:** Excel Functions
 - **What You'll Learn:**
   - Conditional summing and counting
   - Multiple criteria handling
@@ -73,37 +76,46 @@ Finlysta helps learners build practical spreadsheet and analyst skills through s
 - **Key Topics:** Conditional calculations, Reporting, Data analysis
 
 ### Pivot Tables
-- **URL:** https://finlysta.com/excel/pivot-tables
+- **URL:** https://finlysta.com/excel-functions/pivot-tables
+- **Category:** Excel Functions
 - **What You'll Learn:**
   - Data summarization techniques
   - Creating interactive reports
   - Calculated fields
   - Grouping and filtering
+  - Slicers and Pivot Charts
   - Interview questions and practice scenarios
 - **Key Topics:** Data analysis, Reporting, Summarization
 
 ### Power Query
-- **URL:** https://finlysta.com/excel/power-query
+- **URL:** https://finlysta.com/excel-functions/power-query
+- **Category:** Excel Functions
 - **What You'll Learn:**
   - Data import and transformation
+  - Merging and appending queries
   - Combining multiple files
   - Cleaning and preparing data
   - Automated workflows
+  - M language basics
   - Repeatable data processes
 - **Key Topics:** Data transformation, ETL, Automation
 
 ### Data Cleaning
-- **URL:** https://finlysta.com/excel/data-cleaning
+- **URL:** https://finlysta.com/excel-functions/data-cleaning
+- **Category:** Excel Functions
 - **What You'll Learn:**
   - Removing duplicates
-  - Text cleaning (TRIM, CLEAN, SUBSTITUTE)
+  - Text cleaning (TRIM, CLEAN, PROPER)
   - Handling missing values
-  - Standardizing formats
+  - Text to Columns
+  - Flash Fill
   - Data validation techniques
+  - Standardizing formats
 - **Key Topics:** Data quality, Data preparation, Data hygiene
 
 ### Excel Dashboards
 - **URL:** https://finlysta.com/excel/dashboards
+- **Category:** Excel Features
 - **What You'll Learn:**
   - Dashboard design principles
   - KPI selection and tracking
@@ -114,6 +126,7 @@ Finlysta helps learners build practical spreadsheet and analyst skills through s
 
 ### Financial Analysis
 - **URL:** https://finlysta.com/finance/financial-analysis
+- **Category:** Finance
 - **What You'll Learn:**
   - Financial modeling basics
   - Ratio analysis
@@ -138,14 +151,14 @@ Finlysta helps learners build practical spreadsheet and analyst skills through s
 
 ## Excel Learning Topics
 
-### Core Excel Skills
-- Lookup Functions (VLOOKUP, XLOOKUP, INDEX MATCH)
-- Conditional Formulas (SUMIFS, COUNTIFS, AVERAGEIFS)
-- Pivot Tables & Data Analysis
-- Power Query & Data Transformation
-- Data Cleaning & Preparation
-- Excel Dashboards & Reporting
-- Financial Modeling & Analysis
+### Excel Functions (All in /excel-functions/)
+- VLOOKUP & XLOOKUP
+- INDEX & MATCH
+- SUMIFS & COUNTIFS
+- Pivot Tables
+- Power Query
+- Data Cleaning
+- Excel Dashboards (Coming Soon)
 
 ### Interview Preparation
 - Advanced Excel Interview Questions
@@ -187,6 +200,11 @@ Finlysta follows a practical-first learning approach:
 **Take Assessment:** https://finlysta.com/assessment
 **Interview Prep:** https://finlysta.com/interview-prep
 **VLOOKUP Guide:** https://finlysta.com/excel-functions/vlookup
+**INDEX MATCH Guide:** https://finlysta.com/excel-functions/index-match
+**SUMIFS Guide:** https://finlysta.com/excel-functions/sumifs
+**Pivot Tables Guide:** https://finlysta.com/excel-functions/pivot-tables
+**Power Query Guide:** https://finlysta.com/excel-functions/power-query
+**Data Cleaning Guide:** https://finlysta.com/excel-functions/data-cleaning
 **Contact:** https://finlysta.com/contact
 **About:** https://finlysta.com/about
 
@@ -207,6 +225,11 @@ Target keywords include:
 - Excel skills for freshers
 - Excel assessment test
 - Excel practical test
+- SUMIFS Excel
+- COUNTIFS Excel
+- Excel data transformation
+- Power Query M language
+- Excel data preparation
 
 ---
 

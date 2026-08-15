@@ -21,19 +21,19 @@ const excelTopics = [
     title: "Pivot Tables",
     description:
       "Analyze and summarize business data with practical Excel exercises.",
-    href: "/excel/pivot-tables",
+    href: "/excel-functions/pivot-tables",
   },
   {
     title: "Power Query",
     description:
       "Practice cleaning, transforming and preparing data for analysis.",
-    href: "/excel/power-query",
+    href: "/excel-functions/power-query",
   },
   {
     title: "Data Cleaning",
     description:
       "Identify and fix common data-quality problems found in spreadsheets.",
-    href: "/excel/data-cleaning",
+    href: "/excel-functions/data-cleaning",
   },
   {
     title: "Excel Dashboards",
@@ -55,6 +55,24 @@ const interviewTopics = [
     description:
       "Test your knowledge of formulas, lookup functions, Pivot Tables and more.",
     href: "/interview-prep",
+  },
+  {
+    title: "Finance Interview Excel Test",
+    description:
+      "Practice financial modeling, valuation and accounting scenarios.",
+    href: "/finance/financial-analysis",
+  },
+  {
+    title: "Data Analyst Excel Assessment",
+    description:
+      "Test your skills in data cleaning, Power Query, and dashboard creation.",
+    href: "/excel/data-cleaning",
+  },
+  {
+    title: "Consulting Case Study Excel",
+    description:
+      "Solve business problems using Excel analysis and presentation skills.",
+    href: "/excel/dashboards",
   },
 ];
 
@@ -202,6 +220,18 @@ export default function Home() {
         </div>
       </header>
 
+      {/* Pivot Announcement Banner */}
+      <div className="border-b border-blue-200 bg-blue-50">
+        <div className="mx-auto max-w-7xl px-5 py-3 text-center text-sm sm:px-6 lg:px-8">
+          <span className="font-semibold text-blue-700">🚀 New:</span>
+          <span className="text-slate-700">
+            {" "}
+            Finlysta is now a dedicated Excel practice platform — built for
+            students and freshers to master interview-ready skills.
+          </span>
+        </div>
+      </div>
+
       {/* Hero */}
       <section className="border-b border-slate-200">
         <div className="mx-auto max-w-7xl px-5 py-16 sm:px-6 sm:py-20 lg:px-8 lg:py-28">
@@ -213,15 +243,17 @@ export default function Home() {
             <h1 className="text-4xl font-extrabold tracking-tight text-slate-950 sm:text-5xl lg:text-6xl">
               Practice the skills.
               <br />
-              <span className="text-blue-600">
-                Get interview ready.
-              </span>
+              <span className="text-blue-600">Get interview ready.</span>
             </h1>
 
             <p className="mx-auto mt-6 max-w-2xl text-base leading-7 text-slate-600 sm:text-lg sm:leading-8">
-              Build practical Excel, finance and analytical skills through
-              realistic challenges, assessments and interview questions
-              designed for students, freshers and entry-level professionals.
+              Build practical Excel, finance and analytical skills through realistic challenges, assessments and interview questions designed for students, freshers and entry-level professionals. Instead of watching passive tutorials, you'll solve the type of problems employers actually test in interviews — from VLOOKUP and Pivot Tables to financial modeling and data cleaning.
+            </p>
+
+            <p className="mx-auto mt-4 max-w-2xl text-sm text-slate-500">
+              <span className="font-semibold">20+ practice questions</span> ·
+              <span className="font-semibold"> Real interview scenarios</span> ·
+              <span className="font-semibold"> Free to start</span>
             </p>
 
             <div className="mt-9 flex flex-col justify-center gap-3 sm:flex-row">
@@ -481,7 +513,7 @@ export default function Home() {
             </p>
           </div>
 
-          <div className="mt-10 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          <div className="mt-10 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
             {interviewTopics.map((topic) => (
               <a
                 key={topic.title}
@@ -534,6 +566,37 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Why We Pivoted */}
+      <section className="border-y border-slate-200 bg-white">
+        <div className="mx-auto max-w-7xl px-5 py-16 sm:px-6 sm:py-20 lg:px-8">
+          <div className="mx-auto max-w-3xl text-center">
+            <p className="text-sm font-bold uppercase tracking-wider text-blue-600">
+              Our Story
+            </p>
+            <h2 className="mt-3 text-3xl font-extrabold tracking-tight sm:text-4xl">
+              From Job Platform to Excel Practice
+            </h2>
+            <p className="mt-5 text-base leading-7 text-slate-600 sm:text-lg sm:leading-8">
+              Finlysta started as a job and internship platform. But we
+              quickly realized that the biggest barrier for students wasn't
+              finding jobs — it was passing the Excel tests that employers
+              use to screen candidates.
+            </p>
+            <p className="mt-4 text-base leading-7 text-slate-600 sm:text-lg sm:leading-8">
+              So we pivoted. Today, we're building the most practical,
+              hands-on Excel practice platform for students, freshers, and
+              entry-level professionals.
+            </p>
+            <a
+              href="/about"
+              className="mt-6 inline-block text-sm font-bold text-blue-600 transition hover:text-blue-800"
+            >
+              Learn more about our story →
+            </a>
+          </div>
+        </div>
+      </section>
+
       {/* FAQ */}
       <section>
         <div className="mx-auto max-w-4xl px-5 py-16 sm:px-6 sm:py-20">
@@ -547,7 +610,8 @@ export default function Home() {
             </h2>
 
             <p className="mx-auto mt-4 max-w-2xl text-slate-600">
-              Find answers to common questions about Finlysta and Excel practice.
+              Find answers to common questions about Finlysta and Excel
+              practice.
             </p>
           </div>
 
@@ -561,7 +625,7 @@ export default function Home() {
                   <div className="flex items-center justify-between gap-4">
                     <span className="flex items-center gap-3">
                       <span className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-50 text-sm font-bold text-blue-600 group-hover:bg-blue-100">
-                        {String(index + 1).padStart(2, '0')}
+                        {String(index + 1).padStart(2, "0")}
                       </span>
                       {faq.question}
                     </span>
@@ -580,6 +644,77 @@ export default function Home() {
                 </div>
               </details>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Resources / Blog */}
+      <section className="border-t border-slate-200 bg-slate-50">
+        <div className="mx-auto max-w-7xl px-5 py-16 sm:px-6 sm:py-20 lg:px-8">
+          <div className="mx-auto max-w-3xl text-center">
+            <p className="text-sm font-bold uppercase tracking-wider text-blue-600">
+              Resources
+            </p>
+            <h2 className="mt-3 text-3xl font-extrabold tracking-tight sm:text-4xl">
+              Tips & Guides for Excel Interviews
+            </h2>
+            <p className="mx-auto mt-4 max-w-2xl text-slate-600">
+              Free articles to help you prepare for Excel assessments and
+              interviews.
+            </p>
+          </div>
+
+          <div className="mt-10 grid gap-5 md:grid-cols-3">
+            <a
+              href="/blog/top-excel-interview-questions"
+              className="group rounded-xl border border-slate-200 bg-white p-6 transition hover:shadow-md"
+            >
+              <p className="text-sm font-semibold text-blue-600">Article</p>
+              <h3 className="mt-2 text-lg font-bold text-slate-900 group-hover:text-blue-600">
+                Top 10 Excel Interview Questions for Finance Roles
+              </h3>
+              <p className="mt-2 text-sm text-slate-500">
+                Learn which Excel skills are most commonly tested in finance
+                interviews.
+              </p>
+              <span className="mt-4 inline-block text-sm font-bold text-blue-600">
+                Read More →
+              </span>
+            </a>
+
+            <a
+              href="/blog/how-to-practice-vlookup"
+              className="group rounded-xl border border-slate-200 bg-white p-6 transition hover:shadow-md"
+            >
+              <p className="text-sm font-semibold text-blue-600">Article</p>
+              <h3 className="mt-2 text-lg font-bold text-slate-900 group-hover:text-blue-600">
+                How to Practice VLOOKUP for a Job Test
+              </h3>
+              <p className="mt-2 text-sm text-slate-500">
+                A step-by-step guide to mastering VLOOKUP for practical
+                assessments.
+              </p>
+              <span className="mt-4 inline-block text-sm font-bold text-blue-600">
+                Read More →
+              </span>
+            </a>
+
+            <a
+              href="/blog/excel-assessment-tips"
+              className="group rounded-xl border border-slate-200 bg-white p-6 transition hover:shadow-md"
+            >
+              <p className="text-sm font-semibold text-blue-600">Article</p>
+              <h3 className="mt-2 text-lg font-bold text-slate-900 group-hover:text-blue-600">
+                5 Tips to Ace Your Excel Skills Assessment
+              </h3>
+              <p className="mt-2 text-sm text-slate-500">
+                Practical advice on how to prepare and perform well in Excel
+                tests.
+              </p>
+              <span className="mt-4 inline-block text-sm font-bold text-blue-600">
+                Read More →
+              </span>
+            </a>
           </div>
         </div>
       </section>

@@ -1,32 +1,33 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "VLOOKUP in Excel: Formula, Examples & Practice",
+  title: "INDEX & MATCH in Excel: Formula, Examples & Practice",
   description:
-    "Learn VLOOKUP in Excel with formula syntax, examples, exact and approximate matches, common errors, multiple criteria, VLOOKUP vs XLOOKUP, interview questions and practical exercises.",
+    "Learn INDEX & MATCH in Excel with formula syntax, examples, lookup techniques, two-way lookups, vertical and horizontal searches, common errors, interview questions and practical exercises.",
   keywords: [
-    "VLOOKUP",
-    "VLOOKUP Excel",
-    "VLOOKUP formula",
-    "how to use VLOOKUP",
-    "VLOOKUP example",
+    "INDEX MATCH",
+    "INDEX MATCH Excel",
+    "INDEX MATCH formula",
+    "how to use INDEX MATCH",
+    "INDEX MATCH example",
     "Excel lookup formula",
     "Excel lookup function",
-    "VLOOKUP for beginners",
-    "VLOOKUP interview questions",
-    "VLOOKUP multiple criteria",
-    "VLOOKUP two criteria",
-    "VLOOKUP vs XLOOKUP",
-    "VLOOKUP practice",
+    "INDEX MATCH for beginners",
+    "INDEX MATCH interview questions",
+    "INDEX MATCH vs VLOOKUP",
+    "INDEX MATCH two-way lookup",
+    "INDEX MATCH practice",
+    "Excel INDEX function",
+    "Excel MATCH function",
   ],
   alternates: {
-    canonical: "/excel-functions/vlookup",
+    canonical: "/excel-functions/index-match",
   },
   openGraph: {
-    title: "VLOOKUP in Excel: Formula, Examples & Practice",
+    title: "INDEX & MATCH in Excel: Formula, Examples & Practice",
     description:
-      "Learn VLOOKUP in Excel with formulas, examples, common errors, interview questions and practical exercises.",
-    url: "https://finlysta.com/excel-functions/vlookup",
+      "Learn INDEX & MATCH in Excel with formulas, examples, two-way lookups, common errors, interview questions and practical exercises.",
+    url: "https://finlysta.com/excel-functions/index-match",
     siteName: "Finlysta",
     type: "article",
     images: [
@@ -34,140 +35,140 @@ export const metadata: Metadata = {
         url: "/og-image.png",
         width: 1200,
         height: 630,
-        alt: "VLOOKUP in Excel - Formula, Examples & Practice",
+        alt: "INDEX & MATCH in Excel - Formula, Examples & Practice",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "VLOOKUP in Excel: Formula, Examples & Practice",
+    title: "INDEX & MATCH in Excel: Formula, Examples & Practice",
     description:
-      "Learn VLOOKUP formulas, examples, common errors and practical Excel interview questions.",
+      "Learn INDEX & MATCH formulas, examples, common errors and practical Excel interview questions.",
     images: ["/og-image.png"],
   },
 };
 
 const faqs = [
   {
-    question: "What is VLOOKUP in Excel?",
+    question: "What is INDEX & MATCH in Excel?",
     answer:
-      "VLOOKUP is an Excel lookup function that searches for a value in the first column of a table and returns a related value from another column in the same row.",
+      "INDEX & MATCH is a powerful Excel lookup technique that combines the INDEX and MATCH functions. MATCH finds the position of a value in a range, and INDEX returns the value at that position from another range.",
   },
   {
-    question: "What is the VLOOKUP formula?",
+    question: "What is the INDEX & MATCH formula?",
     answer:
-      "The basic VLOOKUP syntax is =VLOOKUP(lookup_value, table_array, col_index_num, [range_lookup]). The fourth argument determines whether Excel should use an exact or approximate match.",
+      "The basic INDEX & MATCH syntax is =INDEX(return_range, MATCH(lookup_value, lookup_range, [match_type])). MATCH finds the position of the lookup value, and INDEX returns the value from that position in the return range.",
   },
   {
-    question: "How do I use VLOOKUP in Excel?",
+    question: "How is INDEX & MATCH different from VLOOKUP?",
     answer:
-      "To use VLOOKUP, identify the value you want to find, select the table containing the lookup value and result, specify the result column number, and choose FALSE when an exact match is required.",
+      "Unlike VLOOKUP, INDEX & MATCH can look up values in any direction—left, right, up, or down. It also handles column insertions better because you don't need to count column numbers.",
   },
   {
-    question: "What does FALSE mean in VLOOKUP?",
+    question: "What does the match type mean in MATCH?",
     answer:
-      "FALSE tells VLOOKUP to find an exact match. It is commonly used when looking up employee IDs, product codes, invoice numbers and other unique identifiers.",
+      "MATCH offers three match types: 0 for exact match, 1 for less than (sorted ascending), and -1 for greater than (sorted descending). 0 is the most commonly used for exact matching.",
   },
   {
-    question: "What does TRUE mean in VLOOKUP?",
+    question: "Can INDEX & MATCH be used for two-way lookups?",
     answer:
-      "TRUE tells VLOOKUP to perform an approximate match. The first column of the lookup table should generally be sorted in ascending order for reliable approximate matching.",
+      "Yes, INDEX & MATCH can perform two-way lookups by using MATCH for both the row and column positions. This allows you to find a value at the intersection of a specific row and column.",
   },
   {
-    question: "Can VLOOKUP look to the left?",
+    question: "Is INDEX & MATCH better than XLOOKUP?",
     answer:
-      "Traditional VLOOKUP cannot return a value from a column to the left of the lookup column. INDEX MATCH or XLOOKUP can be used when a left lookup is required.",
+      "XLOOKUP is more modern and easier to use, but INDEX & MATCH is still important because many older workbooks use it. It's also useful in Excel versions that don't have XLOOKUP.",
   },
   {
-    question: "Can VLOOKUP use multiple criteria?",
+    question: "Can INDEX & MATCH look to the left?",
     answer:
-      "VLOOKUP does not directly handle multiple independent criteria in its basic form. A helper column or combined lookup key can be created to combine multiple criteria into one lookup value.",
+      "Yes, INDEX & MATCH can return values from columns to the left of the lookup column, which is a major limitation of VLOOKUP.",
   },
   {
-    question: "What is the difference between VLOOKUP and XLOOKUP?",
+    question: "How do I handle errors in INDEX & MATCH?",
     answer:
-      "VLOOKUP uses a column index number and normally returns values from columns to the right of the lookup column. XLOOKUP is more flexible and can return values from either side of the lookup range.",
+      "You can wrap INDEX & MATCH with IFERROR or IFNA to handle errors. For example: =IFERROR(INDEX(B:B, MATCH(D2, A:A, 0)), 'Not Found').",
   },
 ];
 
 const interviewQuestions = [
   {
-    question: "What is VLOOKUP in Excel?",
+    question: "What is INDEX & MATCH in Excel?",
     answer:
-      "VLOOKUP is a vertical lookup function. It searches for a value in the first column of a selected table and returns a related value from another column in the same row.",
+      "INDEX & MATCH is a lookup combination that finds a value using two functions: MATCH returns the position of a value, and INDEX returns the value at a given position.",
   },
   {
-    question: "Explain the syntax of the VLOOKUP formula.",
+    question: "Explain the syntax of INDEX & MATCH.",
     answer:
-      "=VLOOKUP(lookup_value, table_array, col_index_num, [range_lookup]). The lookup_value is what you want to find, table_array is the lookup table, col_index_num specifies the return column, and range_lookup determines exact or approximate matching.",
+      "=INDEX(return_range, MATCH(lookup_value, lookup_range, [match_type])). MATCH finds the position, and INDEX returns the value from that position in the return range.",
   },
   {
-    question: "What is the difference between TRUE and FALSE in VLOOKUP?",
+    question: "What is the advantage of INDEX & MATCH over VLOOKUP?",
     answer:
-      "FALSE performs an exact match, while TRUE performs an approximate match. FALSE is commonly preferred when matching IDs, codes and other unique values.",
+      "INDEX & MATCH is more flexible because it can look up values in any direction. It's also more reliable when columns are inserted or deleted, since you don't rely on column index numbers.",
   },
   {
-    question: "Why does VLOOKUP return #N/A?",
+    question: "How do you perform an exact match with INDEX & MATCH?",
     answer:
-      "VLOOKUP returns #N/A when it cannot find the lookup value. Common causes include spelling differences, extra spaces, incorrect ranges, different data types or a lookup value that does not exist in the first column.",
+      "Use 0 as the match type in MATCH. For example: =INDEX(B:B, MATCH(D2, A:A, 0)). This finds an exact match for D2 in column A and returns the corresponding value from column B.",
   },
   {
-    question: "Can VLOOKUP look to the left?",
+    question: "Can INDEX & MATCH work with multiple criteria?",
     answer:
-      "No. Traditional VLOOKUP searches the first column of the selected table and returns a value from a column to its right. INDEX MATCH or XLOOKUP can be used for left lookups.",
+      "Yes, you can use an array formula with multiple MATCH functions or combine criteria into a helper column. The formula =INDEX(return_range, MATCH(1, (criteria1_range=criteria1)*(criteria2_range=criteria2), 0)) is one approach.",
   },
   {
-    question: "What is the difference between VLOOKUP and XLOOKUP?",
+    question: "How do you handle #N/A errors in INDEX & MATCH?",
     answer:
-      "VLOOKUP requires a table and column index number, while XLOOKUP uses separate lookup and return ranges. XLOOKUP is more flexible because it can perform lookups in either direction.",
+      "Wrap the formula with IFERROR. For example: =IFERROR(INDEX(B:B, MATCH(D2, A:A, 0)), 'Not Found'). This displays a custom message instead of the error.",
   },
   {
-    question: "How would you use VLOOKUP with multiple criteria?",
+    question: "What's the difference between INDEX & MATCH and VLOOKUP?",
     answer:
-      "A common approach is to create a helper column that combines the criteria into one lookup key. For example, Employee ID and Month could be combined into a single value and then used with VLOOKUP.",
+      "INDEX & MATCH offers more flexibility—it can search in any direction, handles column insertions better, and is more efficient for large datasets. VLOOKUP is simpler but more limited.",
   },
   {
-    question: "How can you prevent VLOOKUP errors?",
+    question: "What is a two-way lookup in Excel?",
     answer:
-      "You can use IFERROR around VLOOKUP to display a custom message or alternative value when the lookup returns an error. You should also check the lookup range, data types, spaces and lookup value.",
+      "A two-way lookup searches for a value at the intersection of a specific row and column. It uses INDEX with two MATCH functions—one for the row position and one for the column position.",
   },
 ];
 
 const mistakes = [
   {
-    title: "Using the wrong column index",
+    title: "Using the wrong range in MATCH",
     description:
-      "The column index determines which column VLOOKUP returns. Count the columns starting from the first column of the selected table array.",
+      "The MATCH function searches in one row or one column. Make sure you're searching in a range that is either entirely vertical or entirely horizontal.",
   },
   {
-    title: "Using TRUE accidentally",
+    title: "Incorrect match type in MATCH",
     description:
-      "If you need an exact match but use TRUE or omit the final argument, Excel may return an unexpected result. Use FALSE for exact matching.",
+      "Use 0 for exact match, 1 for less-than (sorted ascending), and -1 for greater-than (sorted descending). 0 is the most common choice for lookups.",
   },
   {
-    title: "Lookup value is not in the first column",
+    title: "Using inconsistent ranges",
     description:
-      "Traditional VLOOKUP searches for the lookup value in the first column of the selected table array.",
+      "The return_range in INDEX and the lookup_range in MATCH should be the same size. If one has 100 rows and the other has 100 rows, they should match.",
   },
   {
-    title: "Extra spaces or inconsistent data",
+    title: "Not locking ranges with $",
     description:
-      "Extra spaces and inconsistent data types can prevent VLOOKUP from finding a match. Cleaning and standardizing the source data can resolve these problems.",
+      "When copying INDEX & MATCH formulas, use absolute references ($A$1:$A$100) to prevent the ranges from shifting.",
   },
   {
     title: "Ignoring #N/A errors",
     description:
-      "#N/A generally means Excel could not find the requested lookup value. Check the lookup value, source range and formatting before changing the formula.",
+      "#N/A means MATCH could not find the lookup value. Check for extra spaces, inconsistent formatting, or missing values.",
   },
 ];
 
-export default function VlookupPage() {
+export default function IndexMatchPage() {
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "Article",
-    headline: "VLOOKUP in Excel: Formula, Examples & Practice",
+    headline: "INDEX & MATCH in Excel: Formula, Examples & Practice",
     description:
-      "Learn VLOOKUP in Excel with formulas, examples, common errors, interview questions and practical exercises.",
+      "Learn INDEX & MATCH in Excel with formulas, examples, common errors, interview questions and practical exercises.",
     author: {
       "@type": "Organization",
       name: "Finlysta",
@@ -178,7 +179,7 @@ export default function VlookupPage() {
     },
     mainEntityOfPage: {
       "@type": "WebPage",
-      "@id": "https://finlysta.com/excel-functions/vlookup",
+      "@id": "https://finlysta.com/excel-functions/index-match",
     },
   };
 
@@ -214,8 +215,8 @@ export default function VlookupPage() {
       {
         "@type": "ListItem",
         position: 3,
-        name: "VLOOKUP",
-        item: "https://finlysta.com/excel-functions/vlookup",
+        name: "INDEX & MATCH",
+        item: "https://finlysta.com/excel-functions/index-match",
       },
     ],
   };
@@ -325,7 +326,7 @@ export default function VlookupPage() {
                   href="/excel-functions/index-match"
                   className="block px-4 py-2 text-sm text-slate-700 transition hover:bg-blue-50 hover:text-blue-600"
                 >
-                  INDEX MATCH
+                  INDEX & MATCH
                 </a>
                 <a
                   href="/excel-functions/sumifs"
@@ -363,7 +364,7 @@ export default function VlookupPage() {
                 </a>
               </li>
               <li className="text-slate-300">/</li>
-              <li className="font-semibold text-slate-900">VLOOKUP</li>
+              <li className="font-semibold text-slate-900">INDEX & MATCH</li>
             </ol>
           </nav>
         </div>
@@ -382,13 +383,13 @@ export default function VlookupPage() {
           </div>
 
           <h1 className="mt-4 max-w-4xl text-4xl font-extrabold tracking-tight text-slate-950 sm:text-5xl lg:text-6xl">
-            VLOOKUP in Excel: Formula, Examples & Practice
+            INDEX & MATCH in Excel: Formula, Examples & Practice
           </h1>
 
           <p className="mt-6 max-w-3xl text-lg leading-8 text-slate-600 sm:text-xl">
-            Learn how to use VLOOKUP in Excel with simple formulas,
-            practical examples, exact and approximate matches, common
-            mistakes and interview-focused exercises.
+            Learn how to use INDEX & MATCH in Excel with simple formulas,
+            practical examples, flexible lookups, common mistakes and
+            interview-focused exercises.
           </p>
 
           <div className="mt-4 flex flex-wrap items-center gap-4 text-sm text-slate-500">
@@ -408,10 +409,10 @@ export default function VlookupPage() {
             </a>
 
             <a
-              href="/excel-functions/index-match"
+              href="/excel-functions/vlookup"
               className="rounded-xl border border-slate-300 bg-white px-6 py-3.5 text-center font-bold text-slate-800 transition hover:bg-slate-50"
             >
-              Learn INDEX MATCH
+              Learn VLOOKUP
             </a>
           </div>
         </div>
@@ -419,108 +420,97 @@ export default function VlookupPage() {
 
       {/* Main content */}
       <div className="mx-auto max-w-4xl px-5 py-12 sm:px-6 sm:py-16">
-        {/* What is VLOOKUP */}
+        {/* What is INDEX & MATCH */}
         <section>
           <h2 className="text-3xl font-extrabold tracking-tight sm:text-4xl">
-            What Is VLOOKUP in Excel?
+            What Is INDEX & MATCH in Excel?
           </h2>
 
           <p className="mt-5 text-base leading-8 text-slate-600 sm:text-lg">
-            VLOOKUP stands for <strong>Vertical Lookup</strong>. It is one of the most commonly used Excel lookup functions.
+            INDEX & MATCH is a powerful Excel lookup technique that combines two functions to find and return values. It is often considered superior to VLOOKUP because it is more flexible and reliable.
           </p>
 
           <p className="mt-4 text-base leading-8 text-slate-600 sm:text-lg">
-            It allows you to search for a value in the first column of a table and return related information from another column in the same row.
+            The MATCH function finds the position of a value in a row or column. The INDEX function returns a value from a specific position in a range. Together, they create a dynamic and flexible lookup solution.
           </p>
 
           <p className="mt-4 text-base leading-8 text-slate-600 sm:text-lg">
-            VLOOKUP is frequently used in finance, accounting, reporting, operations and analyst roles.
-          </p>
-
-          <p className="mt-4 text-base leading-8 text-slate-600 sm:text-lg">
-            For example, you can use it to find an employee's department from an Employee ID, retrieve a product price from a product code, or match customer information across tables.
+            INDEX & MATCH is frequently used in finance, accounting, data analysis and consulting roles. It's especially useful when you need to look up values to the left, search in two dimensions, or maintain reliable spreadsheets when columns are added or removed.
           </p>
 
           <div className="mt-6 rounded-2xl border border-blue-100 bg-blue-50 p-6">
             <p className="font-bold text-blue-900">📌 Why this matters for interviews</p>
             <p className="mt-2 leading-7 text-blue-900/80">
-              VLOOKUP is one of the most frequently tested Excel functions in 
-              interviews for finance, accounting, data analysis, and consulting roles. 
-              Interviewers often ask you to explain the syntax, troubleshoot errors, 
-              or use it in a practical scenario.
+              INDEX & MATCH is a favorite interview topic because it tests deeper Excel knowledge. Interviewers ask about it to see if you understand the limitations of VLOOKUP and can build more robust solutions.
             </p>
           </div>
         </section>
 
-        {/* Formula */}
+        {/* How it works */}
         <section className="mt-16">
           <h2 className="text-3xl font-extrabold tracking-tight sm:text-4xl">
-            VLOOKUP Formula
+            How INDEX & MATCH Works
           </h2>
+
+          <p className="mt-5 leading-8 text-slate-600">
+            INDEX & MATCH uses two functions:
+          </p>
+
+          <div className="mt-6 grid gap-4 sm:grid-cols-2">
+            <div className="rounded-2xl border border-slate-200 bg-white p-6">
+              <p className="text-sm font-bold uppercase tracking-wider text-blue-600">
+                INDEX
+              </p>
+              <p className="mt-3 text-xl font-bold text-slate-900">
+                INDEX(return_range, row_num, [column_num])
+              </p>
+              <p className="mt-3 text-sm leading-6 text-slate-600">
+                Returns a value from a range at a specific row (and column) position.
+              </p>
+            </div>
+
+            <div className="rounded-2xl border border-slate-200 bg-white p-6">
+              <p className="text-sm font-bold uppercase tracking-wider text-blue-600">
+                MATCH
+              </p>
+              <p className="mt-3 text-xl font-bold text-slate-900">
+                MATCH(lookup_value, lookup_range, [match_type])
+              </p>
+              <p className="mt-3 text-sm leading-6 text-slate-600">
+                Returns the position of a value within a row or column. Use 0 for exact match.
+              </p>
+            </div>
+          </div>
 
           <div className="mt-6 overflow-x-auto rounded-2xl bg-slate-950 p-5 sm:p-7">
             <code className="whitespace-nowrap font-mono text-sm text-white sm:text-base">
-              =VLOOKUP(lookup_value, table_array, col_index_num, [range_lookup])
+              =INDEX(return_range, MATCH(lookup_value, lookup_range, 0))
             </code>
           </div>
 
-          <div className="mt-6 overflow-hidden rounded-2xl border border-slate-200">
-            <div className="grid grid-cols-1 divide-y divide-slate-200 sm:grid-cols-2 sm:divide-y-0">
-              {[
-                [
-                  "lookup_value",
-                  "The value you want Excel to find.",
-                ],
-                [
-                  "table_array",
-                  "The range containing the lookup value and result.",
-                ],
-                [
-                  "col_index_num",
-                  "The number of the column containing the result.",
-                ],
-                [
-                  "range_lookup",
-                  "TRUE for approximate match or FALSE for exact match.",
-                ],
-              ].map(([term, description]) => (
-                <div
-                  key={term}
-                  className="border-slate-200 p-5 sm:border-b sm:border-r"
-                >
-                  <p className="font-bold text-slate-900">{term}</p>
-
-                  <p className="mt-2 text-sm leading-6 text-slate-600">
-                    {description}
-                  </p>
-                </div>
-              ))}
-            </div>
-          </div>
+          <p className="mt-5 leading-8 text-slate-600">
+            MATCH finds the position of the lookup value in the lookup_range. INDEX then returns the value from the same position in the return_range.
+          </p>
         </section>
 
         {/* Example */}
         <section className="mt-16">
           <h2 className="text-3xl font-extrabold tracking-tight sm:text-4xl">
-            VLOOKUP Example
+            INDEX & MATCH Example
           </h2>
 
           <p className="mt-5 leading-8 text-slate-600">
-            Imagine you have an employee table containing Employee ID,
-            Department and Salary. The Employee ID you want to search is in
-            cell E2.
+            Let's say you have an employee table with Employee ID in column A and Department in column B. You want to find the department for Employee ID "EMP103".
           </p>
 
           <div className="mt-6 overflow-x-auto rounded-2xl bg-slate-950 p-5 sm:p-7">
             <code className="whitespace-nowrap font-mono text-sm text-white sm:text-base">
-              =VLOOKUP(E2,A2:C100,2,FALSE)
+              =INDEX(B:B, MATCH("EMP103", A:A, 0))
             </code>
           </div>
 
           <p className="mt-5 leading-8 text-slate-600">
-            This formula searches for the value in E2 in the first column
-            of A2:C100 and returns the corresponding value from the second
-            column. FALSE tells Excel to find an exact match.
+            MATCH finds "EMP103" in column A (position 3) and INDEX returns the value from position 3 in column B ("Operations").
           </p>
 
           <div className="mt-8 overflow-x-auto rounded-2xl border border-slate-200">
@@ -530,30 +520,25 @@ export default function VlookupPage() {
                   <th className="whitespace-nowrap p-4 font-bold">
                     Employee ID
                   </th>
-
                   <th className="whitespace-nowrap p-4 font-bold">
                     Department
                   </th>
-
                   <th className="whitespace-nowrap p-4 font-bold">
                     Salary
                   </th>
                 </tr>
               </thead>
-
               <tbody>
                 <tr className="border-t border-slate-200">
                   <td className="p-4">EMP101</td>
                   <td className="p-4">Finance</td>
                   <td className="p-4">₹45,000</td>
                 </tr>
-
                 <tr className="border-t border-slate-200">
                   <td className="p-4">EMP102</td>
                   <td className="p-4">Accounting</td>
                   <td className="p-4">₹42,000</td>
                 </tr>
-
                 <tr className="border-t border-slate-200">
                   <td className="p-4">EMP103</td>
                   <td className="p-4">Operations</td>
@@ -564,118 +549,142 @@ export default function VlookupPage() {
           </div>
         </section>
 
-        {/* Exact match */}
+        {/* Left Lookup */}
         <section className="mt-16">
           <h2 className="text-3xl font-extrabold tracking-tight sm:text-4xl">
-            VLOOKUP Exact Match
+            INDEX & MATCH Left Lookup
           </h2>
 
           <p className="mt-5 leading-8 text-slate-600">
-            Exact matching is one of the most important VLOOKUP concepts
-            for Excel interviews. Use FALSE as the fourth argument when you
-            need Excel to find the exact lookup value.
+            One of the biggest advantages of INDEX & MATCH over VLOOKUP is the ability to look up values to the left. VLOOKUP can only return values from columns to the right of the lookup column.
+          </p>
+
+          <p className="mt-4 leading-8 text-slate-600">
+            With INDEX & MATCH, you can search for a value and return a value from a column to the left.
           </p>
 
           <div className="mt-6 overflow-x-auto rounded-2xl bg-slate-950 p-5 sm:p-7">
             <code className="whitespace-nowrap font-mono text-sm text-white sm:text-base">
-              =VLOOKUP(A2,D2:F100,3,FALSE)
+              =INDEX(A:A, MATCH("Operations", B:B, 0))
             </code>
           </div>
 
-          <div className="mt-6 rounded-2xl border border-blue-100 bg-blue-50 p-6">
-            <p className="font-bold text-blue-900">Interview tip</p>
+          <p className="mt-5 leading-8 text-slate-600">
+            This formula searches for "Operations" in column B and returns the Employee ID from column A—a left lookup that VLOOKUP cannot do.
+          </p>
 
-            <p className="mt-2 leading-7 text-blue-900/80">
-              When matching IDs, codes or other unique identifiers,
-              explicitly using FALSE makes your intention clear and avoids
-              accidental approximate matches.
+          <div className="mt-6 rounded-2xl border border-green-100 bg-green-50 p-6">
+            <p className="font-bold text-green-900">💡 Key advantage</p>
+            <p className="mt-2 leading-7 text-green-900/80">
+              Unlike VLOOKUP, INDEX & MATCH can return values from any column—left, right, or even from a completely different range.
             </p>
           </div>
         </section>
 
-        {/* Approximate */}
+        {/* Two-Way Lookup */}
         <section className="mt-16">
           <h2 className="text-3xl font-extrabold tracking-tight sm:text-4xl">
-            VLOOKUP Approximate Match
+            INDEX & MATCH Two-Way Lookup
           </h2>
 
           <p className="mt-5 leading-8 text-slate-600">
-            Approximate matching can be useful when working with ranges
-            such as commission tiers, grades or pricing bands. TRUE tells
-            VLOOKUP to use an approximate match.
+            INDEX & MATCH can perform two-way lookups—finding a value at the intersection of a specific row and column.
           </p>
 
           <div className="mt-6 overflow-x-auto rounded-2xl bg-slate-950 p-5 sm:p-7">
             <code className="whitespace-nowrap font-mono text-sm text-white sm:text-base">
-              =VLOOKUP(A2,D2:E10,2,TRUE)
+              =INDEX(B2:E10, MATCH("RowValue", A2:A10, 0), MATCH("ColumnHeader", B1:E1, 0))
             </code>
           </div>
 
           <p className="mt-5 leading-8 text-slate-600">
-            For approximate matching, the lookup column should generally be
-            sorted in ascending order. Otherwise, the returned result may
-            not be what you expect.
+            One MATCH finds the row position, the other finds the column position. INDEX then returns the value at their intersection. This is one of the most powerful lookup techniques in Excel.
           </p>
         </section>
 
-        {/* How it works */}
+        {/* Multiple Criteria */}
         <section className="mt-16">
           <h2 className="text-3xl font-extrabold tracking-tight sm:text-4xl">
-            How to Use VLOOKUP in Excel
-          </h2>
-
-          <div className="mt-7 space-y-4">
-            {[
-              "Identify the value you want to search for.",
-              "Select a table that contains the lookup value in its first column.",
-              "Choose the column containing the information you want to return.",
-              "Enter the appropriate column index number.",
-              "Use FALSE when you need an exact match.",
-            ].map((item, index) => (
-              <div
-                key={item}
-                className="flex gap-4 rounded-2xl border border-slate-200 p-5"
-              >
-                <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-blue-50 text-sm font-bold text-blue-700">
-                  {index + 1}
-                </span>
-
-                <p className="leading-7 text-slate-700">{item}</p>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        {/* Multiple criteria */}
-        <section className="mt-16">
-          <h2 className="text-3xl font-extrabold tracking-tight sm:text-4xl">
-            VLOOKUP With Multiple Criteria
+            INDEX & MATCH with Multiple Criteria
           </h2>
 
           <p className="mt-5 leading-8 text-slate-600">
-            A standard VLOOKUP works with one lookup value. When a problem
-            requires multiple conditions, such as Employee ID plus Month or
-            Customer plus Product, you can create a combined lookup key in
-            a helper column and use that key with VLOOKUP.
+            INDEX & MATCH can handle multiple criteria by using an array formula or a helper column. Here's the array formula approach:
           </p>
 
           <div className="mt-6 overflow-x-auto rounded-2xl bg-slate-950 p-5 sm:p-7">
             <code className="whitespace-nowrap font-mono text-sm text-white sm:text-base">
-              =A2&amp;"-"&amp;B2
+              =INDEX(return_range, MATCH(1, (criteria1_range=criteria1)*(criteria2_range=criteria2), 0))
             </code>
           </div>
 
-          <p className="mt-5 leading-8 text-slate-600">
-            The combined key can then be used as the lookup value. In newer
-            Excel workflows, XLOOKUP or other approaches may provide a
-            cleaner solution depending on the problem.
-          </p>
+          <div className="mt-6 rounded-2xl border border-yellow-100 bg-yellow-50 p-6">
+            <p className="font-bold text-yellow-900">⚠️ Note</p>
+            <p className="mt-2 leading-7 text-yellow-900/80">
+              This formula works with the criteria AND logic. For newer Excel versions, XLOOKUP or helper columns may provide a cleaner solution.
+            </p>
+          </div>
         </section>
 
-        {/* Errors */}
+        {/* VLOOKUP Comparison */}
         <section className="mt-16">
           <h2 className="text-3xl font-extrabold tracking-tight sm:text-4xl">
-            Common VLOOKUP Errors and Mistakes
+            INDEX & MATCH vs VLOOKUP
+          </h2>
+
+          <p className="mt-5 leading-8 text-slate-600">
+            Both VLOOKUP and INDEX & MATCH are useful lookup tools. Here's when to use each:
+          </p>
+
+          <div className="mt-7 overflow-x-auto rounded-2xl border border-slate-200">
+            <table className="min-w-[620px] w-full text-left text-sm">
+              <thead className="bg-slate-50">
+                <tr>
+                  <th className="p-4 font-bold">Feature</th>
+                  <th className="p-4 font-bold">INDEX & MATCH</th>
+                  <th className="p-4 font-bold">VLOOKUP</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr className="border-t border-slate-200">
+                  <td className="p-4 font-medium">Lookup direction</td>
+                  <td className="p-4">Left, right, up, down</td>
+                  <td className="p-4">Only to the right</td>
+                </tr>
+                <tr className="border-t border-slate-200">
+                  <td className="p-4 font-medium">Column insertion</td>
+                  <td className="p-4">Not affected</td>
+                  <td className="p-4">May break formulas</td>
+                </tr>
+                <tr className="border-t border-slate-200">
+                  <td className="p-4 font-medium">Flexibility</td>
+                  <td className="p-4">Very flexible</td>
+                  <td className="p-4">Limited</td>
+                </tr>
+                <tr className="border-t border-slate-200">
+                  <td className="p-4 font-medium">Learning curve</td>
+                  <td className="p-4">Slightly steeper</td>
+                  <td className="p-4">Easier to learn</td>
+                </tr>
+                <tr className="border-t border-slate-200">
+                  <td className="p-4 font-medium">Two-way lookup</td>
+                  <td className="p-4">Yes</td>
+                  <td className="p-4">No</td>
+                </tr>
+                <tr className="border-t border-slate-200">
+                  <td className="p-4 font-medium">Multiple criteria</td>
+                  <td className="p-4">Yes (with array formula)</td>
+                  <td className="p-4">No</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        {/* Common Errors */}
+        <section className="mt-16">
+          <h2 className="text-3xl font-extrabold tracking-tight sm:text-4xl">
+            Common INDEX & MATCH Errors and Mistakes
           </h2>
 
           <div className="mt-7 space-y-4">
@@ -687,7 +696,6 @@ export default function VlookupPage() {
                 <h3 className="font-bold text-slate-900">
                   {mistake.title}
                 </h3>
-
                 <p className="mt-2 leading-7 text-slate-600">
                   {mistake.description}
                 </p>
@@ -696,65 +704,14 @@ export default function VlookupPage() {
           </div>
         </section>
 
-        {/* Comparison */}
+        {/* Interview Questions */}
         <section className="mt-16">
           <h2 className="text-3xl font-extrabold tracking-tight sm:text-4xl">
-            VLOOKUP vs XLOOKUP
+            INDEX & MATCH Interview Questions
           </h2>
 
           <p className="mt-5 leading-8 text-slate-600">
-            VLOOKUP remains an important Excel skill because it is widely
-            recognized in interviews and existing business workbooks.
-            XLOOKUP provides a more flexible modern lookup approach.
-          </p>
-
-          <div className="mt-7 overflow-x-auto rounded-2xl border border-slate-200">
-            <table className="min-w-[620px] w-full text-left text-sm">
-              <thead className="bg-slate-50">
-                <tr>
-                  <th className="p-4 font-bold">Feature</th>
-                  <th className="p-4 font-bold">VLOOKUP</th>
-                  <th className="p-4 font-bold">XLOOKUP</th>
-                </tr>
-              </thead>
-
-              <tbody>
-                <tr className="border-t border-slate-200">
-                  <td className="p-4">Lookup direction</td>
-                  <td className="p-4">Primarily to the right</td>
-                  <td className="p-4">More flexible</td>
-                </tr>
-
-                <tr className="border-t border-slate-200">
-                  <td className="p-4">Column index number</td>
-                  <td className="p-4">Required</td>
-                  <td className="p-4">Not required</td>
-                </tr>
-
-                <tr className="border-t border-slate-200">
-                  <td className="p-4">Common in older workbooks</td>
-                  <td className="p-4">Yes</td>
-                  <td className="p-4">Less common</td>
-                </tr>
-
-                <tr className="border-t border-slate-200">
-                  <td className="p-4">Modern flexibility</td>
-                  <td className="p-4">Lower</td>
-                  <td className="p-4">Higher</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </section>
-
-        {/* Interview questions */}
-        <section className="mt-16">
-          <h2 className="text-3xl font-extrabold tracking-tight sm:text-4xl">
-            VLOOKUP Interview Questions
-          </h2>
-
-          <p className="mt-5 leading-8 text-slate-600">
-            These are common VLOOKUP questions you may encounter in Excel
+            These are common INDEX & MATCH questions you may encounter in Excel
             interviews and practical assessments.
           </p>
 
@@ -768,14 +725,11 @@ export default function VlookupPage() {
                   <span className="mr-3 text-blue-600 group-open:hidden">
                     +
                   </span>
-
                   <span className="mr-3 hidden text-blue-600 group-open:inline">
                     −
                   </span>
-
                   {item.question}
                 </summary>
-
                 <p className="mt-4 border-t border-slate-100 pt-4 leading-7 text-slate-600">
                   {item.answer}
                 </p>
@@ -814,13 +768,13 @@ export default function VlookupPage() {
           </p>
 
           <h2 className="mt-3 text-3xl font-extrabold tracking-tight">
-            Ready to practice VLOOKUP?
+            Ready to practice INDEX & MATCH?
           </h2>
 
           <p className="mx-auto mt-4 max-w-2xl leading-7 text-slate-600">
             Understanding the formula is only the beginning. Practice
-            realistic Excel scenarios and build confidence using lookup
-            functions in interviews and real-world work.
+            realistic Excel scenarios and build confidence using INDEX & MATCH
+            in interviews and real-world work.
           </p>
 
           <a
@@ -839,20 +793,17 @@ export default function VlookupPage() {
 
           <div className="mt-6 grid gap-4 sm:grid-cols-2">
             <a
-              href="/excel-functions/index-match"
+              href="/excel-functions/vlookup"
               className="rounded-2xl border border-slate-200 p-6 transition hover:border-blue-300 hover:bg-blue-50/40"
             >
               <h3 className="font-bold text-slate-900">
-                INDEX MATCH
+                VLOOKUP & XLOOKUP
               </h3>
-
               <p className="mt-2 text-sm leading-6 text-slate-600">
-                Learn a flexible Excel lookup technique using INDEX and
-                MATCH.
+                Practice lookup formulas with realistic data and business scenarios.
               </p>
-
               <span className="mt-4 inline-block text-sm font-bold text-blue-600">
-                Learn INDEX MATCH →
+                Learn VLOOKUP →
               </span>
             </a>
 
@@ -863,12 +814,9 @@ export default function VlookupPage() {
               <h3 className="font-bold text-slate-900">
                 Excel Practice
               </h3>
-
               <p className="mt-2 text-sm leading-6 text-slate-600">
-                Practice realistic Excel problems for finance and analyst
-                roles.
+                Practice realistic Excel problems for finance and analyst roles.
               </p>
-
               <span className="mt-4 inline-block text-sm font-bold text-blue-600">
                 Start Practice →
               </span>
@@ -881,12 +829,9 @@ export default function VlookupPage() {
               <h3 className="font-bold text-slate-900">
                 SUMIFS & COUNTIFS
               </h3>
-
               <p className="mt-2 text-sm leading-6 text-slate-600">
-                Practice conditional calculations used in reporting and
-                analysis.
+                Practice conditional calculations used in reporting and analysis.
               </p>
-
               <span className="mt-4 inline-block text-sm font-bold text-blue-600">
                 Learn SUMIFS →
               </span>
@@ -899,12 +844,9 @@ export default function VlookupPage() {
               <h3 className="font-bold text-slate-900">
                 Pivot Tables
               </h3>
-
               <p className="mt-2 text-sm leading-6 text-slate-600">
-                Analyze and summarize business data with practical Excel
-                exercises.
+                Analyze and summarize business data with practical Excel exercises.
               </p>
-
               <span className="mt-4 inline-block text-sm font-bold text-blue-600">
                 Learn Pivot Tables →
               </span>
@@ -927,7 +869,6 @@ export default function VlookupPage() {
                 <summary className="cursor-pointer font-bold text-slate-900">
                   {faq.question}
                 </summary>
-
                 <p className="mt-4 leading-7 text-slate-600">
                   {faq.answer}
                 </p>

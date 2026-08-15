@@ -203,22 +203,104 @@ export default function AdvancedExcelPage() {
         }}
       />
 
-      {/* Header */}
-      <header className="border-b border-slate-200 bg-white">
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-5 py-4 sm:px-6">
-          <a href="/" className="flex items-center gap-3">
+      {/* Pivot Announcement Banner */}
+      <div className="border-b border-blue-200 bg-blue-50">
+        <div className="mx-auto max-w-7xl px-5 py-3 text-center text-sm sm:px-6 lg:px-8">
+          <span className="font-semibold text-blue-700">🚀 New:</span>
+          <span className="text-slate-700">
+            {" "}
+            Finlysta is now a dedicated Excel practice platform — built for
+            students and freshers to master interview-ready skills.
+          </span>
+        </div>
+      </div>
+
+      {/* Header with navigation */}
+      <header className="sticky top-0 z-50 border-b border-slate-200 bg-white/95 backdrop-blur">
+        <div className="mx-auto flex max-w-7xl items-center justify-between px-5 py-4 sm:px-6 lg:px-8">
+          <a
+            href="/"
+            className="flex items-center gap-3"
+            aria-label="Finlysta home"
+          >
             <img
               src="/Finlysta.png"
               alt="Finlysta Logo"
-              className="h-10 w-30 rounded-lg object-contain"
+              className="h-16 w-30 rounded-lg object-contain md:h-10 md:w-30"
             />
           </a>
 
-          <a
-            href="/practice"
-            className="rounded-lg bg-blue-600 px-5 py-2.5 text-sm font-bold text-white transition hover:bg-blue-700"
+          <nav
+            aria-label="Main navigation"
+            className="hidden items-center gap-8 text-sm font-semibold md:flex"
           >
-            Practice Excel →
+            <a
+              href="/#practice"
+              className="text-slate-700 transition hover:text-blue-600"
+            >
+              Practice
+            </a>
+
+            <a
+              href="/#topics"
+              className="text-slate-700 transition hover:text-blue-600"
+            >
+              Interview Questions
+            </a>
+
+            <a
+              href="/#how-it-works"
+              className="text-slate-700 transition hover:text-blue-600"
+            >
+              How It Works
+            </a>
+
+            {/* Excel Functions Dropdown */}
+            <div className="group relative">
+              <button className="flex items-center gap-1 text-slate-700 transition hover:text-blue-600">
+                Excel Functions
+                <svg
+                  className="h-4 w-4 transition-transform group-hover:rotate-180"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M19 9l-7 7-7-7"
+                  />
+                </svg>
+              </button>
+              <div className="absolute left-0 mt-2 w-48 rounded-lg border border-slate-200 bg-white py-2 shadow-lg opacity-0 invisible transition-all group-hover:opacity-100 group-hover:visible">
+                <a
+                  href="/excel-functions/vlookup"
+                  className="block px-4 py-2 text-sm text-slate-700 transition hover:bg-blue-50 hover:text-blue-600"
+                >
+                  VLOOKUP
+                </a>
+                <a
+                  href="/excel-functions/index-match"
+                  className="block px-4 py-2 text-sm text-slate-700 transition hover:bg-blue-50 hover:text-blue-600"
+                >
+                  INDEX MATCH
+                </a>
+                <a
+                  href="/excel-functions/sumifs"
+                  className="block px-4 py-2 text-sm text-slate-700 transition hover:bg-blue-50 hover:text-blue-600"
+                >
+                  SUMIFS
+                </a>
+              </div>
+            </div>
+          </nav>
+
+          <a
+            href="/assessment"
+            className="rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-bold text-white shadow-sm transition hover:bg-blue-700 sm:px-5"
+          >
+            Start Assessment
           </a>
         </div>
       </header>
@@ -359,15 +441,132 @@ export default function AdvancedExcelPage() {
               </div>
             ))}
           </div>
+
+          {/* Free Assessment CTA */}
+          <div className="mt-12 rounded-3xl bg-gradient-to-r from-blue-600 to-blue-700 p-7 text-center text-white sm:p-10">
+            <p className="text-sm font-bold uppercase tracking-widest text-blue-200">
+              Free Assessment
+            </p>
+
+            <h2 className="mt-3 text-3xl font-extrabold tracking-tight">
+              How interview-ready is your Excel?
+            </h2>
+
+            <p className="mx-auto mt-4 max-w-2xl leading-7 text-blue-100">
+              Take our free Excel assessment to identify your strengths and
+              weaknesses across the skills commonly tested in interviews.
+            </p>
+
+            <a
+              href="/assessment"
+              className="mt-7 inline-block rounded-xl bg-white px-7 py-3.5 font-bold text-blue-600 transition hover:bg-slate-100"
+            >
+              Take Free Assessment →
+            </a>
+          </div>
         </div>
       </section>
 
       {/* Footer */}
       <footer className="border-t border-slate-200 bg-white">
-        <div className="mx-auto max-w-7xl px-5 py-6 sm:px-6">
-          <p className="text-center text-sm text-slate-400">
-            © 2026 Finlysta. Practice skills. Get interview ready.
-          </p>
+        <div className="mx-auto max-w-7xl px-5 py-12 sm:px-6 lg:px-8">
+          <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
+            {/* Brand */}
+            <div className="sm:col-span-2 lg:col-span-1">
+              <a href="/" className="flex items-center gap-3">
+                <img
+                  src="/Finlysta.png"
+                  alt="Finlysta Logo"
+                  className="h-16 w-30 rounded-lg object-contain md:h-10 md:w-30"
+                />
+              </a>
+              <p className="mt-3 text-sm text-slate-600">
+                Practice skills. Get interview ready.
+              </p>
+            </div>
+
+            {/* Practice */}
+            <div>
+              <h3 className="text-sm font-semibold uppercase tracking-wider text-slate-900">
+                Practice
+              </h3>
+              <ul className="mt-4 space-y-3">
+                <li>
+                  <a
+                    href="/practice"
+                    className="text-sm text-slate-500 transition hover:text-blue-600"
+                  >
+                    Excel Practice
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="/assessment"
+                    className="text-sm text-slate-500 transition hover:text-blue-600"
+                  >
+                    Excel Assessment
+                  </a>
+                </li>
+              </ul>
+            </div>
+
+            {/* Interview Prep */}
+            <div>
+              <h3 className="text-sm font-semibold uppercase tracking-wider text-slate-900">
+                Interview Prep
+              </h3>
+              <ul className="mt-4 space-y-3">
+                <li>
+                  <a
+                    href="/interview-prep"
+                    className="text-sm text-slate-500 transition hover:text-blue-600"
+                  >
+                    Advanced Excel Interview Questions
+                  </a>
+                </li>
+              </ul>
+            </div>
+
+            {/* Company */}
+            <div>
+              <h3 className="text-sm font-semibold uppercase tracking-wider text-slate-900">
+                Company
+              </h3>
+              <ul className="mt-4 space-y-3">
+                <li>
+                  <a
+                    href="/about"
+                    className="text-sm text-slate-500 transition hover:text-blue-600"
+                  >
+                    About Us
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="/contact"
+                    className="text-sm text-slate-500 transition hover:text-blue-600"
+                  >
+                    Contact Us
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="/privacy"
+                    className="text-sm text-slate-500 transition hover:text-blue-600"
+                  >
+                    Privacy
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          {/* Bottom bar */}
+          <div className="mt-12 border-t border-slate-200 pt-8">
+            <p className="text-center text-sm text-slate-400">
+              © 2026 Finlysta. Practice skills. Get interview ready.
+            </p>
+          </div>
         </div>
       </footer>
     </main>
