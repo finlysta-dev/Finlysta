@@ -9,7 +9,7 @@ export const metadata: Metadata = {
     template: "%s | Finlysta",
   },
   description:
-    "Practice Excel, finance and analytical skills through realistic challenges, assessments and interview questions for students, freshers and entry-level professionals.",
+    "Practice Excel, finance and analytical skills through realistic challenges, assessments and interview questions for students and freshers.",
   keywords: [
     "Excel practice",
     "Excel interview questions",
@@ -80,7 +80,7 @@ export default function RootLayout({
     "name": "Finlysta",
     "url": "https://finlysta.com",
     "logo": "https://finlysta.com/Finlysta.png",
-    "description": "Practice Excel, finance and analytical skills through realistic challenges, assessments and interview questions for students, freshers and entry-level professionals.",
+    "description": "Practice Excel, finance and analytical skills through realistic challenges, assessments and interview questions for students and freshers.",
     "sameAs": [],
     "contactPoint": {
       "@type": "ContactPoint",
