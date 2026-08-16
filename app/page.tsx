@@ -431,16 +431,16 @@ export default function Home() {
                 href={topic.href}
                 className="group rounded-xl border border-slate-200 bg-white p-5 transition hover:-translate-y-0.5 hover:border-blue-300 hover:shadow-md"
               >
-                <h4 className="font-bold text-slate-900 group-hover:text-blue-600">
+                <h3 className="font-bold text-slate-900 group-hover:text-blue-600">
                   {topic.title}
-                </h4>
+                </h3>
 
                 <p className="mt-2 text-sm leading-6 text-slate-500">
                   {topic.description}
                 </p>
 
                 <span className="mt-4 inline-block text-sm font-bold text-blue-600">
-                  Start Practicing {topic.title} →
+                  Practice →
                 </span>
               </a>
             ))}
@@ -483,7 +483,7 @@ export default function Home() {
               href="/practice"
               className="mt-7 inline-block rounded-xl bg-blue-600 px-6 py-3 font-bold text-white transition hover:bg-blue-700"
             >
-              Start Practicing Now →
+              Start Practicing →
             </a>
           </div>
 
@@ -586,16 +586,16 @@ export default function Home() {
                   href={topic.href}
                   className={`rounded-xl border ${colors.border} ${colors.bg} p-5 transition ${colors.hover} hover:shadow-md`}
                 >
-                  <h4 className={`font-bold text-slate-900`}>
+                  <h3 className={`font-bold text-slate-900`}>
                     {topic.title}
-                  </h4>
+                  </h3>
 
                   <p className="mt-2 text-sm leading-6 text-slate-600">
                     {topic.description}
                   </p>
 
                   <span className={`mt-4 inline-block text-sm font-bold ${colors.text}`}>
-                    View {topic.title} →
+                    View →
                   </span>
                 </a>
               );
@@ -627,7 +627,7 @@ export default function Home() {
               href="/practice"
               className="mt-8 inline-block rounded-xl bg-white px-6 py-3 font-bold text-slate-900 transition hover:bg-slate-100"
             >
-              Start Practicing Now
+              Start Practicing
             </a>
           </div>
         </div>
@@ -741,14 +741,14 @@ export default function Home() {
                 <p className="text-sm font-semibold text-blue-600">
                   {post.category}
                 </p>
-                <h4 className="mt-2 text-lg font-bold text-slate-900 group-hover:text-blue-600">
+                <h3 className="mt-2 text-lg font-bold text-slate-900 group-hover:text-blue-600">
                   {post.title}
-                </h4>
+                </h3>
                 <p className="mt-2 text-base leading-6 text-slate-500">
                   {post.description}
                 </p>
                 <span className="mt-4 inline-block text-sm font-bold text-blue-600">
-                  Read Full Article →
+                  Read →
                 </span>
               </a>
             ))}
@@ -772,7 +772,7 @@ export default function Home() {
             href="/assessment"
             className="mt-7 inline-block rounded-xl bg-blue-600 px-7 py-4 font-bold text-white shadow-sm transition hover:bg-blue-700"
           >
-            Take Free Assessment Now →
+            Take Assessment →
           </a>
         </div>
       </section>
