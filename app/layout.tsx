@@ -5,7 +5,7 @@ import "./globals.css";
 export const metadata: Metadata = {
   metadataBase: new URL("https://finlysta.com"),
   title: {
-    default: "Finlysta | Excel Practice & Interview Preparation",
+    default: "Finlysta | Excel Practice & Interview Preparation for Students",
     template: "%s | Finlysta",
   },
   description:
