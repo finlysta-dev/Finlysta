@@ -29,6 +29,7 @@ Finlysta helps learners build practical spreadsheet and analyst skills through s
 | Practice Hub | https://finlysta.com/practice | Excel practice hub with exercises and assessments |
 | Free Assessment | https://finlysta.com/assessment | Excel skills assessment to identify strengths and weaknesses |
 | Interview Prep | https://finlysta.com/interview-prep | Advanced Excel interview questions and answers |
+| Blog | https://finlysta.com/blog | Tips, guides, and articles for Excel interviews |
 
 ### Company Pages
 
@@ -52,6 +53,19 @@ Finlysta helps learners build practical spreadsheet and analyst skills through s
   - Interview questions and practice scenarios
 - **Key Topics:** Lookup functions, Data retrieval, Formula building
 
+### XLOOKUP
+- **URL:** https://finlysta.com/excel-functions/xlookup
+- **Category:** Excel Functions
+- **What You'll Learn:**
+  - XLOOKUP syntax and usage
+  - Exact match vs approximate match
+  - Error handling with if_not_found
+  - Left lookups and flexible searching
+  - Match modes (0, -1, 1, 2)
+  - XLOOKUP vs VLOOKUP vs INDEX MATCH
+  - Interview questions and practice scenarios
+- **Key Topics:** Lookup functions, Data retrieval, Modern Excel
+
 ### INDEX & MATCH
 - **URL:** https://finlysta.com/excel-functions/index-match
 - **Category:** Excel Functions
@@ -63,6 +77,18 @@ Finlysta helps learners build practical spreadsheet and analyst skills through s
   - Advantages over VLOOKUP
   - Interview questions and practice scenarios
 - **Key Topics:** Flexible lookups, Array formulas, Data analysis
+
+### IF & Nested IF
+- **URL:** https://finlysta.com/excel-functions/if
+- **Category:** Excel Functions
+- **What You'll Learn:**
+  - IF function syntax and usage
+  - Nested IF for multiple conditions
+  - IF with AND, OR, NOT functions
+  - Error handling with IFERROR and ISERROR
+  - Real-world decision-making scenarios
+  - Interview questions and practice scenarios
+- **Key Topics:** Logical functions, Conditional logic, Decision-making
 
 ### SUMIFS & COUNTIFS
 - **URL:** https://finlysta.com/excel-functions/sumifs
@@ -121,6 +147,7 @@ Finlysta helps learners build practical spreadsheet and analyst skills through s
   - KPI selection and tracking
   - Charts and visualizations
   - Interactive elements (slicers, timelines)
+  - Consulting case studies
   - Best practices for reporting
 - **Key Topics:** Visualization, Reporting, Decision-making
 
@@ -135,6 +162,68 @@ Finlysta helps learners build practical spreadsheet and analyst skills through s
   - Excel for finance professionals
 - **Key Topics:** Finance, Analysis, Modeling
 
+## Interview Preparation
+
+### Advanced Excel Interview Questions
+- **URL:** https://finlysta.com/interview-prep
+- **Category:** Interview Preparation
+- **What You'll Learn:**
+  - Advanced Excel formulas and functions
+  - Lookup functions (VLOOKUP, XLOOKUP, INDEX MATCH)
+  - Pivot Tables and data analysis
+  - Financial modeling scenarios
+  - Real-world business problems
+  - Interview tips and strategies
+
+### Finance Interview Questions
+- **URL:** https://finlysta.com/interview-prep/finance
+- **Category:** Interview Preparation
+- **What You'll Learn:**
+  - Financial modeling and valuation
+  - Investment analysis scenarios
+  - Accounting and budgeting questions
+  - Corporate finance concepts
+  - Excel for finance professionals
+  - Interview tips and strategies
+
+### Data Analyst Interview Questions
+- **URL:** https://finlysta.com/interview-prep/data-analyst
+- **Category:** Interview Preparation
+- **What You'll Learn:**
+  - Data cleaning and preparation
+  - Power Query and data transformation
+  - Dashboard creation and reporting
+  - Lookup functions for data analysis
+  - Pivot Tables for data summarization
+  - Interview tips and strategies
+
+## Blog
+
+### Data Analyst Excel: Complete Guide for 2026
+- **URL:** https://finlysta.com/blog/data-analyst-excel-guide
+- **Category:** Data Analysis
+- **Description:** A complete guide to mastering Excel for data analysis, covering essential functions, Pivot Tables, Power Query, and data cleaning techniques.
+
+### INDEX MATCH vs VLOOKUP: Which One Should You Use?
+- **URL:** https://finlysta.com/blog/index-match-vs-vlookup
+- **Category:** Excel Functions
+- **Description:** A detailed comparison of INDEX MATCH and VLOOKUP, helping you understand when and why to use each function.
+
+### Top 10 Excel Interview Questions for Finance Roles
+- **URL:** https://finlysta.com/blog/top-excel-interview-questions
+- **Category:** Interview Preparation
+- **Description:** Prepare for your finance interview with these 10 essential Excel questions that recruiters commonly ask.
+
+### How to Practice VLOOKUP for a Job Test
+- **URL:** https://finlysta.com/blog/how-to-practice-vlookup
+- **Category:** Excel Functions
+- **Description:** Master VLOOKUP with this step-by-step practice guide. Learn common pitfalls and real-world scenarios.
+
+### 5 Tips to Ace Your Excel Interview
+- **URL:** https://finlysta.com/blog/excel-assessment-tips
+- **Category:** Interview Tips
+- **Description:** Excel assessments can be challenging. Here are 5 proven strategies to help you perform your best under pressure.
+
 ## Target Audience
 
 | Group | Relevance |
@@ -145,6 +234,7 @@ Finlysta helps learners build practical spreadsheet and analyst skills through s
 | Accounting Students | Develop essential data analysis skills |
 | Aspiring Financial Analysts | Gain practical analysis and modeling skills |
 | Aspiring Business Analysts | Learn data analysis and reporting techniques |
+| Aspiring Data Analysts | Master Excel for data analysis and reporting |
 | Entry-Level Professionals | Excel skills for workplace success |
 | Interview Candidates | Prepare for Excel interviews and assessments |
 | Career Changers | Build marketable skills for analyst roles |
@@ -153,15 +243,20 @@ Finlysta helps learners build practical spreadsheet and analyst skills through s
 
 ### Excel Functions (All in /excel-functions/)
 - VLOOKUP & XLOOKUP
+- XLOOKUP
 - INDEX & MATCH
+- IF & Nested IF
 - SUMIFS & COUNTIFS
 - Pivot Tables
 - Power Query
 - Data Cleaning
-- Excel Dashboards (Coming Soon)
+- Excel Dashboards
+- Financial Analysis
 
 ### Interview Preparation
 - Advanced Excel Interview Questions
+- Finance Interview Questions
+- Data Analyst Interview Questions
 - Excel Interview Questions for Freshers
 - Scenario-Based Questions
 - Excel Practical Tests
@@ -193,18 +288,25 @@ Finlysta follows a practical-first learning approach:
 - **Real Scenarios** - Practice with business-relevant data
 - **Interview Prep** - Questions based on real interview formats
 - **Immediate Practice** - No course required - start practicing right away
+- **Blog Resources** - Free articles and guides for interview preparation
 
 ## Quick Links
 
 **Start Learning:** https://finlysta.com/practice
 **Take Assessment:** https://finlysta.com/assessment
 **Interview Prep:** https://finlysta.com/interview-prep
+**Blog:** https://finlysta.com/blog
 **VLOOKUP Guide:** https://finlysta.com/excel-functions/vlookup
+**XLOOKUP Guide:** https://finlysta.com/excel-functions/xlookup
 **INDEX MATCH Guide:** https://finlysta.com/excel-functions/index-match
+**IF Guide:** https://finlysta.com/excel-functions/if
 **SUMIFS Guide:** https://finlysta.com/excel-functions/sumifs
 **Pivot Tables Guide:** https://finlysta.com/excel-functions/pivot-tables
 **Power Query Guide:** https://finlysta.com/excel-functions/power-query
 **Data Cleaning Guide:** https://finlysta.com/excel-functions/data-cleaning
+**Excel Dashboards:** https://finlysta.com/excel/dashboards
+**Finance Interview Questions:** https://finlysta.com/interview-prep/finance
+**Data Analyst Interview Questions:** https://finlysta.com/interview-prep/data-analyst
 **Contact:** https://finlysta.com/contact
 **About:** https://finlysta.com/about
 
@@ -230,6 +332,10 @@ Target keywords include:
 - Excel data transformation
 - Power Query M language
 - Excel data preparation
+- IF function Excel
+- Nested IF Excel
+- Finance interview questions
+- Data analyst Excel interview
 
 ---
 

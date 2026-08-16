@@ -8,6 +8,7 @@ export default function robots(): MetadataRoute.Robots {
         allow: "/",
         disallow: ["/api/", "/admin/", "/_next/"],
       },
+      // These rules are recommended to manage AI crawlers
       {
         userAgent: "GPTBot",
         allow: "/",
@@ -24,6 +25,7 @@ export default function robots(): MetadataRoute.Robots {
         disallow: ["/api/", "/admin/", "/_next/"],
       },
     ],
+    // Ensure your sitemap is generated and accessible at this URL
     sitemap: "https://finlysta.com/sitemap.xml",
   };
 }

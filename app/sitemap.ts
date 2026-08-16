@@ -4,6 +4,7 @@ const BASE_URL = "https://finlysta.com";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   return [
+    // Core Pages
     {
       url: BASE_URL,
       lastModified: new Date(),
@@ -28,6 +29,44 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: "weekly",
       priority: 0.9,
     },
+    {
+      url: `${BASE_URL}/blog`,
+      lastModified: new Date(),
+      changeFrequency: "weekly",
+      priority: 0.85,
+    },
+
+    // Blog Posts
+    {
+      url: `${BASE_URL}/blog/data-analyst-excel-guide`,
+      lastModified: new Date(),
+      changeFrequency: "monthly",
+      priority: 0.8,
+    },
+    {
+      url: `${BASE_URL}/blog/index-match-vs-vlookup`,
+      lastModified: new Date(),
+      changeFrequency: "monthly",
+      priority: 0.8,
+    },
+    {
+      url: `${BASE_URL}/blog/top-excel-interview-questions`,
+      lastModified: new Date(),
+      changeFrequency: "monthly",
+      priority: 0.8,
+    },
+    {
+      url: `${BASE_URL}/blog/how-to-practice-vlookup`,
+      lastModified: new Date(),
+      changeFrequency: "monthly",
+      priority: 0.8,
+    },
+    {
+      url: `${BASE_URL}/blog/excel-assessment-tips`,
+      lastModified: new Date(),
+      changeFrequency: "monthly",
+      priority: 0.8,
+    },
 
     // Excel Functions
     {
@@ -37,7 +76,19 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.9,
     },
     {
+      url: `${BASE_URL}/excel-functions/xlookup`,
+      lastModified: new Date(),
+      changeFrequency: "monthly",
+      priority: 0.85,
+    },
+    {
       url: `${BASE_URL}/excel-functions/index-match`,
+      lastModified: new Date(),
+      changeFrequency: "monthly",
+      priority: 0.85,
+    },
+    {
+      url: `${BASE_URL}/excel-functions/if`,
       lastModified: new Date(),
       changeFrequency: "monthly",
       priority: 0.85,
@@ -48,25 +99,45 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: "monthly",
       priority: 0.85,
     },
-
-    // Excel Features
     {
-      url: `${BASE_URL}/excel/pivot-tables`,
+      url: `${BASE_URL}/excel-functions/pivot-tables`,
       lastModified: new Date(),
       changeFrequency: "monthly",
       priority: 0.85,
     },
     {
-      url: `${BASE_URL}/excel/power-query`,
+      url: `${BASE_URL}/excel-functions/power-query`,
       lastModified: new Date(),
       changeFrequency: "monthly",
       priority: 0.8,
     },
     {
-      url: `${BASE_URL}/excel/data-cleaning`,
+      url: `${BASE_URL}/excel-functions/data-cleaning`,
       lastModified: new Date(),
       changeFrequency: "monthly",
       priority: 0.8,
+    },
+
+    // Excel Features
+    {
+      url: `${BASE_URL}/excel/dashboards`,
+      lastModified: new Date(),
+      changeFrequency: "monthly",
+      priority: 0.8,
+    },
+
+    // Interview Prep
+    {
+      url: `${BASE_URL}/interview-prep/finance`,
+      lastModified: new Date(),
+      changeFrequency: "monthly",
+      priority: 0.85,
+    },
+    {
+      url: `${BASE_URL}/interview-prep/data-analyst`,
+      lastModified: new Date(),
+      changeFrequency: "monthly",
+      priority: 0.85,
     },
 
     // Static Pages
