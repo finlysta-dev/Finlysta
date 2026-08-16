@@ -9,7 +9,7 @@ export const metadata: Metadata = {
     template: "%s | Finlysta",
   },
   description:
-    "Practice Excel, finance and analytical skills through realistic challenges, assessments and interview questions designed for students, freshers and entry-level professionals.",
+    "Practice Excel, finance and analytical skills through realistic challenges, assessments and interview questions for students, freshers and entry-level professionals.",
   keywords: [
     "Excel practice",
     "Excel interview questions",

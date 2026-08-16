@@ -18,6 +18,18 @@ const excelTopics = [
     href: "/excel-functions/sumifs",
   },
   {
+    title: "IF & Nested IF",
+    description:
+      "Master conditional logic with IF, Nested IF, AND, and OR functions.",
+    href: "/excel-functions/if",
+  },
+  {
+    title: "XLOOKUP",
+    description:
+      "Learn the modern Excel lookup function with built-in error handling.",
+    href: "/excel-functions/xlookup",
+  },
+  {
     title: "Pivot Tables",
     description:
       "Analyze and summarize business data with practical Excel exercises.",
@@ -55,24 +67,66 @@ const interviewTopics = [
     description:
       "Test your knowledge of formulas, lookup functions, Pivot Tables and more.",
     href: "/interview-prep",
+    color: "blue",
   },
   {
-    title: "Finance Interview Excel Test",
+    title: "Finance Excel Interview Questions",
     description:
       "Practice financial modeling, valuation and accounting scenarios.",
-    href: "/finance/financial-analysis",
+    href: "/interview-prep/finance",
+    color: "green",
   },
   {
-    title: "Data Analyst Excel Assessment",
+    title: "Data Analyst Excel Interview Questions",
     description:
       "Test your skills in data cleaning, Power Query, and dashboard creation.",
-    href: "/excel/data-cleaning",
+    href: "/interview-prep/data-analyst",
+    color: "purple",
   },
   {
     title: "Consulting Case Study Excel",
     description:
       "Solve business problems using Excel analysis and presentation skills.",
     href: "/excel/dashboards",
+    color: "orange",
+  },
+];
+
+const blogPosts = [
+  {
+    title: "Data Analyst Excel: Complete Guide for 2026",
+    description:
+      "A complete guide to mastering Excel for data analysis, covering essential functions, Pivot Tables, Power Query, and data cleaning techniques.",
+    href: "/blog/data-analyst-excel-guide",
+    category: "Data Analysis",
+  },
+  {
+    title: "INDEX MATCH vs VLOOKUP: Which One Should You Use?",
+    description:
+      "A detailed comparison of INDEX MATCH and VLOOKUP, helping you understand when and why to use each function.",
+    href: "/blog/index-match-vs-vlookup",
+    category: "Excel Functions",
+  },
+  {
+    title: "Top 10 Excel Interview Questions for Finance Roles",
+    description:
+      "Prepare for your finance interview with these 10 essential Excel questions that recruiters commonly ask.",
+    href: "/blog/top-excel-interview-questions",
+    category: "Interview Preparation",
+  },
+  {
+    title: "How to Practice VLOOKUP for a Job Test",
+    description:
+      "Master VLOOKUP with this step-by-step practice guide. Learn common pitfalls and real-world scenarios.",
+    href: "/blog/how-to-practice-vlookup",
+    category: "Excel Functions",
+  },
+  {
+    title: "5 Tips to Ace Your Excel Interview",
+    description:
+      "Excel assessments can be challenging. Here are 5 proven strategies to help you perform your best under pressure.",
+    href: "/blog/excel-assessment-tips",
+    category: "Interview Tips",
   },
 ];
 
@@ -128,6 +182,47 @@ const faqs = [
 ];
 
 export default function Home() {
+  // Helper function to get color classes
+  const getColorClasses = (color: string) => {
+    switch (color) {
+      case "blue":
+        return {
+          border: "border-blue-200",
+          bg: "bg-blue-50",
+          hover: "hover:border-blue-300",
+          text: "text-blue-600",
+        };
+      case "green":
+        return {
+          border: "border-green-200",
+          bg: "bg-green-50",
+          hover: "hover:border-green-300",
+          text: "text-green-600",
+        };
+      case "purple":
+        return {
+          border: "border-purple-200",
+          bg: "bg-purple-50",
+          hover: "hover:border-purple-300",
+          text: "text-purple-600",
+        };
+      case "orange":
+        return {
+          border: "border-orange-200",
+          bg: "bg-orange-50",
+          hover: "hover:border-orange-300",
+          text: "text-orange-600",
+        };
+      default:
+        return {
+          border: "border-slate-200",
+          bg: "bg-slate-50",
+          hover: "hover:border-slate-300",
+          text: "text-blue-600",
+        };
+    }
+  };
+
   return (
     <main className="min-h-screen bg-white text-slate-900">
       {/* Header */}
@@ -147,7 +242,7 @@ export default function Home() {
 
           <nav
             aria-label="Main navigation"
-            className="hidden items-center gap-8 text-sm font-semibold md:flex"
+            className="hidden items-center gap-6 text-sm font-semibold md:flex"
           >
             <a
               href="#practice"
@@ -155,60 +250,24 @@ export default function Home() {
             >
               Practice
             </a>
-
             <a
               href="#topics"
               className="text-slate-700 transition hover:text-blue-600"
             >
-              Interview Questions
+              Interview Qs
             </a>
-
             <a
               href="#how-it-works"
               className="text-slate-700 transition hover:text-blue-600"
             >
               How It Works
             </a>
-
-            {/* Excel Functions Dropdown */}
-            <div className="group relative">
-              <button className="flex items-center gap-1 text-slate-700 transition hover:text-blue-600">
-                Excel Functions
-                <svg
-                  className="h-4 w-4 transition-transform group-hover:rotate-180"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M19 9l-7 7-7-7"
-                  />
-                </svg>
-              </button>
-              <div className="absolute left-0 mt-2 w-48 rounded-lg border border-slate-200 bg-white py-2 shadow-lg opacity-0 invisible transition-all group-hover:opacity-100 group-hover:visible">
-                <a
-                  href="/excel-functions/vlookup"
-                  className="block px-4 py-2 text-sm text-slate-700 transition hover:bg-blue-50 hover:text-blue-600"
-                >
-                  VLOOKUP
-                </a>
-                <a
-                  href="/excel-functions/index-match"
-                  className="block px-4 py-2 text-sm text-slate-700 transition hover:bg-blue-50 hover:text-blue-600"
-                >
-                  INDEX MATCH
-                </a>
-                <a
-                  href="/excel-functions/sumifs"
-                  className="block px-4 py-2 text-sm text-slate-700 transition hover:bg-blue-50 hover:text-blue-600"
-                >
-                  SUMIFS
-                </a>
-              </div>
-            </div>
+            <a
+              href="/blog"
+              className="text-slate-700 transition hover:text-blue-600"
+            >
+              Blog
+            </a>
           </nav>
 
           <a
@@ -247,7 +306,12 @@ export default function Home() {
             </h1>
 
             <p className="mx-auto mt-6 max-w-2xl text-base leading-7 text-slate-600 sm:text-lg sm:leading-8">
-              Build practical Excel, finance and analytical skills through realistic challenges, assessments and interview questions designed for students, freshers and entry-level professionals. Instead of watching passive tutorials, you'll solve the type of problems employers actually test in interviews — from VLOOKUP and Pivot Tables to financial modeling and data cleaning.
+              Build practical Excel, finance and analytical skills through
+              realistic challenges, assessments and interview questions designed
+              for students, freshers and entry-level professionals. Instead of
+              watching passive tutorials, you'll solve the type of problems
+              employers actually test in interviews — from VLOOKUP and Pivot
+              Tables to financial modeling and data cleaning.
             </p>
 
             <p className="mx-auto mt-4 max-w-2xl text-sm text-slate-500">
@@ -367,16 +431,16 @@ export default function Home() {
                 href={topic.href}
                 className="group rounded-xl border border-slate-200 bg-white p-5 transition hover:-translate-y-0.5 hover:border-blue-300 hover:shadow-md"
               >
-                <h3 className="font-bold text-slate-900 group-hover:text-blue-600">
+                <h4 className="font-bold text-slate-900 group-hover:text-blue-600">
                   {topic.title}
-                </h3>
+                </h4>
 
                 <p className="mt-2 text-sm leading-6 text-slate-500">
                   {topic.description}
                 </p>
 
                 <span className="mt-4 inline-block text-sm font-bold text-blue-600">
-                  Learn & Practice →
+                  Start Practicing {topic.title} →
                 </span>
               </a>
             ))}
@@ -419,7 +483,7 @@ export default function Home() {
               href="/practice"
               className="mt-7 inline-block rounded-xl bg-blue-600 px-6 py-3 font-bold text-white transition hover:bg-blue-700"
             >
-              Start Practicing →
+              Start Practicing Now →
             </a>
           </div>
 
@@ -514,25 +578,28 @@ export default function Home() {
           </div>
 
           <div className="mt-10 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-            {interviewTopics.map((topic) => (
-              <a
-                key={topic.title}
-                href={topic.href}
-                className="rounded-xl border border-slate-200 bg-white p-5 transition hover:border-blue-300 hover:bg-blue-50"
-              >
-                <h3 className="font-bold text-slate-900">
-                  {topic.title}
-                </h3>
+            {interviewTopics.map((topic) => {
+              const colors = getColorClasses(topic.color);
+              return (
+                <a
+                  key={topic.title}
+                  href={topic.href}
+                  className={`rounded-xl border ${colors.border} ${colors.bg} p-5 transition ${colors.hover} hover:shadow-md`}
+                >
+                  <h4 className={`font-bold text-slate-900`}>
+                    {topic.title}
+                  </h4>
 
-                <p className="mt-2 text-sm leading-6 text-slate-500">
-                  {topic.description}
-                </p>
+                  <p className="mt-2 text-sm leading-6 text-slate-600">
+                    {topic.description}
+                  </p>
 
-                <span className="mt-4 inline-block text-sm font-bold text-blue-600">
-                  Explore →
-                </span>
-              </a>
-            ))}
+                  <span className={`mt-4 inline-block text-sm font-bold ${colors.text}`}>
+                    View {topic.title} →
+                  </span>
+                </a>
+              );
+            })}
           </div>
         </div>
       </section>
@@ -560,7 +627,7 @@ export default function Home() {
               href="/practice"
               className="mt-8 inline-block rounded-xl bg-white px-6 py-3 font-bold text-slate-900 transition hover:bg-slate-100"
             >
-              Start Practicing
+              Start Practicing Now
             </a>
           </div>
         </div>
@@ -591,7 +658,7 @@ export default function Home() {
               href="/about"
               className="mt-6 inline-block text-sm font-bold text-blue-600 transition hover:text-blue-800"
             >
-              Learn more about our story →
+              Discover Our Journey →
             </a>
           </div>
         </div>
@@ -665,56 +732,26 @@ export default function Home() {
           </div>
 
           <div className="mt-10 grid gap-5 md:grid-cols-3">
-            <a
-              href="/blog/top-excel-interview-questions"
-              className="group rounded-xl border border-slate-200 bg-white p-6 transition hover:shadow-md"
-            >
-              <p className="text-sm font-semibold text-blue-600">Article</p>
-              <h3 className="mt-2 text-lg font-bold text-slate-900 group-hover:text-blue-600">
-                Top 10 Excel Interview Questions for Finance Roles
-              </h3>
-              <p className="mt-2 text-sm text-slate-500">
-                Learn which Excel skills are most commonly tested in finance
-                interviews.
-              </p>
-              <span className="mt-4 inline-block text-sm font-bold text-blue-600">
-                Read More →
-              </span>
-            </a>
-
-            <a
-              href="/blog/how-to-practice-vlookup"
-              className="group rounded-xl border border-slate-200 bg-white p-6 transition hover:shadow-md"
-            >
-              <p className="text-sm font-semibold text-blue-600">Article</p>
-              <h3 className="mt-2 text-lg font-bold text-slate-900 group-hover:text-blue-600">
-                How to Practice VLOOKUP for a Job Test
-              </h3>
-              <p className="mt-2 text-sm text-slate-500">
-                A step-by-step guide to mastering VLOOKUP for practical
-                assessments.
-              </p>
-              <span className="mt-4 inline-block text-sm font-bold text-blue-600">
-                Read More →
-              </span>
-            </a>
-
-            <a
-              href="/blog/excel-assessment-tips"
-              className="group rounded-xl border border-slate-200 bg-white p-6 transition hover:shadow-md"
-            >
-              <p className="text-sm font-semibold text-blue-600">Article</p>
-              <h3 className="mt-2 text-lg font-bold text-slate-900 group-hover:text-blue-600">
-                5 Tips to Ace Your Excel Skills Assessment
-              </h3>
-              <p className="mt-2 text-sm text-slate-500">
-                Practical advice on how to prepare and perform well in Excel
-                tests.
-              </p>
-              <span className="mt-4 inline-block text-sm font-bold text-blue-600">
-                Read More →
-              </span>
-            </a>
+            {blogPosts.slice(0, 3).map((post) => (
+              <a
+                key={post.title}
+                href={post.href}
+                className="group rounded-xl border border-slate-200 bg-white p-6 transition hover:shadow-md"
+              >
+                <p className="text-sm font-semibold text-blue-600">
+                  {post.category}
+                </p>
+                <h4 className="mt-2 text-lg font-bold text-slate-900 group-hover:text-blue-600">
+                  {post.title}
+                </h4>
+                <p className="mt-2 text-base leading-6 text-slate-500">
+                  {post.description}
+                </p>
+                <span className="mt-4 inline-block text-sm font-bold text-blue-600">
+                  Read Full Article →
+                </span>
+              </a>
+            ))}
           </div>
         </div>
       </section>
@@ -735,7 +772,7 @@ export default function Home() {
             href="/assessment"
             className="mt-7 inline-block rounded-xl bg-blue-600 px-7 py-4 font-bold text-white shadow-sm transition hover:bg-blue-700"
           >
-            Start Free Excel Practice →
+            Take Free Assessment Now →
           </a>
         </div>
       </section>
@@ -797,6 +834,22 @@ export default function Home() {
                     Advanced Excel Interview Questions
                   </a>
                 </li>
+                <li>
+                  <a
+                    href="/interview-prep/finance"
+                    className="text-sm text-slate-500 transition hover:text-blue-600"
+                  >
+                    Finance Interview Questions
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="/interview-prep/data-analyst"
+                    className="text-sm text-slate-500 transition hover:text-blue-600"
+                  >
+                    Data Analyst Interview Questions
+                  </a>
+                </li>
               </ul>
             </div>
 
@@ -834,8 +887,40 @@ export default function Home() {
             </div>
           </div>
 
+          {/* Social Sharing in Footer */}
+          <div className="mt-8 border-t border-slate-200 pt-6">
+            <p className="text-center text-sm text-slate-500">Share Finlysta:</p>
+            <div className="mt-3 flex flex-wrap justify-center gap-3">
+              <a
+                href="https://twitter.com/intent/tweet?url=https://finlysta.com&text=Practice%20Excel%20skills%20with%20Finlysta"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="rounded-full bg-slate-100 px-4 py-2 text-sm font-medium text-slate-700 transition hover:bg-blue-50 hover:text-blue-600"
+                aria-label="Share on Twitter"
+              >
+                🐦 Twitter
+              </a>
+              <a
+                href="https://www.linkedin.com/sharing/share-offsite/?url=https://finlysta.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="rounded-full bg-slate-100 px-4 py-2 text-sm font-medium text-slate-700 transition hover:bg-blue-50 hover:text-blue-600"
+                aria-label="Share on LinkedIn"
+              >
+                💼 LinkedIn
+              </a>
+              <a
+                href="mailto:?subject=Practice%20Excel%20skills%20with%20Finlysta&body=I%20found%20this%20great%20Excel%20practice%20platform%3A%20https%3A%2F%2Ffinlysta.com"
+                className="rounded-full bg-slate-100 px-4 py-2 text-sm font-medium text-slate-700 transition hover:bg-blue-50 hover:text-blue-600"
+                aria-label="Share via Email"
+              >
+                ✉️ Email
+              </a>
+            </div>
+          </div>
+
           {/* Bottom bar */}
-          <div className="mt-12 border-t border-slate-200 pt-8">
+          <div className="mt-6 border-t border-slate-200 pt-6">
             <p className="text-center text-sm text-slate-400">
               © 2026 Finlysta. Practice skills. Get interview ready.
             </p>
